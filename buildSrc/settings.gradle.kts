@@ -1,14 +1,18 @@
 pluginManagement {
     repositories {
         mavenCentral()
-        gradlePluginPortal() // 必须包含插件仓库
+        gradlePluginPortal()
     }
 }
+
+// 生成libs静态类插件
+//plugins {
+//    id("dev.panuszewski.typesafe-conventions") version "0.6.0-RC1"
+//}
 
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        gradlePluginPortal() // 必须包含插件仓库
     }
 
     versionCatalogs {

@@ -1,11 +1,20 @@
-import org.gradle.buildinit.plugins.internal.VersionCatalogDependencyRegistry
-
-//val libs: VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+//val catalogsExtension = project.extensions.getByType<VersionCatalogsExtension>()
+//val libs = project.extensions.getByType<LibrariesForLibs>()
+//val libs = the<LibrariesForLibs>()
 
 plugins {
     kotlin("jvm")
+
 }
+
+//val libs = the<LibrariesForLibs>()
+
+repositories {
+    mavenCentral()
+}
+
 dependencies {
+    implementation(versionCatalogs.named("libs").findLibrary("jackson.databind").orElseThrow(::AssertionError))
 //    implementation(libs.jackson.databind)
 //    implementation(libs.jackson.datatype.jsr310)
 //    implementation(libs.jackson.module.parameter.names)
