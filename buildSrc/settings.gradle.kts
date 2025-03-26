@@ -5,10 +5,6 @@ pluginManagement {
     }
 }
 
-// 生成libs静态类插件
-//plugins {
-//    id("dev.panuszewski.typesafe-conventions") version "0.6.0-RC1"
-//}
 
 dependencyResolutionManagement {
     repositories {
