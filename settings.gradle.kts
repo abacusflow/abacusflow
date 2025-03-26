@@ -12,6 +12,7 @@ include("invenflow-core:invenflow-user")
 findProject(":invenflow-core:invenflow-user")?.name = "invenflow-user"
 
 // 服务层
+include("invenflow-usecase")
 include("invenflow-usecase:invenflow-usecase-user")
 findProject(":invenflow-usecase:invenflow-usecase-user")?.name = "invenflow-usecase-user"
 
