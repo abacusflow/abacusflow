@@ -28,10 +28,11 @@ dependencies {
 }
 
 ktlint {
+//    version.set("12.1.0")
     filter {
-//        include {
-//            it.name.endsWith(".kt") || it.name.endsWith(".kts")
-//        }
+        include {
+            it.name.endsWith(".kt") || it.name.endsWith(".kts")
+        }
         exclude { entry ->
             entry.file.toString().contains("generated")
         }
