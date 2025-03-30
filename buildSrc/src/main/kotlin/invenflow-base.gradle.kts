@@ -28,7 +28,7 @@ dependencies {
 }
 
 ktlint {
-//    version.set("12.1.0")
+    version.set("1.4.1")
     filter {
         include {
             it.name.endsWith(".kt") || it.name.endsWith(".kts")

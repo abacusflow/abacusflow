@@ -27,6 +27,5 @@ findProject(":invenflow-tools:invenflow-monitor")?.name = "invenflow-monitor"
 // 应用服务启动层
 include("invenflow-server")
 
-//页面
+// 页面
 include("invenflow-webapp")
-

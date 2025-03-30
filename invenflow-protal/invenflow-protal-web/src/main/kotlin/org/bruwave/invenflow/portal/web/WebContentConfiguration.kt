@@ -9,5 +9,4 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan(basePackages = ["org.bruwave.invenflow.portal.web"])
-class WebContentConfiguration {
-}
+class WebContentConfiguration
