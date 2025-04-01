@@ -12,6 +12,8 @@ jsonschema-validator = "1.5.6"
 jsonschema2pojo = "1.2.2"
 openapi-generator = "7.12.0"
 ktlint = "12.2.0"
+#swagger = "2.2.25"
+springdoc-openapi-ui = "2.8.5"
 
 [plugins]
 jsonschema2pojo = { id = "org.jsonschema2pojo", version.ref = "jsonschema2pojo" }
@@ -60,3 +62,5 @@ jsonschema-validator = { module = "com.networknt:json-schema-validator", version
 
 # Others
 netty = { module = "io.netty:netty-all", version.ref = "netty" }
+#swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger" }
+springdoc-openapi-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi-ui" }
