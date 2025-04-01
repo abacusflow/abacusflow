@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api(libs.spring.boot.starter.web)
+    api(project("invenflow-usecase-user"))
 }

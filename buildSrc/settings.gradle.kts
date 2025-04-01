@@ -1,14 +1,14 @@
 pluginManagement {
     repositories {
         mavenCentral()
-        gradlePluginPortal() // 必须包含插件仓库
+        gradlePluginPortal()
     }
 }
+
 
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        gradlePluginPortal() // 必须包含插件仓库
     }
 
     versionCatalogs {
