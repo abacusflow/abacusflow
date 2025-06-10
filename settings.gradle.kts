@@ -6,13 +6,17 @@ rootProject.name = "invenflow"
 // 基础设施层
 include("invenflow-infra:invenflow-db")
 findProject(":invenflow-infra:invenflow-db")?.name = "invenflow-db"
+include("invenflow-infra:invenflow-commons")
+findProject(":invenflow-infra:invenflow-commons")?.name = "invenflow-commons"
 
 // 领域核心层
 include("invenflow-core:invenflow-user")
 findProject(":invenflow-core:invenflow-user")?.name = "invenflow-user"
 
 // 服务层
-include("invenflow-usecase")
+// include("invenflow-usecase")
+include("invenflow-usecase:invenflow-usecase-commons")
+findProject(":invenflow-usecase:invenflow-usecase-user")?.name = "invenflow-usecase-commons"
 include("invenflow-usecase:invenflow-usecase-user")
 findProject(":invenflow-usecase:invenflow-usecase-user")?.name = "invenflow-usecase-user"
 
