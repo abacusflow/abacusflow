@@ -1,35 +1,35 @@
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
-rootProject.name = "invenflow"
+rootProject.name = "abacusflow"
 
 // 基础设施层
-include("invenflow-infra:invenflow-db")
-findProject(":invenflow-infra:invenflow-db")?.name = "invenflow-db"
-include("invenflow-infra:invenflow-commons")
-findProject(":invenflow-infra:invenflow-commons")?.name = "invenflow-commons"
+include("abacusflow-infra:abacusflow-db")
+findProject(":abacusflow-infra:abacusflow-db")?.name = "abacusflow-db"
+include("abacusflow-infra:abacusflow-commons")
+findProject(":abacusflow-infra:abacusflow-commons")?.name = "abacusflow-commons"
 
 // 领域核心层
-include("invenflow-core:invenflow-user")
-findProject(":invenflow-core:invenflow-user")?.name = "invenflow-user"
+include("abacusflow-core:abacusflow-user")
+findProject(":abacusflow-core:abacusflow-user")?.name = "abacusflow-user"
 
 // 服务层
-// include("invenflow-usecase")
-include("invenflow-usecase:invenflow-usecase-commons")
-findProject(":invenflow-usecase:invenflow-usecase-user")?.name = "invenflow-usecase-commons"
-include("invenflow-usecase:invenflow-usecase-user")
-findProject(":invenflow-usecase:invenflow-usecase-user")?.name = "invenflow-usecase-user"
+// include("abacusflow-usecase")
+include("abacusflow-usecase:abacusflow-usecase-commons")
+findProject(":abacusflow-usecase:abacusflow-usecase-user")?.name = "abacusflow-usecase-commons"
+include("abacusflow-usecase:abacusflow-usecase-user")
+findProject(":abacusflow-usecase:abacusflow-usecase-user")?.name = "abacusflow-usecase-user"
 
 // 接入层
-include("invenflow-protal:invenflow-protal-web")
-findProject(":invenflow-protal:invenflow-protal-web")?.name = "invenflow-protal-web"
+include("abacusflow-protal:abacusflow-protal-web")
+findProject(":abacusflow-protal:abacusflow-protal-web")?.name = "abacusflow-protal-web"
 
 // 辅助工具层
-include("invenflow-tools:invenflow-monitor")
-findProject(":invenflow-tools:invenflow-monitor")?.name = "invenflow-monitor"
+include("abacusflow-tools:abacusflow-monitor")
+findProject(":abacusflow-tools:abacusflow-monitor")?.name = "abacusflow-monitor"
 
 // 应用服务启动层
-include("invenflow-server")
+include("abacusflow-server")
 
 // 页面
-include("invenflow-webapp")
+include("abacusflow-webapp")
