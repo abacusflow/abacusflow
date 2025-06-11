@@ -5,8 +5,6 @@ import org.bruwave.invenflow.usecase.CoreContextConfiguration
 import org.springframework.boot.WebApplicationType
 import org.springframework.boot.builder.SpringApplicationBuilder
 
-class ServerApplication
-
 fun main(args: Array<String>) {
     SpringApplicationBuilder()
         .sources(CoreContextConfiguration::class.java)

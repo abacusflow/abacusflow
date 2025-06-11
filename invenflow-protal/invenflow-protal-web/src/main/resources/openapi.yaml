@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: invenflow
   description: 进销存系统服务接口文档
-  version: 0.1.0
+  version: 0.0.1
 servers:
   - url: http://localhost:8080
 tags:
@@ -17,12 +17,6 @@ paths:
       summary: 用户列表
       description: 用户列表
       operationId: listUsers
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BasicUser'
       responses:
         '200':
           description: OK

@@ -1,0 +1,166 @@
+openapi: 3.0.0
+info:
+  title: invenflow api
+  description: 进销存系统服务接口文档
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/v1
+tags:
+  - name: user
+    description: 用户
+
+paths:
+  /user:
+    get:
+      tags:
+        - user
+      summary: 用户列表
+      description: 用户列表
+      operationId: listUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicUser'
+  /user/{id}:
+    get:
+      tags:
+        - user
+      summary: 获取单个用户
+      description: 根据用户ID获取用户详细信息
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          description: 用户ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: 用户未找到
+
+    put:
+      tags:
+        - user
+      summary: 更新用户信息
+      description: 根据用户ID更新用户详细信息
+      operationId: editUser
+      parameters:
+        - name: id
+          in: path
+          description: 用户ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: 用户数据
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 请求数据无效
+        '404':
+          description: 用户未找到
+components:
+  schemas:
+    BasicUser:
+      type: object
+      required:
+        - id
+        - username
+        - nickname
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        nickname:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - nickname
+        - sex
+        - age
+        - enabled
+        - locked
+        - roles
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        nickname:
+          type: string
+        sex:
+          type: string
+        age:
+          type: integer
+        roles:
+          type: array
+          items:
+            type: string
+        enabled:
+          type: boolean
+        locked:
+          type: boolean
+        createdAt:
+          type: integer
+          format: int64
+    Error:
+      description: 错误信息
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        path:
+          type: string
+
+  responses:
+    BadRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
