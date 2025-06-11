@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: invenflow api
-  description: 红线系统服务接口文档
+  description: 进销存系统服务接口文档
   version: 0.0.1
 servers:
   - url: http://localhost:8080/api/v1
