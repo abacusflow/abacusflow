@@ -1,5 +1,5 @@
 [versions]
-invenflow = "0.0.1"
+abacusflow = "0.0.1"
 kotlin = "2.1.0"
 spring = "6.2.0"
 spring-boot = "3.4.0"

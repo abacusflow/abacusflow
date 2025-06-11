@@ -1,6 +1,6 @@
 plugins {
-    id("invenflow-base")
+    id("abacusflow-base")
 }
 
-group = "org.bruwave.invenflow"
-version = libs.versions.invenflow.get()
+group = "org.bruwave.abacusflow"
+version = libs.versions.abacusflow.get()
