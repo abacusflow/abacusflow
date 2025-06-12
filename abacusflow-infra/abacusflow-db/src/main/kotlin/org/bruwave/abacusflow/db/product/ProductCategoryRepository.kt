@@ -1,4 +1,4 @@
-package org.bruwave.abacusflow.db.repository
+package org.bruwave.abacusflow.db.product
 
 import org.bruwave.abacusflow.product.ProductCategory
 import org.springframework.data.jpa.repository.JpaRepository

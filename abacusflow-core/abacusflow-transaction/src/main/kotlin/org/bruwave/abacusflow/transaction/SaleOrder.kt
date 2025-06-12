@@ -1,3 +1,5 @@
+package org.bruwave.abacusflow.transaction
+
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -6,9 +8,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
-import org.bruwave.abacusflow.transaction.OrderStatus
-import org.bruwave.abacusflow.transaction.SaleItem
-import org.bruwave.abacusflow.transaction.SaleOrderCompletedEvent
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot

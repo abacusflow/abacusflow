@@ -1,4 +1,4 @@
-package org.bruwave.abacusflow.db.repository
+package org.bruwave.abacusflow.db.warehouse
 
 import org.bruwave.abacusflow.warehouse.Warehouse
 import org.springframework.data.jpa.repository.JpaRepository
@@ -8,4 +8,4 @@ import org.springframework.stereotype.Repository
 interface WarehouseRepository : JpaRepository<Warehouse, Long> {
     fun findByName(name: String): Warehouse?
     fun existsByName(name: String): Boolean
-} 
+}

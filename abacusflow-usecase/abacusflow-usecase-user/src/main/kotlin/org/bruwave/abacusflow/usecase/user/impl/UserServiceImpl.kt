@@ -1,6 +1,7 @@
 package org.bruwave.abacusflow.usecase.user.impl
 
-import org.bruwave.abacusflow.db.repository.UserRepository
+import org.bruwave.abacusflow.commons.Sex
+import org.bruwave.abacusflow.db.user.UserRepository
 import org.bruwave.abacusflow.user.User
 import org.bruwave.abacusflow.usecase.user.BasicUserTO
 import org.bruwave.abacusflow.usecase.user.UserService
@@ -16,9 +17,9 @@ class UserServiceImpl(
     override fun createUser(user: UserTO): UserTO {
         val newUser = User(name = user.name)
         newUser.updateProfile(
-            sex = user.sex?.let { org.bruwave.abacusflow.commons.Sex.valueOf(it) },
-            age = user.age,
-            nick = user.nick
+            newSex = user.sex?.let { Sex.valueOf(it) },
+            newAge = user.age,
+            newNick = user.nick
         )
         user.roles.forEach { roleName ->
             // TODO: Add role assignment logic
@@ -29,9 +30,9 @@ class UserServiceImpl(
     override fun updateUser(userTO: UserTO): UserTO {
         val user = userRepository.findById(userTO.id).orElseThrow { NoSuchElementException("User not found") }
         user.updateProfile(
-            sex = userTO.sex?.let { org.bruwave.abacusflow.commons.Sex.valueOf(it) },
-            age = userTO.age,
-            nick = userTO.nick
+            newSex = userTO.sex?.let { org.bruwave.abacusflow.commons.Sex.valueOf(it) },
+            newAge = userTO.age,
+            newNick = userTO.nick
         )
         return userRepository.save(user).toUserTO()
     }

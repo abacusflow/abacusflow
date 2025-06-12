@@ -1,70 +1,84 @@
 openapi: 3.0.0
 info:
   title: abacusflow api
-  description: 进销存系统服务接口文档
   version: 0.0.1
+  description: 进销存系统服务接口文档
 servers:
   - url: http://localhost:8080/api/v1
 tags:
+  - name: inventory
+    description: 管理商品库存状态和库存操作，包括库存数量、多仓库支持、库存调整与预警机制。
+
+  - name: partner
+    description: 管理客户和供应商等外部合作伙伴的信息，并与交易历史进行关联管理。
+
+  - name: product
+    description: 管理商品的基础信息，包括分类、规格及商品本身的增删改查操作。
+
+  - name: transaction
+    description: 处理采购和销售订单的全流程，涵盖订单创建、状态跟踪及订单明细处理。
+
   - name: user
-    description: 用户
+    description: 管理系统用户账户、权限控制及用户行为相关的信息（未在当前领域中显式定义，但通常为系统所需基础模块）。
+
+  - name: warehouse
+    description: 管理物理仓库及其内部存储空间，包括库位分配、容量规划和仓库布局设计。
 
 paths:
-  /user:
+  /users:
     get:
-      tags:
-        - user
-      summary: 用户列表
-      description: 用户列表
-      operationId: listUsers
+      summary: List all users
       responses:
         '200':
-          description: OK
+          description: List of users
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/BasicUser'
-  /user/{id}:
-    get:
-      tags:
-        - user
-      summary: 获取单个用户
-      description: 根据用户ID获取用户详细信息
-      operationId: getUser
-      parameters:
-        - name: id
-          in: path
-          description: 用户ID
-          required: true
-          schema:
-            type: integer
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
-        '200':
-          description: OK
+        '201':
+          description: User created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '404':
-          description: 用户未找到
-
-    put:
-      tags:
-        - user
-      summary: 更新用户信息
-      description: 根据用户ID更新用户详细信息
-      operationId: editUser
+  /users/{id}:
+    get:
+      summary: Get user by ID
       parameters:
         - name: id
           in: path
-          description: 用户ID
           required: true
           schema:
             type: integer
+            format: int64
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: Update user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
-        description: 用户数据
         required: true
         content:
           application/json:
@@ -72,56 +86,736 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '200':
-          description: OK
+          description: User updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
-          description: 请求数据无效
-        '404':
-          description: 用户未找到
+    delete:
+      summary: Delete user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /suppliers:
+    get:
+      summary: List all suppliers
+      responses:
+        '200':
+          description: List of suppliers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Supplier'
+    post:
+      summary: Create a new supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+      responses:
+        '201':
+          description: Supplier created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+  /suppliers/{id}:
+    get:
+      summary: Get supplier by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Supplier details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+    put:
+      summary: Update supplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+      responses:
+        '200':
+          description: Supplier updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+    delete:
+      summary: Delete supplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Supplier deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+
+  /customers:
+    get:
+      summary: List all customers
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    post:
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+  /customers/{id}:
+    get:
+      summary: Get customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    put:
+      summary: Update customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    delete:
+      summary: Delete customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+  /products:
+    get:
+      summary: List all products
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+  /products/{id}:
+    get:
+      summary: Get product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    put:
+      summary: Update product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    delete:
+      summary: Delete product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /product-categories:
+    get:
+      summary: List all product categories
+      responses:
+        '200':
+          description: List of product categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductCategory'
+    post:
+      summary: Create a new product category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCategory'
+      responses:
+        '201':
+          description: Product category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategory'
+  /product-categories/{id}:
+    get:
+      summary: Get product category by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product category details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategory'
+    put:
+      summary: Update product category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCategory'
+      responses:
+        '200':
+          description: Product category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategory'
+    delete:
+      summary: Delete product category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategory'
+
+  /warehouses:
+    get:
+      summary: List all warehouses
+      responses:
+        '200':
+          description: List of warehouses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Warehouse'
+    post:
+      summary: Create a new warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+      responses:
+        '201':
+          description: Warehouse created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+  /warehouses/{id}:
+    get:
+      summary: Get warehouse by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Warehouse details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+    put:
+      summary: Update warehouse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+      responses:
+        '200':
+          description: Warehouse updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+    delete:
+      summary: Delete warehouse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Warehouse deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+
+  /invenries:
+    get:
+      summary: List all invenries
+      responses:
+        '200':
+          description: List of invenries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invenry'
+    post:
+      summary: Create a new invenry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invenry'
+      responses:
+        '201':
+          description: Invenry created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invenry'
+  /invenries/{id}:
+    get:
+      summary: Get invenry by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Invenry details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invenry'
+    put:
+      summary: Update invenry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invenry'
+      responses:
+        '200':
+          description: Invenry updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invenry'
+    delete:
+      summary: Delete invenry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Invenry deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invenry'
+
+  /sale-orders:
+    get:
+      summary: List all sale orders
+      responses:
+        '200':
+          description: List of sale orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SaleOrder'
+    post:
+      summary: Create a new sale order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleOrder'
+      responses:
+        '201':
+          description: Sale order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOrder'
+  /sale-orders/{id}:
+    get:
+      summary: Get sale order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Sale order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOrder'
+    put:
+      summary: Update sale order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleOrder'
+      responses:
+        '200':
+          description: Sale order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOrder'
+    delete:
+      summary: Delete sale order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Sale order deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOrder'
+
+  /purchase-orders:
+    get:
+      summary: List all purchase orders
+      responses:
+        '200':
+          description: List of purchase orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PurchaseOrder'
+    post:
+      summary: Create a new purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+      responses:
+        '201':
+          description: Purchase order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+  /purchase-orders/{id}:
+    get:
+      summary: Get purchase order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Purchase order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+    put:
+      summary: Update purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+      responses:
+        '200':
+          description: Purchase order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+    delete:
+      summary: Delete purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Purchase order deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+
 components:
   schemas:
-    BasicUser:
-      type: object
-      required:
-        - id
-        - username
-        - nickname
-        - createdAt
-      properties:
-        id:
-          type: integer
-          format: int64
-        username:
-          type: string
-        nickname:
-          type: string
-        createdAt:
-          type: integer
-          format: int64
     User:
       type: object
-      required:
-        - id
-        - username
-        - nickname
-        - age
-        - enabled
-        - locked
-        - roles
-        - createdAt
       properties:
         id:
           type: integer
           format: int64
-        username:
-          type: string
-        nickname:
+        name:
           type: string
         sex:
           type: string
+          nullable: true
+        age:
+          type: integer
+        nick:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        enabled:
+          type: boolean
+        locked:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    BasicUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        nick:
+          type: string
+        sex:
+          type: string
+          nullable: true
         age:
           type: integer
         roles:
@@ -133,33 +827,200 @@ components:
         locked:
           type: boolean
         createdAt:
-          type: integer
-          format: int64
-    Error:
-      description: 错误信息
-      type: object
-      required:
-        - type
-      properties:
-        type:
-          type: string
-        message:
-          type: string
-        timestamp:
           type: string
           format: date-time
-        status:
+        updatedAt:
+          type: string
+          format: date-time
+    Supplier:
+      type: object
+      properties:
+        id:
           type: integer
-          format: int32
-        error:
+          format: int64
+        name:
           type: string
-        path:
+        contactPerson:
           type: string
-
-  responses:
-    BadRequestResponse:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        unitPrice:
+          type: number
+          format: double
+        categoryId:
+          type: integer
+          format: int64
+        categoryName:
+          type: string
+        supplierId:
+          type: integer
+          format: int64
+        specification:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProductCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        code:
+          type: string
+    Warehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        location:
+          type: string
+          nullable: true
+        capacity:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Invenry:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        warehouseId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+        safetySck:
+          type: integer
+        version:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SaleOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        customerId:
+          type: integer
+          format: int64
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleItem'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SaleItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+          format: double
+    PurchaseOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        supplierId:
+          type: integer
+          format: int64
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseItem'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PurchaseItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+          format: double

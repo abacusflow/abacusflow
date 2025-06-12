@@ -1,4 +1,4 @@
-package org.bruwave.abacusflow.db.repository
+package org.bruwave.abacusflow.db.transaction
 
 import org.bruwave.abacusflow.transaction.PurchaseOrder
 import org.springframework.data.jpa.repository.JpaRepository
