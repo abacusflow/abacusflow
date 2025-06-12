@@ -1,9 +1,8 @@
 import type { App } from 'vue'
-import { Configuration, UserApi } from '../openapi'
+import { Configuration, UserApi } from '../core/openapi'
 
-// 创建插件
-export const ApiPlugin = {
-  install(app: App, config: Configuration) {
+export default {
+  install: (app: App, config: Configuration) => {
     // 使用提供的配置初始化 UserApi
     const userApi = new UserApi(config)
 

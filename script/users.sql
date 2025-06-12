@@ -1,5 +1,5 @@
 INSERT INTO public.users (age, created_at, enabled, locked, name, nick, password, sex, updated_at)
-VALUES (18, '2025-06-12 15:33:17.384000 +00:00', true, false, 'admin', '超级管理员', '123456', 'MALE',
+VALUES (18, '2025-06-12 15:33:17.384000 +00:00', true, false, 'admin', '超级管理员', '123456', 'M',
         '2025-06-12 15:34:18.513000 +00:00');
 
 INSERT INTO public.role (created_at, label, name, updated_at)

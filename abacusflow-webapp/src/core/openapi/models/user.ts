@@ -42,7 +42,7 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    sex: string;
+    sex?: string;
     /**
      * 
      * @type {number}
@@ -82,7 +82,6 @@ export function instanceOfUser(value: object): value is User {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('username' in value) || value['username'] === undefined) return false;
     if (!('nickname' in value) || value['nickname'] === undefined) return false;
-    if (!('sex' in value) || value['sex'] === undefined) return false;
     if (!('age' in value) || value['age'] === undefined) return false;
     if (!('roles' in value) || value['roles'] === undefined) return false;
     if (!('enabled' in value) || value['enabled'] === undefined) return false;
@@ -104,7 +103,7 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
         'id': json['id'],
         'username': json['username'],
         'nickname': json['nickname'],
-        'sex': json['sex'],
+        'sex': json['sex'] == null ? undefined : json['sex'],
         'age': json['age'],
         'roles': json['roles'],
         'enabled': json['enabled'],

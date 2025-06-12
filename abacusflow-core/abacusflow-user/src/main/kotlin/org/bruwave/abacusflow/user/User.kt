@@ -41,7 +41,7 @@ class User(
     val id: Long = 0
 
     @Enumerated(EnumType.STRING)
-    var sex: Sex = Sex.UNKNOWN
+    var sex: Sex? = null
         private set
 
     var age: Int = 0
