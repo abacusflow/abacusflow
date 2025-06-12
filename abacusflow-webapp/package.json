@@ -10,9 +10,11 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "generate": "openapi-generator-cli generate -i ../abacusflow-protal/abacusflow-protal-web/src/main/resources/static/openapi.yaml -g typescript-fetch -o src/core/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true,basePath=https://api.yourdomain.com --generate-alias-as-model"
   },
   "dependencies": {
+    "@tanstack/vue-query": "^5.80.7",
     "ant-design-vue": "^4.2.6",
     "pinia": "^3.0.1",
     "vue": "^3.5.13",
