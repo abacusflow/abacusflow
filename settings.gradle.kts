@@ -12,6 +12,14 @@ findProject(":abacusflow-infra:abacusflow-commons")?.name = "abacusflow-commons"
 // 领域核心层
 include("abacusflow-core:abacusflow-user")
 findProject(":abacusflow-core:abacusflow-user")?.name = "abacusflow-user"
+include("abacusflow-core:abacusflow-product")
+findProject(":abacusflow-core:abacusflow-product")?.name = "abacusflow-product"
+include("abacusflow-core:abacusflow-inventory")
+findProject(":abacusflow-core:abacusflow-inventory")?.name = "abacusflow-inventory"
+include("abacusflow-core:abacusflow-transaction")
+findProject(":abacusflow-core:abacusflow-transaction")?.name = "abacusflow-transaction"
+include("abacusflow-core:abacusflow-partner")
+findProject(":abacusflow-core:abacusflow-partner")?.name = "abacusflow-partner"
 
 // 服务层
 // include("abacusflow-usecase")
@@ -33,3 +41,4 @@ include("abacusflow-server")
 
 // 页面
 include("abacusflow-webapp")
+include("abacusflow-core:abacusflow-warehouse")
