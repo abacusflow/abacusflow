@@ -1,50 +1,43 @@
 package org.bruwave.abacusflow.transaction
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
-import jakarta.persistence.Enumerated
-import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
-import jdk.jfr.internal.SecuritySupport.registerEvent
+import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
-import java.util.UUID
 
 @Entity
 @Table(name = "purchase_orders")
 class PurchaseOrder(
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "supplier_id")
-    val supplier: Supplier,
+    val supplierId: Long,  // 通过ID关联供应商
 
-    @Enumerated(EnumType.STRING)
     var status: OrderStatus = OrderStatus.PENDING
 ) : AbstractAggregateRoot<PurchaseOrder>() {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID = UUID.randomUUID()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0
 
     @CreationTimestamp
-    @NotNull
-    val createdAt: Instant = Instant.EPOCH
+    val createdAt: Instant = Instant.now()
 
     @UpdateTimestamp
-    @NotNull
-    var updatedAt: Instant = Instant.EPOCH
+    var updatedAt: Instant = Instant.now()
         private set
 
-    @OneToMany(mappedBy = "purchaseOrder", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val items: MutableSet<PurchaseItem> = mutableSetOf()
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "order_id")
+    val items: MutableList<PurchaseItem> = mutableListOf()
 
-    fun addItem(product: Product, quantity: Int, unitPrice: Double) {
-        val item = PurchaseItem(this, product, quantity, unitPrice)
-        items.add(item)
+    fun addItem(productId: Long, quantity: Int, unitPrice: Double) {
+        items.add(PurchaseItem(productId, quantity, unitPrice))
         updatedAt = Instant.now()
     }
 
@@ -52,12 +45,9 @@ class PurchaseOrder(
         require(status == OrderStatus.PENDING) { "只有待处理订单才能完成" }
         status = OrderStatus.COMPLETED
         updatedAt = Instant.now()
-        registerEvent(PurchaseOrderCompletedEvent(this))
-    }
-
-    fun cancelOrder() {
-        require(status == OrderStatus.PENDING) { "只有待处理订单才能取消" }
-        status = OrderStatus.CANCELLED
-        updatedAt = Instant.now()
+        registerEvent(PurchaseOrderCompletedEvent(id, items.map {
+            PurchaseItem(it.productId, it.quantity, it.unitPrice)
+        }))
     }
 }
+

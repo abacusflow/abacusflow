@@ -2,51 +2,61 @@ package org.bruwave.abacusflow.partner
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
-import java.util.UUID
+
 
 @Entity
 @Table(name = "suppliers")
 class Supplier(
-    @field:NotBlank(message = "供应商名称不能为空")
-    @field:Size(max = 100, message = "供应商名称不能超过100字符")
-    val name: String,
-
-    @field:Size(max = 50, message = "联系人不能超过50字符")
-    val contactPerson: String? = null,
-
-    @field:Pattern(regexp = "^\\d{11}\$", message = "手机号格式不正确")
-    val phone: String? = null
+    name: String,
+    phone: String?,
 ) : AbstractAggregateRoot<Supplier>() {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID = UUID.randomUUID()
-
-    @CreationTimestamp
-    @NotNull
-    val createdAt: Instant = Instant.EPOCH
-
-    @UpdateTimestamp
-    @NotNull
-    var updatedAt: Instant = Instant.EPOCH
+    @field:NotBlank
+    @field:Size(max = 100)
+    var name: String = name
         private set
 
-    @OneToMany(mappedBy = "supplier")
-    val products: MutableSet<Product> = mutableSetOf()
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0
 
-    @OneToMany(mappedBy = "supplier")
-    val orders: MutableSet<PurchaseOrder> = mutableSetOf()
+    @field:Size(max = 50)
+    var contactPerson: String? = null
+        private set
 
-    fun updateContactInfo(newContactPerson: String?, newPhone: String?) {
-        contactPerson = newContactPerson
-        phone = newPhone
+    @field:Pattern(regexp = "^\\d{11}\$")
+    var phone: String? = phone
+        private set
+
+    @CreationTimestamp
+    val createdAt: Instant = Instant.now()
+
+    @UpdateTimestamp
+    var updatedAt: Instant = Instant.now()
+        private set
+
+    fun updateContactInfo(newName: String?, newContactPerson: String?, newPhone: String?) {
+        newName?.let {
+            name = it
+        }
+        newContactPerson?.let {
+            contactPerson = it
+        }
+        newPhone?.let {
+            phone = it
+        }
         updatedAt = Instant.now()
+        registerEvent(SupplierUpdatedEvent(id))
     }
 }
+
