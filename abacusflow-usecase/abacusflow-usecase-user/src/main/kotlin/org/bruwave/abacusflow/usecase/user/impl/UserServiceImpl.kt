@@ -4,6 +4,7 @@ import org.bruwave.abacusflow.commons.Sex
 import org.bruwave.abacusflow.db.user.UserRepository
 import org.bruwave.abacusflow.user.User
 import org.bruwave.abacusflow.usecase.user.BasicUserTO
+import org.bruwave.abacusflow.usecase.user.UserInputTO
 import org.bruwave.abacusflow.usecase.user.UserService
 import org.bruwave.abacusflow.usecase.user.UserTO
 import org.springframework.stereotype.Service
@@ -14,33 +15,33 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(
     private val userRepository: UserRepository,
 ) : UserService {
-    override fun createUser(user: UserTO): UserTO {
-        val newUser = User(name = user.name)
+    override fun createUser(input: UserInputTO): UserTO {
+        val newUser = User(name = input.name)
         newUser.updateProfile(
-            newSex = user.sex?.let { Sex.valueOf(it) },
-            newAge = user.age,
-            newNick = user.nick
+            newSex = input.sex?.let { Sex.valueOf(it) },
+            newAge = input.age,
+            newNick = input.nick
         )
-        user.roles.forEach { roleName ->
+        input.roles.forEach { roleName ->
             // TODO: Add role assignment logic
         }
         return userRepository.save(newUser).toUserTO()
     }
 
-    override fun updateUser(userTO: UserTO): UserTO {
-        val user = userRepository.findById(userTO.id).orElseThrow { NoSuchElementException("User not found") }
+    override fun updateUser(input: UserInputTO): UserTO {
+        val user = userRepository.findById(input.id).orElseThrow { NoSuchElementException("User not found") }
         user.updateProfile(
-            newSex = userTO.sex?.let { org.bruwave.abacusflow.commons.Sex.valueOf(it) },
-            newAge = userTO.age,
-            newNick = userTO.nick
+            newSex = input.sex?.let { Sex.valueOf(it) },
+            newAge = input.age,
+            newNick = input.nick
         )
         return userRepository.save(user).toUserTO()
     }
 
-    override fun deleteUser(userTO: UserTO): UserTO {
-        val user = userRepository.findById(userTO.id).orElseThrow { NoSuchElementException("User not found") }
+    override fun deleteUser(id: Long): UserTO {
+        val user = userRepository.findById(id).orElseThrow { NoSuchElementException("User not found") }
         userRepository.delete(user)
-        return userTO
+        return user.toUserTO()
     }
 
     override fun getUser(id: Long): UserTO {
