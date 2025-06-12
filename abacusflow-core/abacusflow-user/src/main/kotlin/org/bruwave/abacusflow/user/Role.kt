@@ -18,7 +18,7 @@ import java.time.Instant
 
 @Entity
 @Table(
-    name = "role",
+    name = "roles",
     uniqueConstraints = [
         UniqueConstraint(columnNames = ["name"]),
     ],
