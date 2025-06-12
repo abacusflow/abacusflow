@@ -1,17 +1,15 @@
 package org.bruwave.abacusflow.commons
 
 enum class Sex {
-    MALE,
-    FEMALE,
-    UNKNOWN,
-    ;
+    M,
+    F;
 
     companion object {
         fun fromString(value: String): Sex =
             when (value) {
-                "MALE" -> MALE
-                "FEMALE" -> FEMALE
-                else -> UNKNOWN
+                "M" -> M
+                "F" -> F
+                else -> throw IllegalArgumentException("sex not supported $value")
             }
     }
 }

@@ -34,12 +34,12 @@ class UserController(
                 user.id,
                 user.name,
                 user.nick,
-                user.sex,
                 user.age,
                 user.roles,
                 user.enabled,
                 user.locked,
                 user.createdAt.toEpochMilli(),
+                user.sex,
             ),
         )
     }
@@ -68,12 +68,12 @@ class UserController(
                 user.id,
                 user.name,
                 user.nick,
-                user.sex,
                 user.age,
                 user.roles,
                 user.enabled,
                 user.locked,
                 user.createdAt.toEpochMilli(),
+                user.sex
             ),
         )
     }

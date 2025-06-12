@@ -5,7 +5,7 @@ import java.time.Instant
 data class UserTO(
     val id: Long,
     val name: String,
-    val sex: String,
+    val sex: String?,
     val age: Int,
     val nick: String,
     val roles: List<String>,
