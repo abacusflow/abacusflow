@@ -5,5 +5,5 @@ plugins {
 
 dependencies {
     implementation(project(":abacusflow-usecase"))
-    implementation(project(":abacusflow-protal:abacusflow-protal-web"))
+    implementation(project(":abacusflow-portal:abacusflow-portal-web"))
 }

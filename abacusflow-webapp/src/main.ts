@@ -1,14 +1,14 @@
 import './assets/main.css'
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import {createApp} from 'vue'
+import {createPinia} from 'pinia'
 
 import App from './App.vue'
 import router from './router'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
-import { VueQueryPlugin } from '@tanstack/vue-query'
-import { Configuration } from './core/openapi'
+import {VueQueryPlugin} from '@tanstack/vue-query'
+import {Configuration} from './core/openapi'
 import TimestampTranslate from './plugin/timestamp-translate'
 import FetchApi from './plugin/fetch'
 

@@ -4,7 +4,6 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
@@ -20,6 +19,7 @@ import java.time.Instant
 class Supplier(
     name: String,
     phone: String?,
+    contactPerson: String?,
 ) : AbstractAggregateRoot<Supplier>() {
     @field:NotBlank
     @field:Size(max = 100)
@@ -31,11 +31,14 @@ class Supplier(
     val id: Long = 0
 
     @field:Size(max = 50)
-    var contactPerson: String? = null
+    var contactPerson: String? = contactPerson
         private set
 
     @field:Pattern(regexp = "^\\d{11}\$")
     var phone: String? = phone
+        private set
+
+    var enabled: Boolean = true
         private set
 
     @CreationTimestamp
@@ -57,6 +60,20 @@ class Supplier(
         }
         updatedAt = Instant.now()
         registerEvent(SupplierUpdatedEvent(id))
+    }
+
+    fun enable() {
+        if (enabled) return
+
+        enabled = true
+        updatedAt = Instant.now()
+    }
+
+    fun disable() {
+        if (!enabled) return
+
+        enabled = false
+        updatedAt = Instant.now()
     }
 }
 

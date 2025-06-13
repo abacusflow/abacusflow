@@ -1,0 +1,2230 @@
+openapi: 3.0.0
+info:
+  title: abacusflow api
+  version: 0.0.1
+  description: 进销存系统服务接口文档
+servers:
+  - url: http://localhost:8080/api/v1
+tags:
+  - name: inventory
+    description: 管理商品库存状态和库存操作，包括库存数量、多仓库支持、库存调整与预警机制。
+  - name: partner
+    description: 管理客户和供应商等外部合作伙伴的信息，并与交易历史进行关联管理。
+  - name: product
+    description: 管理商品的基础信息，包括分类、规格及商品本身的增删改查操作。
+  - name: transaction
+    description: 处理采购和销售订单的全流程，涵盖订单创建、状态跟踪及订单明细处理。
+  - name: user
+    description: 管理系统用户账户、权限控制及用户行为相关的信息。
+  - name: warehouse
+    description: 管理物理仓库及其内部存储空间，包括库位分配、容量规划和仓库布局设计。
+
+paths:
+  /users:
+    get:
+      operationId: listUsers
+      tags:
+        - user
+      summary: List all users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicUser'
+    post:
+      operationId: addUser
+      tags:
+        - user
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserInput'
+      responses:
+        '200':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags:
+        - user
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      operationId: updateUser
+      tags:
+        - user
+      summary: Update user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserInput'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      operationId: deleteUser
+      tags:
+        - user
+      summary: Delete user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /suppliers:
+    get:
+      operationId: listSuppliers
+      tags:
+        - partner
+      summary: List all suppliers
+      responses:
+        '200':
+          description: List of suppliers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicSupplier'
+    post:
+      operationId: addSupplier
+      tags:
+        - partner
+      summary: Create a new supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupplierInput'
+      responses:
+        '200':
+          description: Supplier created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+
+  /suppliers/{id}:
+    get:
+      operationId: getSupplier
+      tags:
+        - partner
+      summary: Get supplier by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Supplier details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+    put:
+      operationId: updateSupplier
+      tags:
+        - partner
+      summary: Update supplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSupplierInput'
+      responses:
+        '200':
+          description: Supplier updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+    delete:
+      operationId: deleteSupplier
+      tags:
+        - partner
+      summary: Delete supplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Supplier deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+
+  /customers:
+    get:
+      operationId: listCustomers
+      tags:
+        - partner
+      summary: List all customers
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicCustomer'
+    post:
+      operationId: addCustomer
+      tags:
+        - partner
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerInput'
+      responses:
+        '200':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+  /customers/{id}:
+    get:
+      operationId: getCustomer
+      tags:
+        - partner
+      summary: Get customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    put:
+      operationId: updateCustomer
+      tags:
+        - partner
+      summary: Update customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomerInput'
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    delete:
+      operationId: deleteCustomer
+      tags:
+        - partner
+      summary: Delete customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+  /products:
+    get:
+      operationId: listProducts
+      tags:
+        - product
+      summary: List all products
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicProduct'
+    post:
+      operationId: addProduct
+      tags:
+        - product
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductInput'
+      responses:
+        '200':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags:
+        - product
+      summary: Get product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    put:
+      operationId: updateProduct
+      tags:
+        - product
+      summary: Update product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductInput'
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    delete:
+      operationId: deleteProduct
+      tags:
+        - product
+      summary: Delete product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /product-categories:
+    get:
+      operationId: listProductCategories
+      tags:
+        - product
+      summary: List all product categories
+      responses:
+        '200':
+          description: List of product categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicProductCategory'
+    post:
+      operationId: addProductCategory
+      tags:
+        - product
+      summary: Create a new product category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductCategoryInput'
+      responses:
+        '200':
+          description: Product category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategory'
+
+  /product-categories/{id}:
+    get:
+      operationId: getProductCategory
+      tags:
+        - product
+      summary: Get product category by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product category details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategory'
+    put:
+      operationId: updateProductCategory
+      tags:
+        - product
+      summary: Update product category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductCategoryInput'
+      responses:
+        '200':
+          description: Product category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategory'
+    delete:
+      operationId: deleteProductCategory
+      tags:
+        - product
+      summary: Delete product category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategory'
+
+  /warehouses:
+    get:
+      operationId: listWarehouses
+      tags:
+        - warehouse
+      summary: List all warehouses
+      responses:
+        '200':
+          description: List of warehouses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicWarehouse'
+    post:
+      operationId: addWarehouse
+      tags:
+        - warehouse
+      summary: Create a new warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWarehouseInput'
+      responses:
+        '200':
+          description: Warehouse created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+
+  /warehouses/{id}:
+    get:
+      operationId: getWarehouse
+      tags:
+        - warehouse
+      summary: Get warehouse by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Warehouse details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+    put:
+      operationId: updateWarehouse
+      tags:
+        - warehouse
+      summary: Update warehouse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWarehouseInput'
+      responses:
+        '200':
+          description: Warehouse updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+    delete:
+      operationId: deleteWarehouse
+      tags:
+        - warehouse
+      summary: Delete warehouse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Warehouse deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+
+  /inventories:
+    get:
+      operationId: listInventories
+      tags:
+        - inventory
+      summary: List all inventories
+      responses:
+        '200':
+          description: List of inventories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicInventory'
+    post:
+      operationId: addInventory
+      tags:
+        - inventory
+      summary: Create a new inventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInventoryInput'
+      responses:
+        '200':
+          description: Inventory created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+
+  /inventories/{id}:
+    get:
+      operationId: getInventory
+      tags:
+        - inventory
+      summary: Get inventory by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Inventory details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+    put:
+      operationId: updateInventory
+      tags:
+        - inventory
+      summary: Update inventory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInventoryInput'
+      responses:
+        '200':
+          description: Inventory updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+    delete:
+      operationId: deleteInventory
+      tags:
+        - inventory
+      summary: Delete inventory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Inventory deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+
+  /sale-orders:
+    get:
+      operationId: listSaleOrders
+      tags:
+        - transaction
+      summary: List all sale orders
+      responses:
+        '200':
+          description: List of sale orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicSaleOrder'
+    post:
+      operationId: addSaleOrder
+      tags:
+        - transaction
+      summary: Create a new sale order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSaleOrderInput'
+      responses:
+        '200':
+          description: Sale order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOrder'
+
+  /sale-orders/{id}:
+    get:
+      operationId: getSaleOrder
+      tags:
+        - transaction
+      summary: Get sale order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Sale order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOrder'
+    put:
+      operationId: updateSaleOrder
+      tags:
+        - transaction
+      summary: Update sale order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSaleOrderInput'
+      responses:
+        '200':
+          description: Sale order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOrder'
+    delete:
+      operationId: deleteSaleOrder
+      tags:
+        - transaction
+      summary: Delete sale order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Sale order deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleOrder'
+
+  /purchase-orders:
+    get:
+      operationId: listPurchaseOrders
+      tags:
+        - transaction
+      summary: List all purchase orders
+      responses:
+        '200':
+          description: List of purchase orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasicPurchaseOrder'
+    post:
+      operationId: addPurchaseOrder
+      tags:
+        - transaction
+      summary: Create a new purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePurchaseOrderInput'
+      responses:
+        '200':
+          description: Purchase order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+
+  /purchase-orders/{id}:
+    get:
+      operationId: getPurchaseOrder
+      tags:
+        - transaction
+      summary: Get purchase order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Purchase order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+    put:
+      operationId: updatePurchaseOrder
+      tags:
+        - transaction
+      summary: Update purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePurchaseOrderInput'
+      responses:
+        '200':
+          description: Purchase order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+    delete:
+      operationId: deletePurchaseOrder
+      tags:
+        - transaction
+      summary: Delete purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Purchase order deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+
+components:
+  schemas:
+    # ============= User schemas =============
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - age
+        - nick
+        - roles
+        - enabled
+        - locked
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 用户唯一标识
+        name:
+          type: string
+          description: 用户真实姓名
+        sex:
+          type: string
+          nullable: true
+          description: 性别
+        age:
+          type: integer
+          description: 年龄
+        nick:
+          type: string
+          description: 昵称
+        roles:
+          type: array
+          items:
+            type: string
+          description: 用户角色列表
+        enabled:
+          type: boolean
+          description: 账户是否启用
+        locked:
+          type: boolean
+          description: 账户是否锁定
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicUser:
+      type: object
+      required:
+        - id
+        - name
+        - nick
+        - enabled
+        - locked
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 用户ID
+        name:
+          type: string
+          description: 用户姓名
+        nick:
+          type: string
+          description: 昵称
+        enabled:
+          type: boolean
+          description: 是否启用
+        locked:
+          type: boolean
+          description: 是否锁定
+
+    CreateUserInput:
+      type: object
+      required:
+        - name
+        - age
+        - nick
+        - roles
+      properties:
+        name:
+          type: string
+          description: 用户真实姓名
+        sex:
+          type: string
+          nullable: true
+          description: 性别
+        age:
+          type: integer
+          minimum: 1
+          maximum: 200
+          description: 年龄
+        nick:
+          type: string
+          description: 昵称
+        roles:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: 用户角色列表
+        enabled:
+          type: boolean
+          default: true
+          description: 账户是否启用
+        locked:
+          type: boolean
+          default: false
+          description: 账户是否锁定
+
+    UpdateUserInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 用户真实姓名
+        sex:
+          type: string
+          nullable: true
+          description: 性别
+        age:
+          type: integer
+          minimum: 1
+          maximum: 200
+          description: 年龄
+        nick:
+          type: string
+          description: 昵称
+        roles:
+          type: array
+          items:
+            type: string
+          description: 用户角色列表
+        enabled:
+          type: boolean
+          description: 账户是否启用
+        locked:
+          type: boolean
+          description: 账户是否锁定
+
+    # ============= Supplier schemas =============
+    Supplier:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 供应商唯一标识
+        name:
+          type: string
+          description: 供应商名称
+        contactPerson:
+          type: string
+          nullable: true
+          description: 联系人姓名
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicSupplier:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 供应商ID
+        name:
+          type: string
+          description: 供应商名称
+        contactPerson:
+          type: string
+          nullable: true
+          description: 联系人
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+
+    CreateSupplierInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 供应商名称
+        contactPerson:
+          type: string
+          nullable: true
+          description: 联系人姓名
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          format: email
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+
+    UpdateSupplierInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 供应商名称
+        contactPerson:
+          type: string
+          nullable: true
+          description: 联系人姓名
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          format: email
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+
+    # ============= Customer schemas =============
+    Customer:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 客户唯一标识
+        name:
+          type: string
+          description: 客户名称
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicCustomer:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 客户ID
+        name:
+          type: string
+          description: 客户名称
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+
+    CreateCustomerInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 客户名称
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          format: email
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+
+    UpdateCustomerInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 客户名称
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          format: email
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+
+    # ============= Product schemas =============
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - unit
+        - unitPrice
+        - categoryId
+        - categoryName
+        - supplierId
+        - supplierName
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 商品唯一标识
+        name:
+          type: string
+          description: 商品名称
+        unitPrice:
+          type: number
+          format: double
+          description: 单价
+        categoryId:
+          type: integer
+          format: int64
+          description: 分类ID
+        categoryName:
+          type: string
+          description: 分类名称
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        supplierName:
+          type: string
+          description: 供应商名称
+        specification:
+          type: string
+          nullable: true
+          description: 规格说明
+        unit:
+          $ref: '#/components/schemas/ProductUnit'
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicProduct:
+      type: object
+      required:
+        - id
+        - name
+        - unit
+        - unitPrice
+        - categoryName
+        - supplierName
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 商品ID
+        name:
+          type: string
+          description: 商品名称
+        unitPrice:
+          type: number
+          format: double
+          description: 单价
+        categoryName:
+          type: string
+          description: 分类名称
+        supplierName:
+          type: string
+          description: 供应商名称
+        unit:
+          $ref: '#/components/schemas/ProductUnit'
+
+    CreateProductInput:
+      type: object
+      required:
+        - name
+        - unit
+        - unitPrice
+        - categoryId
+        - supplierId
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 商品名称
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+        categoryId:
+          type: integer
+          format: int64
+          description: 分类ID
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        specification:
+          type: string
+          nullable: true
+          description: 规格说明
+        unit:
+          $ref: '#/components/schemas/ProductUnit'
+
+    UpdateProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 商品名称
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+        categoryId:
+          type: integer
+          format: int64
+          description: 分类ID
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        specification:
+          type: string
+          nullable: true
+          description: 规格说明
+        unit:
+          $ref: '#/components/schemas/ProductUnit'
+
+    # ============= ProductCategory schemas =============
+    ProductCategory:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 分类唯一标识
+        name:
+          type: string
+          description: 分类名称
+        description:
+          type: string
+          nullable: true
+          description: 分类描述
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+          description: 父分类ID
+        parentName:
+          type: string
+          nullable: true
+          description: 父分类名称
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicProductCategory:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 分类ID
+        name:
+          type: string
+          description: 分类名称
+        parentName:
+          type: string
+          nullable: true
+          description: 父分类名称
+
+    CreateProductCategoryInput:
+      type: object
+      required:
+        - name
+        - parentId
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 分类名称
+        description:
+          type: string
+          nullable: true
+          description: 分类描述
+        parentId:
+          type: integer
+          format: int64
+          description: 父分类ID
+
+    UpdateProductCategoryInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 分类名称
+        description:
+          type: string
+          nullable: true
+          description: 分类描述
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+          description: 父分类ID
+
+    # ============= Warehouse schemas =============
+    Warehouse:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 仓库唯一标识
+        name:
+          type: string
+          description: 仓库名称
+        location:
+          type: string
+          nullable: true
+          description: 仓库地址
+        capacity:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 仓库容量
+        enabled:
+          type: boolean
+          description: 是否启用
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicWarehouse:
+      type: object
+      required:
+        - id
+        - name
+        - enabled
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 仓库ID
+        name:
+          type: string
+          description: 仓库名称
+        location:
+          type: string
+          nullable: true
+          description: 仓库地址
+        capacity:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 仓库容量
+        enabled:
+          type: boolean
+          description: 是否启用
+
+    CreateWarehouseInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 仓库名称
+        location:
+          type: string
+          nullable: true
+          description: 仓库地址
+        capacity:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 仓库容量
+
+    UpdateWarehouseInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 仓库名称
+        location:
+          type: string
+          nullable: true
+          description: 仓库地址
+        capacity:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 仓库容量
+
+    # ============= Inventory schemas =============
+    Inventory:
+      type: object
+      required:
+        - id
+        - productId
+        - productName
+        - warehouseId
+        - warehouseName
+        - quantity
+        - reservedQuantity
+        - availableQuantity
+        - safetyStock
+        - maxStock
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 库存唯一标识
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        productName:
+          type: string
+          description: 商品名称
+        warehouseId:
+          type: integer
+          format: int64
+          description: 仓库ID
+        warehouseName:
+          type: string
+          description: 仓库名称
+        quantity:
+          type: integer
+          description: 总库存数量
+        reservedQuantity:
+          type: integer
+          description: 预留数量
+        availableQuantity:
+          type: integer
+          description: 可用数量
+        safetyStock:
+          type: integer
+          nullable: true
+          description: 安全库存预警线
+        maxStock:
+          type: integer
+          nullable: true
+          description: 最高库存预警线
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicInventory:
+      type: object
+      required:
+        - id
+        - productName
+        - warehouseName
+        - quantity
+        - availableQuantity
+        - safetyStock
+        - maxStock
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 库存ID
+        productName:
+          type: string
+          description: 商品名称
+        warehouseName:
+          type: string
+          description: 仓库名称
+        quantity:
+          type: integer
+          description: 总库存数量
+        availableQuantity:
+          type: integer
+          description: 可用数量
+        safetyStock:
+          type: integer
+          nullable: true
+          description: 安全库存预警线
+        maxStock:
+          type: integer
+          nullable: true
+          description: 最大库存预警线
+
+    CreateInventoryInput:
+      type: object
+      required:
+        - productId
+        - warehouseId
+        - quantity
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        warehouseId:
+          type: integer
+          format: int64
+          description: 仓库ID
+        quantity:
+          type: integer
+          minimum: 0
+          description: 初始库存数量
+        safetyStock:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 安全库存预警线
+        maxStock:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 最高库存预警线
+
+    UpdateInventoryInput:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          minimum: 0
+          description: 库存数量
+        safetyStock:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 安全库存预警线
+        maxStock:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 最高库存预警线
+
+    # ============= SaleOrder schemas =============
+    SaleOrder:
+      type: object
+      required:
+        - id
+        - orderNo
+        - customerId
+        - customerName
+        - status
+        - totalAmount
+        - orderItems
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 销售订单唯一标识
+        orderNo:
+          type: string
+          description: 订单编号
+        customerId:
+          type: integer
+          format: int64
+          description: 客户ID
+        customerName:
+          type: string
+          description: 客户名称
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        note:
+          type: string
+          nullable: true
+          description: 备注
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleOrderItem'
+          description: 订单明细
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicSaleOrder:
+      type: object
+      required:
+        - id
+        - orderNo
+        - customerName
+        - status
+        - totalAmount
+        - totalQuantity
+        - itemCount
+        - orderDate
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 销售订单ID
+        orderNo:
+          type: string
+          description: 订单编号
+        customerName:
+          type: string
+          description: 客户名称
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        totalAmount:
+          type: number
+          format: double
+          description: 订单总金额
+        totalQuantity:
+          type: integer
+          format: int64
+          description: 所有商品购买数量总和
+        itemCount:
+          type: integer
+          description: 不同商品的种类数
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
+
+    CreateSaleOrderInput:
+      type: object
+      required:
+        - customerId
+        - orderItems
+        - orderDate
+      properties:
+        customerId:
+          type: integer
+          format: int64
+          description: 客户ID
+        note:
+          type: string
+          nullable: true
+          description: 备注
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleOrderItemInput'
+          minItems: 1
+          description: 订单明细
+
+    UpdateSaleOrderInput:
+      type: object
+      properties:
+        customerId:
+          type: integer
+          format: int64
+          description: 客户ID
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        note:
+          type: string
+          nullable: true
+          description: 备注
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleOrderItemInput'
+          description: 订单明细
+
+    # ============= PurchaseOrder schemas =============
+    PurchaseOrder:
+      type: object
+      required:
+        - id
+        - orderNo
+        - supplierId
+        - supplierName
+        - status
+        - totalAmount
+        - orderItems
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 采购订单唯一标识
+        orderNo:
+          type: string
+          description: 订单编号
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        supplierName:
+          type: string
+          description: 供应商名称
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        note:
+          type: string
+          nullable: true
+          description: 备注
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItem'
+          description: 订单明细
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
+
+    BasicPurchaseOrder:
+      type: object
+      required:
+        - id
+        - orderNo
+        - supplierName
+        - status
+        - totalAmount
+        - totalQuantity
+        - itemCount
+        - orderDate
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 采购订单ID
+        orderNo:
+          type: string
+          description: 订单编号
+        supplierName:
+          type: string
+          description: 供应商名称
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        totalAmount:
+          type: number
+          format: double
+          description: 订单总金额
+        totalQuantity:
+          type: integer
+          format: int64
+          description: 所有商品购买数量总和
+        itemCount:
+          type: integer
+          description: 不同商品的种类数
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
+
+    CreatePurchaseOrderInput:
+      type: object
+      required:
+        - supplierId
+        - orderDate
+        - orderItems
+      properties:
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        note:
+          type: string
+          nullable: true
+          description: 备注
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItemInput'
+          minItems: 1
+          description: 订单明细
+
+    UpdatePurchaseOrderInput:
+      type: object
+      properties:
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        note:
+          type: string
+          nullable: true
+          description: 备注
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItemInput'
+          description: 订单明细
+
+    # ============= OrderItem schemas =============
+    SaleOrderItem:
+      type: object
+      required:
+        - id
+        - productId
+        - productName
+        - quantity
+        - unitPrice
+        - subtotal
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 订单明细ID
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        productName:
+          type: string
+          description: 商品名称
+        quantity:
+          type: integer
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          description: 单价
+        subtotal:
+          type: number
+          format: double
+          description: 小计
+
+    SaleOrderItemInput:
+      type: object
+      required:
+        - productId
+        - quantity
+        - unitPrice
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        quantity:
+          type: integer
+          minimum: 1
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+
+    PurchaseOrderItem:
+      type: object
+      required:
+        - id
+        - productId
+        - productName
+        - quantity
+        - unitPrice
+        - subtotal
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 订单明细ID
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        productName:
+          type: string
+          description: 商品名称
+        quantity:
+          type: integer
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          description: 单价
+        subtotal:
+          type: number
+          format: double
+          description: 小计
+
+    PurchaseOrderItemInput:
+      type: object
+      required:
+        - productId
+        - quantity
+        - unitPrice
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        quantity:
+          type: integer
+          minimum: 1
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+
+    ProductUnit:
+      type: string
+      description: 商品单位枚举
+      enum:
+        - piece    # 件
+        - box      # 箱
+        - pack     # 包
+        - dozen    # 打
+        - pair     # 对
+        - gram     # 克
+        - kilogram # 千克
+        - liter    # 升
+        - milliliter # 毫升
+        - meter    # 米
+        - centimeter # 厘米
+        - bottle   # 瓶
+        - barrel   # 桶
+        - bag      # 袋
+        - sheet    # 张
+        - roll     # 卷
+        - unit     # 单位
+      x-enum-varnames:
+        - piece
+        - box
+        - pack
+        - dozen
+        - pair
+        - gram
+        - kilogram
+        - liter
+        - milliliter
+        - meter
+        - centimeter
+        - bottle
+        - barrel
+        - bag
+        - sheet
+        - roll
+        - unit
+      x-enum-descriptions:
+        - 件
+        - 箱
+        - 包
+        - 打
+        - 对
+        - 克
+        - 千克
+        - 升
+        - 毫升
+        - 米
+        - 厘米
+        - 瓶
+        - 桶
+        - 袋
+        - 张
+        - 卷
+        - 单位
+    OrderStatus:
+      type: string
+      description: 订单状态
+      enum:
+        - pending
+        - confirmed
+        - received
+        - cancelled
+      x-enum-varnames:
+        - pending
+        - confirmed
+        - received
+        - cancelled
+      x-enum-descriptions:
+        - 待确认
+        - 已确认
+        - 已收货
+        - 已取消

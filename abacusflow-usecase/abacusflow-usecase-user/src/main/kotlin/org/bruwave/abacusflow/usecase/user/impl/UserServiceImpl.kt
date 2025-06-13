@@ -1,64 +1,86 @@
 package org.bruwave.abacusflow.usecase.user.impl
 
+import org.bruwave.abacusflow.commons.Sex
+import org.bruwave.abacusflow.db.user.UserRepository
 import org.bruwave.abacusflow.usecase.user.BasicUserTO
+import org.bruwave.abacusflow.usecase.user.CreateUserInputTO
+import org.bruwave.abacusflow.usecase.user.UpdateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UserService
 import org.bruwave.abacusflow.usecase.user.UserTO
-import org.bruwave.abacusflow.user.UserRepository
+import org.bruwave.abacusflow.user.User
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class UserServiceImpl(
     private val userRepository: UserRepository,
 ) : UserService {
-    override fun createUser(user: UserTO): UserTO {
-        TODO("Not yet implemented")
+    override fun createUser(input: CreateUserInputTO): UserTO {
+        val newUser = User(name = input.name)
+        newUser.updateProfile(
+            newSex = input.sex?.let { Sex.valueOf(it) },
+            newAge = input.age,
+            newNick = input.nick
+        )
+        return userRepository.save(newUser).toUserTO()
     }
 
-    override fun updateUser(userTO: UserTO): UserTO {
-        TODO("Not yet implemented")
+    override fun updateUser(id: Long, input: UpdateUserInputTO): UserTO {
+        val user = userRepository.findById(id).orElseThrow { NoSuchElementException("User not found") }
+        user.updateProfile(
+            newSex = input.sex?.let { Sex.valueOf(it) },
+            newAge = input.age,
+            newNick = input.nick
+        )
+        return userRepository.save(user).toUserTO()
     }
 
-    override fun deleteUser(userTO: UserTO): UserTO {
-        TODO("Not yet implemented")
+    override fun deleteUser(id: Long): UserTO {
+        val user = userRepository.findById(id).orElseThrow { NoSuchElementException("User not found") }
+        userRepository.delete(user)
+        return user.toUserTO()
     }
 
     override fun getUser(id: Long): UserTO {
-        val user =
-            userRepository
-                .findById(id)
-                .orElseThrow { RuntimeException("User with id $id not found") }
-
-        return UserTO(
-            id = user.id,
-            name = user.name,
-            nick = user.nick,
-            sex = user.sex?.name,
-            age = user.age,
-            roles = user.roles.map { it.name },
-            enabled = user.enabled,
-            locked = user.locked,
-            createdAt = user.createdAt,
-            updatedAt = user.updatedAt,
-        )
+        return userRepository.findById(id)
+            .orElseThrow { NoSuchElementException("User not found") }
+            .toUserTO()
     }
 
     override fun getUser(name: String): UserTO {
-        TODO("Not yet implemented")
+        return userRepository.findByName(name)
+            ?.toUserTO()
+            ?: throw NoSuchElementException("User not found")
     }
 
-    override fun listUsers(): List<BasicUserTO> =
-        userRepository.findAll().map {
-            BasicUserTO(
-                id = it.id,
-                name = it.name,
-                nick = it.nick,
-                sex = it.sex?.name,
-                age = it.age,
-                roles = it.roles.map { it.name },
-                enabled = it.enabled,
-                locked = it.locked,
-                createdAt = it.createdAt,
-                updatedAt = it.updatedAt,
-            )
-        }
+    override fun listUsers(): List<BasicUserTO> {
+        return userRepository.findAll().map { it.toBasicUserTO() }
+    }
+
+    private fun User.toUserTO() = UserTO(
+        id = id,
+        name = name,
+        sex = sex?.name,
+        age = age,
+        nick = nick,
+        roles = roles.map { it.name },
+        enabled = enabled,
+        locked = locked,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+
+    private fun User.toBasicUserTO() = BasicUserTO(
+        id = id,
+        name = name,
+        nick = nick,
+        sex = sex?.name,
+        age = age,
+        roles = roles.map { it.name },
+        enabled = enabled,
+        locked = locked,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
 }

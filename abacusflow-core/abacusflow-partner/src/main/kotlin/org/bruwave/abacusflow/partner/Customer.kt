@@ -1,18 +1,24 @@
 package org.bruwave.abacusflow.partner
 
-import jakarta.persistence.*
-import jakarta.validation.constraints.*
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
-import java.util.*
 
 @Entity
 @Table(name = "customers")
 class Customer(
     name: String,
     phone: String?,
+    address: String?,
     ) : AbstractAggregateRoot<Customer>() {
 
     @Id
@@ -29,7 +35,10 @@ class Customer(
         private set
 
     @field:Size(max = 200)
-    var address: String? = null
+    var address: String? = address
+        private set
+
+    var enabled: Boolean = true
         private set
 
     @CreationTimestamp
@@ -51,5 +60,19 @@ class Customer(
         }
         updatedAt = Instant.now()
         registerEvent(CustomerUpdatedEvent(id))
+    }
+
+    fun enable() {
+        if (enabled) return
+
+        enabled = true
+        updatedAt = Instant.now()
+    }
+
+    fun disable() {
+        if (!enabled) return
+
+        enabled = false
+        updatedAt = Instant.now()
     }
 }

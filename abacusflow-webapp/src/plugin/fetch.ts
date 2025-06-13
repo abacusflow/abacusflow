@@ -1,5 +1,5 @@
-import type { App } from 'vue'
-import { Configuration, UserApi } from '../core/openapi'
+import type {App} from 'vue'
+import {Configuration, UserApi} from '../core/openapi'
 
 export default {
   install: (app: App, config: Configuration) => {

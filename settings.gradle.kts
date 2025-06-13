@@ -1,44 +1,75 @@
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
+
 rootProject.name = "abacusflow"
 
-// 基础设施层
-include("abacusflow-infra:abacusflow-db")
-findProject(":abacusflow-infra:abacusflow-db")?.name = "abacusflow-db"
-include("abacusflow-infra:abacusflow-commons")
-findProject(":abacusflow-infra:abacusflow-commons")?.name = "abacusflow-commons"
+// ------------------------------------
+// 基础设施层 infra
+// ------------------------------------
+val infraModules = listOf("abacusflow-db", "abacusflow-commons")
+infraModules.forEach {
+    include("abacusflow-infra:$it")
+    findProject(":abacusflow-infra:$it")?.name = it
+}
 
-// 领域核心层
-include("abacusflow-core:abacusflow-user")
-findProject(":abacusflow-core:abacusflow-user")?.name = "abacusflow-user"
-include("abacusflow-core:abacusflow-product")
-findProject(":abacusflow-core:abacusflow-product")?.name = "abacusflow-product"
-include("abacusflow-core:abacusflow-inventory")
-findProject(":abacusflow-core:abacusflow-inventory")?.name = "abacusflow-inventory"
-include("abacusflow-core:abacusflow-transaction")
-findProject(":abacusflow-core:abacusflow-transaction")?.name = "abacusflow-transaction"
-include("abacusflow-core:abacusflow-partner")
-findProject(":abacusflow-core:abacusflow-partner")?.name = "abacusflow-partner"
+// ------------------------------------
+// 领域核心层 core
+// ------------------------------------
+val coreModules = listOf(
+    "abacusflow-user",
+    "abacusflow-product",
+    "abacusflow-inventory",
+    "abacusflow-transaction",
+    "abacusflow-partner",
+    "abacusflow-warehouse"
+)
+coreModules.forEach {
+    include("abacusflow-core:$it")
+    findProject(":abacusflow-core:$it")?.name = it
+}
 
-// 服务层
-// include("abacusflow-usecase")
-include("abacusflow-usecase:abacusflow-usecase-commons")
-findProject(":abacusflow-usecase:abacusflow-usecase-user")?.name = "abacusflow-usecase-commons"
-include("abacusflow-usecase:abacusflow-usecase-user")
-findProject(":abacusflow-usecase:abacusflow-usecase-user")?.name = "abacusflow-usecase-user"
+// ------------------------------------
+// 服务层 usecase
+// ------------------------------------
+val usecaseModules = listOf(
+    "abacusflow-usecase-commons",
+    "abacusflow-usecase-inventory",
+    "abacusflow-usecase-partner",
+    "abacusflow-usecase-product",
+    "abacusflow-usecase-transaction",
+    "abacusflow-usecase-user",
+    "abacusflow-usecase-warehouse"
+)
+usecaseModules.forEach {
+    include("abacusflow-usecase:$it")
+    findProject(":abacusflow-usecase:$it")?.name = it
+}
 
-// 接入层
-include("abacusflow-protal:abacusflow-protal-web")
-findProject(":abacusflow-protal:abacusflow-protal-web")?.name = "abacusflow-protal-web"
+// ------------------------------------
+// 接入层 portal
+// ------------------------------------
+val portalModules = listOf("abacusflow-portal-web")
+portalModules.forEach {
+    include("abacusflow-portal:$it")
+    findProject(":abacusflow-portal:$it")?.name = it
+}
 
-// 辅助工具层
-include("abacusflow-tools:abacusflow-monitor")
-findProject(":abacusflow-tools:abacusflow-monitor")?.name = "abacusflow-monitor"
+// ------------------------------------
+// 辅助工具层 tools
+// ------------------------------------
+val toolsModules = listOf("abacusflow-monitor")
+toolsModules.forEach {
+    include("abacusflow-tools:$it")
+    findProject(":abacusflow-tools:$it")?.name = it
+}
 
-// 应用服务启动层
+// ------------------------------------
+// 应用服务启动层（聚合主程序）
+// ------------------------------------
 include("abacusflow-server")
 
-// 页面
+// ------------------------------------
+// 页面 webapp
+// ------------------------------------
 include("abacusflow-webapp")
-include("abacusflow-core:abacusflow-warehouse")

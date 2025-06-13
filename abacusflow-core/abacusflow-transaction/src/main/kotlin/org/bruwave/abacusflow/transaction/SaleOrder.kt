@@ -1,4 +1,7 @@
+package org.bruwave.abacusflow.transaction
+
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -6,25 +9,37 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
-import org.bruwave.abacusflow.transaction.OrderStatus
-import org.bruwave.abacusflow.transaction.SaleItem
-import org.bruwave.abacusflow.transaction.SaleOrderCompletedEvent
+import jakarta.validation.constraints.NotBlank
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
+import java.time.LocalDate
+import java.util.UUID
 
 @Entity
 @Table(name = "sale_orders")
 class SaleOrder(
-    val customerId: Long,  // 通过ID关联客户
-
-    var status: OrderStatus = OrderStatus.PENDING
+    customerId: Long,
+    orderDate: LocalDate = LocalDate.now(),
 ) : AbstractAggregateRoot<SaleOrder>() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
+
+    @field:NotBlank
+    @Column(unique = true)
+    val orderNo: UUID = UUID.randomUUID()
+
+    var customerId: Long = customerId // 通过ID关联客户
+        private set
+
+    var status: OrderStatus = OrderStatus.PENDING
+        private set
+
+    var orderDate: LocalDate = orderDate
+        private set
 
     @CreationTimestamp
     val createdAt: Instant = Instant.now()
@@ -35,10 +50,28 @@ class SaleOrder(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "order_id")
-    val items: MutableList<SaleItem> = mutableListOf()
+    val _items: MutableList<SaleOrderItem> = mutableListOf()
 
+    val items: List<SaleOrderItem>
+        get() = _items.toList()
+
+
+    fun changeOrderDate(newOrderDate: LocalDate?) {
+        newOrderDate?.let {
+            orderDate = newOrderDate
+        }
+    }
+
+    fun changeCustomer(newCustomerId: Long) {
+        if (customerId == newCustomerId) return
+
+        customerId = newCustomerId
+        updatedAt = Instant.now()
+    }
+
+    // TODO 最佳方案是替换为增量更新
     fun addItem(productId: Long, quantity: Int, unitPrice: Double) {
-        items.add(SaleItem(productId, quantity, unitPrice))
+        _items.add(SaleOrderItem(productId, quantity, unitPrice))
         updatedAt = Instant.now()
     }
 
@@ -47,9 +80,20 @@ class SaleOrder(
         status = OrderStatus.COMPLETED
         updatedAt = Instant.now()
         registerEvent(SaleOrderCompletedEvent(id, items.map {
-            SaleItem(it.productId, it.quantity, it.unitPrice)
+            SaleOrderItem(it.productId, it.quantity, it.unitPrice)
         }))
     }
+
+    fun clearItems() {
+        _items.clear()
+    }
+
+    val totalAmount: Double
+        get() = items.sumOf { it.subtotal }
+    val totalQuantity: Long
+        get() = items.sumOf { it.quantity.toLong() }
+    val itemCount: Int
+        get() = items.distinctBy { it.productId }.size
 }
 
 

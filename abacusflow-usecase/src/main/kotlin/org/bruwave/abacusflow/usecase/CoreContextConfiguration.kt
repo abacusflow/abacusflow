@@ -25,12 +25,17 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableCaching
 @EnableJpaRepositories(
     basePackages = [
-        "org.bruwave.abacusflow.user",
+        "org.bruwave.abacusflow.db",
     ],
 )
 @EntityScan(
     basePackages = [
         "org.bruwave.abacusflow.user",
+        "org.bruwave.abacusflow.inventory",
+        "org.bruwave.abacusflow.partner",
+        "org.bruwave.abacusflow.product",
+        "org.bruwave.abacusflow.transaction",
+        "org.bruwave.abacusflow.warehouse",
     ],
 )
 @PropertySource("classpath:application-core.yml", factory = YamlPropertySourceFactory::class)

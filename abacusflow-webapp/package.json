@@ -11,7 +11,7 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
-    "generate": "openapi-generator-cli generate -i ../abacusflow-protal/abacusflow-protal-web/src/main/resources/static/openapi.yaml -g typescript-fetch -o src/core/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true,basePath=https://api.yourdomain.com --generate-alias-as-model"
+    "generate": "openapi-generator-cli generate -i ../abacusflow-portal/abacusflow-portal-web/src/main/resources/static/openapi.yaml -g typescript-fetch -o src/core/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true,basePath=https://api.yourdomain.com --generate-alias-as-model"
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.80.7",

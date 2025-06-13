@@ -30,9 +30,10 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import { useRoute, useRouter } from 'vue-router'
-import { ref, watch } from 'vue'
-import { UserOutlined, DashboardOutlined } from '@ant-design/icons-vue'
+import {useRoute, useRouter} from 'vue-router'
+import {ref, watch} from 'vue'
+import {DashboardOutlined, UserOutlined} from '@ant-design/icons-vue'
+
 const route = useRoute()
 const router = useRouter()
 const selectedKeys = ref(['/'])
