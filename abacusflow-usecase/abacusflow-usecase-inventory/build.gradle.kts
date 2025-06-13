@@ -5,4 +5,6 @@ plugins {
 dependencies {
     implementation(project(":abacusflow-usecase:abacusflow-usecase-commons"))
     implementation(project(":abacusflow-core:abacusflow-inventory"))
+    implementation(project(":abacusflow-core:abacusflow-product"))
+    implementation(project(":abacusflow-core:abacusflow-warehouse"))
 }

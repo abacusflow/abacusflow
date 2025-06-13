@@ -19,6 +19,7 @@ import java.time.Instant
 @Table(name = "products")
 class Product(
     name: String,
+    specification: String? = null,
     unitPrice: Double = 0.0,
     category: ProductCategory,
     supplierId: Long
@@ -45,7 +46,7 @@ class Product(
         private set
 
     @field:Size(max = 50)
-    var specification: String? = null
+    var specification: String? = specification
         private set
 
     @CreationTimestamp

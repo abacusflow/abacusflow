@@ -1,10 +1,9 @@
 package org.bruwave.abacusflow.usecase.warehouse
 
 interface WarehouseService {
-    fun createWarehouse(warehouse: WarehouseTO): WarehouseTO
-    fun updateWarehouse(warehouseTO: WarehouseTO): WarehouseTO
-    fun deleteWarehouse(warehouseTO: WarehouseTO): WarehouseTO
+    fun createWarehouse(input: CreateWarehouseInputTO): WarehouseTO
+    fun updateWarehouse(id: Long, input: UpdateWarehouseInputTO): WarehouseTO
+    fun deleteWarehouse(id: Long): WarehouseTO
     fun getWarehouse(id: Long): WarehouseTO
-    fun getWarehouse(name: String): WarehouseTO
-    fun listWarehouses(): List<WarehouseTO>
+    fun listWarehouses(): List<BasicWarehouseTO>
 } 

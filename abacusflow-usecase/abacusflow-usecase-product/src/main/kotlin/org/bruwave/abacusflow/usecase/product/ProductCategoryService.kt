@@ -1,11 +1,10 @@
 package org.bruwave.abacusflow.usecase.product
 
+
 interface ProductCategoryService {
-    fun createCategory(category: ProductCategoryTO): ProductCategoryTO
-    fun updateCategory(categoryTO: ProductCategoryTO): ProductCategoryTO
-    fun deleteCategory(categoryTO: ProductCategoryTO): ProductCategoryTO
-    fun getCategory(id: Long): ProductCategoryTO
-    fun getCategory(name: String): ProductCategoryTO
-    fun getCategoryByCode(code: String): ProductCategoryTO
-    fun listCategories(): List<ProductCategoryTO>
+    fun createProductCategory(input: CreateProductCategoryInputTO): ProductCategoryTO
+    fun updateProductCategory(id: Long, input: UpdateProductCategoryInputTO): ProductCategoryTO
+    fun deleteProductCategory(id: Long): ProductCategoryTO
+    fun getProductCategory(id: Long): ProductCategoryTO
+    fun listProductCategories(): List<BasicProductCategoryTO>
 } 

@@ -1,12 +1,10 @@
 package org.bruwave.abacusflow.usecase.product
 
 interface ProductService {
-    fun createProduct(product: ProductTO): ProductTO
-    fun updateProduct(productTO: ProductTO): ProductTO
-    fun deleteProduct(productTO: ProductTO): ProductTO
+    fun createProduct(input: CreateProductInputTO): ProductTO
+    fun updateProduct(id: Long, input: UpdateProductInputTO): ProductTO
+    fun deleteProduct(id: Long): ProductTO
     fun getProduct(id: Long): ProductTO
     fun getProduct(name: String): ProductTO
-    fun listProducts(): List<ProductTO>
-    fun listProductsByCategory(categoryId: Long): List<ProductTO>
-    fun listProductsBySupplier(supplierId: Long): List<ProductTO>
-} 
+    fun listProducts(): List<BasicProductTO>
+}

@@ -47,12 +47,12 @@ usecaseModules.forEach {
 }
 
 // ------------------------------------
-// 接入层 protal
+// 接入层 portal
 // ------------------------------------
-val protalModules = listOf("abacusflow-protal-web")
-protalModules.forEach {
-    include("abacusflow-protal:$it")
-    findProject(":abacusflow-protal:$it")?.name = it
+val portalModules = listOf("abacusflow-portal-web")
+portalModules.forEach {
+    include("abacusflow-portal:$it")
+    findProject(":abacusflow-portal:$it")?.name = it
 }
 
 // ------------------------------------

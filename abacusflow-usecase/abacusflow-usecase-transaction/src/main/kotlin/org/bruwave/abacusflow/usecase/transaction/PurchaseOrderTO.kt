@@ -10,10 +10,3 @@ data class PurchaseOrderTO(
     val createdAt: Instant,
     val updatedAt: Instant
 )
-
-data class PurchaseItemTO(
-    val id: Long,
-    val productId: Long,
-    val quantity: Int,
-    val unitPrice: Double
-) 

@@ -18,6 +18,7 @@ import java.time.Instant
 class Customer(
     name: String,
     phone: String?,
+    address: String?,
     ) : AbstractAggregateRoot<Customer>() {
 
     @Id
@@ -34,7 +35,7 @@ class Customer(
         private set
 
     @field:Size(max = 200)
-    var address: String? = null
+    var address: String? = address
         private set
 
     @CreationTimestamp

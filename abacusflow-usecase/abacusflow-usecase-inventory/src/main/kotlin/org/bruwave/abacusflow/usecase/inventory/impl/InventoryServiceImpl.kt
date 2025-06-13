@@ -1,9 +1,10 @@
 package org.bruwave.abacusflow.usecase.inventory.impl
 
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
+import org.bruwave.abacusflow.db.product.ProductRepository
+import org.bruwave.abacusflow.db.warehouse.WarehouseRepository
 import org.bruwave.abacusflow.inventory.Inventory
-import org.bruwave.abacusflow.usecase.inventory.InventoryService
-import org.bruwave.abacusflow.usecase.inventory.InventoryTO
+import org.bruwave.abacusflow.usecase.inventory.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -11,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class InventoryServiceImpl(
     private val inventoryRepository: InventoryRepository,
+    private val productRepository: ProductRepository,
+    private val warehouseRepository: WarehouseRepository
 ) : InventoryService {
 
     override fun createInventory(to: InventoryTO): InventoryTO {
@@ -39,22 +42,47 @@ class InventoryServiceImpl(
 
     override fun getInventory(id: Long): InventoryTO {
         return inventoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Inventory not found") }
+            .orElseThrow { NoSuchElementException("Inventory not found with id: $id") }
             .toTO()
     }
 
-    override fun listInventories(): List<InventoryTO> {
-        return inventoryRepository.findAll().map { it.toTO() }
+    override fun listInventories(): List<BasicInventoryTO> {
+        val inventories = inventoryRepository.findAll()
+
+        // 批量获取所有涉及的产品和仓库
+        val productMap = productRepository.findAllById(inventories.map { it.productId }).associateBy { it.id }
+        val warehouseMap = warehouseRepository.findAllById(inventories.map { it.warehouseId }).associateBy { it.id }
+
+        return inventories.map { inventory ->
+            val productName = productMap[inventory.productId]?.name ?: "未知产品"
+            val warehouseName = warehouseMap[inventory.warehouseId]?.name ?: "未知仓库"
+            inventory.toBasicTO(productName, warehouseName)
+        }
     }
 
-    private fun Inventory.toTO(): InventoryTO = InventoryTO(
-        id = id,
-        productId = productId,
-        warehouseId = warehouseId,
-        quantity = quantity,
-        safetyStock = safetyStock,
-        version = version,
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    override fun checkSafetyStock(id: Long): Boolean {
+        val inventory = inventoryRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Inventory not found with id: $id") }
+
+        return inventory.isBelowSafetyStock()
+    }
 }
+
+private fun Inventory.toTO() = InventoryTO(
+    id = id,
+    productId = productId,
+    warehouseId = warehouseId,
+    quantity = quantity,
+    safetyStock = safetyStock,
+    version = version,
+    createdAt = createdAt,
+    updatedAt = updatedAt
+)
+
+fun Inventory.toBasicTO(productName: String, warehouseName: String) = BasicInventoryTO(
+    id = id,
+    productName = productName,
+    warehouseName = warehouseName,
+    quantity = quantity
+)
+

@@ -17,6 +17,8 @@ import java.time.Instant
 @Table(name = "warehouses")
 class Warehouse(
     name: String,
+    location: String?,
+    capacity: Int = 0,
 ) : AbstractAggregateRoot<Warehouse>() {
 
     @Id
@@ -29,11 +31,11 @@ class Warehouse(
         private set
 
     @field:Size(max = 200)
-    var location: String? = null
+    var location: String? = location
         private set
 
     @field:PositiveOrZero
-    var capacity: Int = 0
+    var capacity: Int = capacity
         private set
 
     @CreationTimestamp

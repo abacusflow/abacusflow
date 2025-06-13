@@ -2,64 +2,67 @@ package org.bruwave.abacusflow.usecase.product.impl
 
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.product.ProductCategory
-import org.bruwave.abacusflow.usecase.product.ProductCategoryService
-import org.bruwave.abacusflow.usecase.product.ProductCategoryTO
+import org.bruwave.abacusflow.usecase.product.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
 class ProductCategoryServiceImpl(
-    private val productCategoryRepository: ProductCategoryRepository,
+    private val productCategoryRepository: ProductCategoryRepository
 ) : ProductCategoryService {
-    override fun createCategory(category: ProductCategoryTO): ProductCategoryTO {
-        val newCategory = ProductCategory(
-            name = category.name,
-            code = category.code
+    override fun createProductCategory(input: CreateProductCategoryInputTO): ProductCategoryTO {
+        val category = ProductCategory(
+            name = input.name,
+            code = input.code,
+            description = input.description
         )
-        return productCategoryRepository.save(newCategory).toProductCategoryTO()
-    }
-
-    override fun updateCategory(categoryTO: ProductCategoryTO): ProductCategoryTO {
-        val category = productCategoryRepository.findById(categoryTO.id)
-            .orElseThrow { NoSuchElementException("Product category not found") }
-        category.name = categoryTO.name
-        category.code = categoryTO.code
         return productCategoryRepository.save(category).toProductCategoryTO()
     }
 
-    override fun deleteCategory(categoryTO: ProductCategoryTO): ProductCategoryTO {
-        val category = productCategoryRepository.findById(categoryTO.id)
-            .orElseThrow { NoSuchElementException("Product category not found") }
-        productCategoryRepository.delete(category)
-        return categoryTO
+    override fun updateProductCategory(id: Long, input: UpdateProductCategoryInputTO): ProductCategoryTO {
+        val category = productCategoryRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
+
+        category.apply {
+            name = input.name
+            code = input.code
+            description = input.description
+        }
+
+        return productCategoryRepository.save(category).toProductCategoryTO()
     }
 
-    override fun getCategory(id: Long): ProductCategoryTO {
+    override fun deleteProductCategory(id: Long): ProductCategoryTO {
+        val category = productCategoryRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
+
+        productCategoryRepository.delete(category)
+        return category.toProductCategoryTO()
+    }
+
+    override fun getProductCategory(id: Long): ProductCategoryTO {
         return productCategoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Product category not found") }
+            .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
             .toProductCategoryTO()
     }
 
-    override fun getCategory(name: String): ProductCategoryTO {
-        return productCategoryRepository.findByName(name)
-            ?.toProductCategoryTO()
-            ?: throw NoSuchElementException("Product category not found")
+    override fun listProductCategories(): List<BasicProductCategoryTO> {
+        return productCategoryRepository.findAll().map { it.toBasicProductCategoryTO() }
     }
+}
 
-    override fun getCategoryByCode(code: String): ProductCategoryTO {
-        return productCategoryRepository.findByCode(code)
-            ?.toProductCategoryTO()
-            ?: throw NoSuchElementException("Product category not found")
-    }
+private fun ProductCategory.toProductCategoryTO() = ProductCategoryTO(
+    id = id,
+    name = name,
+    code = code,
+    description = description,
+    createdAt = createdAt,
+    updatedAt = updatedAt
+)
 
-    override fun listCategories(): List<ProductCategoryTO> {
-        return productCategoryRepository.findAll().map { it.toProductCategoryTO() }
-    }
-
-    private fun ProductCategory.toProductCategoryTO() = ProductCategoryTO(
-        id = id,
-        name = name,
-        code = code
-    )
-} 
+private fun ProductCategory.toBasicProductCategoryTO() = BasicProductCategoryTO(
+    id = id,
+    name = name,
+    code = code
+)

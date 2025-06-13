@@ -16,14 +16,18 @@ import java.time.Instant
 @Entity
 @Table(name = "sale_orders")
 class SaleOrder(
-    val customerId: Long,  // 通过ID关联客户
-
-    var status: OrderStatus = OrderStatus.PENDING
+    customerId: Long
 ) : AbstractAggregateRoot<SaleOrder>() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
+
+    var customerId: Long = customerId // 通过ID关联客户
+        private set
+
+    var status: OrderStatus = OrderStatus.PENDING
+        private set
 
     @CreationTimestamp
     val createdAt: Instant = Instant.now()
@@ -36,6 +40,14 @@ class SaleOrder(
     @JoinColumn(name = "order_id")
     val items: MutableList<SaleItem> = mutableListOf()
 
+    fun changeCustomer(newCustomerId: Long) {
+        if (this.customerId == newCustomerId) return
+
+        this.customerId = newCustomerId
+        this.updatedAt = Instant.now()
+    }
+
+    // TODO 最佳方案是替换为增量更新
     fun addItem(productId: Long, quantity: Int, unitPrice: Double) {
         items.add(SaleItem(productId, quantity, unitPrice))
         updatedAt = Instant.now()

@@ -1,10 +1,10 @@
 package org.bruwave.abacusflow.usecase.partner
 
 interface CustomerService {
-    fun createCustomer(customer: CustomerTO): CustomerTO
-    fun updateCustomer(customerTO: CustomerTO): CustomerTO
-    fun deleteCustomer(customerTO: CustomerTO): CustomerTO
+    fun createCustomer(input: CreateCustomerInputTO): CustomerTO
+    fun updateCustomer(id: Long, input: UpdateCustomerInputTO): CustomerTO
+    fun deleteCustomer(id: Long): CustomerTO
     fun getCustomer(id: Long): CustomerTO
     fun getCustomer(name: String): CustomerTO
-    fun listCustomers(): List<CustomerTO>
+    fun listCustomers(): List<BasicCustomerTO>
 } 

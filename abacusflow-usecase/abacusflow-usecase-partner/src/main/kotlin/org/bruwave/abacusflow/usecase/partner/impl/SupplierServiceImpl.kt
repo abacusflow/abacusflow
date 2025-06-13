@@ -2,8 +2,11 @@ package org.bruwave.abacusflow.usecase.partner.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.partner.Supplier
+import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
+import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
 import org.bruwave.abacusflow.usecase.partner.SupplierService
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
+import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,55 +15,62 @@ import org.springframework.transaction.annotation.Transactional
 class SupplierServiceImpl(
     private val supplierRepository: SupplierRepository,
 ) : SupplierService {
-    override fun createSupplier(supplier: SupplierTO): SupplierTO {
+    override fun createSupplier(supplier: CreateSupplierInputTO): SupplierTO {
         val newSupplier = Supplier(
             name = supplier.name,
-            phone = supplier.phone
+            phone = supplier.phone,
+            contactPerson = supplier.contactPerson
         )
-        supplier.contactPerson?.let { newSupplier.updateContactInfo(null, it, null) }
-        return supplierRepository.save(newSupplier).toSupplierTO()
+        return supplierRepository.save(newSupplier).toTO()
     }
 
-    override fun updateSupplier(supplierTO: SupplierTO): SupplierTO {
-        val supplier = supplierRepository.findById(supplierTO.id)
+    override fun updateSupplier(id: Long, supplierTO: UpdateSupplierInputTO): SupplierTO {
+        val supplier = supplierRepository.findById(id)
             .orElseThrow { NoSuchElementException("Supplier not found") }
         supplier.updateContactInfo(
             newName = supplierTO.name,
             newContactPerson = supplierTO.contactPerson,
             newPhone = supplierTO.phone
         )
-        return supplierRepository.save(supplier).toSupplierTO()
+        return supplierRepository.save(supplier).toTO()
     }
 
-    override fun deleteSupplier(supplierTO: SupplierTO): SupplierTO {
-        val supplier = supplierRepository.findById(supplierTO.id)
+    override fun deleteSupplier(id: Long): SupplierTO {
+        val supplier = supplierRepository.findById(id)
             .orElseThrow { NoSuchElementException("Supplier not found") }
         supplierRepository.delete(supplier)
-        return supplierTO
+        return supplier.toTO()
     }
 
     override fun getSupplier(id: Long): SupplierTO {
         return supplierRepository.findById(id)
             .orElseThrow { NoSuchElementException("Supplier not found") }
-            .toSupplierTO()
+            .toTO()
     }
 
     override fun getSupplier(name: String): SupplierTO {
         return supplierRepository.findByName(name)
-            ?.toSupplierTO()
+            ?.toTO()
             ?: throw NoSuchElementException("Supplier not found")
     }
 
-    override fun listSuppliers(): List<SupplierTO> {
-        return supplierRepository.findAll().map { it.toSupplierTO() }
+    override fun listSuppliers(): List<BasicSupplierTO> {
+        return supplierRepository.findAll().map { it.toBasicTO() }
     }
 
-    private fun Supplier.toSupplierTO() = SupplierTO(
+    private fun Supplier.toTO() = SupplierTO(
         id = id,
         name = name,
         contactPerson = contactPerson,
         phone = phone,
         createdAt = createdAt,
         updatedAt = updatedAt
+    )
+
+    private fun Supplier.toBasicTO() = BasicSupplierTO(
+        id = id,
+        name = name,
+        contactPerson = contactPerson,
+        phone = phone,
     )
 } 

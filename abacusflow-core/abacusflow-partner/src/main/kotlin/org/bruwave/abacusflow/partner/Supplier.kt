@@ -19,6 +19,7 @@ import java.time.Instant
 class Supplier(
     name: String,
     phone: String?,
+    contactPerson: String?,
 ) : AbstractAggregateRoot<Supplier>() {
     @field:NotBlank
     @field:Size(max = 100)
@@ -30,7 +31,7 @@ class Supplier(
     val id: Long = 0
 
     @field:Size(max = 50)
-    var contactPerson: String? = null
+    var contactPerson: String? = contactPerson
         private set
 
     @field:Pattern(regexp = "^\\d{11}\$")
