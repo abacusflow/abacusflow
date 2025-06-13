@@ -1,11 +1,11 @@
 package org.bruwave.abacusflow.usecase.transaction.impl
 
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
-import org.bruwave.abacusflow.transaction.SaleItem
+import org.bruwave.abacusflow.transaction.SaleOrderItem
 import org.bruwave.abacusflow.transaction.SaleOrder
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
-import org.bruwave.abacusflow.usecase.transaction.SaleItemTO
+import org.bruwave.abacusflow.usecase.transaction.SaleOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderService
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.UpdateSaleOrderInputTO
@@ -21,7 +21,7 @@ class SaleOrderServiceImpl(
         val saleOrder = SaleOrder(
             customerId = input.customerId,
         )
-        input.items.forEach {
+        input.orderItems.forEach {
             saleOrder.addItem(it.productId, it.quantity, it.unitPrice)
         }
         return saleOrderRepository.save(saleOrder).toTO()
@@ -32,9 +32,13 @@ class SaleOrderServiceImpl(
             .orElseThrow { NoSuchElementException("SaleOrder not found") }
 
         saleOrder.apply {
-            changeCustomer(input.customerId)
-            items.clear()
-            input.items.forEach {
+            input.customerId?.let {
+                changeCustomer(it)
+            }
+
+            clearItems()
+
+            input.orderItems?.forEach {
                 saleOrder.addItem(it.productId, it.quantity, it.unitPrice)
             }
         }
@@ -76,21 +80,28 @@ class SaleOrderServiceImpl(
         status = status.name,
         items = items.map { it.toTO() },
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
+        orderNo = orderNo,
+        orderDate = orderDate
     )
 
     private fun SaleOrder.toBasicTO() = BasicSaleOrderTO(
         id = id,
-        customerId = customerId,
         status = status.name,
         itemCount = items.count(),
         createdAt = createdAt,
+        orderNo = orderNo,
+        customerName = "null",//TODO-NULL
+        totalAmount = totalAmount,
+        totalQuantity = totalQuantity,
+        orderDate = orderDate,
     )
 
-    private fun SaleItem.toTO() = SaleItemTO(
+    private fun SaleOrderItem.toTO() = SaleOrderItemTO(
         id = id,
         productId = productId,
         quantity = quantity,
-        unitPrice = unitPrice
+        unitPrice = unitPrice,
+        subtotal = subtotal
     )
 } 

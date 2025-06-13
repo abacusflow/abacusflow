@@ -37,6 +37,7 @@ class ProductController(
                 name = createProductInputVO.name,
                 categoryId = createProductInputVO.categoryId,
                 supplierId = createProductInputVO.supplierId,
+                unit = createProductInputVO.unit.name,
                 unitPrice = createProductInputVO.unitPrice,
                 specification = createProductInputVO.specification
             )
@@ -56,6 +57,7 @@ class ProductController(
                 name = updateProductInputVO.name,
                 categoryId = updateProductInputVO.categoryId,
                 supplierId = updateProductInputVO.supplierId,
+                unit = updateProductInputVO.unit?.name,
                 unitPrice = updateProductInputVO.unitPrice,
                 specification = updateProductInputVO.specification
             )

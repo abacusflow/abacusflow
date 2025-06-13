@@ -1,27 +1,24 @@
-package org.bruwave.abacusflow.portal.web.purchase
+package org.bruwave.abacusflow.portal.web.transaction
 
 import org.bruwave.abacusflow.portal.web.api.PurchaseOrdersApi
 import org.bruwave.abacusflow.portal.web.model.BasicPurchaseOrderVO
 import org.bruwave.abacusflow.portal.web.model.CreatePurchaseOrderInputVO
 import org.bruwave.abacusflow.portal.web.model.PurchaseOrderVO
 import org.bruwave.abacusflow.portal.web.model.UpdatePurchaseOrderInputVO
+import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderService
+import org.bruwave.abacusflow.usecase.transaction.UpdatePurchaseOrderInputTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class PurchaseOrderController(
     private val purchaseOrderService: PurchaseOrderService
-): PurchaseOrdersApi {
+) : PurchaseOrdersApi {
 
     override fun listPurchaseOrders(): ResponseEntity<List<BasicPurchaseOrderVO>> {
-        val orders = purchaseOrderService.listPurchaseOrders()
-        val orderVOs = orders.map { order ->
-            BasicPurchaseOrderVO(
-                order.id,
-                order.supplierId,
-                order.items
-            )
+        val orderVOs = purchaseOrderService.listPurchaseOrders().map { order ->
+            order.toBasicVO()
         }
         return ResponseEntity.ok(orderVOs)
     }
@@ -29,31 +26,21 @@ class PurchaseOrderController(
     override fun getPurchaseOrder(id: Long): ResponseEntity<PurchaseOrderVO> {
         val order = purchaseOrderService.getPurchaseOrder(id)
         return ResponseEntity.ok(
-            PurchaseOrderVO(
-                order.id,
-                order.supplierId,
-                order.items,
-                order.createdAt.toEpochMilli(),
-                order.updatedAt.toEpochMilli()
-            )
+            order.toVO()
         )
     }
 
     override fun addPurchaseOrder(createPurchaseOrderInputVO: CreatePurchaseOrderInputVO): ResponseEntity<PurchaseOrderVO> {
         val order = purchaseOrderService.createPurchaseOrder(
             CreatePurchaseOrderInputTO(
-                createPurchaseOrderInputVO.supplierId,
-                createPurchaseOrderInputVO.items
+                supplierId = createPurchaseOrderInputVO.supplierId,
+                orderDate = createPurchaseOrderInputVO.orderDate,
+                orderItems = createPurchaseOrderInputVO.orderItems.map { it.toInputTO() },
+                note = createPurchaseOrderInputVO.note
             )
         )
         return ResponseEntity.ok(
-            PurchaseOrderVO(
-                order.id,
-                order.supplierId,
-                order.items,
-                order.createdAt.toEpochMilli(),
-                order.updatedAt.toEpochMilli()
-            )
+            order.toVO()
         )
     }
 
@@ -65,17 +52,13 @@ class PurchaseOrderController(
             id,
             UpdatePurchaseOrderInputTO(
                 supplierId = updatePurchaseOrderInputVO.supplierId,
-                items = updatePurchaseOrderInputVO.items
+                orderDate = updatePurchaseOrderInputVO.orderDate,
+                orderItems = updatePurchaseOrderInputVO.orderItems?.map { it.toInputTO() },
+                note = updatePurchaseOrderInputVO.note
             )
         )
         return ResponseEntity.ok(
-            PurchaseOrderVO(
-                order.id,
-                order.supplierId,
-                order.items,
-                order.createdAt.toEpochMilli(),
-                order.updatedAt.toEpochMilli()
-            )
+            order.toVO()
         )
     }
 

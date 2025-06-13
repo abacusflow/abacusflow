@@ -5,6 +5,8 @@ import org.bruwave.abacusflow.portal.web.model.BasicWarehouseVO
 import org.bruwave.abacusflow.portal.web.model.CreateWarehouseInputVO
 import org.bruwave.abacusflow.portal.web.model.WarehouseVO
 import org.bruwave.abacusflow.portal.web.model.UpdateWarehouseInputVO
+import org.bruwave.abacusflow.usecase.warehouse.CreateWarehouseInputTO
+import org.bruwave.abacusflow.usecase.warehouse.UpdateWarehouseInputTO
 import org.bruwave.abacusflow.usecase.warehouse.WarehouseService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -12,17 +14,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class WarehouseController(
     private val warehouseService: WarehouseService
-): WarehousesApi {
+) : WarehousesApi {
 
     override fun listWarehouses(): ResponseEntity<List<BasicWarehouseVO>> {
-        val warehouses = warehouseService.listWarehouses()
-        val warehouseVOs = warehouses.map { warehouse ->
-            BasicWarehouseVO(
-                warehouse.id,
-                warehouse.name,
-                warehouse.location,
-                warehouse.capacity
-            )
+        val warehouseVOs = warehouseService.listWarehouses().map { warehouse ->
+            warehouse.toBasicTO()
         }
         return ResponseEntity.ok(warehouseVOs)
     }
@@ -30,14 +26,7 @@ class WarehouseController(
     override fun getWarehouse(id: Long): ResponseEntity<WarehouseVO> {
         val warehouse = warehouseService.getWarehouse(id)
         return ResponseEntity.ok(
-            WarehouseVO(
-                warehouse.id,
-                warehouse.name,
-                warehouse.location,
-                warehouse.capacity,
-                warehouse.createdAt.toEpochMilli(),
-                warehouse.updatedAt.toEpochMilli()
-            )
+            warehouse.toTO()
         )
     }
 
@@ -50,14 +39,7 @@ class WarehouseController(
             )
         )
         return ResponseEntity.ok(
-            WarehouseVO(
-                warehouse.id,
-                warehouse.name,
-                warehouse.location,
-                warehouse.capacity,
-                warehouse.createdAt.toEpochMilli(),
-                warehouse.updatedAt.toEpochMilli()
-            )
+            warehouse.toTO()
         )
     }
 
@@ -74,14 +56,7 @@ class WarehouseController(
             )
         )
         return ResponseEntity.ok(
-            WarehouseVO(
-                warehouse.id,
-                warehouse.name,
-                warehouse.location,
-                warehouse.capacity,
-                warehouse.createdAt.toEpochMilli(),
-                warehouse.updatedAt.toEpochMilli()
-            )
+            warehouse.toTO()
         )
     }
 

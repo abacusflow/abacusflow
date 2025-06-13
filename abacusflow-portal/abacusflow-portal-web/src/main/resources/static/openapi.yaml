@@ -1530,18 +1530,10 @@ components:
           nullable: true
           description: 仓库地址
         capacity:
-          type: number
-          format: double
+          type: integer
           nullable: true
+          minimum: 0
           description: 仓库容量
-        manager:
-          type: string
-          nullable: true
-          description: 仓库管理员
-        phone:
-          type: string
-          nullable: true
-          description: 联系电话
         enabled:
           type: boolean
           description: 是否启用
@@ -1572,6 +1564,11 @@ components:
           type: string
           nullable: true
           description: 仓库地址
+        capacity:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 仓库容量
         enabled:
           type: boolean
           description: 是否启用
@@ -1590,23 +1587,10 @@ components:
           nullable: true
           description: 仓库地址
         capacity:
-          type: number
-          format: double
+          type: integer
           nullable: true
           minimum: 0
           description: 仓库容量
-        manager:
-          type: string
-          nullable: true
-          description: 仓库管理员
-        phone:
-          type: string
-          nullable: true
-          description: 联系电话
-        enabled:
-          type: boolean
-          default: true
-          description: 是否启用
 
     UpdateWarehouseInput:
       type: object
@@ -1620,22 +1604,10 @@ components:
           nullable: true
           description: 仓库地址
         capacity:
-          type: number
-          format: double
+          type: integer
           nullable: true
           minimum: 0
           description: 仓库容量
-        manager:
-          type: string
-          nullable: true
-          description: 仓库管理员
-        phone:
-          type: string
-          nullable: true
-          description: 联系电话
-        enabled:
-          type: boolean
-          description: 是否启用
 
     # ============= Inventory schemas =============
     Inventory:
@@ -1787,7 +1759,7 @@ components:
       type: object
       required:
         - id
-        - orderNumber
+        - orderNo
         - customerId
         - customerName
         - status
@@ -1800,7 +1772,7 @@ components:
           type: integer
           format: int64
           description: 销售订单唯一标识
-        orderNumber:
+        orderNo:
           type: string
           description: 订单编号
         customerId:
@@ -1811,26 +1783,16 @@ components:
           type: string
           description: 客户名称
         status:
-          type: string
-          enum: [ PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED ]
-          description: 订单状态
-        totalAmount:
-          type: number
-          format: double
-          description: 订单总金额
-        notes:
+          $ref: "#/components/schemas/OrderStatus"
+        note:
           type: string
           nullable: true
           description: 备注
         orderDate:
-          type: integer
-          format: int64
+          type: string
+          format: date
+          example: "1970-01-01"
           description: 订单日期
-        deliveryDate:
-          type: integer
-          format: int64
-          nullable: true
-          description: 交货日期
         orderItems:
           type: array
           items:
@@ -1849,33 +1811,41 @@ components:
       type: object
       required:
         - id
-        - orderNumber
+        - orderNo
         - customerName
         - status
         - totalAmount
+        - totalQuantity
+        - itemCount
         - orderDate
       properties:
         id:
           type: integer
           format: int64
           description: 销售订单ID
-        orderNumber:
+        orderNo:
           type: string
           description: 订单编号
         customerName:
           type: string
           description: 客户名称
         status:
-          type: string
-          enum: [ PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED ]
-          description: 订单状态
+          $ref: "#/components/schemas/OrderStatus"
         totalAmount:
           type: number
           format: double
           description: 订单总金额
-        orderDate:
+        totalQuantity:
           type: integer
           format: int64
+          description: 所有商品购买数量总和
+        itemCount:
+          type: integer
+          description: 不同商品的种类数
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
           description: 订单日期
 
     CreateSaleOrderInput:
@@ -1883,24 +1853,25 @@ components:
       required:
         - customerId
         - orderItems
+        - orderDate
       properties:
         customerId:
           type: integer
           format: int64
           description: 客户ID
-        notes:
+        note:
           type: string
           nullable: true
           description: 备注
-        deliveryDate:
-          type: integer
-          format: int64
-          nullable: true
-          description: 交货日期
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/CreateSaleOrderItemInput'
+            $ref: '#/components/schemas/SaleOrderItemInput'
           minItems: 1
           description: 订单明细
 
@@ -1912,22 +1883,20 @@ components:
           format: int64
           description: 客户ID
         status:
-          type: string
-          enum: [ PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED ]
-          description: 订单状态
-        notes:
+          $ref: "#/components/schemas/OrderStatus"
+        note:
           type: string
           nullable: true
           description: 备注
-        deliveryDate:
-          type: integer
-          format: int64
-          nullable: true
-          description: 交货日期
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/UpdateSaleOrderItemInput'
+            $ref: '#/components/schemas/SaleOrderItemInput'
           description: 订单明细
 
     # ============= PurchaseOrder schemas =============
@@ -1935,7 +1904,7 @@ components:
       type: object
       required:
         - id
-        - orderNumber
+        - orderNo
         - supplierId
         - supplierName
         - status
@@ -1948,7 +1917,7 @@ components:
           type: integer
           format: int64
           description: 采购订单唯一标识
-        orderNumber:
+        orderNo:
           type: string
           description: 订单编号
         supplierId:
@@ -1959,26 +1928,16 @@ components:
           type: string
           description: 供应商名称
         status:
-          type: string
-          enum: [ PENDING, CONFIRMED, RECEIVED, CANCELLED ]
-          description: 订单状态
-        totalAmount:
-          type: number
-          format: double
-          description: 订单总金额
-        notes:
+          $ref: "#/components/schemas/OrderStatus"
+        note:
           type: string
           nullable: true
           description: 备注
         orderDate:
-          type: integer
-          format: int64
+          type: string
+          format: date
+          example: "1970-01-01"
           description: 订单日期
-        expectedDate:
-          type: integer
-          format: int64
-          nullable: true
-          description: 预期到货日期
         orderItems:
           type: array
           items:
@@ -1997,58 +1956,67 @@ components:
       type: object
       required:
         - id
-        - orderNumber
+        - orderNo
         - supplierName
         - status
         - totalAmount
+        - totalQuantity
+        - itemCount
         - orderDate
       properties:
         id:
           type: integer
           format: int64
           description: 采购订单ID
-        orderNumber:
+        orderNo:
           type: string
           description: 订单编号
         supplierName:
           type: string
           description: 供应商名称
         status:
-          type: string
-          enum: [ PENDING, CONFIRMED, RECEIVED, CANCELLED ]
-          description: 订单状态
+          $ref: "#/components/schemas/OrderStatus"
         totalAmount:
           type: number
           format: double
           description: 订单总金额
-        orderDate:
+        totalQuantity:
           type: integer
           format: int64
+          description: 所有商品购买数量总和
+        itemCount:
+          type: integer
+          description: 不同商品的种类数
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
           description: 订单日期
 
     CreatePurchaseOrderInput:
       type: object
       required:
         - supplierId
+        - orderDate
         - orderItems
       properties:
         supplierId:
           type: integer
           format: int64
           description: 供应商ID
-        notes:
+        note:
           type: string
           nullable: true
           description: 备注
-        expectedDate:
-          type: integer
-          format: int64
-          nullable: true
-          description: 预期到货日期
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/CreatePurchaseOrderItemInput'
+            $ref: '#/components/schemas/PurchaseOrderItemInput'
           minItems: 1
           description: 订单明细
 
@@ -2060,22 +2028,20 @@ components:
           format: int64
           description: 供应商ID
         status:
-          type: string
-          enum: [ PENDING, CONFIRMED, RECEIVED, CANCELLED ]
-          description: 订单状态
-        notes:
+          $ref: "#/components/schemas/OrderStatus"
+        note:
           type: string
           nullable: true
           description: 备注
-        expectedDate:
-          type: integer
-          format: int64
-          nullable: true
-          description: 预期到货日期
+        orderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
+          description: 订单日期
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/UpdatePurchaseOrderItemInput'
+            $ref: '#/components/schemas/PurchaseOrderItemInput'
           description: 订单明细
 
     # ============= OrderItem schemas =============
@@ -2087,7 +2053,7 @@ components:
         - productName
         - quantity
         - unitPrice
-        - totalPrice
+        - subtotal
       properties:
         id:
           type: integer
@@ -2107,34 +2073,17 @@ components:
           type: number
           format: double
           description: 单价
-        totalPrice:
+        subtotal:
           type: number
           format: double
           description: 小计
 
-    CreateSaleOrderItemInput:
+    SaleOrderItemInput:
       type: object
       required:
         - productId
         - quantity
         - unitPrice
-      properties:
-        productId:
-          type: integer
-          format: int64
-          description: 商品ID
-        quantity:
-          type: integer
-          minimum: 1
-          description: 数量
-        unitPrice:
-          type: number
-          format: double
-          minimum: 0
-          description: 单价
-
-    UpdateSaleOrderItemInput:
-      type: object
       properties:
         productId:
           type: integer
@@ -2158,7 +2107,7 @@ components:
         - productName
         - quantity
         - unitPrice
-        - totalPrice
+        - subtotal
       properties:
         id:
           type: integer
@@ -2178,12 +2127,12 @@ components:
           type: number
           format: double
           description: 单价
-        totalPrice:
+        subtotal:
           type: number
           format: double
           description: 小计
 
-    CreatePurchaseOrderItemInput:
+    PurchaseOrderItemInput:
       type: object
       required:
         - productId
@@ -2204,61 +2153,45 @@ components:
           minimum: 0
           description: 单价
 
-    UpdatePurchaseOrderItemInput:
-      type: object
-      properties:
-        productId:
-          type: integer
-          format: int64
-          description: 商品ID
-        quantity:
-          type: integer
-          minimum: 1
-          description: 数量
-        unitPrice:
-          type: number
-          format: double
-          minimum: 0
-          description: 单价
     ProductUnit:
       type: string
       description: 商品单位枚举
       enum:
-        - PIECE    # 件
-        - BOX      # 箱
-        - PACK     # 包
-        - DOZEN    # 打
-        - PAIR     # 对
-        - GRAM     # 克
-        - KILOGRAM # 千克
-        - LITER    # 升
-        - MILLILITER # 毫升
-        - METER    # 米
-        - CENTIMETER # 厘米
-        - BOTTLE   # 瓶
-        - BARREL   # 桶
-        - BAG      # 袋
-        - SHEET    # 张
-        - ROLL     # 卷
-        - UNIT     # 单位
+        - piece    # 件
+        - box      # 箱
+        - pack     # 包
+        - dozen    # 打
+        - pair     # 对
+        - gram     # 克
+        - kilogram # 千克
+        - liter    # 升
+        - milliliter # 毫升
+        - meter    # 米
+        - centimeter # 厘米
+        - bottle   # 瓶
+        - barrel   # 桶
+        - bag      # 袋
+        - sheet    # 张
+        - roll     # 卷
+        - unit     # 单位
       x-enum-varnames:
-        - PIECE
-        - BOX
-        - PACK
-        - DOZEN
-        - PAIR
-        - GRAM
-        - KILOGRAM
-        - LITER
-        - MILLILITER
-        - METER
-        - CENTIMETER
-        - BOTTLE
-        - BARREL
-        - BAG
-        - SHEET
-        - ROLL
-        - UNIT
+        - piece
+        - box
+        - pack
+        - dozen
+        - pair
+        - gram
+        - kilogram
+        - liter
+        - milliliter
+        - meter
+        - centimeter
+        - bottle
+        - barrel
+        - bag
+        - sheet
+        - roll
+        - unit
       x-enum-descriptions:
         - 件
         - 箱
@@ -2277,3 +2210,21 @@ components:
         - 张
         - 卷
         - 单位
+    OrderStatus:
+      type: string
+      description: 订单状态
+      enum:
+        - pending
+        - confirmed
+        - received
+        - cancelled
+      x-enum-varnames:
+        - pending
+        - confirmed
+        - received
+        - cancelled
+      x-enum-descriptions:
+        - 待确认
+        - 已确认
+        - 已收货
+        - 已取消

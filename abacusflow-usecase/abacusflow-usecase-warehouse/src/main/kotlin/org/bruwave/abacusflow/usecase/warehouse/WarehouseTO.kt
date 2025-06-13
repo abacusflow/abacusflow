@@ -7,6 +7,7 @@ data class WarehouseTO(
     val name: String,
     val location: String?,
     val capacity: Int,
+    val enabled: Boolean,
     val createdAt: Instant,
     val updatedAt: Instant
 ) 

@@ -18,7 +18,7 @@ import java.time.Instant
 class Warehouse(
     name: String,
     location: String?,
-    capacity: Int = 0,
+    capacity: Int?,
 ) : AbstractAggregateRoot<Warehouse>() {
 
     @Id
@@ -35,7 +35,10 @@ class Warehouse(
         private set
 
     @field:PositiveOrZero
-    var capacity: Int = capacity
+    var capacity: Int = capacity ?: 0
+        private set
+
+    var enabled: Boolean = true
         private set
 
     @CreationTimestamp
@@ -57,5 +60,20 @@ class Warehouse(
         }
         updatedAt = Instant.now()
         registerEvent(WarehouseUpdatedEvent(id))
+    }
+
+
+    fun enable() {
+        if (enabled) return
+
+        enabled = true
+        updatedAt = Instant.now()
+    }
+
+    fun disable() {
+        if (!enabled) return
+
+        enabled = false
+        updatedAt = Instant.now()
     }
 }

@@ -10,7 +10,7 @@ import jakarta.validation.constraints.PositiveOrZero
 
 @Entity
 @Table(name = "sale_order_items")
-class SaleItem(
+class SaleOrderItem(
     val productId: Long,
 
     @field:Positive
@@ -22,4 +22,7 @@ class SaleItem(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
+
+    val subtotal: Double
+        get() = unitPrice * quantity
 }

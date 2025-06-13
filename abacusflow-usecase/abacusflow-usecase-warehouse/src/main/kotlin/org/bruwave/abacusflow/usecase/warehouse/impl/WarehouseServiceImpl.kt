@@ -53,19 +53,3 @@ class WarehouseServiceImpl(
         return warehouseRepository.findAll().map { it.toBasicTO() }
     }
 }
-
-private fun Warehouse.toTO() = WarehouseTO(
-    id = id,
-    name = name,
-    location = location,
-    capacity = capacity,
-    createdAt = createdAt,
-    updatedAt = updatedAt
-)
-
-private fun Warehouse.toBasicTO() = BasicWarehouseTO(
-    id = id,
-    name = name,
-    location = location,
-    capacity = capacity
-) 

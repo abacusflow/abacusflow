@@ -38,6 +38,9 @@ class Supplier(
     var phone: String? = phone
         private set
 
+    var enabled: Boolean = true
+        private set
+
     @CreationTimestamp
     val createdAt: Instant = Instant.now()
 
@@ -57,6 +60,20 @@ class Supplier(
         }
         updatedAt = Instant.now()
         registerEvent(SupplierUpdatedEvent(id))
+    }
+
+    fun enable() {
+        if (enabled) return
+
+        enabled = true
+        updatedAt = Instant.now()
+    }
+
+    fun disable() {
+        if (!enabled) return
+
+        enabled = false
+        updatedAt = Instant.now()
     }
 }
 

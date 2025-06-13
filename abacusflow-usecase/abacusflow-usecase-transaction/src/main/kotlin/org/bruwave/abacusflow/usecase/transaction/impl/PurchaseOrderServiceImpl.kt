@@ -1,11 +1,11 @@
 package org.bruwave.abacusflow.usecase.transaction.impl
 
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
-import org.bruwave.abacusflow.transaction.PurchaseItem
+import org.bruwave.abacusflow.transaction.PurchaseOrderItem
 import org.bruwave.abacusflow.transaction.PurchaseOrder
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
-import org.bruwave.abacusflow.usecase.transaction.PurchaseItemTO
+import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderService
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.UpdatePurchaseOrderInputTO
@@ -22,7 +22,7 @@ class PurchaseOrderServiceImpl(
         val purchaseOrder = PurchaseOrder(
             supplierId = input.supplierId,
         )
-        input.items.forEach {
+        input.orderItems.forEach {
             purchaseOrder.addItem(it.productId, it.quantity, it.unitPrice)
         }
         return purchaseOrderRepository.save(purchaseOrder).toTO()
@@ -33,9 +33,13 @@ class PurchaseOrderServiceImpl(
             .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
 
         purchaseOrder.apply {
-            changeSupplier(input.supplierId)
-            items.clear()
-            input.items.forEach {
+            input.supplierId?.let {
+                changeSupplier(it)
+            }
+
+            clearItems()
+
+            input.orderItems?.forEach {
                 purchaseOrder.addItem(it.productId, it.quantity, it.unitPrice)
             }
         }
@@ -77,21 +81,27 @@ class PurchaseOrderServiceImpl(
         status = status.name,
         items = items.map { it.toTO() },
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
+        orderNo = orderNo
     )
 
     private fun PurchaseOrder.toBasicTO() = BasicPurchaseOrderTO(
         id = id,
-        supplierId = supplierId,
+        supplierName = "null",//TODO-NULL
         status = status.name,
         itemCount = items.size,
         createdAt = createdAt,
+        orderNo = orderNo,
+        totalAmount = totalAmount,
+        totalQuantity = totalQuantity,
+        orderDate = orderDate,
     )
 
-    private fun PurchaseItem.toTO() = PurchaseItemTO(
+    private fun PurchaseOrderItem.toTO() = PurchaseOrderItemTO(
         id = id,
         productId = productId,
         quantity = quantity,
-        unitPrice = unitPrice
+        unitPrice = unitPrice,
+        subtotal = subtotal
     )
 } 

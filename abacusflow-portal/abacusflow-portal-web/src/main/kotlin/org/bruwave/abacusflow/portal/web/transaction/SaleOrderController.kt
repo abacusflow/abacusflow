@@ -1,28 +1,25 @@
-package org.bruwave.abacusflow.portal.web.sale
+package org.bruwave.abacusflow.portal.web.transaction
 
 import org.bruwave.abacusflow.portal.web.api.SaleOrdersApi
 import org.bruwave.abacusflow.portal.web.model.BasicSaleOrderVO
 import org.bruwave.abacusflow.portal.web.model.CreateSaleOrderInputVO
 import org.bruwave.abacusflow.portal.web.model.SaleOrderVO
 import org.bruwave.abacusflow.portal.web.model.UpdateSaleOrderInputVO
+import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderService
+import org.bruwave.abacusflow.usecase.transaction.UpdateSaleOrderInputTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SaleOrderController(
     private val saleOrderService: SaleOrderService
-): SaleOrdersApi {
+) : SaleOrdersApi {
 
     override fun listSaleOrders(): ResponseEntity<List<BasicSaleOrderVO>> {
         val orders = saleOrderService.listSaleOrders()
         val orderVOs = orders.map { order ->
-            BasicSaleOrderVO(
-                order.id,
-                order.customerId,
-                order.orderDate,
-                order.status
-            )
+            order.toBasicVO()
         }
         return ResponseEntity.ok(orderVOs)
     }
@@ -30,14 +27,7 @@ class SaleOrderController(
     override fun getSaleOrder(id: Long): ResponseEntity<SaleOrderVO> {
         val order = saleOrderService.getSaleOrder(id)
         return ResponseEntity.ok(
-            SaleOrderVO(
-                order.id,
-                order.customerId,
-                order.orderDate,
-                order.status,
-                order.createdAt.toEpochMilli(),
-                order.updatedAt.toEpochMilli()
-            )
+            order.toVO()
         )
     }
 
@@ -46,18 +36,12 @@ class SaleOrderController(
             CreateSaleOrderInputTO(
                 createSaleOrderInputVO.customerId,
                 createSaleOrderInputVO.orderDate,
-                createSaleOrderInputVO.status
+                createSaleOrderInputVO.orderItems.map { it.toInputTO() },
+                createSaleOrderInputVO.note
             )
         )
         return ResponseEntity.ok(
-            SaleOrderVO(
-                order.id,
-                order.customerId,
-                order.orderDate,
-                order.status,
-                order.createdAt.toEpochMilli(),
-                order.updatedAt.toEpochMilli()
-            )
+            order.toVO()
         )
     }
 
@@ -70,23 +54,17 @@ class SaleOrderController(
             UpdateSaleOrderInputTO(
                 customerId = updateSaleOrderInputVO.customerId,
                 orderDate = updateSaleOrderInputVO.orderDate,
-                status = updateSaleOrderInputVO.status
+                orderItems = updateSaleOrderInputVO.orderItems?.map { it.toInputTO() },
+                note = updateSaleOrderInputVO.note
             )
         )
         return ResponseEntity.ok(
-            SaleOrderVO(
-                order.id,
-                order.customerId,
-                order.orderDate,
-                order.status,
-                order.createdAt.toEpochMilli(),
-                order.updatedAt.toEpochMilli()
-            )
+            order.toVO()
         )
     }
 
     override fun deleteSaleOrder(id: Long): ResponseEntity<SaleOrderVO> {
-        saleOrderService.deleteSaleOrder()
+        saleOrderService.deleteSaleOrder(id)
         return ResponseEntity.ok().build()
     }
 } 

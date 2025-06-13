@@ -57,6 +57,9 @@ class Product(
     var specification: String? = specification
         private set
 
+    var enabled: Boolean = true
+        private set
+
     @CreationTimestamp
     val createdAt: Instant = Instant.now()
 
@@ -100,6 +103,20 @@ class Product(
 
         supplierId = newSupplierId
 
+        updatedAt = Instant.now()
+    }
+
+    fun enable() {
+        if (enabled) return
+
+        enabled = true
+        updatedAt = Instant.now()
+    }
+
+    fun disable() {
+        if (!enabled) return
+
+        enabled = false
         updatedAt = Instant.now()
     }
 }
