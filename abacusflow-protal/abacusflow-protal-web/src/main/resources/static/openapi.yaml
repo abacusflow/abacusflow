@@ -8,19 +8,14 @@ servers:
 tags:
   - name: inventory
     description: 管理商品库存状态和库存操作，包括库存数量、多仓库支持、库存调整与预警机制。
-
   - name: partner
     description: 管理客户和供应商等外部合作伙伴的信息，并与交易历史进行关联管理。
-
   - name: product
     description: 管理商品的基础信息，包括分类、规格及商品本身的增删改查操作。
-
   - name: transaction
     description: 处理采购和销售订单的全流程，涵盖订单创建、状态跟踪及订单明细处理。
-
   - name: user
     description: 管理系统用户账户、权限控制及用户行为相关的信息（未在当前领域中显式定义，但通常为系统所需基础模块）。
-
   - name: warehouse
     description: 管理物理仓库及其内部存储空间，包括库位分配、容量规划和仓库布局设计。
 
@@ -50,9 +45,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/CreateUserInput'
       responses:
-        '201':
+        '200':
           description: User created
           content:
             application/json:
@@ -96,7 +91,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UpdateUserInput'
       responses:
         '200':
           description: User updated
@@ -138,7 +133,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Supplier'
+                  $ref: '#/components/schemas/BasicSupplier'
     post:
       operationId: addSupplier
       tags:
@@ -149,9 +144,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Supplier'
+              $ref: '#/components/schemas/CreateSupplierInput'
       responses:
-        '201':
+        '200':
           description: Supplier created
           content:
             application/json:
@@ -195,7 +190,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Supplier'
+              $ref: '#/components/schemas/UpdateSupplierInput'
       responses:
         '200':
           description: Supplier updated
@@ -237,7 +232,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Customer'
+                  $ref: '#/components/schemas/BasicCustomer'
     post:
       operationId: addCustomer
       tags:
@@ -248,9 +243,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customer'
+              $ref: '#/components/schemas/CreateCustomerInput'
       responses:
-        '201':
+        '200':
           description: Customer created
           content:
             application/json:
@@ -294,7 +289,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customer'
+              $ref: '#/components/schemas/UpdateCustomerInput'
       responses:
         '200':
           description: Customer updated
@@ -336,7 +331,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Product'
+                  $ref: '#/components/schemas/BasicProduct'
     post:
       operationId: addProduct
       tags:
@@ -347,9 +342,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Product'
+              $ref: '#/components/schemas/CreateProductInput'
       responses:
-        '201':
+        '200':
           description: Product created
           content:
             application/json:
@@ -393,7 +388,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Product'
+              $ref: '#/components/schemas/UpdateProductInput'
       responses:
         '200':
           description: Product updated
@@ -435,7 +430,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProductCategory'
+                  $ref: '#/components/schemas/BasicProductCategory'
     post:
       operationId: addProductCategory
       tags:
@@ -446,9 +441,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductCategory'
+              $ref: '#/components/schemas/CreateProductCategoryInput'
       responses:
-        '201':
+        '200':
           description: Product category created
           content:
             application/json:
@@ -492,7 +487,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductCategory'
+              $ref: '#/components/schemas/UpdateProductCategoryInput'
       responses:
         '200':
           description: Product category updated
@@ -534,7 +529,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Warehouse'
+                  $ref: '#/components/schemas/BasicWarehouse'
     post:
       operationId: addWarehouse
       tags:
@@ -545,9 +540,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Warehouse'
+              $ref: '#/components/schemas/CreateWarehouseInput'
       responses:
-        '201':
+        '200':
           description: Warehouse created
           content:
             application/json:
@@ -591,7 +586,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Warehouse'
+              $ref: '#/components/schemas/UpdateWarehouseInput'
       responses:
         '200':
           description: Warehouse updated
@@ -633,7 +628,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Inventory'
+                  $ref: '#/components/schemas/BasicInventory'
     post:
       operationId: addInventory
       tags:
@@ -644,9 +639,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Inventory'
+              $ref: '#/components/schemas/CreateInventoryInput'
       responses:
-        '201':
+        '200':
           description: Inventory created
           content:
             application/json:
@@ -690,7 +685,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Inventory'
+              $ref: '#/components/schemas/UpdateInventoryInput'
       responses:
         '200':
           description: Inventory updated
@@ -722,7 +717,7 @@ paths:
     get:
       operationId: listSaleOrders
       tags:
-        - sale-order
+        - transaction
       summary: List all sale orders
       responses:
         '200':
@@ -732,20 +727,20 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SaleOrder'
+                  $ref: '#/components/schemas/BasicSaleOrder'
     post:
       operationId: addSaleOrder
       tags:
-        - sale-order
+        - transaction
       summary: Create a new sale order
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SaleOrder'
+              $ref: '#/components/schemas/CreateSaleOrderInput'
       responses:
-        '201':
+        '200':
           description: Sale order created
           content:
             application/json:
@@ -756,7 +751,7 @@ paths:
     get:
       operationId: getSaleOrder
       tags:
-        - sale-order
+        - transaction
       summary: Get sale order by ID
       parameters:
         - name: id
@@ -775,7 +770,7 @@ paths:
     put:
       operationId: updateSaleOrder
       tags:
-        - sale-order
+        - transaction
       summary: Update sale order
       parameters:
         - name: id
@@ -789,7 +784,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SaleOrder'
+              $ref: '#/components/schemas/UpdateSaleOrderInput'
       responses:
         '200':
           description: Sale order updated
@@ -800,7 +795,7 @@ paths:
     delete:
       operationId: deleteSaleOrder
       tags:
-        - sale-order
+        - transaction
       summary: Delete sale order
       parameters:
         - name: id
@@ -821,7 +816,7 @@ paths:
     get:
       operationId: listPurchaseOrders
       tags:
-        - purchase-order
+        - transaction
       summary: List all purchase orders
       responses:
         '200':
@@ -831,20 +826,20 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PurchaseOrder'
+                  $ref: '#/components/schemas/BasicPurchaseOrder'
     post:
       operationId: addPurchaseOrder
       tags:
-        - purchase-order
+        - transaction
       summary: Create a new purchase order
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PurchaseOrder'
+              $ref: '#/components/schemas/CreatePurchaseOrderInput'
       responses:
-        '201':
+        '200':
           description: Purchase order created
           content:
             application/json:
@@ -855,7 +850,7 @@ paths:
     get:
       operationId: getPurchaseOrder
       tags:
-        - purchase-order
+        - transaction
       summary: Get purchase order by ID
       parameters:
         - name: id
@@ -874,7 +869,7 @@ paths:
     put:
       operationId: updatePurchaseOrder
       tags:
-        - purchase-order
+        - transaction
       summary: Update purchase order
       parameters:
         - name: id
@@ -888,7 +883,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PurchaseOrder'
+              $ref: '#/components/schemas/UpdatePurchaseOrderInput'
       responses:
         '200':
           description: Purchase order updated
@@ -899,7 +894,7 @@ paths:
     delete:
       operationId: deletePurchaseOrder
       tags:
-        - purchase-order
+        - transaction
       summary: Delete purchase order
       parameters:
         - name: id
@@ -918,6 +913,7 @@ paths:
 
 components:
   schemas:
+    # ============= User schemas =============
     User:
       type: object
       required:
@@ -934,29 +930,39 @@ components:
         id:
           type: integer
           format: int64
+          description: 用户唯一标识
         name:
           type: string
+          description: 用户真实姓名
         sex:
           type: string
           nullable: true
+          description: 性别
         age:
           type: integer
+          description: 年龄
         nick:
           type: string
+          description: 昵称
         roles:
           type: array
           items:
             type: string
+          description: 用户角色列表
         enabled:
           type: boolean
+          description: 账户是否启用
         locked:
           type: boolean
+          description: 账户是否锁定
         createdAt:
           type: integer
           format: int64
+          description: 创建时间戳
         updatedAt:
           type: integer
           format: int64
+          description: 更新时间戳
 
     BasicUser:
       type: object
@@ -964,35 +970,95 @@ components:
         - id
         - name
         - nick
-        - age
         - enabled
         - locked
-        - createdAt
-        - updatedAt
       properties:
         id:
           type: integer
           format: int64
+          description: 用户ID
         name:
           type: string
+          description: 用户姓名
         nick:
           type: string
+          description: 昵称
+        enabled:
+          type: boolean
+          description: 是否启用
+        locked:
+          type: boolean
+          description: 是否锁定
+
+    CreateUserInput:
+      type: object
+      required:
+        - name
+        - age
+        - nick
+        - roles
+      properties:
+        name:
+          type: string
+          description: 用户真实姓名
         sex:
           type: string
           nullable: true
+          description: 性别
         age:
           type: integer
+          minimum: 1
+          maximum: 200
+          description: 年龄
+        nick:
+          type: string
+          description: 昵称
+        roles:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: 用户角色列表
         enabled:
           type: boolean
+          default: true
+          description: 账户是否启用
         locked:
           type: boolean
-        createdAt:
-          type: integer
-          format: int64
-        updatedAt:
-          type: integer
-          format: int64
+          default: false
+          description: 账户是否锁定
 
+    UpdateUserInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 用户真实姓名
+        sex:
+          type: string
+          nullable: true
+          description: 性别
+        age:
+          type: integer
+          minimum: 1
+          maximum: 200
+          description: 年龄
+        nick:
+          type: string
+          description: 昵称
+        roles:
+          type: array
+          items:
+            type: string
+          description: 用户角色列表
+        enabled:
+          type: boolean
+          description: 账户是否启用
+        locked:
+          type: boolean
+          description: 账户是否锁定
+
+    # ============= Supplier schemas =============
     Supplier:
       type: object
       required:
@@ -1004,21 +1070,110 @@ components:
         id:
           type: integer
           format: int64
+          description: 供应商唯一标识
         name:
           type: string
+          description: 供应商名称
         contactPerson:
           type: string
           nullable: true
+          description: 联系人姓名
         phone:
           type: string
           nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
         createdAt:
           type: integer
           format: int64
+          description: 创建时间戳
         updatedAt:
           type: integer
           format: int64
+          description: 更新时间戳
 
+    BasicSupplier:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 供应商ID
+        name:
+          type: string
+          description: 供应商名称
+        contactPerson:
+          type: string
+          nullable: true
+          description: 联系人
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+
+    CreateSupplierInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 供应商名称
+        contactPerson:
+          type: string
+          nullable: true
+          description: 联系人姓名
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          format: email
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+
+    UpdateSupplierInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 供应商名称
+        contactPerson:
+          type: string
+          nullable: true
+          description: 联系人姓名
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          format: email
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+
+    # ============= Customer schemas =============
     Customer:
       type: object
       required:
@@ -1030,21 +1185,116 @@ components:
         id:
           type: integer
           format: int64
+          description: 客户唯一标识
         name:
           type: string
+          description: 客户名称
         phone:
           type: string
           nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          description: 邮箱地址
         address:
           type: string
           nullable: true
+          description: 地址
+        creditLimit:
+          type: number
+          format: double
+          nullable: true
+          description: 信用额度
         createdAt:
           type: integer
           format: int64
+          description: 创建时间戳
         updatedAt:
           type: integer
           format: int64
+          description: 更新时间戳
 
+    BasicCustomer:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 客户ID
+        name:
+          type: string
+          description: 客户名称
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        creditLimit:
+          type: number
+          format: double
+          nullable: true
+          description: 信用额度
+
+    CreateCustomerInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 客户名称
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          format: email
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+        creditLimit:
+          type: number
+          format: double
+          nullable: true
+          minimum: 0
+          description: 信用额度
+
+    UpdateCustomerInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 客户名称
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        email:
+          type: string
+          nullable: true
+          format: email
+          description: 邮箱地址
+        address:
+          type: string
+          nullable: true
+          description: 地址
+        creditLimit:
+          type: number
+          format: double
+          nullable: true
+          minimum: 0
+          description: 信用额度
+
+    # ============= Product schemas =============
     Product:
       type: object
       required:
@@ -1054,205 +1304,938 @@ components:
         - categoryId
         - categoryName
         - supplierId
+        - supplierName
         - createdAt
         - updatedAt
       properties:
         id:
           type: integer
           format: int64
+          description: 商品唯一标识
         name:
           type: string
+          description: 商品名称
         unitPrice:
           type: number
           format: double
+          description: 单价
         categoryId:
           type: integer
           format: int64
+          description: 分类ID
         categoryName:
           type: string
+          description: 分类名称
         supplierId:
           type: integer
           format: int64
+          description: 供应商ID
+        supplierName:
+          type: string
+          description: 供应商名称
         specification:
           type: string
           nullable: true
+          description: 规格说明
+        unit:
+          type: string
+          nullable: true
+          description: 商品单位
         createdAt:
           type: integer
           format: int64
+          description: 创建时间戳
         updatedAt:
           type: integer
           format: int64
+          description: 更新时间戳
 
+    BasicProduct:
+      type: object
+      required:
+        - id
+        - name
+        - unitPrice
+        - categoryName
+        - supplierName
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 商品ID
+        name:
+          type: string
+          description: 商品名称
+        unitPrice:
+          type: number
+          format: double
+          description: 单价
+        categoryName:
+          type: string
+          description: 分类名称
+        supplierName:
+          type: string
+          description: 供应商名称
+        unit:
+          type: string
+          nullable: true
+          description: 商品单位
+
+    CreateProductInput:
+      type: object
+      required:
+        - name
+        - unitPrice
+        - categoryId
+        - supplierId
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 商品名称
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+        categoryId:
+          type: integer
+          format: int64
+          description: 分类ID
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        specification:
+          type: string
+          nullable: true
+          description: 规格说明
+        unit:
+          type: string
+          nullable: true
+          description: 商品单位
+
+    UpdateProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 商品名称
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+        categoryId:
+          type: integer
+          format: int64
+          description: 分类ID
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        specification:
+          type: string
+          nullable: true
+          description: 规格说明
+        unit:
+          type: string
+          nullable: true
+          description: 商品单位
+
+    # ============= ProductCategory schemas =============
     ProductCategory:
       type: object
       required:
         - id
         - name
-        - code
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
           format: int64
+          description: 分类唯一标识
         name:
           type: string
-        code:
+          description: 分类名称
+        description:
           type: string
+          nullable: true
+          description: 分类描述
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+          description: 父分类ID
+        parentName:
+          type: string
+          nullable: true
+          description: 父分类名称
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
+        updatedAt:
+          type: integer
+          format: int64
+          description: 更新时间戳
 
+    BasicProductCategory:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 分类ID
+        name:
+          type: string
+          description: 分类名称
+        parentName:
+          type: string
+          nullable: true
+          description: 父分类名称
+
+    CreateProductCategoryInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 分类名称
+        description:
+          type: string
+          nullable: true
+          description: 分类描述
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+          description: 父分类ID
+
+    UpdateProductCategoryInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 分类名称
+        description:
+          type: string
+          nullable: true
+          description: 分类描述
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+          description: 父分类ID
+
+    # ============= Warehouse schemas =============
     Warehouse:
       type: object
       required:
         - id
         - name
-        - capacity
         - createdAt
         - updatedAt
       properties:
         id:
           type: integer
           format: int64
+          description: 仓库唯一标识
         name:
           type: string
+          description: 仓库名称
         location:
           type: string
           nullable: true
+          description: 仓库地址
         capacity:
-          type: integer
+          type: number
+          format: double
+          nullable: true
+          description: 仓库容量
+        manager:
+          type: string
+          nullable: true
+          description: 仓库管理员
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        enabled:
+          type: boolean
+          description: 是否启用
         createdAt:
           type: integer
           format: int64
+          description: 创建时间戳
         updatedAt:
           type: integer
           format: int64
+          description: 更新时间戳
 
+    BasicWarehouse:
+      type: object
+      required:
+        - id
+        - name
+        - enabled
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 仓库ID
+        name:
+          type: string
+          description: 仓库名称
+        location:
+          type: string
+          nullable: true
+          description: 仓库地址
+        enabled:
+          type: boolean
+          description: 是否启用
+
+    CreateWarehouseInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 仓库名称
+        location:
+          type: string
+          nullable: true
+          description: 仓库地址
+        capacity:
+          type: number
+          format: double
+          nullable: true
+          minimum: 0
+          description: 仓库容量
+        manager:
+          type: string
+          nullable: true
+          description: 仓库管理员
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        enabled:
+          type: boolean
+          default: true
+          description: 是否启用
+
+    UpdateWarehouseInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: 仓库名称
+        location:
+          type: string
+          nullable: true
+          description: 仓库地址
+        capacity:
+          type: number
+          format: double
+          nullable: true
+          minimum: 0
+          description: 仓库容量
+        manager:
+          type: string
+          nullable: true
+          description: 仓库管理员
+        phone:
+          type: string
+          nullable: true
+          description: 联系电话
+        enabled:
+          type: boolean
+          description: 是否启用
+
+    # ============= Inventory schemas =============
     Inventory:
       type: object
       required:
         - id
         - productId
+        - productName
         - warehouseId
+        - warehouseName
         - quantity
-        - safetyStock
-        - version
+        - reservedQuantity
+        - availableQuantity
         - createdAt
         - updatedAt
       properties:
         id:
           type: integer
           format: int64
+          description: 库存唯一标识
         productId:
           type: integer
           format: int64
+          description: 商品ID
+        productName:
+          type: string
+          description: 商品名称
         warehouseId:
           type: integer
           format: int64
+          description: 仓库ID
+        warehouseName:
+          type: string
+          description: 仓库名称
         quantity:
           type: integer
-        safetyStock:
+          description: 总库存数量
+        reservedQuantity:
           type: integer
-        version:
+          description: 预留数量
+        availableQuantity:
           type: integer
-          format: int64
+          description: 可用数量
+        minStockLevel:
+          type: integer
+          nullable: true
+          description: 最低库存预警线
+        maxStockLevel:
+          type: integer
+          nullable: true
+          description: 最高库存预警线
         createdAt:
           type: integer
           format: int64
+          description: 创建时间戳
         updatedAt:
           type: integer
           format: int64
+          description: 更新时间戳
 
+    BasicInventory:
+      type: object
+      required:
+        - id
+        - productName
+        - warehouseName
+        - quantity
+        - availableQuantity
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 库存ID
+        productName:
+          type: string
+          description: 商品名称
+        warehouseName:
+          type: string
+          description: 仓库名称
+        quantity:
+          type: integer
+          description: 总库存数量
+        availableQuantity:
+          type: integer
+          description: 可用数量
+        minStockLevel:
+          type: integer
+          nullable: true
+          description: 最低库存预警线
+
+    CreateInventoryInput:
+      type: object
+      required:
+        - productId
+        - warehouseId
+        - quantity
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        warehouseId:
+          type: integer
+          format: int64
+          description: 仓库ID
+        quantity:
+          type: integer
+          minimum: 0
+          description: 初始库存数量
+        minStockLevel:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 最低库存预警线
+        maxStockLevel:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 最高库存预警线
+
+    UpdateInventoryInput:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          minimum: 0
+          description: 库存数量
+        minStockLevel:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 最低库存预警线
+        maxStockLevel:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: 最高库存预警线
+
+    # ============= SaleOrder schemas =============
     SaleOrder:
       type: object
       required:
         - id
+        - orderNumber
         - customerId
+        - customerName
         - status
-        - items
+        - totalAmount
+        - orderItems
         - createdAt
         - updatedAt
       properties:
         id:
           type: integer
           format: int64
+          description: 销售订单唯一标识
+        orderNumber:
+          type: string
+          description: 订单编号
         customerId:
           type: integer
           format: int64
+          description: 客户ID
+        customerName:
+          type: string
+          description: 客户名称
         status:
           type: string
-        items:
+          enum: [ PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED ]
+          description: 订单状态
+        totalAmount:
+          type: number
+          format: double
+          description: 订单总金额
+        notes:
+          type: string
+          nullable: true
+          description: 备注
+        orderDate:
+          type: integer
+          format: int64
+          description: 订单日期
+        deliveryDate:
+          type: integer
+          format: int64
+          nullable: true
+          description: 交货日期
+        orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/SaleItem'
+            $ref: '#/components/schemas/SaleOrderItem'
+          description: 订单明细
         createdAt:
           type: integer
           format: int64
+          description: 创建时间戳
         updatedAt:
           type: integer
           format: int64
+          description: 更新时间戳
 
-    SaleItem:
+    BasicSaleOrder:
       type: object
       required:
         - id
-        - productId
-        - quantity
-        - unitPrice
+        - orderNumber
+        - customerName
+        - status
+        - totalAmount
+        - orderDate
       properties:
         id:
           type: integer
           format: int64
-        productId:
-          type: integer
-          format: int64
-        quantity:
-          type: integer
-        unitPrice:
+          description: 销售订单ID
+        orderNumber:
+          type: string
+          description: 订单编号
+        customerName:
+          type: string
+          description: 客户名称
+        status:
+          type: string
+          enum: [ PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED ]
+          description: 订单状态
+        totalAmount:
           type: number
           format: double
+          description: 订单总金额
+        orderDate:
+          type: integer
+          format: int64
+          description: 订单日期
 
+    CreateSaleOrderInput:
+      type: object
+      required:
+        - customerId
+        - orderItems
+      properties:
+        customerId:
+          type: integer
+          format: int64
+          description: 客户ID
+        notes:
+          type: string
+          nullable: true
+          description: 备注
+        deliveryDate:
+          type: integer
+          format: int64
+          nullable: true
+          description: 交货日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateSaleOrderItemInput'
+          minItems: 1
+          description: 订单明细
+
+    UpdateSaleOrderInput:
+      type: object
+      properties:
+        customerId:
+          type: integer
+          format: int64
+          description: 客户ID
+        status:
+          type: string
+          enum: [ PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED ]
+          description: 订单状态
+        notes:
+          type: string
+          nullable: true
+          description: 备注
+        deliveryDate:
+          type: integer
+          format: int64
+          nullable: true
+          description: 交货日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/UpdateSaleOrderItemInput'
+          description: 订单明细
+
+    # ============= PurchaseOrder schemas =============
     PurchaseOrder:
       type: object
       required:
         - id
+        - orderNumber
         - supplierId
+        - supplierName
         - status
-        - items
+        - totalAmount
+        - orderItems
         - createdAt
         - updatedAt
       properties:
         id:
           type: integer
           format: int64
+          description: 采购订单唯一标识
+        orderNumber:
+          type: string
+          description: 订单编号
         supplierId:
           type: integer
           format: int64
+          description: 供应商ID
+        supplierName:
+          type: string
+          description: 供应商名称
         status:
           type: string
-        items:
+          enum: [ PENDING, CONFIRMED, RECEIVED, CANCELLED ]
+          description: 订单状态
+        totalAmount:
+          type: number
+          format: double
+          description: 订单总金额
+        notes:
+          type: string
+          nullable: true
+          description: 备注
+        orderDate:
+          type: integer
+          format: int64
+          description: 订单日期
+        expectedDate:
+          type: integer
+          format: int64
+          nullable: true
+          description: 预期到货日期
+        orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/PurchaseItem'
+            $ref: '#/components/schemas/PurchaseOrderItem'
+          description: 订单明细
         createdAt:
           type: integer
           format: int64
+          description: 创建时间戳
         updatedAt:
           type: integer
           format: int64
+          description: 更新时间戳
 
-    PurchaseItem:
+    BasicPurchaseOrder:
       type: object
       required:
         - id
-        - productId
-        - quantity
-        - unitPrice
+        - orderNumber
+        - supplierName
+        - status
+        - totalAmount
+        - orderDate
       properties:
         id:
           type: integer
           format: int64
+          description: 采购订单ID
+        orderNumber:
+          type: string
+          description: 订单编号
+        supplierName:
+          type: string
+          description: 供应商名称
+        status:
+          type: string
+          enum: [ PENDING, CONFIRMED, RECEIVED, CANCELLED ]
+          description: 订单状态
+        totalAmount:
+          type: number
+          format: double
+          description: 订单总金额
+        orderDate:
+          type: integer
+          format: int64
+          description: 订单日期
+
+    CreatePurchaseOrderInput:
+      type: object
+      required:
+        - supplierId
+        - orderItems
+      properties:
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        notes:
+          type: string
+          nullable: true
+          description: 备注
+        expectedDate:
+          type: integer
+          format: int64
+          nullable: true
+          description: 预期到货日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatePurchaseOrderItemInput'
+          minItems: 1
+          description: 订单明细
+
+    UpdatePurchaseOrderInput:
+      type: object
+      properties:
+        supplierId:
+          type: integer
+          format: int64
+          description: 供应商ID
+        status:
+          type: string
+          enum: [ PENDING, CONFIRMED, RECEIVED, CANCELLED ]
+          description: 订单状态
+        notes:
+          type: string
+          nullable: true
+          description: 备注
+        expectedDate:
+          type: integer
+          format: int64
+          nullable: true
+          description: 预期到货日期
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/UpdatePurchaseOrderItemInput'
+          description: 订单明细
+
+    # ============= OrderItem schemas =============
+    SaleOrderItem:
+      type: object
+      required:
+        - id
+        - productId
+        - productName
+        - quantity
+        - unitPrice
+        - totalPrice
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 订单明细ID
         productId:
           type: integer
           format: int64
+          description: 商品ID
+        productName:
+          type: string
+          description: 商品名称
         quantity:
           type: integer
+          description: 数量
         unitPrice:
           type: number
           format: double
+          description: 单价
+        totalPrice:
+          type: number
+          format: double
+          description: 小计
+
+    CreateSaleOrderItemInput:
+      type: object
+      required:
+        - productId
+        - quantity
+        - unitPrice
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        quantity:
+          type: integer
+          minimum: 1
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+
+    UpdateSaleOrderItemInput:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        quantity:
+          type: integer
+          minimum: 1
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+
+    PurchaseOrderItem:
+      type: object
+      required:
+        - id
+        - productId
+        - productName
+        - quantity
+        - unitPrice
+        - totalPrice
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 订单明细ID
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        productName:
+          type: string
+          description: 商品名称
+        quantity:
+          type: integer
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          description: 单价
+        totalPrice:
+          type: number
+          format: double
+          description: 小计
+
+    CreatePurchaseOrderItemInput:
+      type: object
+      required:
+        - productId
+        - quantity
+        - unitPrice
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        quantity:
+          type: integer
+          minimum: 1
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
+
+    UpdatePurchaseOrderItemInput:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: 商品ID
+        quantity:
+          type: integer
+          minimum: 1
+          description: 数量
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价

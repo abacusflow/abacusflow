@@ -2,6 +2,8 @@ package org.bruwave.abacusflow.portal.web.user
 
 import org.bruwave.abacusflow.portal.web.api.UsersApi
 import org.bruwave.abacusflow.portal.web.model.BasicUserVO
+import org.bruwave.abacusflow.portal.web.model.CreateUserInputVO
+import org.bruwave.abacusflow.portal.web.model.UpdateUserInputVO
 import org.bruwave.abacusflow.portal.web.model.UserVO
 import org.bruwave.abacusflow.usecase.user.CreateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UpdateUserInputTO
@@ -21,12 +23,8 @@ class UserController(
                     user.id,
                     user.name,
                     user.nick,
-                    user.age,
                     user.enabled,
                     user.locked,
-                    user.createdAt.toEpochMilli(),
-                    user.updatedAt.toEpochMilli(),
-                    user.sex,
                 )
             }
         return ResponseEntity.ok(userVOS)
@@ -50,13 +48,13 @@ class UserController(
         )
     }
 
-    override fun addUser(userVO: UserVO): ResponseEntity<UserVO> {
+    override fun addUser(createUserInputVO: CreateUserInputVO): ResponseEntity<UserVO> {
         val user = userService.createUser(
             CreateUserInputTO(
-                userVO.name,
-                userVO.nick,
-                userVO.sex,
-                userVO.age,
+                createUserInputVO.name,
+                createUserInputVO.nick,
+                createUserInputVO.sex,
+                createUserInputVO.age,
             )
         )
         return ResponseEntity.ok(
@@ -75,13 +73,13 @@ class UserController(
         )
     }
 
-    override fun updateUser(id: Long, userVO: UserVO): ResponseEntity<UserVO> {
+    override fun updateUser(id: Long, updateUserInputVO: UpdateUserInputVO): ResponseEntity<UserVO> {
         val user = userService.updateUser(
             id,
             UpdateUserInputTO(
-                nick = userVO.nick,
-                sex = userVO.sex,
-                age = userVO.age,
+                nick = updateUserInputVO.nick,
+                sex = updateUserInputVO.sex,
+                age = updateUserInputVO.age,
             ),
         )
         return ResponseEntity.ok(

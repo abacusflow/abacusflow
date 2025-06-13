@@ -1,7 +1,10 @@
-package org.bruwave.abacusflow.portal.web
+package org.bruwave.abacusflow.portal.web.transaction
 
-import org.bruwave.abacusflow.portal.web.api.ProductCategoriesApi
-import org.bruwave.abacusflow.portal.web.model.ProductCategoryVO
+import org.bruwave.abacusflow.portal.web.api.PurchaseOrdersApi
+import org.bruwave.abacusflow.portal.web.model.BasicPurchaseOrderVO
+import org.bruwave.abacusflow.portal.web.model.CreatePurchaseOrderInputVO
+import org.bruwave.abacusflow.portal.web.model.PurchaseOrderVO
+import org.bruwave.abacusflow.portal.web.model.UpdatePurchaseOrderInputVO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -9,27 +12,27 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class PurchaseOrderController(
     private val purchaseOrderService: PurchaseOrderService
-): ProductCategoriesApi {
-    override fun listProductCategories(): ResponseEntity<List<ProductCategoryVO>> {
-        return super.listProductCategories()
+): PurchaseOrdersApi {
+    override fun listPurchaseOrders(): ResponseEntity<List<BasicPurchaseOrderVO>> {
+        return super.listPurchaseOrders()
     }
 
-    override fun getProductCategory(id: Long): ResponseEntity<ProductCategoryVO> {
-        return super.getProductCategory(id)
+    override fun getPurchaseOrder(id: Long): ResponseEntity<PurchaseOrderVO> {
+        return super.getPurchaseOrder(id)
     }
 
-    override fun addProductCategory(productCategoryVO: ProductCategoryVO): ResponseEntity<ProductCategoryVO> {
-        return super.addProductCategory(productCategoryVO)
+    override fun addPurchaseOrder(createPurchaseOrderInputVO: CreatePurchaseOrderInputVO): ResponseEntity<PurchaseOrderVO> {
+        return super.addPurchaseOrder(createPurchaseOrderInputVO)
     }
 
-    override fun updateProductCategory(
+    override fun updatePurchaseOrder(
         id: Long,
-        productCategoryVO: ProductCategoryVO
-    ): ResponseEntity<ProductCategoryVO> {
-        return super.updateProductCategory(id, productCategoryVO)
+        updatePurchaseOrderInputVO: UpdatePurchaseOrderInputVO
+    ): ResponseEntity<PurchaseOrderVO> {
+        return super.updatePurchaseOrder(id, updatePurchaseOrderInputVO)
     }
 
-    override fun deleteProductCategory(id: Long): ResponseEntity<ProductCategoryVO> {
-        return super.deleteProductCategory(id)
+    override fun deletePurchaseOrder(id: Long): ResponseEntity<PurchaseOrderVO> {
+        return super.deletePurchaseOrder(id)
     }
 }
