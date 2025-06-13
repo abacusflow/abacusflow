@@ -4,7 +4,7 @@ import org.bruwave.abacusflow.portal.web.api.SaleOrdersApi
 import org.bruwave.abacusflow.portal.web.model.SaleOrderVO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SaleOrderController(

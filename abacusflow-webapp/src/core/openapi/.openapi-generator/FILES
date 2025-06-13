@@ -1,8 +1,0 @@
-apis/index.ts
-apis/user-api.ts
-index.ts
-models/basic-user.ts
-models/index.ts
-models/model-error.ts
-models/user.ts
-runtime.ts

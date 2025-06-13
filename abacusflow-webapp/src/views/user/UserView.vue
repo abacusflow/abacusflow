@@ -17,9 +17,9 @@
   </a-table>
 </template>
 <script lang="ts" setup>
-import { UserApi } from '@/core/openapi'
-import { useQuery } from '@tanstack/vue-query'
-import { inject } from 'vue'
+import {UserApi} from '@/core/openapi'
+import {useQuery} from '@tanstack/vue-query'
+import {inject} from 'vue'
 
 const userApi = inject('userApi') as UserApi
 

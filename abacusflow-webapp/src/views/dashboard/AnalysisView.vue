@@ -37,5 +37,5 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons-vue'
+import {ArrowDownOutlined, ArrowUpOutlined} from '@ant-design/icons-vue'
 </script>

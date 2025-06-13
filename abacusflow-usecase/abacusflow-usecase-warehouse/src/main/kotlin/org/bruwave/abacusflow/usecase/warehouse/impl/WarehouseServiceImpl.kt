@@ -1,9 +1,9 @@
 package org.bruwave.abacusflow.usecase.warehouse.impl
 
-import org.bruwave.abacusflow.db.WarehouseRepository
-import org.bruwave.abacusflow.warehouse.Warehouse
+import org.bruwave.abacusflow.db.warehouse.WarehouseRepository
 import org.bruwave.abacusflow.usecase.warehouse.WarehouseService
 import org.bruwave.abacusflow.usecase.warehouse.WarehouseTO
+import org.bruwave.abacusflow.warehouse.Warehouse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

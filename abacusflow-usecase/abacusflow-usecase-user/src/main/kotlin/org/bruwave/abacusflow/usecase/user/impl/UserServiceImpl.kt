@@ -2,12 +2,12 @@ package org.bruwave.abacusflow.usecase.user.impl
 
 import org.bruwave.abacusflow.commons.Sex
 import org.bruwave.abacusflow.db.user.UserRepository
-import org.bruwave.abacusflow.user.User
 import org.bruwave.abacusflow.usecase.user.BasicUserTO
 import org.bruwave.abacusflow.usecase.user.CreateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UpdateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UserService
 import org.bruwave.abacusflow.usecase.user.UserTO
+import org.bruwave.abacusflow.user.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

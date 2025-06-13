@@ -3,9 +3,8 @@ package org.bruwave.abacusflow.portal.web
 import org.bruwave.abacusflow.portal.web.api.ProductsApi
 import org.bruwave.abacusflow.portal.web.model.ProductVO
 import org.bruwave.abacusflow.usecase.product.ProductService
-import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProductController(
