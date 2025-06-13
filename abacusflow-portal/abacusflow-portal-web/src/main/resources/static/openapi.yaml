@@ -1201,11 +1201,6 @@ components:
           type: string
           nullable: true
           description: 地址
-        creditLimit:
-          type: number
-          format: double
-          nullable: true
-          description: 信用额度
         createdAt:
           type: integer
           format: int64
@@ -1232,11 +1227,6 @@ components:
           type: string
           nullable: true
           description: 联系电话
-        creditLimit:
-          type: number
-          format: double
-          nullable: true
-          description: 信用额度
 
     CreateCustomerInput:
       type: object
@@ -1260,12 +1250,6 @@ components:
           type: string
           nullable: true
           description: 地址
-        creditLimit:
-          type: number
-          format: double
-          nullable: true
-          minimum: 0
-          description: 信用额度
 
     UpdateCustomerInput:
       type: object
@@ -1287,12 +1271,6 @@ components:
           type: string
           nullable: true
           description: 地址
-        creditLimit:
-          type: number
-          format: double
-          nullable: true
-          minimum: 0
-          description: 信用额度
 
     # ============= Product schemas =============
     Product:
@@ -1300,6 +1278,7 @@ components:
       required:
         - id
         - name
+        - unit
         - unitPrice
         - categoryId
         - categoryName
@@ -1338,9 +1317,7 @@ components:
           nullable: true
           description: 规格说明
         unit:
-          type: string
-          nullable: true
-          description: 商品单位
+          $ref: '#/components/schemas/ProductUnit'
         createdAt:
           type: integer
           format: int64
@@ -1355,6 +1332,7 @@ components:
       required:
         - id
         - name
+        - unit
         - unitPrice
         - categoryName
         - supplierName
@@ -1377,14 +1355,13 @@ components:
           type: string
           description: 供应商名称
         unit:
-          type: string
-          nullable: true
-          description: 商品单位
+          $ref: '#/components/schemas/ProductUnit'
 
     CreateProductInput:
       type: object
       required:
         - name
+        - unit
         - unitPrice
         - categoryId
         - supplierId
@@ -1411,9 +1388,7 @@ components:
           nullable: true
           description: 规格说明
         unit:
-          type: string
-          nullable: true
-          description: 商品单位
+          $ref: '#/components/schemas/ProductUnit'
 
     UpdateProductInput:
       type: object
@@ -1440,9 +1415,7 @@ components:
           nullable: true
           description: 规格说明
         unit:
-          type: string
-          nullable: true
-          description: 商品单位
+          $ref: '#/components/schemas/ProductUnit'
 
     # ============= ProductCategory schemas =============
     ProductCategory:
@@ -1504,6 +1477,7 @@ components:
       type: object
       required:
         - name
+        - parentId
       properties:
         name:
           type: string
@@ -1516,7 +1490,6 @@ components:
         parentId:
           type: integer
           format: int64
-          nullable: true
           description: 父分类ID
 
     UpdateProductCategoryInput:
@@ -1676,6 +1649,8 @@ components:
         - quantity
         - reservedQuantity
         - availableQuantity
+        - safetyStock
+        - maxStock
         - createdAt
         - updatedAt
       properties:
@@ -1706,11 +1681,11 @@ components:
         availableQuantity:
           type: integer
           description: 可用数量
-        minStockLevel:
+        safetyStock:
           type: integer
           nullable: true
-          description: 最低库存预警线
-        maxStockLevel:
+          description: 安全库存预警线
+        maxStock:
           type: integer
           nullable: true
           description: 最高库存预警线
@@ -1731,6 +1706,8 @@ components:
         - warehouseName
         - quantity
         - availableQuantity
+        - safetyStock
+        - maxStock
       properties:
         id:
           type: integer
@@ -1748,10 +1725,14 @@ components:
         availableQuantity:
           type: integer
           description: 可用数量
-        minStockLevel:
+        safetyStock:
           type: integer
           nullable: true
-          description: 最低库存预警线
+          description: 安全库存预警线
+        maxStock:
+          type: integer
+          nullable: true
+          description: 最大库存预警线
 
     CreateInventoryInput:
       type: object
@@ -1772,12 +1753,12 @@ components:
           type: integer
           minimum: 0
           description: 初始库存数量
-        minStockLevel:
+        safetyStock:
           type: integer
           nullable: true
           minimum: 0
-          description: 最低库存预警线
-        maxStockLevel:
+          description: 安全库存预警线
+        maxStock:
           type: integer
           nullable: true
           minimum: 0
@@ -1790,12 +1771,12 @@ components:
           type: integer
           minimum: 0
           description: 库存数量
-        minStockLevel:
+        safetyStock:
           type: integer
           nullable: true
           minimum: 0
-          description: 最低库存预警线
-        maxStockLevel:
+          description: 安全库存预警线
+        maxStock:
           type: integer
           nullable: true
           minimum: 0
@@ -2239,3 +2220,60 @@ components:
           format: double
           minimum: 0
           description: 单价
+    ProductUnit:
+      type: string
+      description: 商品单位枚举
+      enum:
+        - PIECE    # 件
+        - BOX      # 箱
+        - PACK     # 包
+        - DOZEN    # 打
+        - PAIR     # 对
+        - GRAM     # 克
+        - KILOGRAM # 千克
+        - LITER    # 升
+        - MILLILITER # 毫升
+        - METER    # 米
+        - CENTIMETER # 厘米
+        - BOTTLE   # 瓶
+        - BARREL   # 桶
+        - BAG      # 袋
+        - SHEET    # 张
+        - ROLL     # 卷
+        - UNIT     # 单位
+      x-enum-varnames:
+        - PIECE
+        - BOX
+        - PACK
+        - DOZEN
+        - PAIR
+        - GRAM
+        - KILOGRAM
+        - LITER
+        - MILLILITER
+        - METER
+        - CENTIMETER
+        - BOTTLE
+        - BARREL
+        - BAG
+        - SHEET
+        - ROLL
+        - UNIT
+      x-enum-descriptions:
+        - 件
+        - 箱
+        - 包
+        - 打
+        - 对
+        - 克
+        - 千克
+        - 升
+        - 毫升
+        - 米
+        - 厘米
+        - 瓶
+        - 桶
+        - 袋
+        - 张
+        - 卷
+        - 单位

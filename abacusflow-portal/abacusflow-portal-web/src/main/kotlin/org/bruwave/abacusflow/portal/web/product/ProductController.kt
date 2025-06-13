@@ -5,26 +5,21 @@ import org.bruwave.abacusflow.portal.web.model.BasicProductVO
 import org.bruwave.abacusflow.portal.web.model.CreateProductInputVO
 import org.bruwave.abacusflow.portal.web.model.ProductVO
 import org.bruwave.abacusflow.portal.web.model.UpdateProductInputVO
+import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
 import org.bruwave.abacusflow.usecase.product.ProductService
+import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProductController(
     private val productService: ProductService
-): ProductsApi {
+) : ProductsApi {
 
     override fun listProducts(): ResponseEntity<List<BasicProductVO>> {
         val products = productService.listProducts()
         val productVOs = products.map { product ->
-            BasicProductVO(
-                product.id,
-                product.name,
-                product.categoryName,
-                product.supplierId,
-                product.unitPrice,
-                product.specification
-            )
+            product.toVO()
         }
         return ResponseEntity.ok(productVOs)
     }
@@ -32,40 +27,22 @@ class ProductController(
     override fun getProduct(id: Long): ResponseEntity<ProductVO> {
         val product = productService.getProduct(id)
         return ResponseEntity.ok(
-            ProductVO(
-                product.id,
-                product.name,
-                product.categoryName,
-                product.supplierId,
-                product.unitPrice,
-                product.specification,
-                product.createdAt.toEpochMilli(),
-                product.updatedAt.toEpochMilli()
-            )
+            product.toVO()
         )
     }
 
     override fun addProduct(createProductInputVO: CreateProductInputVO): ResponseEntity<ProductVO> {
         val product = productService.createProduct(
             CreateProductInputTO(
-                createProductInputVO.name,
-                createProductInputVO.categoryName,
-                createProductInputVO.supplierId,
-                createProductInputVO.unitPrice,
-                createProductInputVO.specification
+                name = createProductInputVO.name,
+                categoryId = createProductInputVO.categoryId,
+                supplierId = createProductInputVO.supplierId,
+                unitPrice = createProductInputVO.unitPrice,
+                specification = createProductInputVO.specification
             )
         )
         return ResponseEntity.ok(
-            ProductVO(
-                product.id,
-                product.name,
-                product.categoryName,
-                product.supplierId,
-                product.unitPrice,
-                product.specification,
-                product.createdAt.toEpochMilli(),
-                product.updatedAt.toEpochMilli()
-            )
+            product.toVO()
         )
     }
 
@@ -77,23 +54,14 @@ class ProductController(
             id,
             UpdateProductInputTO(
                 name = updateProductInputVO.name,
-                categoryName = updateProductInputVO.categoryName,
+                categoryId = updateProductInputVO.categoryId,
                 supplierId = updateProductInputVO.supplierId,
                 unitPrice = updateProductInputVO.unitPrice,
                 specification = updateProductInputVO.specification
             )
         )
         return ResponseEntity.ok(
-            ProductVO(
-                product.id,
-                product.name,
-                product.categoryName,
-                product.supplierId,
-                product.unitPrice,
-                product.specification,
-                product.createdAt.toEpochMilli(),
-                product.updatedAt.toEpochMilli()
-            )
+            product.toVO()
         )
     }
 

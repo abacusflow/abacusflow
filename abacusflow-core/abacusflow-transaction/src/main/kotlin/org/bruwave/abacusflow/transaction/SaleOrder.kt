@@ -41,10 +41,10 @@ class SaleOrder(
     val items: MutableList<SaleItem> = mutableListOf()
 
     fun changeCustomer(newCustomerId: Long) {
-        if (this.customerId == newCustomerId) return
+        if (customerId == newCustomerId) return
 
-        this.customerId = newCustomerId
-        this.updatedAt = Instant.now()
+        customerId = newCustomerId
+        updatedAt = Instant.now()
     }
 
     // TODO 最佳方案是替换为增量更新

@@ -7,7 +7,7 @@ data class CreateSupplierInputTO(
 )
 
 data class UpdateSupplierInputTO(
-    val name: String,
+    val name: String?,
     val contactPerson: String?,
     val phone: String?
 )

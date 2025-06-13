@@ -16,12 +16,13 @@ class InventoryServiceImpl(
     private val warehouseRepository: WarehouseRepository
 ) : InventoryService {
 
-    override fun createInventory(to: InventoryTO): InventoryTO {
+    override fun createInventory(input: CreateInventoryInputTO): InventoryTO {
         val inventory = Inventory(
-            productId = to.productId,
-            warehouseId = to.warehouseId,
-            quantity = to.quantity,
-            safetyStock = to.safetyStock
+            productId = input.productId,
+            warehouseId = input.warehouseId,
+            quantity = input.quantity,
+            safetyStock = input.safetyStock,
+            maxStock = input.maxStock
         )
         return inventoryRepository.save(inventory).toTO()
     }
@@ -67,22 +68,4 @@ class InventoryServiceImpl(
         return inventory.isBelowSafetyStock()
     }
 }
-
-private fun Inventory.toTO() = InventoryTO(
-    id = id,
-    productId = productId,
-    warehouseId = warehouseId,
-    quantity = quantity,
-    safetyStock = safetyStock,
-    version = version,
-    createdAt = createdAt,
-    updatedAt = updatedAt
-)
-
-fun Inventory.toBasicTO(productName: String, warehouseName: String) = BasicInventoryTO(
-    id = id,
-    productName = productName,
-    warehouseName = warehouseName,
-    quantity = quantity
-)
 

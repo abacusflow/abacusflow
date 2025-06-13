@@ -1,28 +1,25 @@
-package org.bruwave.abacusflow.portal.web.supplier
+package org.bruwave.abacusflow.portal.web.partner
 
 import org.bruwave.abacusflow.portal.web.api.SuppliersApi
 import org.bruwave.abacusflow.portal.web.model.BasicSupplierVO
 import org.bruwave.abacusflow.portal.web.model.CreateSupplierInputVO
 import org.bruwave.abacusflow.portal.web.model.SupplierVO
 import org.bruwave.abacusflow.portal.web.model.UpdateSupplierInputVO
+import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
 import org.bruwave.abacusflow.usecase.partner.SupplierService
+import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SupplierController(
     private val supplierService: SupplierService
-): SuppliersApi {
+) : SuppliersApi {
 
     override fun listSuppliers(): ResponseEntity<List<BasicSupplierVO>> {
         val suppliers = supplierService.listSuppliers()
         val supplierVOs = suppliers.map { supplier ->
-            BasicSupplierVO(
-                supplier.id,
-                supplier.name,
-                supplier.contactPerson,
-                supplier.phone
-            )
+            supplier.toBasicVO()
         }
         return ResponseEntity.ok(supplierVOs)
     }
@@ -30,14 +27,7 @@ class SupplierController(
     override fun getSupplier(id: Long): ResponseEntity<SupplierVO> {
         val supplier = supplierService.getSupplier(id)
         return ResponseEntity.ok(
-            SupplierVO(
-                supplier.id,
-                supplier.name,
-                supplier.contactPerson,
-                supplier.phone,
-                supplier.createdAt.toEpochMilli(),
-                supplier.updatedAt.toEpochMilli()
-            )
+            supplier.toVO()
         )
     }
 
@@ -50,14 +40,7 @@ class SupplierController(
             )
         )
         return ResponseEntity.ok(
-            SupplierVO(
-                supplier.id,
-                supplier.name,
-                supplier.contactPerson,
-                supplier.phone,
-                supplier.createdAt.toEpochMilli(),
-                supplier.updatedAt.toEpochMilli()
-            )
+            supplier.toVO()
         )
     }
 
@@ -74,14 +57,7 @@ class SupplierController(
             )
         )
         return ResponseEntity.ok(
-            SupplierVO(
-                supplier.id,
-                supplier.name,
-                supplier.contactPerson,
-                supplier.phone,
-                supplier.createdAt.toEpochMilli(),
-                supplier.updatedAt.toEpochMilli()
-            )
+            supplier.toVO()
         )
     }
 

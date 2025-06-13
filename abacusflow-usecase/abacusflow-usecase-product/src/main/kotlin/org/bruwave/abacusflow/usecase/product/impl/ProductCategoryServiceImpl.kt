@@ -12,12 +12,15 @@ class ProductCategoryServiceImpl(
     private val productCategoryRepository: ProductCategoryRepository
 ) : ProductCategoryService {
     override fun createProductCategory(input: CreateProductCategoryInputTO): ProductCategoryTO {
+        val parentCategoryFromInput = productCategoryRepository.findById(input.parentId)
+            .orElseThrow { NoSuchElementException("Product category not found with id: ${input.parentId}") }
+
         val category = ProductCategory(
             name = input.name,
-            code = input.code,
+            parent = parentCategoryFromInput,
             description = input.description
         )
-        return productCategoryRepository.save(category).toProductCategoryTO()
+        return productCategoryRepository.save(category).toTO()
     }
 
     override fun updateProductCategory(id: Long, input: UpdateProductCategoryInputTO): ProductCategoryTO {
@@ -25,12 +28,20 @@ class ProductCategoryServiceImpl(
             .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
 
         category.apply {
-            name = input.name
-            code = input.code
-            description = input.description
+            updateBasicInfo(
+                input.name,
+                input.description,
+            )
+
+            input.parentId?.let { parentId ->
+                val parentCategoryFromInput = productCategoryRepository.findById(parentId)
+                    .orElseThrow { NoSuchElementException("Product category not found with id: ${parentId}") }
+
+                changeParent(parentCategoryFromInput)
+            }
         }
 
-        return productCategoryRepository.save(category).toProductCategoryTO()
+        return productCategoryRepository.save(category).toTO()
     }
 
     override fun deleteProductCategory(id: Long): ProductCategoryTO {
@@ -38,31 +49,17 @@ class ProductCategoryServiceImpl(
             .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
 
         productCategoryRepository.delete(category)
-        return category.toProductCategoryTO()
+        return category.toTO()
     }
 
     override fun getProductCategory(id: Long): ProductCategoryTO {
         return productCategoryRepository.findById(id)
             .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
-            .toProductCategoryTO()
+            .toTO()
     }
 
     override fun listProductCategories(): List<BasicProductCategoryTO> {
-        return productCategoryRepository.findAll().map { it.toBasicProductCategoryTO() }
+        return productCategoryRepository.findAll().map { it.toBasicTO() }
     }
 }
 
-private fun ProductCategory.toProductCategoryTO() = ProductCategoryTO(
-    id = id,
-    name = name,
-    code = code,
-    description = description,
-    createdAt = createdAt,
-    updatedAt = updatedAt
-)
-
-private fun ProductCategory.toBasicProductCategoryTO() = BasicProductCategoryTO(
-    id = id,
-    name = name,
-    code = code
-)

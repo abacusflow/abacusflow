@@ -2,6 +2,8 @@ package org.bruwave.abacusflow.product
 
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -19,7 +21,8 @@ import java.time.Instant
 @Table(name = "products")
 class Product(
     name: String,
-    specification: String? = null,
+    specification: String?,
+    unit: ProductUnit,
     unitPrice: Double = 0.0,
     category: ProductCategory,
     supplierId: Long
@@ -32,6 +35,11 @@ class Product(
     @field:NotBlank
     @field:Size(max = 100)
     var name: String = name
+        private set
+
+    @field:NotBlank
+    @Enumerated(EnumType.STRING)
+    var unit: ProductUnit = unit
         private set
 
     @field:PositiveOrZero
@@ -56,20 +64,42 @@ class Product(
     var updatedAt: Instant = Instant.now()
         private set
 
-    fun updateProductBasic(
-        newName: String,
+    fun updateBasicInfo(
+        newName: String?,
         newSpecification: String?,
-        newPrice: Double,
-        newCategory: ProductCategory
+        newUnit: ProductUnit?,
+        newUnitPrice: Double?,
     ) {
-        name = newName
-        specification = newSpecification
-        unitPrice = newPrice
+        newName?.let {
+            name = newName
+        }
+        newSpecification?.let {
+            specification = newSpecification
+        }
+        newUnit?.let {
+            unit = newUnit
+        }
+
+        newUnitPrice?.let {
+            unitPrice = newUnitPrice
+        }
+
+        updatedAt = Instant.now()
+    }
+
+    fun changeCategory(newCategory: ProductCategory) {
+        if (category == newCategory) return
+
         category = newCategory
+
         updatedAt = Instant.now()
     }
 
     fun changeSupplier(newSupplierId: Long) {
+        if (supplierId == newSupplierId) return
+
         supplierId = newSupplierId
+
+        updatedAt = Instant.now()
     }
 }

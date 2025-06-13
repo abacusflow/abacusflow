@@ -1,4 +1,4 @@
-package org.bruwave.abacusflow.portal.web.customer
+package org.bruwave.abacusflow.portal.web.partner
 
 import org.bruwave.abacusflow.portal.web.api.CustomersApi
 import org.bruwave.abacusflow.portal.web.model.BasicCustomerVO
@@ -14,16 +14,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class CustomerController(
     private val customerService: CustomerService
-): CustomersApi {
+) : CustomersApi {
 
     override fun listCustomers(): ResponseEntity<List<BasicCustomerVO>> {
-        val customers = customerService.listCustomers()
-        val customerVOs = customers.map { customer ->
-            BasicCustomerVO(
-                customer.id,
-                customer.name,
-                customer.address
-            )
+        val customerVOs = customerService.listCustomers().map { customer ->
+            customer.toBasicVO()
         }
         return ResponseEntity.ok(customerVOs)
     }
@@ -31,31 +26,21 @@ class CustomerController(
     override fun getCustomer(id: Long): ResponseEntity<CustomerVO> {
         val customer = customerService.getCustomer(id)
         return ResponseEntity.ok(
-            CustomerVO(
-                customer.id,
-                customer.name,
-                customer.address,
-                customer.createdAt.toEpochMilli(),
-                customer.updatedAt.toEpochMilli()
-            )
+            customer.toVO()
         )
     }
 
     override fun addCustomer(createCustomerInputVO: CreateCustomerInputVO): ResponseEntity<CustomerVO> {
         val customer = customerService.createCustomer(
             CreateCustomerInputTO(
-                createCustomerInputVO.name,
-                createCustomerInputVO.address,
+                name = createCustomerInputVO.name,
+                phone = createCustomerInputVO.phone,
+                address = createCustomerInputVO.address,
             )
         )
         return ResponseEntity.ok(
-            CustomerVO(
-                customer.id,
-                customer.name,
-                customer.address,
-                customer.createdAt.toEpochMilli(),
-                customer.updatedAt.toEpochMilli()
-            )
+            customer.toVO()
+
         )
     }
 
@@ -67,17 +52,12 @@ class CustomerController(
             id,
             UpdateCustomerInputTO(
                 name = updateCustomerInputVO.name,
+                phone = updateCustomerInputVO.phone,
                 address = updateCustomerInputVO.address
             )
         )
         return ResponseEntity.ok(
-            CustomerVO(
-                customer.id,
-                customer.name,
-                customer.address,
-                customer.createdAt.toEpochMilli(),
-                customer.updatedAt.toEpochMilli()
-            )
+            customer.toVO()
         )
     }
 

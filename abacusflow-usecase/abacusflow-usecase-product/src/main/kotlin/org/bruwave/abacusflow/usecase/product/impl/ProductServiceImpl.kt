@@ -3,6 +3,7 @@ package org.bruwave.abacusflow.usecase.product.impl
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.Product
+import org.bruwave.abacusflow.product.ProductUnit
 import org.bruwave.abacusflow.usecase.product.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,28 +23,38 @@ class ProductServiceImpl(
         val newProduct = Product(
             name = input.name,
             specification = input.specification,
+            unit = ProductUnit.valueOf(input.unit),
             unitPrice = input.unitPrice,
             category = newProductCategory,
             supplierId = input.supplierId
         )
-        return productRepository.save(newProduct).toProductTO()
+        return productRepository.save(newProduct).toTO()
     }
 
     override fun updateProduct(id: Long, input: UpdateProductInputTO): ProductTO {
         val product = productRepository.findById(id)
             .orElseThrow { NoSuchElementException("Product not found with id: $id") }
 
-        val newProductCategory = productCategoryRepository.findById(input.categoryId).orElseThrow {
-            NoSuchElementException("Product not found with id: ${input.categoryId}")
-        }
-        product.updateProductBasic(
-            newName = input.name,
-            newSpecification = input.specification,
-            newPrice = input.unitPrice,
-            newCategory = newProductCategory
-        )
+        product.apply {
+            updateBasicInfo(
+                newName = input.name,
+                newSpecification = input.specification,
+                newUnitPrice = input.unitPrice,
+                newUnit = input.unit?.let { ProductUnit.valueOf(it) },
+            )
 
-        return productRepository.save(product).toProductTO()
+            input.categoryId?.let { categoryId ->
+                val newProductCategory = productCategoryRepository.findById(categoryId).orElseThrow {
+                    NoSuchElementException("Product not found with id: ${categoryId}")
+                }
+
+                changeCategory(newProductCategory)
+            }
+
+            input.supplierId?.let { supplierId -> changeSupplier(supplierId) }
+        }
+
+        return productRepository.save(product).toTO()
     }
 
     override fun deleteProduct(id: Long): ProductTO {
@@ -51,43 +62,22 @@ class ProductServiceImpl(
             .orElseThrow { NoSuchElementException("Product not found with id: $id") }
 
         productRepository.delete(product)
-        return product.toProductTO()
+        return product.toTO()
     }
 
     override fun getProduct(id: Long): ProductTO {
         return productRepository.findById(id)
             .orElseThrow { NoSuchElementException("Product not found with id: $id") }
-            .toProductTO()
+            .toTO()
     }
 
     override fun getProduct(name: String): ProductTO {
         return productRepository.findByName(name)
-            ?.toProductTO()
+            ?.toTO()
             ?: throw NoSuchElementException("Product not found")
     }
 
     override fun listProducts(): List<BasicProductTO> {
-        return productRepository.findAll().map { it.toBasicProductTO() }
+        return productRepository.findAll().map { it.toBasicTO() }
     }
 }
-
-private fun Product.toProductTO() = ProductTO(
-    id = id,
-    name = name,
-    unitPrice = unitPrice,
-    categoryId = category.id,
-    categoryName = category.name,
-    supplierId = supplierId,
-    specification = specification,
-    createdAt = createdAt,
-    updatedAt = updatedAt
-)
-
-private fun Product.toBasicProductTO() = BasicProductTO(
-    id = id,
-    name = name,
-    categoryName = category.name,
-    supplierId = supplierId,
-    unitPrice = unitPrice,
-    specification = specification
-)

@@ -42,10 +42,10 @@ class PurchaseOrder(
     val items: MutableList<PurchaseItem> = mutableListOf()
 
     fun changeSupplier(newSupplierId: Long) {
-        if (this.supplierId == newSupplierId) return
+        if (supplierId == newSupplierId) return
 
-        this.supplierId = newSupplierId
-        this.updatedAt = Instant.now()
+        supplierId = newSupplierId
+        updatedAt = Instant.now()
     }
 
     // TODO 最佳方案是替换为增量更新
