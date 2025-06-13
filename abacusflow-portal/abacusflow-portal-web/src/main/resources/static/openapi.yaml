@@ -15,7 +15,7 @@ tags:
   - name: transaction
     description: 处理采购和销售订单的全流程，涵盖订单创建、状态跟踪及订单明细处理。
   - name: user
-    description: 管理系统用户账户、权限控制及用户行为相关的信息（未在当前领域中显式定义，但通常为系统所需基础模块）。
+    description: 管理系统用户账户、权限控制及用户行为相关的信息。
   - name: warehouse
     description: 管理物理仓库及其内部存储空间，包括库位分配、容量规划和仓库布局设计。
 
