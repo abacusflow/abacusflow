@@ -1,7 +1,5 @@
-import AnalysisView from '@/views/dashboard/AnalysisView.vue'
-import NotFoundView from '@/views/NotFoundView.vue'
-import UserView from '@/views/user/UserView.vue'
 import {createRouter, createWebHistory} from 'vue-router'
+import FrameWork from '@/layouts/FrameWork.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,21 +11,37 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: AnalysisView,
+      component: () => import('@/views/dashboard/AnalysisView.vue'),
     },
     {
       path: '/user',
       name: 'user',
-      component: UserView,
+      component: () => import('@/views/user/UserView.vue'),
     },
     {
-      path: '/404',
-      name: '404',
-      component: NotFoundView,
+      path: '/product',
+      name: 'product',
+      component: () => import('@/views/product/ProductListView.vue'),
+    },
+    {
+      path: '/product/category',
+      name: 'product-category',
+      component: () => import('@/views/product/ProductCategoryView.vue'),
+    },
+    {
+      path: '/warehouse',
+      name: 'warehouse',
+      component: () => import('@/views/warehouse/WarehouseView.vue'),
+    },
+    {
+      path: '/inventory',
+      name: 'inventory',
+      component: () => import('@/views/inventory/InventoryView.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/404',
+      name: 'not-found',
+      component: () => import('@/views/NotFoundView.vue'),
     },
   ],
 })

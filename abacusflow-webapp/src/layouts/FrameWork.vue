@@ -10,13 +10,37 @@
         mode="inline"
         @select="handleMenuSelect"
       >
-        <a-menu-item key="/dashboard" :route="{ path: '/dashboard' }">
-          <DashboardOutlined />
-          <span class="nav-text">仪表盘</span>
+        <a-menu-item key="/dashboard">
+          <template #icon>
+            <DashboardOutlined />
+          </template>
+          <span>仪表盘</span>
         </a-menu-item>
-        <a-menu-item key="/user" :route="{ path: '/user' }">
-          <UserOutlined />
-          <span class="nav-text">用户管理</span>
+        <a-menu-item key="/user">
+          <template #icon>
+            <UserOutlined />
+          </template>
+          <span>用户管理</span>
+        </a-menu-item>
+        <a-sub-menu key="/product">
+          <template #icon>
+            <ShoppingOutlined />
+          </template>
+          <template #title>产品管理</template>
+          <a-menu-item key="/product">产品列表</a-menu-item>
+          <a-menu-item key="/product/category">产品分类</a-menu-item>
+        </a-sub-menu>
+        <a-menu-item key="/warehouse">
+          <template #icon>
+            <ShopOutlined />
+          </template>
+          <span>仓库管理</span>
+        </a-menu-item>
+        <a-menu-item key="/inventory">
+          <template #icon>
+            <InboxOutlined />
+          </template>
+          <span>库存管理</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
@@ -32,7 +56,13 @@
 <script lang="ts" setup>
 import {useRoute, useRouter} from 'vue-router'
 import {ref, watch} from 'vue'
-import {DashboardOutlined, UserOutlined} from '@ant-design/icons-vue'
+import {
+  DashboardOutlined,
+  UserOutlined,
+  ShoppingOutlined,
+  ShopOutlined,
+  InboxOutlined
+} from '@ant-design/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
