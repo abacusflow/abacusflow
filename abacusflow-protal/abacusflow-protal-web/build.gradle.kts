@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.openapi.generator)
 }
 
+// TODO: 为什么portal可以依赖DB呢
+
 dependencies {
     api(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.validation)

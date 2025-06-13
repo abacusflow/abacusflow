@@ -1,9 +1,9 @@
 package org.bruwave.abacusflow.usecase.user
 
 interface UserService {
-    fun createUser(input: UserInputTO): UserTO
+    fun createUser(input: CreateUserInputTO): UserTO
 
-    fun updateUser(input: UserInputTO): UserTO
+    fun updateUser(id: Long, input: UpdateUserInputTO): UserTO
 
     fun deleteUser(id: Long): UserTO
 

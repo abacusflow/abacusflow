@@ -1,6 +1,6 @@
 package org.bruwave.abacusflow.usecase.transaction.impl
 
-import org.bruwave.abacusflow.db.repository.PurchaseOrderRepository
+import org.bruwave.abacusflow.db.PurchaseOrderRepository
 import org.bruwave.abacusflow.transaction.PurchaseOrder
 import org.bruwave.abacusflow.transaction.PurchaseItem
 import org.bruwave.abacusflow.transaction.OrderStatus

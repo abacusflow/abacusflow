@@ -1,6 +1,6 @@
 package org.bruwave.abacusflow.usecase.partner.impl
 
-import org.bruwave.abacusflow.db.repository.CustomerRepository
+import org.bruwave.abacusflow.db.partner.CustomerRepository
 import org.bruwave.abacusflow.partner.Customer
 import org.bruwave.abacusflow.usecase.partner.CustomerService
 import org.bruwave.abacusflow.usecase.partner.CustomerTO

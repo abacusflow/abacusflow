@@ -120,14 +120,18 @@ class User(
 
     fun updateProfile(
         newSex: Sex?,
-        newAge: Int,
-        newNick: String,
+        newAge: Int?,
+        newNick: String?,
     ) {
         newSex?.let {
             sex = it
         }
-        this.age = newAge
-        this.nick = newNick
+        newAge?.let {
+            age = it
+        }
+        newNick?.let {
+            nick = it
+        }
         updatedAt = Instant.now()
     }
 

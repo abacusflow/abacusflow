@@ -1,6 +1,6 @@
 package org.bruwave.abacusflow.usecase.product.impl
 
-import org.bruwave.abacusflow.db.repository.ProductCategoryRepository
+import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.product.ProductCategory
 import org.bruwave.abacusflow.usecase.product.ProductCategoryService
 import org.bruwave.abacusflow.usecase.product.ProductCategoryTO

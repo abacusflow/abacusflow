@@ -4,7 +4,8 @@ import org.bruwave.abacusflow.commons.Sex
 import org.bruwave.abacusflow.db.user.UserRepository
 import org.bruwave.abacusflow.user.User
 import org.bruwave.abacusflow.usecase.user.BasicUserTO
-import org.bruwave.abacusflow.usecase.user.UserInputTO
+import org.bruwave.abacusflow.usecase.user.CreateUserInputTO
+import org.bruwave.abacusflow.usecase.user.UpdateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UserService
 import org.bruwave.abacusflow.usecase.user.UserTO
 import org.springframework.stereotype.Service
@@ -15,21 +16,18 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(
     private val userRepository: UserRepository,
 ) : UserService {
-    override fun createUser(input: UserInputTO): UserTO {
+    override fun createUser(input: CreateUserInputTO): UserTO {
         val newUser = User(name = input.name)
         newUser.updateProfile(
             newSex = input.sex?.let { Sex.valueOf(it) },
             newAge = input.age,
             newNick = input.nick
         )
-        input.roles.forEach { roleName ->
-            // TODO: Add role assignment logic
-        }
         return userRepository.save(newUser).toUserTO()
     }
 
-    override fun updateUser(input: UserInputTO): UserTO {
-        val user = userRepository.findById(input.id).orElseThrow { NoSuchElementException("User not found") }
+    override fun updateUser(id: Long, input: UpdateUserInputTO): UserTO {
+        val user = userRepository.findById(id).orElseThrow { NoSuchElementException("User not found") }
         user.updateProfile(
             newSex = input.sex?.let { Sex.valueOf(it) },
             newAge = input.age,

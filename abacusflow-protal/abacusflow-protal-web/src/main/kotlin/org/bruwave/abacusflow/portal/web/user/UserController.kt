@@ -3,11 +3,11 @@ package org.bruwave.abacusflow.portal.web.user
 import org.bruwave.abacusflow.portal.web.api.UsersApi
 import org.bruwave.abacusflow.portal.web.model.BasicUserVO
 import org.bruwave.abacusflow.portal.web.model.UserVO
-import org.bruwave.abacusflow.usecase.user.UserInputTO
+import org.bruwave.abacusflow.usecase.user.CreateUserInputTO
+import org.bruwave.abacusflow.usecase.user.UpdateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
 
 @RestController
 class UserController(
@@ -21,12 +21,12 @@ class UserController(
                     user.id,
                     user.name,
                     user.nick,
-                    user.sex,
                     user.age,
                     user.enabled,
                     user.locked,
                     user.createdAt.toEpochMilli(),
-                    user.updatedAt.toEpochMilli()
+                    user.updatedAt.toEpochMilli(),
+                    user.sex,
                 )
             }
         return ResponseEntity.ok(userVOS)
@@ -38,7 +38,6 @@ class UserController(
             UserVO(
                 user.id,
                 user.name,
-                user.sex,
                 user.age,
                 user.nick,
                 user.roles,
@@ -46,46 +45,63 @@ class UserController(
                 user.locked,
                 user.createdAt.toEpochMilli(),
                 user.updatedAt.toEpochMilli(),
+                user.sex,
             ),
         )
     }
 
     override fun addUser(userVO: UserVO): ResponseEntity<UserVO> {
-        return super.addUser(userVO)
-    }
-
-    override fun updateUser(id: Long, userVO: UserVO): ResponseEntity<UserVO> {
-        val user =
-            userService.updateUser(
-                UserInputTO(
-                    id = id.toLong(),
-                    name = userVO.name,
-                    nick = userVO.nick,
-                    sex = userVO.sex,
-                    age = userVO.age,
-                    roles = userVO.roles,
-                    enabled = userVO.enabled,
-                    locked = userVO.locked,
-                    createdAt = Instant.ofEpochMilli(userVO.createdAt),
-                    updatedAt = Instant.now(),
-                ),
+        val user = userService.createUser(
+            CreateUserInputTO(
+                userVO.name,
+                userVO.nick,
+                userVO.sex,
+                userVO.age,
             )
+        )
         return ResponseEntity.ok(
             UserVO(
                 user.id,
                 user.name,
-                user.nick,
                 user.age,
+                user.nick,
                 user.roles,
                 user.enabled,
                 user.locked,
                 user.createdAt.toEpochMilli(),
+                user.updatedAt.toEpochMilli(),
+                user.sex
+            ),
+        )
+    }
+
+    override fun updateUser(id: Long, userVO: UserVO): ResponseEntity<UserVO> {
+        val user = userService.updateUser(
+            id,
+            UpdateUserInputTO(
+                nick = userVO.nick,
+                sex = userVO.sex,
+                age = userVO.age,
+            ),
+        )
+        return ResponseEntity.ok(
+            UserVO(
+                user.id,
+                user.name,
+                user.age,
+                user.nick,
+                user.roles,
+                user.enabled,
+                user.locked,
+                user.createdAt.toEpochMilli(),
+                user.updatedAt.toEpochMilli(),
                 user.sex
             ),
         )
     }
 
     override fun deleteUser(id: Long): ResponseEntity<UserVO> {
-        return super.deleteUser(id)
+        userService.deleteUser(id)
+        return ResponseEntity.ok().build()
     }
 }

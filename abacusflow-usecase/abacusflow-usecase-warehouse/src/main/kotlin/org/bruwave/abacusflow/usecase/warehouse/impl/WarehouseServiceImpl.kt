@@ -1,6 +1,6 @@
 package org.bruwave.abacusflow.usecase.warehouse.impl
 
-import org.bruwave.abacusflow.db.repository.WarehouseRepository
+import org.bruwave.abacusflow.db.WarehouseRepository
 import org.bruwave.abacusflow.warehouse.Warehouse
 import org.bruwave.abacusflow.usecase.warehouse.WarehouseService
 import org.bruwave.abacusflow.usecase.warehouse.WarehouseTO

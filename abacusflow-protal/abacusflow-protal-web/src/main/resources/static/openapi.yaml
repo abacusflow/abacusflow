@@ -425,7 +425,7 @@ paths:
     get:
       operationId: listProductCategories
       tags:
-        - product-category
+        - product
       summary: List all product categories
       responses:
         '200':
@@ -439,7 +439,7 @@ paths:
     post:
       operationId: addProductCategory
       tags:
-        - product-category
+        - product
       summary: Create a new product category
       requestBody:
         required: true
@@ -459,7 +459,7 @@ paths:
     get:
       operationId: getProductCategory
       tags:
-        - product-category
+        - product
       summary: Get product category by ID
       parameters:
         - name: id
@@ -478,7 +478,7 @@ paths:
     put:
       operationId: updateProductCategory
       tags:
-        - product-category
+        - product
       summary: Update product category
       parameters:
         - name: id
@@ -503,7 +503,7 @@ paths:
     delete:
       operationId: deleteProductCategory
       tags:
-        - product-category
+        - product
       summary: Delete product category
       parameters:
         - name: id
@@ -920,6 +920,16 @@ components:
   schemas:
     User:
       type: object
+      required:
+        - id
+        - name
+        - age
+        - nick
+        - roles
+        - enabled
+        - locked
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -947,8 +957,18 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     BasicUser:
       type: object
+      required:
+        - id
+        - name
+        - nick
+        - age
+        - enabled
+        - locked
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -972,8 +992,14 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     Supplier:
       type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -992,8 +1018,14 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     Customer:
       type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -1012,8 +1044,18 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     Product:
       type: object
+      required:
+        - id
+        - name
+        - unitPrice
+        - categoryId
+        - categoryName
+        - supplierId
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -1040,8 +1082,13 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     ProductCategory:
       type: object
+      required:
+        - id
+        - name
+        - code
       properties:
         id:
           type: integer
@@ -1050,8 +1097,15 @@ components:
           type: string
         code:
           type: string
+
     Warehouse:
       type: object
+      required:
+        - id
+        - name
+        - capacity
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -1069,8 +1123,18 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     Inventory:
       type: object
+      required:
+        - id
+        - productId
+        - warehouseId
+        - quantity
+        - safetyStock
+        - version
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -1083,7 +1147,7 @@ components:
           format: int64
         quantity:
           type: integer
-        safetySck:
+        safetyStock:
           type: integer
         version:
           type: integer
@@ -1094,8 +1158,16 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     SaleOrder:
       type: object
+      required:
+        - id
+        - customerId
+        - status
+        - items
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -1115,8 +1187,14 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     SaleItem:
       type: object
+      required:
+        - id
+        - productId
+        - quantity
+        - unitPrice
       properties:
         id:
           type: integer
@@ -1129,8 +1207,16 @@ components:
         unitPrice:
           type: number
           format: double
+
     PurchaseOrder:
       type: object
+      required:
+        - id
+        - supplierId
+        - status
+        - items
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -1150,8 +1236,14 @@ components:
         updatedAt:
           type: integer
           format: int64
+
     PurchaseItem:
       type: object
+      required:
+        - id
+        - productId
+        - quantity
+        - unitPrice
       properties:
         id:
           type: integer

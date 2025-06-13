@@ -1,16 +1,15 @@
 package org.bruwave.abacusflow.usecase.user
 
-import java.time.Instant
 
-data class UserInputTO(
-    val id: Long,
+data class CreateUserInputTO(
     val name: String,
-    val sex: String?,
-    val age: Int,
     val nick: String,
-    val roles: List<String>,
-    val enabled: Boolean,
-    val locked: Boolean,
-    val createdAt: Instant,
-    val updatedAt: Instant,
+    val sex: String? = null,
+    val age: Int? = null,
+)
+
+data class UpdateUserInputTO(
+    val nick: String? = null,
+    val sex: String? = null,
+    val age: Int? = null,
 )
