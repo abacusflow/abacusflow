@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :title="isEdit ? '修改用户' : '新增用户'"
+    :title="'新增用户'"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -8,12 +8,12 @@
   >
     <a-form :model="formState" :rules="rules" ref="formRef">
       <a-form-item label="用户名" name="username">
-        <a-input v-model:value="formState.username" :disabled="isEdit" />
+        <a-input v-model:value="formState.username" />
       </a-form-item>
       <a-form-item label="姓名" name="nickname">
         <a-input v-model:value="formState.nickname" />
       </a-form-item>
-      <a-form-item v-if="!isEdit" label="密码" name="password">
+      <a-form-item label="密码" name="password">
         <a-input-password v-model:value="formState.password" />
       </a-form-item>
     </a-form>
@@ -28,7 +28,6 @@ import { inject } from 'vue'
 
 const props = defineProps<{
   visible: boolean
-  isEdit: boolean
   userData?: any
 }>()
 
@@ -57,26 +56,20 @@ watch(
       formState.username = newVal.username
       formState.nickname = newVal.nickname
     }
-  }
+  },
 )
 
 const handleOk = async () => {
   try {
     await formRef.value?.validate()
     loading.value = true
-    
-    if (props.isEdit) {
-      await userApi.updateUser(props.userData.id, {
-        nickname: formState.nickname,
-      })
-    } else {
-      await userApi.createUser({
-        username: formState.username,
-        nickname: formState.nickname,
-        password: formState.password,
-      })
-    }
-    
+
+    await userApi.createUser({
+      username: formState.username,
+      nickname: formState.nickname,
+      password: formState.password,
+    })
+
     emit('success')
     handleCancel()
   } catch (error) {
@@ -90,4 +83,4 @@ const handleCancel = () => {
   formRef.value?.resetFields()
   emit('update:visible', false)
 }
-</script> 
+</script>

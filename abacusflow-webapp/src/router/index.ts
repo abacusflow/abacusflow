@@ -1,7 +1,8 @@
-import { User } from './../core/openapi/models/user'
 import { createRouter, createWebHistory } from 'vue-router'
 import ProductEditView from '@/views/product/ProductEditView.vue'
 import ProductAddView from '@/views/product/ProductCreateView.vue'
+import UserAddView from '@/views/user/UserAddView.vue'
+import UserEditView from '@/views/user/UserEditView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,7 +19,7 @@ const router = createRouter({
     {
       path: '/user',
       name: 'user',
-      component: () => import('@/views/user/UserList.vue'),
+      component: () => import('@/views/user/UserListView.vue'),
       children: [
         {
           path: 'add',
