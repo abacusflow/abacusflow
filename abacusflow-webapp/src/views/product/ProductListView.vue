@@ -53,6 +53,8 @@
       </a-table>
     </a-card>
   </div>
+
+  <router-view></router-view>
 </template>
 
 <script setup lang="ts">
@@ -118,10 +120,7 @@ const { isPending, data: productsData } = useQuery({
 // 使用 Vue Query 获取分类列表
 const { data: categories } = useQuery({
   queryKey: ['categories'],
-  queryFn: () => productApi.listCategories(),
-  onError: () => {
-    message.error('获取分类列表失败')
-  },
+  queryFn: () => productApi.listProductCategories(),
 })
 
 // 使用 Vue Query 删除产品
@@ -152,7 +151,7 @@ const resetSearch = () => {
 
 // 新增产品
 const handleAdd = () => {
-  router.push('/product/create')
+  router.push('/product/add')
 }
 
 // 编辑产品
@@ -163,6 +162,10 @@ const handleEdit = (record: BasicProduct) => {
 // 删除产品
 const handleDelete = (record: BasicProduct) => {
   deleteProductMutation.mutate(record.id)
+}
+
+function closeDialog() {
+  router.push({ name: 'product' })
 }
 </script>
 

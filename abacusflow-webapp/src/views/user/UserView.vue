@@ -1,52 +1,52 @@
 <template>
-  <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'createdAt'">
-        <span>
-          {{ $formatDate(record.createdAt) }}
-        </span>
-      </template>
-      <template v-else-if="column.key === 'action'">
-        <span>
-          <a>修改</a>
-          <a-divider type="vertical" />
-          <a>删除</a>
-        </span>
-      </template>
-    </template>
-  </a-table>
+  <div>
+    <UserList @edit="handleEdit" @delete="handleDelete" @create="handleCreate" />
+
+    <UserForm
+      v-model:visible="formVisible"
+      :is-edit="isEdit"
+      :user-data="selectedUser"
+      @success="handleSuccess"
+    />
+
+    <UserDelete
+      v-model:visible="deleteVisible"
+      :user-data="selectedUser"
+      @success="handleSuccess"
+    />
+  </div>
 </template>
+
 <script lang="ts" setup>
-import {UserApi} from '@/core/openapi'
-import {useQuery} from '@tanstack/vue-query'
-import {inject} from 'vue'
+import { ref } from 'vue'
+import UserList from './UserList.vue'
+import UserForm from './UserForm.vue'
+import UserDelete from './UserDelete.vue'
 
-const userApi = inject('userApi') as UserApi
+const formVisible = ref(false)
+const deleteVisible = ref(false)
+const isEdit = ref(false)
+const selectedUser = ref<any>(null)
 
-const columns = [
-  {
-    title: '用户名',
-    dataIndex: 'username',
-    key: 'username',
-  },
-  {
-    title: '姓名',
-    dataIndex: 'nickname',
-    key: 'nickname',
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createdAt',
-    key: 'createdAt',
-  },
-  {
-    title: '操作',
-    key: 'action',
-  },
-]
+const handleEdit = (user: any) => {
+  selectedUser.value = user
+  isEdit.value = true
+  formVisible.value = true
+}
 
-const { isPending, isError, data, error } = useQuery({
-  queryKey: ['users'],
-  queryFn: () => userApi.listUsers(),
-})
+const handleDelete = (user: any) => {
+  selectedUser.value = user
+  deleteVisible.value = true
+}
+
+const handleCreate = () => {
+  selectedUser.value = null
+  isEdit.value = false
+  formVisible.value = true
+}
+
+const handleSuccess = () => {
+  // Refresh the list
+  // The list will automatically refresh due to the query invalidation
+}
 </script>

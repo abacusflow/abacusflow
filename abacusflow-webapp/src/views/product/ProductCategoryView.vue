@@ -18,10 +18,7 @@
             <a-space>
               <a @click="handleEdit(record)">编辑</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="确定要删除这个分类吗？"
-                @confirm="handleDelete(record)"
-              >
+              <a-popconfirm title="确定要删除这个分类吗？" @confirm="handleDelete(record)">
                 <a class="danger-link">删除</a>
               </a-popconfirm>
             </a-space>
@@ -47,11 +44,7 @@
           <a-input v-model:value="form.name" placeholder="请输入分类名称" />
         </a-form-item>
         <a-form-item label="描述" name="description">
-          <a-textarea
-            v-model:value="form.description"
-            :rows="3"
-            placeholder="请输入描述"
-          />
+          <a-textarea v-model:value="form.description" :rows="3" placeholder="请输入描述" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -63,12 +56,17 @@ import { ref, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
 import { ProductApi } from '@/core/openapi/apis'
-import type { BasicProductCategory, ProductCategory, CreateProductCategoryInput, UpdateProductCategoryInput } from '@/core/openapi/models'
+import type {
+  BasicProductCategory,
+  ProductCategory,
+  CreateProductCategoryInput,
+  UpdateProductCategoryInput,
+} from '@/core/openapi/models'
+import { useQuery } from '@tanstack/vue-query'
 
 const productApi = new ProductApi()
 
 // 数据列表
-const categories = ref<BasicProductCategory[]>([])
 const loading = ref(false)
 
 // 表格列定义
@@ -101,33 +99,26 @@ const modalType = ref<'add' | 'edit'>('add')
 const formRef = ref<FormInstance>()
 const form = ref<CreateProductCategoryInput | UpdateProductCategoryInput>({
   name: '',
-  description: ''
+  description: '',
 })
 
 // 表单验证规则
 const rules = {
-  name: [{ required: true, message: '请输入分类名称' }]
+  name: [{ required: true, message: '请输入分类名称' }],
 }
 
-// 获取分类列表
-const getCategories = async () => {
-  loading.value = true
-  try {
-    const response = await productApi.listProductCategories()
-    categories.value = response
-  } catch (error) {
-    message.error('获取分类列表失败')
-  } finally {
-    loading.value = false
-  }
-}
+// 使用 Vue Query 获取分类列表
+const { data: categories } = useQuery({
+  queryKey: ['categories'],
+  queryFn: () => productApi.listProductCategories(),
+})
 
 // 新增分类
 const handleAdd = () => {
   modalType.value = 'add'
   form.value = {
     name: '',
-    description: ''
+    description: '',
   }
   modalVisible.value = true
 }
@@ -137,7 +128,7 @@ const handleEdit = (record: BasicProductCategory) => {
   modalType.value = 'edit'
   form.value = {
     name: record.name,
-    description: record.description
+    description: record.description,
   }
   modalVisible.value = true
 }
@@ -158,14 +149,16 @@ const handleSubmit = async () => {
   try {
     await formRef.value?.validate()
     if (modalType.value === 'add') {
-      await productApi.addProductCategory({ createProductCategoryInput: form.value as CreateProductCategoryInput })
+      await productApi.addProductCategory({
+        createProductCategoryInput: form.value as CreateProductCategoryInput,
+      })
       message.success('新增成功')
     } else {
-      const category = categories.value.find(c => c.name === form.value.name)
+      const category = categories.value.find((c) => c.name === form.value.name)
       if (category) {
         await productApi.updateProductCategory({
           id: category.id,
-          updateProductCategoryInput: form.value as UpdateProductCategoryInput
+          updateProductCategoryInput: form.value as UpdateProductCategoryInput,
         })
         message.success('编辑成功')
       }
@@ -205,4 +198,4 @@ onMounted(() => {
 .danger-link:hover {
   color: #ff7875;
 }
-</style> 
+</style>
