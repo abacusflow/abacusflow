@@ -1,10 +1,10 @@
 <template>
   <a-modal
-    :title="'新增用户'"
+    title="新增用户"
     :visible="visible"
     @ok="handleOk"
     @cancel="handleCancel"
-    :confirmLoading="loading"
+    :confirm-loading="loading"
   >
     <a-form :model="formState" :rules="rules" ref="formRef">
       <a-form-item label="用户名" name="username">
@@ -21,62 +21,32 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive } from 'vue'
 import type { FormInstance } from 'ant-design-vue'
-import { UserApi } from '@/core/openapi'
 import { inject } from 'vue'
+import type { UserApi } from '@/core/openapi'
 
-const props = defineProps<{
-  visible: boolean
-  userData?: any
-}>()
-
+const props = defineProps<{ visible: boolean }>()
 const emit = defineEmits(['update:visible', 'success'])
 
 const userApi = inject('userApi') as UserApi
 const formRef = ref<FormInstance>()
 const loading = ref(false)
 
-const formState = reactive({
-  username: '',
-  nickname: '',
-  password: '',
-})
-
+const formState = reactive({ username: '', nickname: '', password: '' })
 const rules = {
   username: [{ required: true, message: '请输入用户名' }],
   nickname: [{ required: true, message: '请输入姓名' }],
   password: [{ required: true, message: '请输入密码' }],
 }
 
-watch(
-  () => props.userData,
-  (newVal) => {
-    if (newVal) {
-      formState.username = newVal.username
-      formState.nickname = newVal.nickname
-    }
-  },
-)
-
 const handleOk = async () => {
-  try {
-    await formRef.value?.validate()
-    loading.value = true
-
-    await userApi.createUser({
-      username: formState.username,
-      nickname: formState.nickname,
-      password: formState.password,
-    })
-
-    emit('success')
-    handleCancel()
-  } catch (error) {
-    console.error(error)
-  } finally {
-    loading.value = false
-  }
+  await formRef.value?.validate()
+  loading.value = true
+  await userApi.createUser({ ...formState })
+  emit('success')
+  handleCancel()
+  loading.value = false
 }
 
 const handleCancel = () => {

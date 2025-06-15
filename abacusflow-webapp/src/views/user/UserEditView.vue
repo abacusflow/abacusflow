@@ -18,21 +18,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
-import type { FormInstance } from 'ant-design-vue'
+import { onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { UserApi } from '@/core/openapi'
 import { inject } from 'vue'
+import type { FormInstance } from 'ant-design-vue'
 
-const props = defineProps<{
-  visible: boolean
-  userData?: any
-}>()
-
+const props = defineProps<{ visible: boolean }>()
+const route = useRoute()
+const userApi = inject('userApi') as UserApi
 const emit = defineEmits(['update:visible', 'success'])
 
-const userApi = inject('userApi') as UserApi
 const formRef = ref<FormInstance>()
 const loading = ref(false)
+const userId = route.params.id as string
 
 const formState = reactive({
   username: '',
@@ -45,27 +44,34 @@ const rules = {
   password: [{ required: true, message: '请输入密码' }],
 }
 
-watch(
-  () => props.userData,
-  (newVal) => {
-    if (newVal) {
-      formState.username = newVal.username
-      formState.nickname = newVal.nickname
-    }
-  },
-)
+const fetchUserDetail = async () => {
+  try {
+    const user = await userApi.getUser(userId)
+    formState.username = user.username
+    formState.nickname = user.nickname
+    // 如果需要，也可以填充 password 或其它字段
+  } catch (e) {
+    console.error('用户信息获取失败', e)
+  }
+}
+
+onMounted(() => {
+  fetchUserDetail()
+})
 
 const handleOk = async () => {
   try {
     await formRef.value?.validate()
     loading.value = true
 
-    await userApi.updateUser(props.userData.id, {
+    await userApi.updateUser(userId, {
       nickname: formState.nickname,
+      password: formState.password,
     })
-
     emit('success')
     handleCancel()
+
+    // success feedback，比如返回用户列表
   } catch (error) {
     console.error(error)
   } finally {
