@@ -1,10 +1,12 @@
 package org.bruwave.abacusflow.portal.web.inventory
 
 import org.bruwave.abacusflow.portal.web.api.InventoriesApi
+import org.bruwave.abacusflow.portal.web.model.AdjustWarningLineRequestVO
+import org.bruwave.abacusflow.portal.web.model.AssignWarehouseRequestVO
 import org.bruwave.abacusflow.portal.web.model.BasicInventoryVO
 import org.bruwave.abacusflow.portal.web.model.IncreaseInventoryRequestVO
 import org.bruwave.abacusflow.portal.web.model.InventoryVO
-import org.bruwave.abacusflow.usecase.inventory.CreateInventoryInputTO
+import org.bruwave.abacusflow.portal.web.model.ReserveInventoryRequestVO
 import org.bruwave.abacusflow.usecase.inventory.InventoriesService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -31,21 +33,43 @@ class InventoryController(
     override fun increaseInventory(
         id: Long,
         increaseInventoryRequestVO: IncreaseInventoryRequestVO
-    ): ResponseEntity<InventoryVO> {
-        val inventory = inventoriesService.increaseInventory(id, increaseInventoryRequestVO.amount)
-        return ResponseEntity.ok(
-            inventory.toVO()
-        )
+    ): ResponseEntity<Unit> {
+        inventoriesService.increaseInventory(id, increaseInventoryRequestVO.amount)
+        return ResponseEntity.ok().build()
     }
 
     override fun decreaseInventory(
         id: Long,
         increaseInventoryRequestVO: IncreaseInventoryRequestVO
-    ): ResponseEntity<InventoryVO> {
-        val inventory = inventoriesService.decreaseInventory(id, increaseInventoryRequestVO.amount)
-        return ResponseEntity.ok(
-            inventory.toVO()
+    ): ResponseEntity<Unit> {
+        inventoriesService.decreaseInventory(id, increaseInventoryRequestVO.amount)
+        return ResponseEntity.ok().build()
+    }
+
+
+    override fun reserveInventory(
+        id: Long,
+        reserveInventoryRequestVO: ReserveInventoryRequestVO
+    ): ResponseEntity<Unit> {
+        inventoriesService.reserveInventory(id, reserveInventoryRequestVO.amount)
+        return ResponseEntity.ok().build()
+    }
+
+    override fun assignWarehouse(id: Long, assignWarehouseRequestVO: AssignWarehouseRequestVO): ResponseEntity<Unit> {
+        inventoriesService.assignWarehouse(id, assignWarehouseRequestVO.warehouseId)
+        return ResponseEntity.ok().build()
+    }
+
+    override fun adjustWarningLine(
+        id: Long,
+        adjustWarningLineRequestVO: AdjustWarningLineRequestVO
+    ): ResponseEntity<Unit> {
+        inventoriesService.adjustWarningLine(
+            id,
+            adjustWarningLineRequestVO.safetyStock,
+            adjustWarningLineRequestVO.maxStock
         )
+        return ResponseEntity.ok().build()
     }
 
     override fun checkSafetyStock(id: Long): ResponseEntity<Boolean> {

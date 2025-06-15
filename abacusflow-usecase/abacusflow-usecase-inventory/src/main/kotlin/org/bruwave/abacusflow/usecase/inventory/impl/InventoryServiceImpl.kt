@@ -27,18 +27,39 @@ class InventoriesServiceImpl(
         return inventoryRepository.save(inventory).toTO()
     }
 
-    override fun increaseInventory(id: Long, amount: Int): InventoryTO {
+    override fun increaseInventory(id: Long, amount: Int) {
         val inventory = inventoryRepository.findById(id)
             .orElseThrow { NoSuchElementException("Inventory not found") }
         inventory.increaseQuantity(amount)
-        return inventoryRepository.save(inventory).toTO()
+        inventoryRepository.save(inventory)
     }
 
-    override fun decreaseInventory(id: Long, amount: Int): InventoryTO {
+    override fun decreaseInventory(id: Long, amount: Int) {
         val inventory = inventoryRepository.findById(id)
             .orElseThrow { NoSuchElementException("Inventory not found") }
         inventory.decreaseQuantity(amount)
-        return inventoryRepository.save(inventory).toTO()
+        inventoryRepository.save(inventory)
+    }
+
+    override fun reserveInventory(id: Long, amount: Int) {
+        val inventory = inventoryRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Inventory not found") }
+        inventory.reserveInventory(amount)
+        inventoryRepository.save(inventory)
+    }
+
+    override fun assignWarehouse(id: Long, newWarehouseId: Long) {
+        val inventory = inventoryRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Inventory not found") }
+        inventory.assignWarehouse(newWarehouseId)
+        inventoryRepository.save(inventory)
+    }
+
+    override fun adjustWarningLine(id: Long, newSafetyStock: Int, newMaxStock: Int) {
+        val inventory = inventoryRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Inventory not found") }
+        inventory.adjustWarningLine(newSafetyStock, newMaxStock)
+        inventoryRepository.save(inventory)
     }
 
     override fun getInventory(id: Long): InventoryTO {
@@ -65,7 +86,7 @@ class InventoriesServiceImpl(
         val inventory = inventoryRepository.findById(id)
             .orElseThrow { NoSuchElementException("Inventory not found with id: $id") }
 
-        return inventory.isBelowSafetyStock()
+        return inventory.isBelowSafetyStock
     }
 }
 

@@ -8,7 +8,7 @@ fun Inventory.toBasicTO(productName: String, warehouseName: String) = BasicInven
     productName = productName,
     warehouseName = warehouseName,
     quantity = quantity,
-    availableQuantity = availableQuantity(),
+    availableQuantity = availableQuantity,
     safetyStock = safetyStock,
     maxStock = maxStock
 )
@@ -19,7 +19,7 @@ fun Inventory.toTO() = InventoryTO(
     warehouseId = warehouseId,
     quantity = quantity,
     reservedQuantity = reservedQuantity,
-    availableQuantity = availableQuantity(),
+    availableQuantity = availableQuantity,
     safetyStock = safetyStock,
     maxStock = maxStock,
     version = version,

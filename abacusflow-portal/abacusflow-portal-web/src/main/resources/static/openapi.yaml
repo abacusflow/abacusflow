@@ -27,14 +27,14 @@ paths:
         - user
       summary: List all users
       responses:
-        '200':
+        "200":
           description: List of users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicUser'
+                  $ref: "#/components/schemas/BasicUser"
     post:
       operationId: addUser
       tags:
@@ -45,14 +45,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserInput'
+              $ref: "#/components/schemas/CreateUserInput"
       responses:
-        '200':
+        "200":
           description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
 
   /users/{id}:
     get:
@@ -68,12 +68,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: User details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
     put:
       operationId: updateUser
       tags:
@@ -91,14 +91,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserInput'
+              $ref: "#/components/schemas/UpdateUserInput"
       responses:
-        '200':
+        "200":
           description: User updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
     delete:
       operationId: deleteUser
       tags:
@@ -112,7 +112,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: User deleted
 
   /suppliers:
@@ -122,14 +122,14 @@ paths:
         - partner
       summary: List all suppliers
       responses:
-        '200':
+        "200":
           description: List of suppliers
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicSupplier'
+                  $ref: "#/components/schemas/BasicSupplier"
     post:
       operationId: addSupplier
       tags:
@@ -140,14 +140,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateSupplierInput'
+              $ref: "#/components/schemas/CreateSupplierInput"
       responses:
-        '200':
+        "200":
           description: Supplier created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Supplier'
+                $ref: "#/components/schemas/Supplier"
 
   /suppliers/{id}:
     get:
@@ -163,12 +163,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Supplier details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Supplier'
+                $ref: "#/components/schemas/Supplier"
     put:
       operationId: updateSupplier
       tags:
@@ -186,14 +186,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSupplierInput'
+              $ref: "#/components/schemas/UpdateSupplierInput"
       responses:
-        '200':
+        "200":
           description: Supplier updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Supplier'
+                $ref: "#/components/schemas/Supplier"
     delete:
       operationId: deleteSupplier
       tags:
@@ -207,7 +207,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Supplier deleted
 
   /customers:
@@ -217,14 +217,14 @@ paths:
         - partner
       summary: List all customers
       responses:
-        '200':
+        "200":
           description: List of customers
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicCustomer'
+                  $ref: "#/components/schemas/BasicCustomer"
     post:
       operationId: addCustomer
       tags:
@@ -235,14 +235,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCustomerInput'
+              $ref: "#/components/schemas/CreateCustomerInput"
       responses:
-        '200':
+        "200":
           description: Customer created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
+                $ref: "#/components/schemas/Customer"
 
   /customers/{id}:
     get:
@@ -258,12 +258,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Customer details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
+                $ref: "#/components/schemas/Customer"
     put:
       operationId: updateCustomer
       tags:
@@ -281,14 +281,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCustomerInput'
+              $ref: "#/components/schemas/UpdateCustomerInput"
       responses:
-        '200':
+        "200":
           description: Customer updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
+                $ref: "#/components/schemas/Customer"
     delete:
       operationId: deleteCustomer
       tags:
@@ -302,7 +302,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Customer deleted
 
   /products:
@@ -312,14 +312,14 @@ paths:
         - product
       summary: List all products
       responses:
-        '200':
+        "200":
           description: List of products
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicProduct'
+                  $ref: "#/components/schemas/BasicProduct"
     post:
       operationId: addProduct
       tags:
@@ -330,14 +330,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProductInput'
+              $ref: "#/components/schemas/CreateProductInput"
       responses:
-        '200':
+        "200":
           description: Product created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: "#/components/schemas/Product"
 
   /products/{id}:
     get:
@@ -353,12 +353,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Product details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: "#/components/schemas/Product"
     put:
       operationId: updateProduct
       tags:
@@ -376,14 +376,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateProductInput'
+              $ref: "#/components/schemas/UpdateProductInput"
       responses:
-        '200':
+        "200":
           description: Product updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: "#/components/schemas/Product"
     delete:
       operationId: deleteProduct
       tags:
@@ -397,7 +397,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Product deleted
 
   /product-categories:
@@ -407,14 +407,14 @@ paths:
         - product
       summary: List all product categories
       responses:
-        '200':
+        "200":
           description: List of product categories
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicProductCategory'
+                  $ref: "#/components/schemas/BasicProductCategory"
     post:
       operationId: addProductCategory
       tags:
@@ -425,14 +425,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProductCategoryInput'
+              $ref: "#/components/schemas/CreateProductCategoryInput"
       responses:
-        '200':
+        "200":
           description: Product category created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductCategory'
+                $ref: "#/components/schemas/ProductCategory"
 
   /product-categories/{id}:
     get:
@@ -448,12 +448,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Product category details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductCategory'
+                $ref: "#/components/schemas/ProductCategory"
     put:
       operationId: updateProductCategory
       tags:
@@ -471,14 +471,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateProductCategoryInput'
+              $ref: "#/components/schemas/UpdateProductCategoryInput"
       responses:
-        '200':
+        "200":
           description: Product category updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductCategory'
+                $ref: "#/components/schemas/ProductCategory"
     delete:
       operationId: deleteProductCategory
       tags:
@@ -492,7 +492,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Product category deleted
 
   /warehouses:
@@ -502,14 +502,14 @@ paths:
         - warehouse
       summary: List all warehouses
       responses:
-        '200':
+        "200":
           description: List of warehouses
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicWarehouse'
+                  $ref: "#/components/schemas/BasicWarehouse"
     post:
       operationId: addWarehouse
       tags:
@@ -520,14 +520,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateWarehouseInput'
+              $ref: "#/components/schemas/CreateWarehouseInput"
       responses:
-        '200':
+        "200":
           description: Warehouse created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Warehouse'
+                $ref: "#/components/schemas/Warehouse"
 
   /warehouses/{id}:
     get:
@@ -543,12 +543,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Warehouse details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Warehouse'
+                $ref: "#/components/schemas/Warehouse"
     put:
       operationId: updateWarehouse
       tags:
@@ -566,14 +566,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateWarehouseInput'
+              $ref: "#/components/schemas/UpdateWarehouseInput"
       responses:
-        '200':
+        "200":
           description: Warehouse updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Warehouse'
+                $ref: "#/components/schemas/Warehouse"
     delete:
       operationId: deleteWarehouse
       tags:
@@ -587,7 +587,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Warehouse deleted
 
   /inventories:
@@ -597,14 +597,14 @@ paths:
         - inventory
       summary: List all inventories
       responses:
-        '200':
+        "200":
           description: List of inventories
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicInventory'
+                  $ref: "#/components/schemas/BasicInventory"
 
   /inventories/{id}:
     get:
@@ -620,12 +620,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Inventory details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Inventory'
+                $ref: "#/components/schemas/Inventory"
 
   /inventories/{id}/increase:
     post:
@@ -651,13 +651,12 @@ paths:
               properties:
                 amount:
                   type: integer
+                  format: int32
+                  minimum: 1
+                  maximum: 100
       responses:
-        '200':
+        "200":
           description: Inventory increased
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Inventory'
 
   /inventories/{id}/decrease:
     post:
@@ -683,13 +682,108 @@ paths:
               properties:
                 amount:
                   type: integer
+                  format: int32
+                  minimum: 1
+                  maximum: 100
       responses:
-        '200':
+        "200":
           description: Inventory decreased
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Inventory'
+
+  /inventories/{id}/assign-warehouse:
+    post:
+      operationId: assignWarehouse
+      tags:
+        - inventory
+      summary: Assign inventory to another warehouse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - warehouseId
+              properties:
+                warehouseId:
+                  type: integer
+                  format: int64
+                  description: ID of the warehouse to assign
+      responses:
+        "200":
+          description: Warehouse assigned successfully
+
+  /inventories/{id}/adjust-warning-line:
+    post:
+      operationId: adjustWarningLine
+      tags:
+        - inventory
+      summary: Adjust safety and maximum stock levels
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - safetyStock
+                - maxStock
+              properties:
+                safetyStock:
+                  type: integer
+                  format: int32
+                  minimum: 0
+                maxStock:
+                  type: integer
+                  format: int32
+                  minimum: 0
+      responses:
+        "200":
+          description: Warning line adjusted successfully
+
+  /inventories/{id}/reserve:
+    post:
+      operationId: reserveInventory
+      tags:
+        - inventory
+      summary: Reserve part of the inventory (冻结部分库存)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: integer
+                  format: int32
+                  minimum: 1
+                  description: 要冻结的库存数量
+      responses:
+        "200":
+          description: Reserved inventory successfully
 
   /inventories/{id}/safety-check:
     get:
@@ -705,7 +799,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Safety stock status
           content:
             application/json:
@@ -719,14 +813,14 @@ paths:
         - transaction
       summary: List all sale orders
       responses:
-        '200':
+        "200":
           description: List of sale orders
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicSaleOrder'
+                  $ref: "#/components/schemas/BasicSaleOrder"
     post:
       operationId: addSaleOrder
       tags:
@@ -737,14 +831,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateSaleOrderInput'
+              $ref: "#/components/schemas/CreateSaleOrderInput"
       responses:
-        '200':
+        "200":
           description: Sale order created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SaleOrder'
+                $ref: "#/components/schemas/SaleOrder"
 
   /sale-orders/{id}:
     get:
@@ -760,12 +854,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Sale order details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SaleOrder'
+                $ref: "#/components/schemas/SaleOrder"
     put:
       operationId: updateSaleOrder
       tags:
@@ -783,14 +877,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSaleOrderInput'
+              $ref: "#/components/schemas/UpdateSaleOrderInput"
       responses:
-        '200':
+        "200":
           description: Sale order updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SaleOrder'
+                $ref: "#/components/schemas/SaleOrder"
     delete:
       operationId: deleteSaleOrder
       tags:
@@ -804,7 +898,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Sale order deleted
 
   /purchase-orders:
@@ -814,14 +908,14 @@ paths:
         - transaction
       summary: List all purchase orders
       responses:
-        '200':
+        "200":
           description: List of purchase orders
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BasicPurchaseOrder'
+                  $ref: "#/components/schemas/BasicPurchaseOrder"
     post:
       operationId: addPurchaseOrder
       tags:
@@ -832,14 +926,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePurchaseOrderInput'
+              $ref: "#/components/schemas/CreatePurchaseOrderInput"
       responses:
-        '200':
+        "200":
           description: Purchase order created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PurchaseOrder'
+                $ref: "#/components/schemas/PurchaseOrder"
 
   /purchase-orders/{id}:
     get:
@@ -855,12 +949,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Purchase order details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PurchaseOrder'
+                $ref: "#/components/schemas/PurchaseOrder"
     put:
       operationId: updatePurchaseOrder
       tags:
@@ -878,14 +972,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePurchaseOrderInput'
+              $ref: "#/components/schemas/UpdatePurchaseOrderInput"
       responses:
-        '200':
+        "200":
           description: Purchase order updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PurchaseOrder'
+                $ref: "#/components/schemas/PurchaseOrder"
     delete:
       operationId: deletePurchaseOrder
       tags:
@@ -899,7 +993,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: Purchase order deleted
 
 components:
@@ -1272,7 +1366,7 @@ components:
           nullable: true
           description: 规格说明
         unit:
-          $ref: '#/components/schemas/ProductUnit'
+          $ref: "#/components/schemas/ProductUnit"
         createdAt:
           type: integer
           format: int64
@@ -1310,7 +1404,7 @@ components:
           type: string
           description: 供应商名称
         unit:
-          $ref: '#/components/schemas/ProductUnit'
+          $ref: "#/components/schemas/ProductUnit"
 
     CreateProductInput:
       type: object
@@ -1343,7 +1437,7 @@ components:
           nullable: true
           description: 规格说明
         unit:
-          $ref: '#/components/schemas/ProductUnit'
+          $ref: "#/components/schemas/ProductUnit"
 
     UpdateProductInput:
       type: object
@@ -1370,7 +1464,7 @@ components:
           nullable: true
           description: 规格说明
         unit:
-          $ref: '#/components/schemas/ProductUnit'
+          $ref: "#/components/schemas/ProductUnit"
 
     # ============= ProductCategory schemas =============
     ProductCategory:
@@ -1571,8 +1665,6 @@ components:
         - id
         - productId
         - productName
-        - warehouseId
-        - warehouseName
         - quantity
         - reservedQuantity
         - availableQuantity
@@ -1630,7 +1722,6 @@ components:
       required:
         - id
         - productName
-        - warehouseName
         - quantity
         - availableQuantity
         - safetyStock
@@ -1660,8 +1751,6 @@ components:
           type: integer
           nullable: true
           description: 最大库存预警线
-
-
 
     # ============= SaleOrder schemas =============
     SaleOrder:
@@ -1705,7 +1794,7 @@ components:
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/SaleOrderItem'
+            $ref: "#/components/schemas/SaleOrderItem"
           description: 订单明细
         createdAt:
           type: integer
@@ -1780,7 +1869,7 @@ components:
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/SaleOrderItemInput'
+            $ref: "#/components/schemas/SaleOrderItemInput"
           minItems: 1
           description: 订单明细
 
@@ -1805,7 +1894,7 @@ components:
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/SaleOrderItemInput'
+            $ref: "#/components/schemas/SaleOrderItemInput"
           description: 订单明细
 
     # ============= PurchaseOrder schemas =============
@@ -1850,7 +1939,7 @@ components:
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/PurchaseOrderItem'
+            $ref: "#/components/schemas/PurchaseOrderItem"
           description: 订单明细
         createdAt:
           type: integer
@@ -1925,7 +2014,7 @@ components:
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/PurchaseOrderItemInput'
+            $ref: "#/components/schemas/PurchaseOrderItemInput"
           minItems: 1
           description: 订单明细
 
@@ -1950,7 +2039,7 @@ components:
         orderItems:
           type: array
           items:
-            $ref: '#/components/schemas/PurchaseOrderItemInput'
+            $ref: "#/components/schemas/PurchaseOrderItemInput"
           description: 订单明细
 
     # ============= OrderItem schemas =============
@@ -2066,23 +2155,23 @@ components:
       type: string
       description: 商品单位枚举
       enum:
-        - item         # 件
-        - piece         # 件
-        - box           # 箱
-        - pack          # 包
-        - dozen         # 打
-        - pair          # 对
-        - gram          # 克
-        - kilogram      # 千克
-        - liter         # 升
-        - milliliter    # 毫升
-        - meter         # 米
-        - centimeter    # 厘米
-        - bottle        # 瓶
-        - barrel        # 桶
-        - bag           # 袋
-        - sheet         # 张
-        - roll          # 卷
+        - item # 件
+        - piece # 件
+        - box # 箱
+        - pack # 包
+        - dozen # 打
+        - pair # 对
+        - gram # 克
+        - kilogram # 千克
+        - liter # 升
+        - milliliter # 毫升
+        - meter # 米
+        - centimeter # 厘米
+        - bottle # 瓶
+        - barrel # 桶
+        - bag # 袋
+        - sheet # 张
+        - roll # 卷
       x-enum-descriptions:
         - 个
         - 件
