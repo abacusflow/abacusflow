@@ -54,74 +54,74 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from 'vue'
-import { message } from 'ant-design-vue'
-import type { FormInstance } from 'ant-design-vue'
-import { useRouter } from 'vue-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import type { ProductApi } from '@/core/openapi/apis'
-import type { CreateProductInput } from '@/core/openapi/models'
+import { ref, inject } from "vue";
+import { message } from "ant-design-vue";
+import type { FormInstance } from "ant-design-vue";
+import { useRouter } from "vue-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
+import type { ProductApi } from "@/core/openapi/apis";
+import type { CreateProductInput } from "@/core/openapi/models";
 
-const router = useRouter()
-const productApi = inject('productApi') as ProductApi
-const queryClient = useQueryClient()
-const formRef = ref<FormInstance>()
+const router = useRouter();
+const productApi = inject("productApi") as ProductApi;
+const queryClient = useQueryClient();
+const formRef = ref<FormInstance>();
 
-const open = ref<boolean>(true)
+const open = ref<boolean>(true);
 
 // 表单数据
 const form = ref<CreateProductInput>({
-  name: '',
+  name: "",
   categoryId: undefined,
-  unit: '',
+  unit: "",
   price: 0,
-  description: '',
-})
+  description: ""
+});
 
 // 表单验证规则
 const rules = {
-  name: [{ required: true, message: '请输入产品名称' }],
-  categoryId: [{ required: true, message: '请选择分类' }],
-  unit: [{ required: true, message: '请输入单位' }],
-  price: [{ required: true, message: '请输入价格' }],
-}
+  name: [{ required: true, message: "请输入产品名称" }],
+  categoryId: [{ required: true, message: "请选择分类" }],
+  unit: [{ required: true, message: "请输入单位" }],
+  price: [{ required: true, message: "请输入价格" }]
+};
 
 // 使用 Vue Query 获取分类列表
 const { data: categories } = useQuery({
-  queryKey: ['categories'],
+  queryKey: ["categories"],
   queryFn: () => productApi.listProductCategories(),
   onError: () => {
-    message.error('获取分类列表失败')
-  },
-})
+    message.error("获取分类列表失败");
+  }
+});
 
 // 使用 Vue Query 添加产品
 const { isPending, mutate: addProduct } = useMutation({
   mutationFn: (input: CreateProductInput) => productApi.addProduct({ createProductInput: input }),
   onSuccess: () => {
-    message.success('新增成功')
-    queryClient.invalidateQueries({ queryKey: ['products'] })
-    router.push('/product')
+    message.success("新增成功");
+    queryClient.invalidateQueries({ queryKey: ["products"] });
+    router.push("/product");
   },
   onError: () => {
-    message.error('新增失败')
-  },
-})
+    message.error("新增失败");
+  }
+});
 
 // 提交表单
 const handleSubmit = async () => {
   try {
-    await formRef.value?.validate()
-    addProduct(form.value)
+    await formRef.value?.validate();
+    addProduct(form.value);
   } catch (error) {
     // 表单验证失败
   }
-}
+};
 
 // 取消
 const handleCancel = () => {
-  router.push('/product')
-}
+  router.push("/product");
+};
 </script>
 
 <style scoped>

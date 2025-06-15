@@ -5,9 +5,9 @@
 </template>
 
 <script setup lang="ts">
-import zhCN from 'ant-design-vue/es/locale/zh_CN'
+import zhCN from "ant-design-vue/es/locale/zh_CN";
 
-import FrameWork from './layouts/FrameWork.vue'
+import FrameWork from "./layouts/FrameWork.vue";
 </script>
 
 <style scoped></style>

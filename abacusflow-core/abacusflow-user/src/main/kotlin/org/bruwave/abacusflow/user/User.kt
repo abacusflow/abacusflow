@@ -33,7 +33,7 @@ class User(
         regexp = "^[a-zA-Z0-9_]*\$",
         message = "User names should contain only letters, numbers and underscores.",
     )
-    @field:Size(min = 5, max = 50, message = "Name must be between 1 and 50 characters")
+    @field:Size(min = 5, max = 50, message = "Name must be between 5 and 50 characters")
     val name: String,
 ) : AbstractAggregateRoot<User>() {
     @Id
@@ -54,12 +54,12 @@ class User(
 
     @field:NotNull(message = "Password is required and cannot be blank")
     @field:Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
-    var password: String = ""
+    var password: String = "12345678"
         private set
 
     @CreationTimestamp
     @NotNull
-    val createdAt: Instant = Instant.EPOCH
+    val createdAt: Instant = Instant.now()
 
     @UpdateTimestamp
     @NotNull

@@ -44,7 +44,7 @@ class Role(
 
     @CreationTimestamp
     @NotNull
-    val createdAt: Instant = Instant.EPOCH
+    val createdAt: Instant = Instant.now()
 
     @UpdateTimestamp
     @NotNull

@@ -3,6 +3,7 @@ package org.bruwave.abacusflow.portal.web.user
 import org.bruwave.abacusflow.portal.web.api.UsersApi
 import org.bruwave.abacusflow.portal.web.model.BasicUserVO
 import org.bruwave.abacusflow.portal.web.model.CreateUserInputVO
+import org.bruwave.abacusflow.portal.web.model.SexVO
 import org.bruwave.abacusflow.portal.web.model.UpdateUserInputVO
 import org.bruwave.abacusflow.portal.web.model.UserVO
 import org.bruwave.abacusflow.usecase.user.CreateUserInputTO
@@ -16,35 +17,16 @@ class UserController(
     private val userService: UserService,
 ) : UsersApi {
     override fun listUsers(): ResponseEntity<List<BasicUserVO>> {
-        val users = userService.listUsers()
-        val userVOS =
-            users.map { user ->
-                BasicUserVO(
-                    user.id,
-                    user.name,
-                    user.nick,
-                    user.enabled,
-                    user.locked,
-                )
-            }
+        val userVOS = userService.listUsers().map { user ->
+            user.toBasicVO()
+        }
         return ResponseEntity.ok(userVOS)
     }
 
     override fun getUser(id: Long): ResponseEntity<UserVO> {
         val user = userService.getUser(id.toLong())
         return ResponseEntity.ok(
-            UserVO(
-                user.id,
-                user.name,
-                user.age,
-                user.nick,
-                user.roles,
-                user.enabled,
-                user.locked,
-                user.createdAt.toEpochMilli(),
-                user.updatedAt.toEpochMilli(),
-                user.sex,
-            ),
+            user.toVO()
         )
     }
 
@@ -53,23 +35,12 @@ class UserController(
             CreateUserInputTO(
                 createUserInputVO.name,
                 createUserInputVO.nick,
-                createUserInputVO.sex,
+                createUserInputVO.sex?.toTO(),
                 createUserInputVO.age,
             )
         )
         return ResponseEntity.ok(
-            UserVO(
-                user.id,
-                user.name,
-                user.age,
-                user.nick,
-                user.roles,
-                user.enabled,
-                user.locked,
-                user.createdAt.toEpochMilli(),
-                user.updatedAt.toEpochMilli(),
-                user.sex
-            ),
+            user.toVO()
         )
     }
 
@@ -78,23 +49,12 @@ class UserController(
             id,
             UpdateUserInputTO(
                 nick = updateUserInputVO.nick,
-                sex = updateUserInputVO.sex,
+                sex = updateUserInputVO.sex?.toTO(),
                 age = updateUserInputVO.age,
             ),
         )
         return ResponseEntity.ok(
-            UserVO(
-                user.id,
-                user.name,
-                user.age,
-                user.nick,
-                user.roles,
-                user.enabled,
-                user.locked,
-                user.createdAt.toEpochMilli(),
-                user.updatedAt.toEpochMilli(),
-                user.sex
-            ),
+            user.toVO()
         )
     }
 

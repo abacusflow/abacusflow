@@ -935,9 +935,7 @@ components:
           type: string
           description: 用户真实姓名
         sex:
-          type: string
-          nullable: true
-          description: 性别
+          $ref: "#/components/schemas/Sex"
         age:
           type: integer
           description: 年龄
@@ -994,17 +992,13 @@ components:
       type: object
       required:
         - name
-        - age
         - nick
-        - roles
       properties:
         name:
           type: string
           description: 用户真实姓名
         sex:
-          type: string
-          nullable: true
-          description: 性别
+          $ref: "#/components/schemas/Sex"
         age:
           type: integer
           minimum: 1
@@ -1013,20 +1007,6 @@ components:
         nick:
           type: string
           description: 昵称
-        roles:
-          type: array
-          items:
-            type: string
-          minItems: 1
-          description: 用户角色列表
-        enabled:
-          type: boolean
-          default: true
-          description: 账户是否启用
-        locked:
-          type: boolean
-          default: false
-          description: 账户是否锁定
 
     UpdateUserInput:
       type: object
@@ -1035,9 +1015,7 @@ components:
           type: string
           description: 用户真实姓名
         sex:
-          type: string
-          nullable: true
-          description: 性别
+          $ref: "#/components/schemas/Sex"
         age:
           type: integer
           minimum: 1
@@ -1046,17 +1024,6 @@ components:
         nick:
           type: string
           description: 昵称
-        roles:
-          type: array
-          items:
-            type: string
-          description: 用户角色列表
-        enabled:
-          type: boolean
-          description: 账户是否启用
-        locked:
-          type: boolean
-          description: 账户是否锁定
 
     # ============= Supplier schemas =============
     Supplier:
@@ -2228,3 +2195,15 @@ components:
         - 已确认
         - 已收货
         - 已取消
+    Sex:
+      type: string
+      description: 性别
+      enum:
+        - male
+        - female
+      x-enum-varnames:
+        - male
+        - female
+      x-enum-descriptions:
+        - 男
+        - 女

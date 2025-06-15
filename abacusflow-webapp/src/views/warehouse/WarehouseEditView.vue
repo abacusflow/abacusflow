@@ -38,70 +38,70 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
-import { useRouter, useRoute } from 'vue-router'
-import type { FormInstance } from 'ant-design-vue'
-import { WarehouseApi } from '@/core/openapi/apis'
-import type { UpdateWarehouseInput } from '@/core/openapi/models'
+import { ref, onMounted } from "vue";
+import { message } from "ant-design-vue";
+import { useRouter, useRoute } from "vue-router";
+import type { FormInstance } from "ant-design-vue";
+import { WarehouseApi } from "@/core/openapi/apis";
+import type { UpdateWarehouseInput } from "@/core/openapi/models";
 
-const router = useRouter()
-const route = useRoute()
-const warehouseApi = new WarehouseApi()
+const router = useRouter();
+const route = useRoute();
+const warehouseApi = new WarehouseApi();
 
-const formRef = ref<FormInstance>()
+const formRef = ref<FormInstance>();
 const form = ref<UpdateWarehouseInput>({
-  name: '',
+  name: "",
   location: null,
   capacity: null
-})
+});
 
 // 表单验证规则
 const rules = {
-  name: [{ required: true, message: '请输入仓库名称' }],
-  location: [{ required: true, message: '请输入位置' }],
-  capacity: [{ required: true, message: '请输入容量' }]
-}
+  name: [{ required: true, message: "请输入仓库名称" }],
+  location: [{ required: true, message: "请输入位置" }],
+  capacity: [{ required: true, message: "请输入容量" }]
+};
 
 // 获取仓库详情
 const getWarehouse = async () => {
   try {
-    const id = Number(route.params.id)
-    const response = await warehouseApi.getWarehouse({ id })
+    const id = Number(route.params.id);
+    const response = await warehouseApi.getWarehouse({ id });
     form.value = {
       name: response.name,
       location: response.location,
       capacity: response.capacity
-    }
+    };
   } catch (error) {
-    message.error('获取仓库详情失败')
+    message.error("获取仓库详情失败");
   }
-}
+};
 
 // 提交表单
 const handleSubmit = async () => {
   try {
-    await formRef.value?.validate()
-    const id = Number(route.params.id)
+    await formRef.value?.validate();
+    const id = Number(route.params.id);
     await warehouseApi.updateWarehouse({
       id,
       updateWarehouseInput: form.value
-    })
-    message.success('编辑成功')
-    router.push('/warehouse')
+    });
+    message.success("编辑成功");
+    router.push("/warehouse");
   } catch (error) {
-    message.error('编辑失败')
+    message.error("编辑失败");
   }
-}
+};
 
 // 取消
 const handleCancel = () => {
-  router.push('/warehouse')
-}
+  router.push("/warehouse");
+};
 
 onMounted(() => {
-  getWarehouse()
-})
+  getWarehouse();
+});
 </script>
 
 <style scoped>
@@ -112,4 +112,4 @@ onMounted(() => {
 .header {
   margin-bottom: 24px;
 }
-</style> 
+</style>

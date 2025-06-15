@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional
 class UserServiceImpl(
     private val userRepository: UserRepository,
 ) : UserService {
+    @Transactional
     override fun createUser(input: CreateUserInputTO): UserTO {
         val newUser = User(name = input.name)
         newUser.updateProfile(

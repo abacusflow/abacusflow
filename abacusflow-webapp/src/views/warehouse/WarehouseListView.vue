@@ -8,11 +8,7 @@
     <a-card class="search-card">
       <a-form layout="inline" :model="searchForm">
         <a-form-item label="仓库名称">
-          <a-input
-            v-model:value="searchForm.name"
-            placeholder="请输入仓库名称"
-            allow-clear
-          />
+          <a-input v-model:value="searchForm.name" placeholder="请输入仓库名称" allow-clear />
         </a-form-item>
         <a-form-item>
           <a-space>
@@ -36,10 +32,7 @@
             <a-space>
               <router-link :to="`/warehouse/edit/${record.id}`">编辑</router-link>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="确定要删除这个仓库吗？"
-                @confirm="handleDelete(record)"
-              >
+              <a-popconfirm title="确定要删除这个仓库吗？" @confirm="handleDelete(record)">
                 <a class="danger-link">删除</a>
               </a-popconfirm>
             </a-space>
@@ -51,106 +44,106 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
-import { useRouter } from 'vue-router'
-import { WarehouseApi } from '@/core/openapi/apis'
-import type { BasicWarehouse } from '@/core/openapi/models'
+import { ref, onMounted } from "vue";
+import { message } from "ant-design-vue";
+import { useRouter } from "vue-router";
+import { WarehouseApi } from "@/core/openapi/apis";
+import type { BasicWarehouse } from "@/core/openapi/models";
 
-const router = useRouter()
-const warehouseApi = new WarehouseApi()
+const router = useRouter();
+const warehouseApi = new WarehouseApi();
 
 // 数据列表
-const warehouses = ref<BasicWarehouse[]>([])
-const loading = ref(false)
+const warehouses = ref<BasicWarehouse[]>([]);
+const loading = ref(false);
 
 // 表格列定义
 const columns = [
   {
-    title: 'ID',
-    dataIndex: 'id',
-    width: 80,
+    title: "ID",
+    dataIndex: "id",
+    width: 80
   },
   {
-    title: '仓库名称',
-    dataIndex: 'name',
+    title: "仓库名称",
+    dataIndex: "name"
   },
   {
-    title: '地址',
-    dataIndex: 'address',
-    ellipsis: true,
+    title: "地址",
+    dataIndex: "address",
+    ellipsis: true
   },
   {
-    title: '联系人',
-    dataIndex: 'contact',
+    title: "联系人",
+    dataIndex: "contact"
   },
   {
-    title: '联系电话',
-    dataIndex: 'phone',
+    title: "联系电话",
+    dataIndex: "phone"
   },
   {
-    title: '描述',
-    dataIndex: 'description',
-    ellipsis: true,
+    title: "描述",
+    dataIndex: "description",
+    ellipsis: true
   },
   {
-    title: '操作',
-    key: 'action',
+    title: "操作",
+    key: "action",
     width: 200,
-    fixed: 'right',
-  },
-]
+    fixed: "right"
+  }
+];
 
 // 搜索表单
 const searchForm = ref({
-  name: ''
-})
+  name: ""
+});
 
 // 获取仓库列表
 const getWarehouses = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const response = await warehouseApi.listWarehouses()
-    warehouses.value = response
+    const response = await warehouseApi.listWarehouses();
+    warehouses.value = response;
   } catch (error) {
-    message.error('获取仓库列表失败')
+    message.error("获取仓库列表失败");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 搜索
 const handleSearch = () => {
-  getWarehouses()
-}
+  getWarehouses();
+};
 
 // 重置搜索
 const resetSearch = () => {
   searchForm.value = {
-    name: ''
-  }
-  getWarehouses()
-}
+    name: ""
+  };
+  getWarehouses();
+};
 
 // 新增仓库
 const handleAdd = () => {
-  router.push('/warehouse/create')
-}
+  router.push("/warehouse/create");
+};
 
 // 删除仓库
 const handleDelete = async (record: BasicWarehouse) => {
   try {
-    await warehouseApi.deleteWarehouse({ id: record.id })
-    message.success('删除成功')
-    getWarehouses()
+    await warehouseApi.deleteWarehouse({ id: record.id });
+    message.success("删除成功");
+    getWarehouses();
   } catch (error) {
-    message.error('删除失败')
+    message.error("删除失败");
   }
-}
+};
 
 onMounted(() => {
-  getWarehouses()
-})
+  getWarehouses();
+});
 </script>
 
 <style scoped>
@@ -176,4 +169,4 @@ onMounted(() => {
 .danger-link {
   color: #ff4d4f;
 }
-</style> 
+</style>

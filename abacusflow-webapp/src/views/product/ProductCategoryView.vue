@@ -52,127 +52,127 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
-import type { FormInstance } from 'ant-design-vue'
-import { ProductApi } from '@/core/openapi/apis'
+import { ref, onMounted } from "vue";
+import { message } from "ant-design-vue";
+import type { FormInstance } from "ant-design-vue";
+import { ProductApi } from "@/core/openapi/apis";
 import type {
   BasicProductCategory,
   ProductCategory,
   CreateProductCategoryInput,
-  UpdateProductCategoryInput,
-} from '@/core/openapi/models'
-import { useQuery } from '@tanstack/vue-query'
+  UpdateProductCategoryInput
+} from "@/core/openapi/models";
+import { useQuery } from "@tanstack/vue-query";
 
-const productApi = new ProductApi()
+const productApi = new ProductApi();
 
 // 数据列表
-const loading = ref(false)
+const loading = ref(false);
 
 // 表格列定义
 const columns = [
   {
-    title: 'ID',
-    dataIndex: 'id',
-    width: 80,
+    title: "ID",
+    dataIndex: "id",
+    width: 80
   },
   {
-    title: '分类名称',
-    dataIndex: 'name',
+    title: "分类名称",
+    dataIndex: "name"
   },
   {
-    title: '描述',
-    dataIndex: 'description',
-    ellipsis: true,
+    title: "描述",
+    dataIndex: "description",
+    ellipsis: true
   },
   {
-    title: '操作',
-    key: 'action',
+    title: "操作",
+    key: "action",
     width: 200,
-    fixed: 'right',
-  },
-]
+    fixed: "right"
+  }
+];
 
 // 对话框相关
-const modalVisible = ref(false)
-const modalType = ref<'add' | 'edit'>('add')
-const formRef = ref<FormInstance>()
+const modalVisible = ref(false);
+const modalType = ref<"add" | "edit">("add");
+const formRef = ref<FormInstance>();
 const form = ref<CreateProductCategoryInput | UpdateProductCategoryInput>({
-  name: '',
-  description: '',
-})
+  name: "",
+  description: ""
+});
 
 // 表单验证规则
 const rules = {
-  name: [{ required: true, message: '请输入分类名称' }],
-}
+  name: [{ required: true, message: "请输入分类名称" }]
+};
 
 // 使用 Vue Query 获取分类列表
 const { data: categories } = useQuery({
-  queryKey: ['categories'],
-  queryFn: () => productApi.listProductCategories(),
-})
+  queryKey: ["categories"],
+  queryFn: () => productApi.listProductCategories()
+});
 
 // 新增分类
 const handleAdd = () => {
-  modalType.value = 'add'
+  modalType.value = "add";
   form.value = {
-    name: '',
-    description: '',
-  }
-  modalVisible.value = true
-}
+    name: "",
+    description: ""
+  };
+  modalVisible.value = true;
+};
 
 // 编辑分类
 const handleEdit = (record: BasicProductCategory) => {
-  modalType.value = 'edit'
+  modalType.value = "edit";
   form.value = {
     name: record.name,
-    description: record.description,
-  }
-  modalVisible.value = true
-}
+    description: record.description
+  };
+  modalVisible.value = true;
+};
 
 // 删除分类
 const handleDelete = async (record: BasicProductCategory) => {
   try {
-    await productApi.deleteProductCategory({ id: record.id })
-    message.success('删除成功')
-    getCategories()
+    await productApi.deleteProductCategory({ id: record.id });
+    message.success("删除成功");
+    getCategories();
   } catch (error) {
-    message.error('删除失败')
+    message.error("删除失败");
   }
-}
+};
 
 // 提交表单
 const handleSubmit = async () => {
   try {
-    await formRef.value?.validate()
-    if (modalType.value === 'add') {
+    await formRef.value?.validate();
+    if (modalType.value === "add") {
       await productApi.addProductCategory({
-        createProductCategoryInput: form.value as CreateProductCategoryInput,
-      })
-      message.success('新增成功')
+        createProductCategoryInput: form.value as CreateProductCategoryInput
+      });
+      message.success("新增成功");
     } else {
-      const category = categories.value.find((c) => c.name === form.value.name)
+      const category = categories.value.find((c) => c.name === form.value.name);
       if (category) {
         await productApi.updateProductCategory({
           id: category.id,
-          updateProductCategoryInput: form.value as UpdateProductCategoryInput,
-        })
-        message.success('编辑成功')
+          updateProductCategoryInput: form.value as UpdateProductCategoryInput
+        });
+        message.success("编辑成功");
       }
     }
-    modalVisible.value = false
-    getCategories()
+    modalVisible.value = false;
+    getCategories();
   } catch (error) {
-    message.error(modalType.value === 'add' ? '新增失败' : '编辑失败')
+    message.error(modalType.value === "add" ? "新增失败" : "编辑失败");
   }
-}
+};
 
 onMounted(() => {
-  getCategories()
-})
+  getCategories();
+});
 </script>
 
 <style scoped>

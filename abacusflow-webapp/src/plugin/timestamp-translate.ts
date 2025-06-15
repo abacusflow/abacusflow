@@ -1,16 +1,16 @@
-import type {App} from 'vue'
+import type { App } from "vue";
 
 export default {
   install: (app: App) => {
     app.config.globalProperties.$formatDate = (timestamp: number) => {
-      const date = new Date(timestamp)
-      return date.toLocaleString('zh-CN')
-    }
-  },
-}
+      const date = new Date(timestamp);
+      return date.toLocaleString("zh-CN");
+    };
+  }
+};
 
-declare module '@vue/runtime-core' {
+declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
-    $formatDate: (timestamp: number) => string
+    $formatDate: (timestamp: number) => string;
   }
 }

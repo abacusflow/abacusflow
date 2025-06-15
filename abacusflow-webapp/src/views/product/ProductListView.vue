@@ -58,114 +58,114 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from 'vue'
-import { message } from 'ant-design-vue'
-import { useRouter } from 'vue-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import type { ProductApi } from '@/core/openapi/apis'
-import type { BasicProduct } from '@/core/openapi/models'
+import { ref, inject } from "vue";
+import { message } from "ant-design-vue";
+import { useRouter } from "vue-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
+import type { ProductApi } from "@/core/openapi/apis";
+import type { BasicProduct } from "@/core/openapi/models";
 
-const router = useRouter()
-const productApi = inject('productApi') as ProductApi
-const queryClient = useQueryClient()
+const router = useRouter();
+const productApi = inject("productApi") as ProductApi;
+const queryClient = useQueryClient();
 
 // 表格列定义
 const columns = [
   {
-    title: 'ID',
-    dataIndex: 'id',
-    width: 80,
+    title: "ID",
+    dataIndex: "id",
+    width: 80
   },
   {
-    title: '产品名称',
-    dataIndex: 'name',
+    title: "产品名称",
+    dataIndex: "name"
   },
   {
-    title: '分类',
-    dataIndex: ['category', 'name'],
+    title: "分类",
+    dataIndex: ["category", "name"]
   },
   {
-    title: '单位',
-    dataIndex: 'unit',
+    title: "单位",
+    dataIndex: "unit"
   },
   {
-    title: '价格',
-    dataIndex: 'price',
+    title: "价格",
+    dataIndex: "price"
   },
   {
-    title: '描述',
-    dataIndex: 'description',
-    ellipsis: true,
+    title: "描述",
+    dataIndex: "description",
+    ellipsis: true
   },
   {
-    title: '操作',
-    key: 'action',
+    title: "操作",
+    key: "action",
     width: 200,
-    fixed: 'right',
-  },
-]
+    fixed: "right"
+  }
+];
 
 // 搜索表单
 const searchForm = ref({
-  name: '',
-  categoryId: undefined,
-})
+  name: "",
+  categoryId: undefined
+});
 
 // 使用 Vue Query 获取产品列表
 const { isPending, data: productsData } = useQuery({
-  queryKey: ['products'],
-  queryFn: () => productApi.listProducts(),
-})
+  queryKey: ["products"],
+  queryFn: () => productApi.listProducts()
+});
 
 // 使用 Vue Query 获取分类列表
 const { data: categories } = useQuery({
-  queryKey: ['categories'],
-  queryFn: () => productApi.listProductCategories(),
-})
+  queryKey: ["categories"],
+  queryFn: () => productApi.listProductCategories()
+});
 
 // 使用 Vue Query 删除产品
 const deleteProductMutation = useMutation({
   mutationFn: (id: number) => productApi.deleteProduct({ id }),
   onSuccess: () => {
-    message.success('删除成功')
-    queryClient.invalidateQueries({ queryKey: ['products'] })
+    message.success("删除成功");
+    queryClient.invalidateQueries({ queryKey: ["products"] });
   },
   onError: () => {
-    message.error('删除失败')
-  },
-})
+    message.error("删除失败");
+  }
+});
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ['products'] })
-}
+  queryClient.invalidateQueries({ queryKey: ["products"] });
+};
 
 // 重置搜索
 const resetSearch = () => {
   searchForm.value = {
-    name: '',
-    categoryId: undefined,
-  }
-  queryClient.invalidateQueries({ queryKey: ['products'] })
-}
+    name: "",
+    categoryId: undefined
+  };
+  queryClient.invalidateQueries({ queryKey: ["products"] });
+};
 
 // 新增产品
 const handleAdd = () => {
-  router.push('/product/add')
-}
+  router.push("/product/add");
+};
 
 // 编辑产品
 const handleEdit = (record: BasicProduct) => {
-  router.push(`/product/edit/${record.id}`)
-}
+  router.push(`/product/edit/${record.id}`);
+};
 
 // 删除产品
 const handleDelete = (record: BasicProduct) => {
-  deleteProductMutation.mutate(record.id)
-}
+  deleteProductMutation.mutate(record.id);
+};
 
 function closeDialog() {
-  router.push({ name: 'product' })
+  router.push({ name: "product" });
 }
 </script>
 

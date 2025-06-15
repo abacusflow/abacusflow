@@ -54,37 +54,37 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import {useRoute, useRouter} from 'vue-router'
-import {ref, watch} from 'vue'
+import { useRoute, useRouter } from "vue-router";
+import { ref, watch } from "vue";
 import {
   DashboardOutlined,
   UserOutlined,
   ShoppingOutlined,
   ShopOutlined,
   InboxOutlined
-} from '@ant-design/icons-vue'
+} from "@ant-design/icons-vue";
 
-const route = useRoute()
-const router = useRouter()
-const selectedKeys = ref(['/'])
+const route = useRoute();
+const router = useRouter();
+const selectedKeys = ref(["/"]);
 
 watch(
   () => route.path,
   (newPath) => {
-    selectedKeys.value = [newPath]
-  },
-)
+    selectedKeys.value = [newPath];
+  }
+);
 
 const handleMenuSelect = ({ key }: { key: string }) => {
   // 只有当前路径不一致时才跳转
   if (route.path !== key) {
     router.push(key).catch((err: Error) => {
-      if (err.name !== 'NavigationDuplicated') {
-        console.error('路由跳转失败:', err)
+      if (err.name !== "NavigationDuplicated") {
+        console.error("路由跳转失败:", err);
       }
-    })
+    });
   }
-}
+};
 </script>
 <style scoped>
 #components-layout-demo-fixed-sider .logo {
@@ -96,7 +96,7 @@ const handleMenuSelect = ({ key }: { key: string }) => {
   background: #fff;
 }
 
-[data-theme='dark'] .site-layout .site-layout-background {
+[data-theme="dark"] .site-layout .site-layout-background {
   background: #141414;
 }
 </style>
