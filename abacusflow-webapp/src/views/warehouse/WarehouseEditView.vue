@@ -1,115 +1,119 @@
 <template>
-  <div class="warehouse-edit">
-    <div class="header">
-      <h1>编辑仓库</h1>
-    </div>
-
-    <a-card>
-      <a-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        :label-col="{ span: 6 }"
-        :wrapper-col="{ span: 16 }"
+  <a-spin :spinning="isPending">
+    <a-form :model="formState" ref="formRef" @finish="handleOk">
+      <a-form-item
+        label="仓库名"
+        name="name"
+        :rules="[{ required: true, message: '请输入仓库名' }]"
       >
-        <a-form-item label="仓库名称" name="name">
-          <a-input v-model:value="form.name" placeholder="请输入仓库名称" />
-        </a-form-item>
-        <a-form-item label="位置" name="location">
-          <a-input v-model:value="form.location" placeholder="请输入位置" />
-        </a-form-item>
-        <a-form-item label="容量" name="capacity">
-          <a-input-number
-            v-model:value="form.capacity"
-            :min="0"
-            style="width: 100%"
-            placeholder="请输入容量"
-          />
-        </a-form-item>
-        <a-form-item :wrapper-col="{ offset: 6 }">
-          <a-space>
-            <a-button type="primary" @click="handleSubmit">保存</a-button>
-            <a-button @click="handleCancel">取消</a-button>
-          </a-space>
-        </a-form-item>
-      </a-form>
-    </a-card>
-  </div>
+        <a-input v-model:value="formState.name" />
+      </a-form-item>
+
+      <a-form-item
+        label="仓库地址"
+        name="location"
+      >
+        <a-input v-model:value="formState.location" />
+      </a-form-item>
+
+      <a-form-item
+        label="仓库容量"
+        name="capacity"
+      >
+        <a-input v-model:value="formState.capacity" />
+      </a-form-item>
+
+      <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+        <a-space>
+          <a-button type="primary" html-type="submit">提交</a-button>
+          <a-button @click="handleCancel">取消</a-button>
+        </a-space>
+      </a-form-item>
+    </a-form>
+  </a-spin>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { message } from "ant-design-vue";
-import { useRouter, useRoute } from "vue-router";
-import type { FormInstance } from "ant-design-vue";
-import { WarehouseApi } from "@/core/openapi/apis";
-import type { UpdateWarehouseInput } from "@/core/openapi/models";
-
-const router = useRouter();
-const route = useRoute();
-const warehouseApi = new WarehouseApi();
+<script lang="ts" setup>
+import { ref, reactive, watchEffect } from "vue";
+import { message, type FormInstance } from "ant-design-vue";
+import { inject } from "vue";
+import { type UpdateWarehouseInput, type WarehouseApi } from "@/core/openapi";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
-const form = ref<UpdateWarehouseInput>({
-  name: "",
-  location: null,
-  capacity: null
+
+const props = defineProps<{ warehouseId: number }>();
+
+const warehouseApi = inject("warehouseApi") as WarehouseApi;
+
+const emit = defineEmits(["success", "close", "update:visible"]);
+
+const formState = reactive<UpdateWarehouseInput>({
+  name: undefined,
+  location: undefined,
+  capacity: undefined
 });
 
-// 表单验证规则
-const rules = {
-  name: [{ required: true, message: "请输入仓库名称" }],
-  location: [{ required: true, message: "请输入位置" }],
-  capacity: [{ required: true, message: "请输入容量" }]
-};
+// TODO: 当 props.warehouseId 变化时，没有重新获取仓库数据，现在是在外层销毁重建了
+const {
+  data: fetchedWarehouse,
+  isPending,
+  isSuccess
+} = useQuery({
+  queryKey: ["warehouse", props.warehouseId],
+  queryFn: () => warehouseApi.getWarehouse({ id: props.warehouseId })
+});
 
-// 获取仓库详情
-const getWarehouse = async () => {
-  try {
-    const id = Number(route.params.id);
-    const response = await warehouseApi.getWarehouse({ id });
-    form.value = {
-      name: response.name,
-      location: response.location,
-      capacity: response.capacity
-    };
-  } catch (error) {
-    message.error("获取仓库详情失败");
+// 当查询成功且有数据时，优先使用 API 数据
+watchEffect(() => {
+  if (isSuccess.value && fetchedWarehouse.value) {
+    const { name, location, capacity } = fetchedWarehouse.value;
+    formState.name = name;
+    formState.location = location;
+    formState.capacity = capacity;
   }
-};
+});
 
-// 提交表单
-const handleSubmit = async () => {
-  try {
-    await formRef.value?.validate();
-    const id = Number(route.params.id);
-    await warehouseApi.updateWarehouse({
-      id,
-      updateWarehouseInput: form.value
-    });
-    message.success("编辑成功");
-    router.push("/warehouse");
-  } catch (error) {
-    message.error("编辑失败");
+const { mutate: updateWarehouse } = useMutation({
+  mutationFn: (editedWarehouse: UpdateWarehouseInput) =>
+    warehouseApi.updateWarehouse({
+      id: props.warehouseId,
+      updateWarehouseInput: { ...editedWarehouse }
+    }),
+  onSuccess: () => {
+    message.success("修改成功");
+    resetForm();
+    emit("success"); // 通知父组件修改成功
+    closeDrawer();
+  },
+  onError: (error) => {
+    message.error("修改失败");
+    console.error(error);
   }
-};
+});
 
-// 取消
 const handleCancel = () => {
-  router.push("/warehouse");
+  resetForm();
+
+  closeDrawer();
 };
 
-onMounted(() => {
-  getWarehouse();
-});
+const closeDrawer = () => {
+  emit("update:visible", false); // 触发 v-model:visible 改变
+};
+
+const resetForm = () => {
+  formRef.value?.resetFields();
+};
+
+const handleOk = () => {
+  formRef.value
+    ?.validate()
+    .then(() => {
+      updateWarehouse(formRef.value?.getFieldsValue() as UpdateWarehouseInput);
+    })
+    .catch((error) => {
+      console.error("表单验证失败", error);
+    });
+};
 </script>
-
-<style scoped>
-.warehouse-edit {
-  padding: 24px;
-}
-
-.header {
-  margin-bottom: 24px;
-}
-</style>

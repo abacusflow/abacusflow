@@ -3,6 +3,8 @@ import ProductEditView from "@/views/product/ProductEditView.vue";
 import ProductAddView from "@/views/product/ProductAddView.vue";
 import UserAddView from "@/views/user/UserAddView.vue";
 import UserEditView from "@/views/user/UserEditView.vue";
+import WarehouseAddView from "@/views/warehouse/WarehouseAddView.vue";
+import WarehouseEditView from "@/views/warehouse/WarehouseEditView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,12 +71,25 @@ const router = createRouter({
     {
       path: "/warehouse",
       name: "warehouse",
-      component: () => import("@/views/warehouse/WarehouseView.vue")
+      component: () => import("@/views/warehouse/WarehouseListView.vue"),
+      children: [
+        {
+          path: "add",
+          name: "warehouse-create",
+          component: WarehouseAddView
+        },
+        {
+          path: "edit/:id",
+          name: "warehouse-edit",
+          component: WarehouseEditView
+        }
+      ]
     },
     {
       path: "/inventory",
       name: "inventory",
-      component: () => import("@/views/inventory/InventoryView.vue")
+      component: () => import("@/views/inventory/InventoryListView.vue"),
+      children: []
     },
     {
       path: "/:pathMatch(.*)*",

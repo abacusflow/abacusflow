@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class InventoryServiceImpl(
+class InventoriesServiceImpl(
     private val inventoryRepository: InventoryRepository,
     private val productRepository: ProductRepository,
     private val warehouseRepository: WarehouseRepository
-) : InventoryService {
+) : InventoriesService {
 
     override fun createInventory(input: CreateInventoryInputTO): InventoryTO {
         val inventory = Inventory(

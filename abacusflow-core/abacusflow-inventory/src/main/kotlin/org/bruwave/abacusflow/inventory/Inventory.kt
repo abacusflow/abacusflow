@@ -60,6 +60,7 @@ class Inventory(
 
     fun increaseQuantity(amount: Int) {
         require(amount > 0) { "增加数量必须为正数" }
+        require(amount <= MAX_ADJUSTMENT) { "每次减少的库存数量不能超过 $MAX_ADJUSTMENT 个" }
         quantity += amount
         updatedAt = Instant.now()
         registerEvent(InventoryIncreasedEvent(id, productId, warehouseId, amount))
@@ -67,6 +68,7 @@ class Inventory(
 
     fun decreaseQuantity(amount: Int) {
         require(amount > 0) { "减少数量必须为正数" }
+        require(amount <= MAX_ADJUSTMENT) { "每次减少的库存数量不能超过 $MAX_ADJUSTMENT 个" }
         require(quantity >= amount) { "库存不足" }
         quantity -= amount
         version++
@@ -77,4 +79,8 @@ class Inventory(
     fun isBelowSafetyStock(): Boolean = quantity < safetyStock
 
     fun availableQuantity(): Int = quantity - reservedQuantity
+
+    companion object {
+        private const val MAX_ADJUSTMENT = 10
+    }
 }

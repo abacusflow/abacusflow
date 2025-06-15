@@ -40,8 +40,13 @@
           style="width: 100%"
         />
       </a-form-item>
-      <a-form-item label="描述" name="description">
-        <a-textarea v-model:value="formState.specification" :rows="3" placeholder="请输入描述" />
+
+      <a-form-item label="规格说明" name="specification" extra="例如：'256GB','A4纸'">
+        <a-textarea
+          v-model:value="formState.specification"
+          :rows="3"
+          placeholder="请输入规格说明"
+        />
       </a-form-item>
 
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">

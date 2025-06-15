@@ -605,24 +605,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/BasicInventory'
-    post:
-      operationId: addInventory
-      tags:
-        - inventory
-      summary: Create a new inventory
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateInventoryInput'
-      responses:
-        '200':
-          description: Inventory created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Inventory'
 
   /inventories/{id}:
     get:
@@ -644,11 +626,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Inventory'
-    put:
-      operationId: updateInventory
+
+  /inventories/{id}/increase:
+    post:
+      operationId: increaseInventory
       tags:
         - inventory
-      summary: Update inventory
+      summary: Increase inventory quantity
       parameters:
         - name: id
           in: path
@@ -661,19 +645,58 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateInventoryInput'
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: integer
       responses:
         '200':
-          description: Inventory updated
+          description: Inventory increased
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Inventory'
-    delete:
-      operationId: deleteInventory
+
+  /inventories/{id}/decrease:
+    post:
+      operationId: decreaseInventory
       tags:
         - inventory
-      summary: Delete inventory
+      summary: Decrease inventory quantity
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: integer
+      responses:
+        '200':
+          description: Inventory decreased
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+
+  /inventories/{id}/safety-check:
+    get:
+      operationId: checkSafetyStock
+      tags:
+        - inventory
+      summary: Check if inventory is below safety stock
       parameters:
         - name: id
           in: path
@@ -683,7 +706,11 @@ paths:
             format: int64
       responses:
         '200':
-          description: Inventory deleted
+          description: Safety stock status
+          content:
+            application/json:
+              schema:
+                type: boolean
 
   /sale-orders:
     get:
@@ -1634,53 +1661,7 @@ components:
           nullable: true
           description: 最大库存预警线
 
-    CreateInventoryInput:
-      type: object
-      required:
-        - productId
-        - warehouseId
-        - quantity
-      properties:
-        productId:
-          type: integer
-          format: int64
-          description: 商品ID
-        warehouseId:
-          type: integer
-          format: int64
-          description: 仓库ID
-        quantity:
-          type: integer
-          minimum: 0
-          description: 初始库存数量
-        safetyStock:
-          type: integer
-          nullable: true
-          minimum: 0
-          description: 安全库存预警线
-        maxStock:
-          type: integer
-          nullable: true
-          minimum: 0
-          description: 最高库存预警线
 
-    UpdateInventoryInput:
-      type: object
-      properties:
-        quantity:
-          type: integer
-          minimum: 0
-          description: 库存数量
-        safetyStock:
-          type: integer
-          nullable: true
-          minimum: 0
-          description: 安全库存预警线
-        maxStock:
-          type: integer
-          nullable: true
-          minimum: 0
-          description: 最高库存预警线
 
     # ============= SaleOrder schemas =============
     SaleOrder:
