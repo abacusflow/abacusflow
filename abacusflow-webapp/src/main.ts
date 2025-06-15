@@ -9,8 +9,10 @@ import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 import { Configuration } from "./core/openapi";
-import TimestampTranslate from "./plugin/timestamp-translate";
+import injectGlobalProperties from "./plugin/injectGlobalProperties";
 import FetchApi from "./plugin/fetch";
+import { formatDate, formatNumber } from "./util/timestampUtils";
+import { translateUnit } from "./util/productUnit";
 
 const app = createApp(App);
 
@@ -24,6 +26,10 @@ app.use(VueQueryPlugin);
 // 配置 Openapi-Generate-Api 插件
 const config = new Configuration({ basePath: "/api/v1" });
 app.use(FetchApi, config);
-// 全局注册一个日期格式化函数
-app.use(TimestampTranslate);
+// 全局工具函数注入
+app.use(injectGlobalProperties, {
+  formatDate,
+  formatNumber,
+  translateUnit
+});
 app.mount("#app");

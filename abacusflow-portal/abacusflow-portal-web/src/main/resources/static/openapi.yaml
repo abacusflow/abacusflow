@@ -114,10 +114,6 @@ paths:
       responses:
         '200':
           description: User deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
 
   /suppliers:
     get:
@@ -213,10 +209,6 @@ paths:
       responses:
         '200':
           description: Supplier deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Supplier'
 
   /customers:
     get:
@@ -312,10 +304,6 @@ paths:
       responses:
         '200':
           description: Customer deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Customer'
 
   /products:
     get:
@@ -411,10 +399,6 @@ paths:
       responses:
         '200':
           description: Product deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
 
   /product-categories:
     get:
@@ -510,10 +494,6 @@ paths:
       responses:
         '200':
           description: Product category deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProductCategory'
 
   /warehouses:
     get:
@@ -609,10 +589,6 @@ paths:
       responses:
         '200':
           description: Warehouse deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Warehouse'
 
   /inventories:
     get:
@@ -708,10 +684,6 @@ paths:
       responses:
         '200':
           description: Inventory deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Inventory'
 
   /sale-orders:
     get:
@@ -807,10 +779,6 @@ paths:
       responses:
         '200':
           description: Sale order deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SaleOrder'
 
   /purchase-orders:
     get:
@@ -906,10 +874,6 @@ paths:
       responses:
         '200':
           description: Purchase order deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PurchaseOrder'
 
 components:
   schemas:
@@ -996,7 +960,7 @@ components:
       properties:
         name:
           type: string
-          description: 用户真实姓名
+          description: 账户名
         sex:
           $ref: "#/components/schemas/Sex"
         age:
@@ -1011,9 +975,6 @@ components:
     UpdateUserInput:
       type: object
       properties:
-        name:
-          type: string
-          description: 用户真实姓名
         sex:
           $ref: "#/components/schemas/Sex"
         age:
@@ -2124,42 +2085,25 @@ components:
       type: string
       description: 商品单位枚举
       enum:
-        - piece    # 件
-        - box      # 箱
-        - pack     # 包
-        - dozen    # 打
-        - pair     # 对
-        - gram     # 克
-        - kilogram # 千克
-        - liter    # 升
-        - milliliter # 毫升
-        - meter    # 米
-        - centimeter # 厘米
-        - bottle   # 瓶
-        - barrel   # 桶
-        - bag      # 袋
-        - sheet    # 张
-        - roll     # 卷
-        - unit     # 单位
-      x-enum-varnames:
-        - piece
-        - box
-        - pack
-        - dozen
-        - pair
-        - gram
-        - kilogram
-        - liter
-        - milliliter
-        - meter
-        - centimeter
-        - bottle
-        - barrel
-        - bag
-        - sheet
-        - roll
-        - unit
+        - item         # 件
+        - piece         # 件
+        - box           # 箱
+        - pack          # 包
+        - dozen         # 打
+        - pair          # 对
+        - gram          # 克
+        - kilogram      # 千克
+        - liter         # 升
+        - milliliter    # 毫升
+        - meter         # 米
+        - centimeter    # 厘米
+        - bottle        # 瓶
+        - barrel        # 桶
+        - bag           # 袋
+        - sheet         # 张
+        - roll          # 卷
       x-enum-descriptions:
+        - 个
         - 件
         - 箱
         - 包
@@ -2176,7 +2120,6 @@ components:
         - 袋
         - 张
         - 卷
-        - 单位
     OrderStatus:
       type: string
       description: 订单状态

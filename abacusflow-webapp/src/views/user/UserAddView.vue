@@ -77,7 +77,6 @@ const handleOk = () => {
   formRef.value
     ?.validate()
     .then(() => {
-      // console.log("表单验证通过，提交数据", formRef.value?.getFieldsValue());
       createUser(formRef.value?.getFieldsValue() as CreateUserInput);
     })
     .catch((error) => {

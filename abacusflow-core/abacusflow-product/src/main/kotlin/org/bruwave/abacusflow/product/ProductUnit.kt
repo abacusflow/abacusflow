@@ -28,5 +28,5 @@ enum class ProductUnit(val displayName: String) {
     ROLL("卷"),
 
     // 通用
-    UNIT("单位");
+    ITEM("个"),
 }

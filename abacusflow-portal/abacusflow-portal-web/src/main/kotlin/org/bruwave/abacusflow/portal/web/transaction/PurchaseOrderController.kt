@@ -62,7 +62,7 @@ class PurchaseOrderController(
         )
     }
 
-    override fun deletePurchaseOrder(id: Long): ResponseEntity<PurchaseOrderVO> {
+    override fun deletePurchaseOrder(id: Long): ResponseEntity<Unit> {
         purchaseOrderService.deletePurchaseOrder(id)
         return ResponseEntity.ok().build()
     }

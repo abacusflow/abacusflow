@@ -20,9 +20,9 @@ class ProductCategory(
     var name: String = name
         private set
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "parent_id", nullable = false)
-    var parent: ProductCategory = parent ?: throw NoSuchElementException("每个分类必须有一个 parent")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "parent_id", nullable = true)
+    var parent: ProductCategory? = parent
         private set
 
     @field:Size(max = 500)

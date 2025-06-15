@@ -1,146 +1,148 @@
 <template>
-  <div class="product-edit">
-    <div class="header">
-      <h1>编辑产品</h1>
-    </div>
-
-    <a-card v-if="product">
-      <a-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        :label-col="{ span: 6 }"
-        :wrapper-col="{ span: 16 }"
+  <a-spin :spinning="isPending">
+    <a-form :model="formState" ref="formRef" @finish="handleOk">
+      <a-form-item
+        label="产品名"
+        name="name"
+        :rules="[{ required: true, message: '请输入产品名' }]"
       >
-        <a-form-item label="产品名称" name="name">
-          <a-input v-model:value="form.name" placeholder="请输入产品名称" />
-        </a-form-item>
-        <a-form-item label="分类" name="categoryId">
-          <a-select v-model:value="form.categoryId" placeholder="请选择分类">
-            <a-select-option v-for="category in categories" :key="category.id" :value="category.id">
-              {{ category.name }}
-            </a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="单位" name="unit">
-          <a-input v-model:value="form.unit" placeholder="请输入单位" />
-        </a-form-item>
-        <a-form-item label="价格" name="price">
-          <a-input-number v-model:value="form.price" :min="0" :precision="2" style="width: 100%" />
-        </a-form-item>
-        <a-form-item label="描述" name="description">
-          <a-textarea v-model:value="form.description" :rows="3" placeholder="请输入描述" />
-        </a-form-item>
-        <a-form-item :wrapper-col="{ offset: 6 }">
-          <a-space>
-            <a-button type="primary" :loading="isPending" @click="handleSubmit">保存</a-button>
-            <a-button @click="handleCancel">取消</a-button>
-          </a-space>
-        </a-form-item>
-      </a-form>
-    </a-card>
-  </div>
+        <a-input v-model:value="formState.name" />
+      </a-form-item>
+      <a-form-item
+        label="分类"
+        name="categoryId"
+        :rules="[{ required: true, message: '请选择分类' }]"
+      >
+        <a-select v-model:value="formState.categoryId" placeholder="请选择分类">
+          <a-select-option v-for="category in categories" :key="category.id" :value="category.id">
+            {{ category.name }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+
+      <a-form-item label="单位" name="unit" :rules="[{ required: true, message: '请选择单位' }]">
+        <a-select v-model:value="formState.unit" placeholder="请选择单位">
+          <a-select-option v-for="value in Object.values(ProductUnit)" :key="value" :value="value">
+            {{ $translateUnit(value) }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+
+      <a-form-item
+        label="单价"
+        name="unitPrice"
+        :rules="[{ required: true, message: '请输入价格' }]"
+      >
+        <a-input-number
+          v-model:value="formState.unitPrice"
+          :min="0"
+          :precision="2"
+          style="width: 100%"
+        />
+      </a-form-item>
+      <a-form-item label="描述" name="description">
+        <a-textarea v-model:value="formState.specification" :rows="3" placeholder="请输入描述" />
+      </a-form-item>
+
+      <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+        <a-space>
+          <a-button type="primary" html-type="submit">提交</a-button>
+          <a-button @click="handleCancel">取消</a-button>
+        </a-space>
+      </a-form-item>
+    </a-form>
+  </a-spin>
 </template>
 
-<script setup lang="ts">
-import { ref, inject, computed } from "vue";
-import { message } from "ant-design-vue";
-import type { FormInstance } from "ant-design-vue";
-import { useRouter, useRoute } from "vue-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
-import type { ProductApi } from "@/core/openapi/apis";
-import type { UpdateProductInput } from "@/core/openapi/models";
+<script lang="ts" setup>
+import { ref, reactive, watchEffect } from "vue";
+import { message, type FormInstance } from "ant-design-vue";
+import { inject } from "vue";
+import { type UpdateProductInput, type ProductApi, ProductUnit } from "@/core/openapi";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 
-const router = useRouter();
-const route = useRoute();
-const productApi = inject("productApi") as ProductApi;
-const queryClient = useQueryClient();
 const formRef = ref<FormInstance>();
 
-// 获取产品ID
-const productId = computed(() => Number(route.params.id));
+const props = defineProps<{ productId: number }>();
 
-// 表单数据
-const form = ref<UpdateProductInput>({
+const productApi = inject("productApi") as ProductApi;
+
+const emit = defineEmits(["success", "close", "update:visible"]);
+
+const formState = reactive<UpdateProductInput>({
   name: "",
-  categoryId: undefined,
-  unit: "",
-  price: 0,
-  description: ""
+  categoryId: 0,
+  unit: ProductUnit.Item,
+  unitPrice: 0,
+  specification: undefined,
+  supplierId: 0
 });
 
-// 表单验证规则
-const rules = {
-  name: [{ required: true, message: "请输入产品名称" }],
-  categoryId: [{ required: true, message: "请选择分类" }],
-  unit: [{ required: true, message: "请输入单位" }],
-  price: [{ required: true, message: "请输入价格" }]
-};
-
-// 使用 Vue Query 获取产品详情
-const { data: product } = useQuery({
-  queryKey: ["product", productId],
-  queryFn: () => productApi.getProduct({ id: productId.value }),
-  onSuccess: (data) => {
-    form.value = {
-      name: data.name,
-      categoryId: data.categoryId,
-      unit: data.unit,
-      price: data.price,
-      description: data.description
-    };
-  },
-  onError: () => {
-    message.error("获取产品详情失败");
-    router.push("/product");
-  }
+// TODO: 当 props.productId 变化时，没有重新获取产品数据，现在是在外层销毁重建了
+const {
+  data: fetchedProduct,
+  isPending,
+  isSuccess
+} = useQuery({
+  queryKey: ["product", props.productId],
+  queryFn: () => productApi.getProduct({ id: props.productId })
 });
 
-// 使用 Vue Query 获取分类列表
 const { data: categories } = useQuery({
   queryKey: ["categories"],
-  queryFn: () => productApi.listCategories(),
-  onError: () => {
-    message.error("获取分类列表失败");
+  queryFn: () => productApi.listProductCategories()
+});
+
+// 当查询成功且有数据时，优先使用 API 数据
+watchEffect(() => {
+  if (isSuccess.value && fetchedProduct.value) {
+    const { name, categoryId, unit, unitPrice, specification, supplierId } = fetchedProduct.value;
+    formState.name = name;
+    formState.categoryId = categoryId;
+    formState.unit = unit;
+    formState.unitPrice = unitPrice;
+    formState.specification = specification;
+    formState.supplierId = supplierId;
   }
 });
 
-// 使用 Vue Query 更新产品
-const { isPending, mutate: updateProduct } = useMutation({
-  mutationFn: (input: UpdateProductInput) =>
-    productApi.updateProduct({ id: productId.value, updateProductInput: input }),
+const { mutate: updateProduct } = useMutation({
+  mutationFn: (editedProduct: UpdateProductInput) =>
+    productApi.updateProduct({ id: props.productId, updateProductInput: { ...editedProduct } }),
   onSuccess: () => {
-    message.success("编辑成功");
-    queryClient.invalidateQueries({ queryKey: ["products"] });
-    router.push("/product");
+    message.success("修改成功");
+    resetForm();
+    emit("success"); // 通知父组件修改成功
+    closeDrawer();
   },
-  onError: () => {
-    message.error("编辑失败");
+  onError: (error) => {
+    message.error("修改失败");
+    console.error(error);
   }
 });
 
-// 提交表单
-const handleSubmit = async () => {
-  try {
-    await formRef.value?.validate();
-    updateProduct(form.value);
-  } catch (error) {
-    // 表单验证失败
-  }
+const handleCancel = () => {
+  resetForm();
+
+  closeDrawer();
 };
 
-// 取消
-const handleCancel = () => {
-  router.push("/product");
+const closeDrawer = () => {
+  emit("update:visible", false); // 触发 v-model:visible 改变
+};
+
+const resetForm = () => {
+  formRef.value?.resetFields();
+};
+
+const handleOk = () => {
+  formRef.value
+    ?.validate()
+    .then(() => {
+      updateProduct(formRef.value?.getFieldsValue() as UpdateProductInput);
+    })
+    .catch((error) => {
+      console.error("表单验证失败", error);
+    });
 };
 </script>
-
-<style scoped>
-.product-edit {
-  padding: 24px;
-}
-
-.header {
-  margin-bottom: 24px;
-}
-</style>

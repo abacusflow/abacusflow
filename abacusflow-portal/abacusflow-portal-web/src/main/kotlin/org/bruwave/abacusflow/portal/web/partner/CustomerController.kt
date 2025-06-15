@@ -61,7 +61,7 @@ class CustomerController(
         )
     }
 
-    override fun deleteCustomer(id: Long): ResponseEntity<CustomerVO> {
+    override fun deleteCustomer(id: Long): ResponseEntity<Unit> {
         customerService.deleteCustomer(id)
         return ResponseEntity.ok().build()
     }

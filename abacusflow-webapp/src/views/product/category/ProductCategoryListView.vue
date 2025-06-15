@@ -2,16 +2,16 @@
   <div>
     <a-space direction="vertical" style="width: 100%">
       <a-flex justify="space-between" align="center">
-        <h1>用户管理</h1>
-        <a-button type="primary" @click="handleAddUser" style="margin-bottom: 16px">
-          新增用户
+        <h1>产品类别管理</h1>
+        <a-button type="primary" @click="handleAddProductCategory" style="margin-bottom: 16px">
+          新增产品类别
         </a-button>
       </a-flex>
 
       <a-card :bordered="false">
         <a-form layout="inline" :model="searchForm">
-          <a-form-item label="姓名">
-            <a-input v-model:value="searchForm.keyword" placeholder="请输入姓名" allow-clear />
+          <a-form-item label="类别名">
+            <a-input v-model:value="searchForm.keyword" placeholder="请输入类别名" allow-clear />
           </a-form-item>
           <a-form-item>
             <a-space>
@@ -23,12 +23,7 @@
       </a-card>
 
       <a-card :bordered="false">
-        <a-table
-          :columns="columns"
-          :data-source="filteredData"
-          :loading="isPending"
-          :row-key="'id'"
-        >
+        <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'enabled'">
               <a-switch v-model:checked="record.enabled" disabled />
@@ -41,15 +36,15 @@
                 <a-button
                   type="link"
                   :disabled="record.name === 'admin'"
-                  @click="handleEditUser(record)"
+                  @click="handleEditProductCategory(record)"
                   >编辑</a-button
                 >
 
                 <a-divider type="vertical" />
 
                 <a-popconfirm
-                  title="确定删除该用户？"
-                  @confirm="handleDeleteUser(record.id)"
+                  title="确定删除该产品类别？"
+                  @confirm="handleDeleteProductCategory(record.id)"
                   :disabled="record.name === 'admin'"
                 >
                   <a-button type="link" :disabled="record.name === 'admin'">删除</a-button>
@@ -60,15 +55,15 @@
         </a-table>
       </a-card>
     </a-space>
-    <a-drawer title="新增用户" :open="showAdd" :closable="false" @close="showAdd = false">
-      <UserAddView v-if="showAdd" v-model:visible="showAdd" @success="refetch" />
+    <a-drawer title="新增产品类别" :open="showAdd" :closable="false" @close="showAdd = false">
+      <ProductCategoryAddView v-if="showAdd" v-model:visible="showAdd" @success="refetch" />
     </a-drawer>
 
-    <a-drawer title="修改用户" :open="showEdit" :closable="false" @close="showEdit = false">
-      <UserEditView
-        v-if="showEdit && editingUser"
+    <a-drawer title="修改产品类别" :open="showEdit" :closable="false" @close="showEdit = false">
+      <ProductCategoryEditView
+        v-if="showEdit && editingProductCategory"
         v-model:visible="showEdit"
-        :userId="editingUser.id"
+        :productCategoryId="editingProductCategory.id"
         @success="refetch"
       />
     </a-drawer>
@@ -76,20 +71,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, inject, computed } from "vue";
+import { ref, inject } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { UserApi, User, BasicUser } from "@/core/openapi";
-import UserAddView from "./UserAddView.vue";
-import UserEditView from "./UserEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
+import type { BasicProductCategory, ProductApi, ProductCategory } from "@/core/openapi";
+import ProductCategoryAddView from "./ProductCategoryAddView.vue";
+import ProductCategoryEditView from "./ProductCategoryEditView.vue";
 
-const userApi = inject("userApi") as UserApi;
+const productApi = inject("productApi") as ProductApi;
 const queryClient = useQueryClient();
 
 const showAdd = ref(false);
 const showEdit = ref(false);
-const editingUser = ref<User | null>(null);
+const editingProductCategory = ref<ProductCategory | null>(null);
 // 搜索表单
 const searchForm = ref({
   keyword: "",
@@ -112,30 +107,21 @@ const resetSearch = () => {
   refetch();
 };
 
-const handleAddUser = () => (showAdd.value = true);
-const handleEditUser = (user: User) => {
-  editingUser.value = user;
+const handleAddProductCategory = () => (showAdd.value = true);
+const handleEditProductCategory = (productCategory: ProductCategory) => {
+  editingProductCategory.value = productCategory;
   showEdit.value = true;
 };
 
 const { data, isPending, refetch } = useQuery({
-  queryKey: ["users"],
-  queryFn: () => userApi.listUsers()
+  queryKey: ["productCategories"],
+  queryFn: () => productApi.listProductCategories()
 });
 
-const filteredData = computed(() => {
-  const keyword = searchForm.value.keyword.trim().toLowerCase();
-  if (!keyword) return data.value;
-
-  return data.value?.filter((user) => {
-    return user.name.toLowerCase().includes(keyword) || user.nick.toLowerCase().includes(keyword);
-  });
-});
-
-const { mutate: deleteUser } = useMutation({
-  mutationFn: (id: number) => userApi.deleteUser({ id }),
+const { mutate: deleteProductCategory } = useMutation({
+  mutationFn: (id: number) => productApi.deleteProductCategory({ id }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["users"] });
+    queryClient.invalidateQueries({ queryKey: ["productCategories"] });
     message.success("删除成功");
   },
   onError: (error) => {
@@ -144,15 +130,13 @@ const { mutate: deleteUser } = useMutation({
   }
 });
 
-function handleDeleteUser(id: number) {
-  deleteUser(id);
+function handleDeleteProductCategory(id: number) {
+  deleteProductCategory(id);
 }
 
-const columns: StrictTableColumnsType<BasicUser> = [
-  { title: "用户名", dataIndex: "name", key: "name" },
-  { title: "姓名", dataIndex: "nick", key: "nick" },
-  { title: "启用状态", dataIndex: "enabled", key: "enabled" },
-  { title: "锁定状态", dataIndex: "locked", key: "locked" },
+const columns: StrictTableColumnsType<BasicProductCategory> = [
+  { title: "产品类别名", dataIndex: "name", key: "name" },
+  { title: "父类别名", dataIndex: "parentName", key: "parentName" },
   { title: "操作", key: "action" }
 ];
 </script>

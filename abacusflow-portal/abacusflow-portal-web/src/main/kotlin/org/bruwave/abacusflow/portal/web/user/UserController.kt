@@ -58,7 +58,7 @@ class UserController(
         )
     }
 
-    override fun deleteUser(id: Long): ResponseEntity<UserVO> {
+    override fun deleteUser(id: Long): ResponseEntity<Unit> {
         userService.deleteUser(id)
         return ResponseEntity.ok().build()
     }

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import ProductEditView from "@/views/product/ProductEditView.vue";
-import ProductAddView from "@/views/product/ProductCreateView.vue";
+import ProductAddView from "@/views/product/ProductAddView.vue";
 import UserAddView from "@/views/user/UserAddView.vue";
 import UserEditView from "@/views/user/UserEditView.vue";
 
@@ -64,7 +64,7 @@ const router = createRouter({
     {
       path: "/product/category",
       name: "product-category",
-      component: () => import("@/views/product/ProductCategoryView.vue")
+      component: () => import("@/views/product/category/ProductCategoryListView.vue")
     },
     {
       path: "/warehouse",

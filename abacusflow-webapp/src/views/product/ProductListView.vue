@@ -1,118 +1,123 @@
 <template>
-  <div class="product">
-    <div class="header">
-      <h1>产品管理</h1>
-      <a-button type="primary" @click="handleAdd">新增产品</a-button>
-    </div>
+  <div>
+    <a-space direction="vertical" style="width: 100%">
+      <a-flex justify="space-between" align="center">
+        <h1>产品管理</h1>
+        <a-button type="primary" @click="handleAddProduct" style="margin-bottom: 16px">
+          新增产品
+        </a-button>
+      </a-flex>
 
-    <a-card class="search-card">
-      <a-form layout="inline" :model="searchForm">
-        <a-form-item label="产品名称">
-          <a-input v-model:value="searchForm.name" placeholder="请输入产品名称" allow-clear />
-        </a-form-item>
-        <a-form-item label="分类">
-          <a-select
-            v-model:value="searchForm.categoryId"
-            placeholder="请选择分类"
-            allow-clear
-            style="width: 200px"
-          >
-            <a-select-option v-for="category in categories" :key="category.id" :value="category.id">
-              {{ category.name }}
-            </a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-space>
-            <a-button type="primary" @click="handleSearch">搜索</a-button>
-            <a-button @click="resetSearch">重置</a-button>
-          </a-space>
-        </a-form-item>
-      </a-form>
-    </a-card>
-
-    <a-card class="table-card">
-      <a-table
-        :loading="isPending"
-        :dataSource="productsData"
-        :columns="columns"
-        :pagination="false"
-        row-key="id"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'action'">
+      <a-card :bordered="false">
+        <a-form layout="inline" :model="searchForm">
+          <a-form-item label="产品名称">
+            <a-input v-model:value="searchForm.name" placeholder="请输入姓名" allow-clear />
+          </a-form-item>
+          <a-form-item label="分类">
+            <a-select
+              v-model:value="searchForm.categoryId"
+              placeholder="请选择分类"
+              allow-clear
+              style="width: 200px"
+            >
+              <a-select-option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
+                {{ category.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item>
             <a-space>
-              <a @click="handleEdit(record)">编辑</a>
-              <a-divider type="vertical" />
-              <a-popconfirm title="确定要删除这个产品吗？" @confirm="handleDelete(record)">
-                <a class="danger-link">删除</a>
-              </a-popconfirm>
+              <a-button type="primary" @click="handleSearch">搜索</a-button>
+              <a-button @click="resetSearch">重置</a-button>
             </a-space>
-          </template>
-        </template>
-      </a-table>
-    </a-card>
-  </div>
+          </a-form-item>
+        </a-form>
+      </a-card>
 
-  <router-view></router-view>
+      <a-card :bordered="false">
+        <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'enabled'">
+              <a-switch v-model:checked="record.enabled" disabled />
+            </template>
+            <template v-if="column.key === 'action'">
+              <a-space>
+                <a-button type="link" @click="handleEditProduct(record)">编辑 </a-button>
+
+                <a-divider type="vertical" />
+
+                <a-popconfirm title="确定删除该产品？" @confirm="handleDeleteProduct(record.id)">
+                  <a-button type="link">删除</a-button>
+                </a-popconfirm>
+              </a-space>
+            </template>
+          </template>
+        </a-table>
+      </a-card>
+    </a-space>
+    <a-drawer title="新增产品" :open="showAdd" :closable="false" @close="showAdd = false">
+      <ProductAddView v-if="showAdd" v-model:visible="showAdd" @success="refetch" />
+    </a-drawer>
+
+    <a-drawer title="修改产品" :open="showEdit" :closable="false" @close="showEdit = false">
+      <ProductEditView
+        v-if="showEdit && editingProduct"
+        v-model:visible="showEdit"
+        :productId="editingProduct.id"
+        @success="refetch"
+      />
+    </a-drawer>
+  </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, inject } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { ProductApi, Product, BasicProduct } from "@/core/openapi";
+import ProductAddView from "./ProductAddView.vue";
+import ProductEditView from "./ProductEditView.vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
-import { useRouter } from "vue-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
-import type { ProductApi } from "@/core/openapi/apis";
-import type { BasicProduct } from "@/core/openapi/models";
 
-const router = useRouter();
 const productApi = inject("productApi") as ProductApi;
 const queryClient = useQueryClient();
 
-// 表格列定义
-const columns = [
-  {
-    title: "ID",
-    dataIndex: "id",
-    width: 80
-  },
-  {
-    title: "产品名称",
-    dataIndex: "name"
-  },
-  {
-    title: "分类",
-    dataIndex: ["category", "name"]
-  },
-  {
-    title: "单位",
-    dataIndex: "unit"
-  },
-  {
-    title: "价格",
-    dataIndex: "price"
-  },
-  {
-    title: "描述",
-    dataIndex: "description",
-    ellipsis: true
-  },
-  {
-    title: "操作",
-    key: "action",
-    width: 200,
-    fixed: "right"
-  }
-];
-
+const showAdd = ref(false);
+const showEdit = ref(false);
+const editingProduct = ref<Product | null>(null);
 // 搜索表单
 const searchForm = ref({
   name: "",
   categoryId: undefined
 });
 
-// 使用 Vue Query 获取产品列表
-const { isPending, data: productsData } = useQuery({
+// 搜索
+const handleSearch = () => {
+  queryClient.invalidateQueries({ queryKey: ["products"] });
+  refetch();
+};
+
+// 重置搜索
+const resetSearch = () => {
+  searchForm.value = {
+    name: "",
+    categoryId: undefined
+  };
+  queryClient.invalidateQueries({ queryKey: ["products"] });
+  refetch();
+};
+
+const handleAddProduct = () => (showAdd.value = true);
+const handleEditProduct = (product: Product) => {
+  editingProduct.value = product;
+  showEdit.value = true;
+};
+
+const { data, isPending, refetch } = useQuery({
   queryKey: ["products"],
   queryFn: () => productApi.listProducts()
 });
@@ -123,77 +128,29 @@ const { data: categories } = useQuery({
   queryFn: () => productApi.listProductCategories()
 });
 
-// 使用 Vue Query 删除产品
-const deleteProductMutation = useMutation({
+const { mutate: deleteProduct } = useMutation({
   mutationFn: (id: number) => productApi.deleteProduct({ id }),
   onSuccess: () => {
-    message.success("删除成功");
     queryClient.invalidateQueries({ queryKey: ["products"] });
+    message.success("删除成功");
   },
-  onError: () => {
+  onError: (error) => {
     message.error("删除失败");
+    console.error(error);
   }
 });
 
-// 搜索
-const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
-};
-
-// 重置搜索
-const resetSearch = () => {
-  searchForm.value = {
-    name: "",
-    categoryId: undefined
-  };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
-};
-
-// 新增产品
-const handleAdd = () => {
-  router.push("/product/add");
-};
-
-// 编辑产品
-const handleEdit = (record: BasicProduct) => {
-  router.push(`/product/edit/${record.id}`);
-};
-
-// 删除产品
-const handleDelete = (record: BasicProduct) => {
-  deleteProductMutation.mutate(record.id);
-};
-
-function closeDialog() {
-  router.push({ name: "product" });
+function handleDeleteProduct(id: number) {
+  deleteProduct(id);
 }
+
+const columns: StrictTableColumnsType<BasicProduct> = [
+  { title: "产品名称", dataIndex: "name", key: "name" },
+  { title: "产品类别", dataIndex: "categoryName", key: "categoryName" },
+  { title: "供应商", dataIndex: "supplierName", key: "supplierName" },
+  { title: "单位", dataIndex: "unit", key: "unit" },
+  { title: "单价", dataIndex: "unitPrice", key: "unitPrice" },
+  // { title: "启用状态", dataIndex: "enabled", key: "enabled" },//TODO
+  { title: "操作", key: "action" }
+];
 </script>
-
-<style scoped>
-.product {
-  padding: 24px;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.search-card {
-  margin-bottom: 24px;
-}
-
-.table-card {
-  margin-bottom: 24px;
-}
-
-.danger-link {
-  color: #ff4d4f;
-}
-
-.danger-link:hover {
-  color: #ff7875;
-}
-</style>

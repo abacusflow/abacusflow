@@ -12,7 +12,7 @@ fun ProductTO.toVO(): ProductVO = ProductVO(
     name = name,
     categoryName = categoryName,
     supplierId = supplierId,
-    unit = ProductUnitVO.valueOf(unit),
+    unit = mapProductUnitTOToVO(unit),
     unitPrice = unitPrice,
     specification = specification,
     createdAt = createdAt.toEpochMilli(),
@@ -24,8 +24,29 @@ fun ProductTO.toVO(): ProductVO = ProductVO(
 fun BasicProductTO.toVO(): BasicProductVO = BasicProductVO(
     id = id,
     name = name,
-    unit = ProductUnitVO.valueOf(unit),
+    unit = mapProductUnitTOToVO(unit),
     unitPrice = unitPrice,
     categoryName = categoryName,
     supplierName = supplierName // TODO()
 )
+
+fun mapProductUnitTOToVO(unit: String): ProductUnitVO = when (unit.uppercase()) {
+    "ITEM" -> ProductUnitVO.item
+    "PIECE" -> ProductUnitVO.piece
+    "BOX" -> ProductUnitVO.box
+    "PACK" -> ProductUnitVO.pack
+    "DOZEN" -> ProductUnitVO.dozen
+    "PAIR" -> ProductUnitVO.pair
+    "GRAM" -> ProductUnitVO.gram
+    "KILOGRAM" -> ProductUnitVO.kilogram
+    "LITER" -> ProductUnitVO.liter
+    "MILLILITER" -> ProductUnitVO.milliliter
+    "METER" -> ProductUnitVO.meter
+    "CENTIMETER" -> ProductUnitVO.centimeter
+    "BOTTLE" -> ProductUnitVO.bottle
+    "BARREL" -> ProductUnitVO.barrel
+    "BAG" -> ProductUnitVO.bag
+    "SHEET" -> ProductUnitVO.sheet
+    "ROLL" -> ProductUnitVO.roll
+    else -> throw IllegalArgumentException("Unknown product unit: $unit")
+}

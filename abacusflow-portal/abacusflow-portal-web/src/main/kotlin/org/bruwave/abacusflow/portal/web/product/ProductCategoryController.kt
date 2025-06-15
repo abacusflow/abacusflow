@@ -6,18 +6,18 @@ import org.bruwave.abacusflow.portal.web.model.CreateProductCategoryInputVO
 import org.bruwave.abacusflow.portal.web.model.ProductCategoryVO
 import org.bruwave.abacusflow.portal.web.model.UpdateProductCategoryInputVO
 import org.bruwave.abacusflow.usecase.product.CreateProductCategoryInputTO
-import org.bruwave.abacusflow.usecase.product.ProductCategoryService
+import org.bruwave.abacusflow.usecase.product.ProductCategoriesService
 import org.bruwave.abacusflow.usecase.product.UpdateProductCategoryInputTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProductCategoryController(
-    private val productCategoryService: ProductCategoryService
+    private val productCategoriesService: ProductCategoriesService
 ) : ProductCategoriesApi {
 
     override fun listProductCategories(): ResponseEntity<List<BasicProductCategoryVO>> {
-        val categories = productCategoryService.listProductCategories()
+        val categories = productCategoriesService.listProductCategories()
         val categoryVOs = categories.map { category ->
             category.toVO()
         }
@@ -25,14 +25,14 @@ class ProductCategoryController(
     }
 
     override fun getProductCategory(id: Long): ResponseEntity<ProductCategoryVO> {
-        val category = productCategoryService.getProductCategory(id)
+        val category = productCategoriesService.getProductCategory(id)
         return ResponseEntity.ok(
             category.toVO()
         )
     }
 
     override fun addProductCategory(createProductCategoryInputVO: CreateProductCategoryInputVO): ResponseEntity<ProductCategoryVO> {
-        val category = productCategoryService.createProductCategory(
+        val category = productCategoriesService.createProductCategory(
             CreateProductCategoryInputTO(
                 name = createProductCategoryInputVO.name,
                 parentId = createProductCategoryInputVO.parentId,
@@ -48,7 +48,7 @@ class ProductCategoryController(
         id: Long,
         updateProductCategoryInputVO: UpdateProductCategoryInputVO
     ): ResponseEntity<ProductCategoryVO> {
-        val category = productCategoryService.updateProductCategory(
+        val category = productCategoriesService.updateProductCategory(
             id,
             UpdateProductCategoryInputTO(
                 name = updateProductCategoryInputVO.name,
@@ -61,8 +61,8 @@ class ProductCategoryController(
         )
     }
 
-    override fun deleteProductCategory(id: Long): ResponseEntity<ProductCategoryVO> {
-        productCategoryService.deleteProductCategory(id)
+    override fun deleteProductCategory(id: Long): ResponseEntity<Unit> {
+        productCategoriesService.deleteProductCategory(id)
         return ResponseEntity.ok().build()
     }
 }
