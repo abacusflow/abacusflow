@@ -22,6 +22,7 @@ import java.util.UUID
 class SaleOrder(
     customerId: Long,
     orderDate: LocalDate = LocalDate.now(),
+    note: String?,
 ) : AbstractAggregateRoot<SaleOrder>() {
 
     @Id
@@ -41,6 +42,9 @@ class SaleOrder(
     var orderDate: LocalDate = orderDate
         private set
 
+    var note: String? = note
+        private set
+
     @CreationTimestamp
     val createdAt: Instant = Instant.now()
 
@@ -55,6 +59,11 @@ class SaleOrder(
     val items: List<SaleOrderItem>
         get() = _items.toList()
 
+    fun updateBasicInfo(newNote: String?) {
+        newNote?.let {
+            note = newNote
+        }
+    }
 
     fun changeOrderDate(newOrderDate: LocalDate?) {
         newOrderDate?.let {

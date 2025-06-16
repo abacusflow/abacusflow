@@ -7,7 +7,6 @@ fun ProductCategory.toTO() = ProductCategoryTO(
     name = name,
     description = description,
     parentId = parent?.id,
-    parentName = parent?.name,
     createdAt = createdAt,
     updatedAt = updatedAt
 )

@@ -16,7 +16,6 @@ fun CustomerTO.toVO(): CustomerVO = CustomerVO(
     name,
     createdAt.toEpochMilli(),
     updatedAt.toEpochMilli(),
-    phone,
-    null,//TODO-NULL
-    address,
+    phone = phone,
+    address = address,
 )

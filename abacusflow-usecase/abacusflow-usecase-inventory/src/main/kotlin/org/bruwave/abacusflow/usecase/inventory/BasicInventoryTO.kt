@@ -1,7 +1,5 @@
 package org.bruwave.abacusflow.usecase.inventory
 
-import org.bruwave.abacusflow.inventory.Inventory
-
 data class BasicInventoryTO(
     val id: Long,
     val productName: String,

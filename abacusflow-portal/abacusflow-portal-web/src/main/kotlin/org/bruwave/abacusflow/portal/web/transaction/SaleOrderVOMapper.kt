@@ -28,17 +28,15 @@ fun SaleOrderTO.toVO(): SaleOrderVO = SaleOrderVO(
     customerId = customerId,
     status = OrderStatusVO.valueOf(status),
     orderItems = items.map { it.toVO() },
-    note = "null",//TODO-NULL
+    note = note,
     createdAt = createdAt.toEpochMilli(),
     updatedAt = updatedAt.toEpochMilli(),
-    customerName = "null",//TODO-NULL
     orderDate = orderDate
 )
 
 fun SaleOrderItemTO.toVO(): SaleOrderItemVO = SaleOrderItemVO(
     id = id,
     productId = productId,
-    productName = "null", //TODO-NULL
     quantity = quantity,
     unitPrice = unitPrice,
     subtotal = subtotal

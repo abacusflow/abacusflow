@@ -9,21 +9,22 @@ fun Product.toTO() = ProductTO(
     unit = unit.name,
     unitPrice = unitPrice,
     categoryId = category.id,
-    categoryName = category.name,
     supplierId = supplierId,
     specification = specification,
+    enabled = enabled,
     createdAt = createdAt,
     updatedAt = updatedAt,
 )
 
-fun Product.toBasicTO() = BasicProductTO(
+fun Product.toBasicTO(supplierName: String) = BasicProductTO(
     id = id,
     name = name,
     categoryName = category.name,
-    supplierName = "null", //TODO-NULL
+    supplierName = supplierName,
     unit = unit.name,
     unitPrice = unitPrice,
-    specification = specification
+    specification = specification,
+    enabled = enabled,
 )
 
 fun mapProductUnitTOToDO(unit: String): ProductUnit = when (unit.uppercase()) {

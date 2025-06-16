@@ -1,14 +1,15 @@
 package org.bruwave.abacusflow.usecase.transaction.impl
 
+import org.bruwave.abacusflow.db.partner.CustomerRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
-import org.bruwave.abacusflow.transaction.SaleOrderItem
 import org.bruwave.abacusflow.transaction.SaleOrder
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
-import org.bruwave.abacusflow.usecase.transaction.SaleOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderService
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.UpdateSaleOrderInputTO
+import org.bruwave.abacusflow.usecase.transaction.mapper.toBasicTO
+import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,10 +17,12 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class SaleOrderServiceImpl(
     private val saleOrderRepository: SaleOrderRepository,
+    private val customerRepository: CustomerRepository,
 ) : SaleOrderService {
     override fun createSaleOrder(input: CreateSaleOrderInputTO): SaleOrderTO {
         val saleOrder = SaleOrder(
             customerId = input.customerId,
+            note = input.note,
         )
         input.orderItems.forEach {
             saleOrder.addItem(it.productId, it.quantity, it.unitPrice)
@@ -60,11 +63,22 @@ class SaleOrderServiceImpl(
     }
 
     override fun listSaleOrdersByCustomer(customerId: Long): List<BasicSaleOrderTO> {
-        return saleOrderRepository.findByCustomerId(customerId).map { it.toBasicTO() }
+        val customer = customerRepository.findById(customerId)
+            .orElseThrow { NoSuchElementException("Supplier not found") }
+
+        return saleOrderRepository.findAll().map { it.toBasicTO(customer.name) }
     }
 
     override fun listSaleOrders(): List<BasicSaleOrderTO> {
-        return saleOrderRepository.findAll().map { it.toBasicTO() }
+        val oreders = saleOrderRepository.findAll()
+        val customerIds = oreders.mapNotNull { it.customerId }.toSet()
+        val customerMap = customerRepository.findAllById(customerIds).associateBy { it.id }
+
+        return oreders.map { order ->
+            val supplierName = customerMap[order.customerId]?.name ?: "unknown"
+
+            order.toBasicTO(supplierName)
+        }
     }
 
     override fun completeOrder(id: Long): SaleOrderTO {
@@ -73,35 +87,4 @@ class SaleOrderServiceImpl(
         saleOrder.completeOrder()
         return saleOrderRepository.save(saleOrder).toTO()
     }
-
-    private fun SaleOrder.toTO() = SaleOrderTO(
-        id = id,
-        customerId = customerId,
-        status = status.name,
-        items = items.map { it.toTO() },
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        orderNo = orderNo,
-        orderDate = orderDate
-    )
-
-    private fun SaleOrder.toBasicTO() = BasicSaleOrderTO(
-        id = id,
-        status = status.name,
-        itemCount = items.count(),
-        createdAt = createdAt,
-        orderNo = orderNo,
-        customerName = "null",//TODO-NULL
-        totalAmount = totalAmount,
-        totalQuantity = totalQuantity,
-        orderDate = orderDate,
-    )
-
-    private fun SaleOrderItem.toTO() = SaleOrderItemTO(
-        id = id,
-        productId = productId,
-        quantity = quantity,
-        unitPrice = unitPrice,
-        subtotal = subtotal
-    )
-} 
+}

@@ -9,6 +9,7 @@ data class SaleOrderTO(
     val orderNo: UUID,
     val customerId: Long,
     val status: String,
+    val note: String?,
     val items: List<SaleOrderItemTO>,
     val createdAt: Instant,
     val updatedAt: Instant,

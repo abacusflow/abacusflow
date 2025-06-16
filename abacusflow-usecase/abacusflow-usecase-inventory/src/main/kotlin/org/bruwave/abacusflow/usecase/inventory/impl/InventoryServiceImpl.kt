@@ -71,13 +71,16 @@ class InventoriesServiceImpl(
     override fun listInventories(): List<BasicInventoryTO> {
         val inventories = inventoryRepository.findAll()
 
+        val productIds = inventories.mapNotNull { it.productId }.toSet()
+        val warehouseIds = inventories.mapNotNull { it.warehouseId }.toSet()
+
         // 批量获取所有涉及的产品和仓库
-        val productMap = productRepository.findAllById(inventories.map { it.productId }).associateBy { it.id }
-        val warehouseMap = warehouseRepository.findAllById(inventories.map { it.warehouseId }).associateBy { it.id }
+        val productMap = productRepository.findAllById(productIds).associateBy { it.id }
+        val warehouseMap = warehouseRepository.findAllById(warehouseIds).associateBy { it.id }
 
         return inventories.map { inventory ->
-            val productName = productMap[inventory.productId]?.name ?: "未知产品"
-            val warehouseName = warehouseMap[inventory.warehouseId]?.name ?: "未知仓库"
+            val productName = productMap[inventory.productId]?.name ?: "unknown"
+            val warehouseName = warehouseMap[inventory.warehouseId]?.name ?: "unknown"
             inventory.toBasicTO(productName, warehouseName)
         }
     }

@@ -8,9 +8,9 @@ data class ProductTO(
     val unit: String,
     val unitPrice: Double,
     val categoryId: Long,
-    val categoryName: String,
     val supplierId: Long,
     val specification: String?,
+    val enabled: Boolean,
     val createdAt: Instant,
     val updatedAt: Instant
 ) 
