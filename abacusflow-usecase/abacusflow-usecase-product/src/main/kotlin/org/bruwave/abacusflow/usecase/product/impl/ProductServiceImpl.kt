@@ -4,8 +4,10 @@ import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.Product
+import org.bruwave.abacusflow.product.ProductDeletedEvent
 import org.bruwave.abacusflow.product.ProductUnit
 import org.bruwave.abacusflow.usecase.product.*
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -14,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 class ProductServiceImpl(
     private val productRepository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
-    private val supplierRepository: SupplierRepository
+    private val supplierRepository: SupplierRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) : ProductService {
 
     override fun createProduct(input: CreateProductInputTO): ProductTO {
@@ -65,7 +68,10 @@ class ProductServiceImpl(
         val product = productRepository.findById(id)
             .orElseThrow { NoSuchElementException("Product not found with id: $id") }
 
+        // TODO 这种聚合根之间的集联删除的最佳实践是什么
         productRepository.delete(product)
+
+        applicationEventPublisher.publishEvent(ProductDeletedEvent(product))
         return product.toTO()
     }
 
