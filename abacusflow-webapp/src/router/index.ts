@@ -92,6 +92,18 @@ const router = createRouter({
       children: []
     },
     {
+      path: "/partner/customer",
+      name: "customer",
+      component: () => import("@/views/partner/customer/CustomerListView.vue"),
+      children: []
+    },
+    {
+      path: "/partner/supplier",
+      name: "supplier",
+      component: () => import("@/views/partner/supplier/SupplierListView.vue"),
+      children: []
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "not-found",
       component: () => import("@/views/NotFoundView.vue")

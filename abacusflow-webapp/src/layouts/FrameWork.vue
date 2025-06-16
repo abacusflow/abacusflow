@@ -42,6 +42,15 @@
           </template>
           <span>库存管理</span>
         </a-menu-item>
+
+        <a-sub-menu key="/partner">
+          <template #icon>
+            <TeamOutlined />
+          </template>
+          <template #title>合作伙伴管理</template>
+          <a-menu-item key="/partner/customer">客户管理</a-menu-item>
+          <a-menu-item key="/partner/supplier">供应商管理</a-menu-item>
+        </a-sub-menu>
       </a-menu>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '200px' }">
@@ -61,7 +70,8 @@ import {
   UserOutlined,
   ShoppingOutlined,
   ShopOutlined,
-  InboxOutlined
+  InboxOutlined,
+  TeamOutlined
 } from "@ant-design/icons-vue";
 
 const route = useRoute();
