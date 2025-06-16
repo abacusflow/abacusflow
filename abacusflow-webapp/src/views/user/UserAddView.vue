@@ -34,9 +34,9 @@ import { useMutation } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const formState = reactive<CreateUserInput>({
-  name: "",
-  nick: "",
+const formState = reactive<Partial<CreateUserInput>>({
+  name: undefined,
+  nick: undefined,
   age: undefined,
   sex: undefined
 });

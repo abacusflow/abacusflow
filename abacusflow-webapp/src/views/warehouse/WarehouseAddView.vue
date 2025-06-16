@@ -30,8 +30,8 @@ import { useMutation } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const formState = reactive<CreateWarehouseInput>({
-  name: "",
+const formState = reactive<Partial<CreateWarehouseInput>>({
+  name: undefined,
   location: undefined,
   capacity: undefined
 });

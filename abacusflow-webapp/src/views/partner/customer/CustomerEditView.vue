@@ -17,14 +17,6 @@
         <a-input v-model:value="formState.phone" />
       </a-form-item>
 
-      <a-form-item
-        label="电子邮箱"
-        name="email"
-        :rules="[{ type: 'email', message: '请输入有效的电子邮箱' }]"
-      >
-        <a-input v-model:value="formState.email" />
-      </a-form-item>
-
       <a-form-item label="地址" name="address">
         <a-input v-model:value="formState.address" />
       </a-form-item>
@@ -54,10 +46,9 @@ const partnerApi = inject("partnerApi") as PartnerApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<UpdateCustomerInput>({
+const formState = reactive<Partial<UpdateCustomerInput>>({
   name: undefined,
   phone: undefined,
-  email: undefined,
   address: undefined
 });
 
@@ -74,10 +65,9 @@ const {
 // 当查询成功且有数据时，优先使用 API 数据
 watchEffect(() => {
   if (isSuccess.value && fetchedCustomer.value) {
-    const { name, phone, email, address } = fetchedCustomer.value;
+    const { name, phone, address } = fetchedCustomer.value;
     formState.name = name;
     formState.phone = phone;
-    formState.email = email;
     formState.address = address;
   }
 });

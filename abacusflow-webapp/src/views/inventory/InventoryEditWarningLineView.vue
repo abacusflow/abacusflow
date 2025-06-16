@@ -42,9 +42,9 @@ const inventoryApi = inject("inventoryApi") as InventoryApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<AdjustWarningLineRequest>({
-  safetyStock: 1,
-  maxStock: 10
+const formState = reactive<Partial<AdjustWarningLineRequest>>({
+  safetyStock: undefined,
+  maxStock: undefined
 });
 
 // TODO: 当 props.inventoryId 变化时，没有重新获取库存数据，现在是在外层销毁重建了

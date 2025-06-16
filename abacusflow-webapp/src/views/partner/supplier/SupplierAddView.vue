@@ -50,8 +50,8 @@ import { useMutation } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const formState = reactive<CreateSupplierInput>({
-  name: "",
+const formState = reactive<Partial<CreateSupplierInput>>({
+  name: undefined,
   contactPerson: undefined,
   phone: undefined,
   email: undefined,

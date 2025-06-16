@@ -12,14 +12,6 @@
       <a-input v-model:value="formState.phone" />
     </a-form-item>
 
-    <a-form-item
-      label="电子邮箱"
-      name="email"
-      :rules="[{ type: 'email', message: '请输入有效的电子邮箱' }]"
-    >
-      <a-input v-model:value="formState.email" />
-    </a-form-item>
-
     <a-form-item label="地址" name="address">
       <a-input v-model:value="formState.address" />
     </a-form-item>
@@ -42,10 +34,9 @@ import { useMutation } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const formState = reactive<CreateCustomerInput>({
-  name: "",
+const formState = reactive<Partial<CreateCustomerInput>>({
+  name: undefined,
   phone: undefined,
-  email: undefined,
   address: undefined
 });
 

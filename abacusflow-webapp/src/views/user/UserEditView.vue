@@ -39,8 +39,8 @@ const userApi = inject("userApi") as UserApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<UpdateUserInput>({
-  nick: "",
+const formState = reactive<Partial<UpdateUserInput>>({
+  nick: undefined,
   age: undefined,
   sex: undefined
 });

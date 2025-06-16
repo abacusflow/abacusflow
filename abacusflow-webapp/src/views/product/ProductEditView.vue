@@ -74,13 +74,13 @@ const productApi = inject("productApi") as ProductApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<UpdateProductInput>({
-  name: "",
-  categoryId: 0,
+const formState = reactive<Partial<UpdateProductInput>>({
+  name: undefined,
+  categoryId: undefined,
   unit: ProductUnit.Item,
   unitPrice: 0,
   specification: undefined,
-  supplierId: 0
+  supplierId: undefined
 });
 
 // TODO: 当 props.productId 变化时，没有重新获取产品数据，现在是在外层销毁重建了
