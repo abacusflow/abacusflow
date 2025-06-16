@@ -1,4 +1,6 @@
-export const formatDate = (timestamp?: number): string => {
+import dayjs from "dayjs";
+
+export const timestampToLocaleString = (timestamp?: number): string => {
   if (timestamp === undefined || timestamp === null) {
     return "";
   }
@@ -8,19 +10,20 @@ export const formatDate = (timestamp?: number): string => {
 
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
-    $formatDate: (timestamp: number) => string;
+    $timestampToLocaleString: (timestamp: number) => string;
   }
 }
 
-export const formatNumber = (num?: number): string => {
-  if (num === undefined || num === null) {
-    return "";
-  }
-  return num.toLocaleString("zh-CN");
+export const dateToFormattedString = (
+  date?: Date | string | null,
+  format = "YYYY-MM-DD"
+): string => {
+  if (!date) return "";
+  return dayjs(date).format(format);
 };
 
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
-    $formatNumber: (num: number) => string;
+    $dateToFormattedString: (date: Date | string | null, format?: string) => string;
   }
 }

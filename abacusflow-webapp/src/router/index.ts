@@ -24,6 +24,16 @@ const router = createRouter({
       }
     },
     {
+      path: "/inventory",
+      name: "inventory",
+      component: () => import("@/views/inventory/InventoryListView.vue"),
+      meta: {
+        title: "库存管理",
+        icon: "database",
+        permission: ["inventory"]
+      }
+    },
+    {
       path: "/product",
       name: "product",
       component: RouterView,
@@ -56,24 +66,36 @@ const router = createRouter({
       ]
     },
     {
-      path: "/warehouse",
-      name: "warehouse",
-      component: () => import("@/views/warehouse/WarehouseListView.vue"),
+      path: "/transaction",
+      name: "transaction",
+      component: RouterView,
       meta: {
-        title: "仓库管理",
-        icon: "home",
-        permission: ["warehouse"]
-      }
-    },
-    {
-      path: "/inventory",
-      name: "inventory",
-      component: () => import("@/views/inventory/InventoryListView.vue"),
-      meta: {
-        title: "库存管理",
-        icon: "database",
-        permission: ["inventory"]
-      }
+        title: "交易管理",
+        icon: "transaction",
+        permission: ["transaction"]
+      },
+      children: [
+        {
+          path: "purchase-order",
+          name: "transaction-purchase-order",
+          component: () => import("@/views/transaction/purchase-order/PurchaseOrderListView.vue"),
+          meta: {
+            title: "采购单管理",
+            icon: "shopping-cart",
+            permission: ["transaction:purchase-order"]
+          }
+        },
+        {
+          path: "sale-order",
+          name: "transaction-sale-order",
+          component: () => import("@/views/transaction/sale-order/SaleOrderListView.vue"),
+          meta: {
+            title: "销售单管理",
+            icon: "shopping-cart",
+            permission: ["transaction:sale-order"]
+          }
+        }
+      ]
     },
     {
       path: "/partner",
@@ -108,6 +130,16 @@ const router = createRouter({
           }
         }
       ]
+    },
+    {
+      path: "/warehouse",
+      name: "warehouse",
+      component: () => import("@/views/warehouse/WarehouseListView.vue"),
+      meta: {
+        title: "仓库管理",
+        icon: "home",
+        permission: ["warehouse"]
+      }
     },
     {
       path: "/:pathMatch(.*)*",

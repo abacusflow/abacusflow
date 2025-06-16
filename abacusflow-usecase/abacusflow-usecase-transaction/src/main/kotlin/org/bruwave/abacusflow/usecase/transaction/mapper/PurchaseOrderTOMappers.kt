@@ -9,12 +9,14 @@ import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 
 fun PurchaseOrder.toTO() = PurchaseOrderTO(
     id = id,
+    orderNo = orderNo,
     supplierId = supplierId,
     status = status.name,
     items = items.map { it.toTO() },
+    orderDate = orderDate,
+    note = note,
     createdAt = createdAt,
     updatedAt = updatedAt,
-    orderNo = orderNo
 )
 
 fun PurchaseOrder.toBasicTO(supplierName: String) = BasicPurchaseOrderTO(

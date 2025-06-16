@@ -22,6 +22,7 @@ class SaleOrderServiceImpl(
     override fun createSaleOrder(input: CreateSaleOrderInputTO): SaleOrderTO {
         val saleOrder = SaleOrder(
             customerId = input.customerId,
+            orderDate = input.orderDate,
             note = input.note,
         )
         input.orderItems.forEach {
@@ -37,6 +38,10 @@ class SaleOrderServiceImpl(
         saleOrder.apply {
             input.customerId?.let {
                 changeCustomer(it)
+            }
+
+            input.orderDate?.let {
+                changeOrderDate(it)
             }
 
             clearItems()

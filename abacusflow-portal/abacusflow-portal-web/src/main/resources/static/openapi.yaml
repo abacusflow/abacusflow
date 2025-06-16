@@ -2161,18 +2161,15 @@ components:
       description: 订单状态
       enum:
         - pending
-        - confirmed
-        - received
+        - completed
         - cancelled
       x-enum-varnames:
         - pending
-        - confirmed
-        - received
+        - completed
         - cancelled
       x-enum-descriptions:
-        - 待确认
-        - 已确认
-        - 已收货
+        - 待处理
+        - 已完成
         - 已取消
     Sex:
       type: string

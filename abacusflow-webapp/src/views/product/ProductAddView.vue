@@ -20,7 +20,11 @@
       name="supplierId"
       :rules="[{ required: true, message: '请输入供应商' }]"
     >
-      <a-input v-model:value="formState.supplierId"></a-input>
+      <a-select v-model:value="formState.supplierId" placeholder="请选择供应商">
+        <a-select-option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+          {{ supplier.name }}
+        </a-select-option>
+      </a-select>
     </a-form-item>
 
     <a-form-item label="单位" name="unit" :rules="[{ required: true, message: '请选择单位' }]">
@@ -57,7 +61,7 @@
 import { ref, reactive } from "vue";
 import { message, type FormInstance } from "ant-design-vue";
 import { inject } from "vue";
-import { ProductApi, ProductUnit, type CreateProductInput } from "@/core/openapi";
+import { PartnerApi, ProductApi, ProductUnit, type CreateProductInput } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
@@ -72,8 +76,14 @@ const formState = reactive<Partial<CreateProductInput>>({
 });
 
 const productApi = inject("productApi") as ProductApi;
+const partnerApi = inject("partnerApi") as PartnerApi;
 
 const emit = defineEmits(["success", "update:visible"]);
+
+const { data: suppliers } = useQuery({
+  queryKey: ["suppliers"],
+  queryFn: () => partnerApi.listSuppliers()
+});
 
 const { data: categories } = useQuery({
   queryKey: ["categories"],

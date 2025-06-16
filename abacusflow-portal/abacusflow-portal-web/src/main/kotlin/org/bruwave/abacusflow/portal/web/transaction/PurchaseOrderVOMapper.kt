@@ -14,7 +14,7 @@ fun BasicPurchaseOrderTO.toBasicVO(): BasicPurchaseOrderVO = BasicPurchaseOrderV
     id = id,
     orderNo = orderNo.toString(),
     supplierName = supplierName,
-    status = OrderStatusVO.valueOf(status),
+    status = mapOrderStatusTOToVO(status),
     totalAmount = totalAmount,
     totalQuantity = totalQuantity,
     itemCount = itemCount,
@@ -25,8 +25,10 @@ fun PurchaseOrderTO.toVO(): PurchaseOrderVO = PurchaseOrderVO(
     id = id,
     orderNo = orderNo.toString(),
     supplierId = supplierId,
-    status = OrderStatusVO.valueOf(status),
+    status = mapOrderStatusTOToVO(status),
+    orderDate = orderDate,
     orderItems = items.map { it.toVO() },
+    note = note,
     createdAt = createdAt.toEpochMilli(),
     updatedAt = updatedAt.toEpochMilli()
 )
@@ -44,3 +46,12 @@ fun PurchaseOrderItemInputVO.toInputTO(): PurchaseItemInputTO = PurchaseItemInpu
     quantity = quantity,
     unitPrice = unitPrice
 )
+
+fun mapOrderStatusTOToVO(orderStatus: String): OrderStatusVO {
+    return when (orderStatus.uppercase()) {
+        "PENDING" -> OrderStatusVO.pending
+        "COMPLETED" -> OrderStatusVO.completed
+        "CANCELLED" -> OrderStatusVO.cancelled
+        else -> throw IllegalArgumentException("Unknown order status: $orderStatus")
+    }
+}

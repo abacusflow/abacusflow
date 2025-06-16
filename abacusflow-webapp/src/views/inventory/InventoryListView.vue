@@ -27,22 +27,14 @@
       <a-card :bordered="false">
         <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
           <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'safetyStock'">
-              <a-tag :color="safetyColor(record)">
-                <template #icon>
-                  <component :is="safetyIcon(record)" />
-                </template>
-                安全库存: {{ record.safetyStock }}
-              </a-tag>
+            <template v-if="column.key === 'availableQuantity'">
+              <a-tooltip :title="stockHealthTip(record)">
+                <a-tag :color="stockHealthColor(record)">
+                  {{ record.availableQuantity }}
+                </a-tag>
+              </a-tooltip>
             </template>
-            <template v-if="column.key === 'maxStock'">
-              <a-tag :color="maxColor(record)">
-                <template #icon>
-                  <component :is="maxIcon(record)" />
-                </template>
-                最大库存: {{ record.maxStock }}
-              </a-tag>
-            </template>
+
             <template v-if="column.key === 'action'">
               <a-space>
                 <a-button type="link" shape="circle" @click="handleAssignWarehouse(record)"
@@ -160,11 +152,6 @@
 <script lang="ts" setup>
 import { ref, inject } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import {
-  CheckCircleOutlined,
-  ExclamationCircleOutlined,
-  CloseCircleOutlined
-} from "@ant-design/icons-vue";
 import type {
   InventoryApi,
   BasicInventory,
@@ -273,44 +260,49 @@ function handleAdjustWarningLine(inventory: Inventory) {
   editingInventory.value = inventory;
   showEditWarningLine.value = true;
 }
-const safetyColor = (record: Inventory) => {
-  const cur = record.availableQuantity;
-  const safe = record.safetyStock;
 
-  if (!safe) return "green";
-  if (cur < safe * 0.5) return "red";
-  if (cur < safe) return "orange";
+const stockHealthTip = (record: Inventory): string => {
+  const value = record.availableQuantity ?? 0;
+  const min = record.safetyStock ?? 0;
+  const max = record.maxStock ?? Infinity;
+  const range = max - min;
+
+  if (value < min * 0.5) return "严重低于安全库存";
+  if (value < min) return "低于安全库存";
+  if (value > max * 1.2) return "严重超出最大库存";
+  if (value > max) return "超出最大库存";
+
+  if (range > 0) {
+    const lower = min + range * 0.25;
+    const upper = max - range * 0.25;
+
+    if (value <= lower) return "库存偏低";
+    if (value >= upper) return "库存偏高";
+    return "库存适中";
+  }
+
+  return "库存健康";
+};
+
+const stockHealthColor = (record: Inventory): string => {
+  const value = record.availableQuantity ?? 0;
+  const min = record.safetyStock ?? 0;
+  const max = record.maxStock ?? Infinity;
+  const range = max - min;
+
+  if (value < min * 0.5 || value > max * 1.2) return "red";
+  if (value < min || value > max) return "orange";
+
+  if (range > 0) {
+    const lower = min + range * 0.25;
+    const upper = max - range * 0.25;
+
+    if (value <= lower) return "blue";
+    if (value >= upper) return "cyan";
+    return "green";
+  }
+
   return "green";
-};
-
-const safetyIcon = (record: Inventory) => {
-  const cur = record.availableQuantity;
-  const safe = record.safetyStock;
-
-  if (!safe) return undefined;
-  if (cur < safe * 0.5) return CloseCircleOutlined;
-  if (cur < safe) return ExclamationCircleOutlined;
-  return CheckCircleOutlined;
-};
-
-const maxColor = (record: Inventory) => {
-  const cur = record.availableQuantity;
-  const max = record.maxStock;
-
-  if (!max) return "green";
-  if (cur > max * 1.2) return "red"; // 超出太多
-  if (cur > max) return "orange"; // 稍微超出
-  return "green";
-};
-
-const maxIcon = (record: Inventory) => {
-  const cur = record.availableQuantity;
-  const max = record.maxStock;
-
-  if (!max) return undefined;
-  if (cur > max * 1.2) return CloseCircleOutlined;
-  if (cur > max) return ExclamationCircleOutlined;
-  return CheckCircleOutlined;
 };
 
 const columns: StrictTableColumnsType<BasicInventory> = [
