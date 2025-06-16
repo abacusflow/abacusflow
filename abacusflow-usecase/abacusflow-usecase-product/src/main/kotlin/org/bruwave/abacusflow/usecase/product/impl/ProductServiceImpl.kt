@@ -19,10 +19,12 @@ class ProductServiceImpl(
 
     override fun createProduct(input: CreateProductInputTO): ProductTO {
         val newProductCategory = productCategoryRepository.findById(input.categoryId).orElseThrow {
-            NoSuchElementException("Product not found with id: ${input.categoryId}")
+            NoSuchElementException("ProductCategory not found with id: ${input.categoryId}")
         }
 
         val newProduct = Product(
+            isNew = true,
+
             name = input.name,
             specification = input.specification,
             unit = mapProductUnitTOToDO(input.unit),

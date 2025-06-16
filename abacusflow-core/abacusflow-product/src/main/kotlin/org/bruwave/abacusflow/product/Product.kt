@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.product
 
-import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -28,7 +27,8 @@ class Product(
     unit: ProductUnit,
     unitPrice: Double = 0.0,
     category: ProductCategory,
-    supplierId: Long
+    supplierId: Long,
+    private val isNew: Boolean = false // 标志是否是新建的
 ) : AbstractAggregateRoot<Product>() {
 
     @Id
@@ -70,6 +70,10 @@ class Product(
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
         private set
+
+    init {
+        registerEvent(ProductCreatedEvent(this))
+    }
 
     fun updateBasicInfo(
         newName: String?,

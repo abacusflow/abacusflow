@@ -62,13 +62,13 @@ import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const formState = reactive<CreateProductInput>({
-  name: "",
-  categoryId: 1,
+const formState = reactive<Partial<CreateProductInput>>({
+  name: undefined,
+  categoryId: undefined,
   unit: ProductUnit.Item,
   unitPrice: 0,
   specification: undefined,
-  supplierId: 0
+  supplierId: undefined
 });
 
 const productApi = inject("productApi") as ProductApi;

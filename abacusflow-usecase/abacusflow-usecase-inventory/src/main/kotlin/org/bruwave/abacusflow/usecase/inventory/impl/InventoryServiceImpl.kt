@@ -21,8 +21,6 @@ class InventoriesServiceImpl(
             productId = input.productId,
             warehouseId = input.warehouseId,
             quantity = input.quantity,
-            safetyStock = input.safetyStock,
-            maxStock = input.maxStock
         )
         return inventoryRepository.save(inventory).toTO()
     }
