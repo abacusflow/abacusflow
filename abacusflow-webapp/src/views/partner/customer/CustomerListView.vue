@@ -40,6 +40,7 @@
               <a-space>
                 <a-button
                   type="link"
+                  shape="circle"
                   :disabled="record.name === 'admin'"
                   @click="handleEditCustomer(record)"
                   >编辑</a-button
@@ -52,7 +53,9 @@
                   @confirm="handleDeleteCustomer(record.id)"
                   :disabled="record.name === 'admin'"
                 >
-                  <a-button type="link" :disabled="record.name === 'admin'">删除</a-button>
+                  <a-button type="link" shape="circle" :disabled="record.name === 'admin'"
+                    >删除</a-button
+                  >
                 </a-popconfirm>
               </a-space>
             </template>

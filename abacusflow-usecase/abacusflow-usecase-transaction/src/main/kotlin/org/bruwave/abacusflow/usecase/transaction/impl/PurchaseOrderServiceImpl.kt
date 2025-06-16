@@ -1,14 +1,15 @@
 package org.bruwave.abacusflow.usecase.transaction.impl
 
+import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
-import org.bruwave.abacusflow.transaction.PurchaseOrderItem
 import org.bruwave.abacusflow.transaction.PurchaseOrder
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
-import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderService
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.UpdatePurchaseOrderInputTO
+import org.bruwave.abacusflow.usecase.transaction.mapper.toBasicTO
+import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class PurchaseOrderServiceImpl(
     private val purchaseOrderRepository: PurchaseOrderRepository,
+    private val supplierRepository: SupplierRepository,
 ) : PurchaseOrderService {
 
     override fun createPurchaseOrder(input: CreatePurchaseOrderInputTO): PurchaseOrderTO {
@@ -61,11 +63,22 @@ class PurchaseOrderServiceImpl(
     }
 
     override fun listPurchaseOrdersBySupplier(supplierId: Long): List<BasicPurchaseOrderTO> {
-        return purchaseOrderRepository.findBySupplierId(supplierId).map { it.toBasicTO() }
+        val supplier = supplierRepository.findById(supplierId)
+            .orElseThrow { NoSuchElementException("Supplier not found") }
+
+        return purchaseOrderRepository.findBySupplierId(supplierId).map { it.toBasicTO(supplier.name) }
     }
 
     override fun listPurchaseOrders(): List<BasicPurchaseOrderTO> {
-        return purchaseOrderRepository.findAll().map { it.toBasicTO() }
+        val orders = purchaseOrderRepository.findAll()
+        val supplierIds = orders.mapNotNull { it.supplierId }.toSet()
+        val supplierMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
+
+        return orders.map { order ->
+            val supplierName = supplierMap[order.supplierId]?.name ?: "unknown"
+
+            order.toBasicTO(supplierName)
+        }
     }
 
     override fun completeOrder(id: Long): PurchaseOrderTO {
@@ -74,34 +87,4 @@ class PurchaseOrderServiceImpl(
         purchaseOrder.completeOrder()
         return purchaseOrderRepository.save(purchaseOrder).toTO()
     }
-
-    private fun PurchaseOrder.toTO() = PurchaseOrderTO(
-        id = id,
-        supplierId = supplierId,
-        status = status.name,
-        items = items.map { it.toTO() },
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        orderNo = orderNo
-    )
-
-    private fun PurchaseOrder.toBasicTO() = BasicPurchaseOrderTO(
-        id = id,
-        supplierName = "null",//TODO-NULL
-        status = status.name,
-        itemCount = items.size,
-        createdAt = createdAt,
-        orderNo = orderNo,
-        totalAmount = totalAmount,
-        totalQuantity = totalQuantity,
-        orderDate = orderDate,
-    )
-
-    private fun PurchaseOrderItem.toTO() = PurchaseOrderItemTO(
-        id = id,
-        productId = productId,
-        quantity = quantity,
-        unitPrice = unitPrice,
-        subtotal = subtotal
-    )
-} 
+}

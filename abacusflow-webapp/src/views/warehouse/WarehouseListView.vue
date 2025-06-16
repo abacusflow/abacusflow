@@ -31,12 +31,14 @@
             </template>
             <template v-if="column.key === 'action'">
               <a-space>
-                <a-button type="link" @click="handleEditWarehouse(record)">编辑 </a-button>
+                <a-button type="link" shape="circle" @click="handleEditWarehouse(record)"
+                  >编辑
+                </a-button>
 
                 <a-divider type="vertical" />
 
                 <a-popconfirm title="确定删除该仓库？" @confirm="handleDeleteWarehouse(record.id)">
-                  <a-button type="link">删除</a-button>
+                  <a-button type="link" shape="circle">删除</a-button>
                 </a-popconfirm>
               </a-space>
             </template>

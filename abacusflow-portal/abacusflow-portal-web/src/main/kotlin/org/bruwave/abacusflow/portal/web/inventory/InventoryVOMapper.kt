@@ -8,9 +8,7 @@ import org.bruwave.abacusflow.usecase.inventory.InventoryTO
 fun InventoryTO.toVO(): InventoryVO = InventoryVO(
     id = id,
     productId = productId,
-    productName = "null" ?: "未知产品", //TODO-null
     warehouseId = warehouseId,
-    warehouseName = "null" ?: "未知仓库",//TODO-null
     quantity = quantity,
     reservedQuantity = reservedQuantity,
     availableQuantity = availableQuantity,
@@ -22,8 +20,8 @@ fun InventoryTO.toVO(): InventoryVO = InventoryVO(
 
 fun BasicInventoryTO.toBasicVO(): BasicInventoryVO = BasicInventoryVO(
     id = id,
-    productName = "null" ?: "未知产品", //TODO-null
-    warehouseName = "null" ?: "未知仓库",//TODO-null
+    productName = productName,
+    warehouseName = warehouseName,
     quantity = quantity,
     availableQuantity = availableQuantity,
     safetyStock = safetyStock,

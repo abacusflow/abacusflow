@@ -7,5 +7,6 @@ data class BasicProductTO(
     val supplierName: String,
     val unit: String,
     val unitPrice: Double,
-    val specification: String?
-) 
+    val specification: String?,
+    val enabled: Boolean
+)

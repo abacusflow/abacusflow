@@ -1,5 +1,6 @@
 package org.bruwave.abacusflow.usecase.product.impl
 
+import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.Product
@@ -12,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ProductServiceImpl(
     private val productRepository: ProductRepository,
-    private val productCategoryRepository: ProductCategoryRepository
+    private val productCategoryRepository: ProductCategoryRepository,
+    private val supplierRepository: SupplierRepository
 ) : ProductService {
 
     override fun createProduct(input: CreateProductInputTO): ProductTO {
@@ -78,6 +80,15 @@ class ProductServiceImpl(
     }
 
     override fun listProducts(): List<BasicProductTO> {
-        return productRepository.findAll().map { it.toBasicTO() }
+        val products = productRepository.findAll()
+
+        val supplierIds = products.mapNotNull { it.supplierId }.toSet()
+
+        val productMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
+
+        return products.map { product ->
+            val supplierName = productMap[product.supplierId]?.name ?: "unknown"
+            product.toBasicTO(supplierName)
+        }
     }
 }

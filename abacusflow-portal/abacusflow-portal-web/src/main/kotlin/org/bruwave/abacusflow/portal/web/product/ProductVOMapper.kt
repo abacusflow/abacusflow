@@ -10,15 +10,14 @@ import org.bruwave.abacusflow.usecase.product.ProductTO
 fun ProductTO.toVO(): ProductVO = ProductVO(
     id = id,
     name = name,
-    categoryName = categoryName,
     supplierId = supplierId,
     unit = mapProductUnitTOToVO(unit),
     unitPrice = unitPrice,
     specification = specification,
-    createdAt = createdAt.toEpochMilli(),
-    updatedAt = updatedAt.toEpochMilli(),
     categoryId = categoryId,
-    supplierName = "null"// TODO-NULL
+    enabled = enabled,
+    updatedAt = updatedAt.toEpochMilli(),
+    createdAt = createdAt.toEpochMilli(),
 )
 
 fun BasicProductTO.toVO(): BasicProductVO = BasicProductVO(
@@ -27,7 +26,8 @@ fun BasicProductTO.toVO(): BasicProductVO = BasicProductVO(
     unit = mapProductUnitTOToVO(unit),
     unitPrice = unitPrice,
     categoryName = categoryName,
-    supplierName = supplierName // TODO()
+    supplierName = supplierName,
+    enabled = enabled,
 )
 
 fun mapProductUnitTOToVO(unit: String): ProductUnitVO = when (unit.uppercase()) {

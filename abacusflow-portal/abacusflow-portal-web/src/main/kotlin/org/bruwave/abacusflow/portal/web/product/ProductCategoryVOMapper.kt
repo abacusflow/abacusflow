@@ -12,7 +12,6 @@ fun ProductCategoryTO.toVO(): ProductCategoryVO = ProductCategoryVO(
     updatedAt = updatedAt.toEpochMilli(),
     description = description,
     parentId = parentId,
-    parentName = parentName,
 )
 
 fun BasicProductCategoryTO.toVO(): BasicProductCategoryVO = BasicProductCategoryVO(

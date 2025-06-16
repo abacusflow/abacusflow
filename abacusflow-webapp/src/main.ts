@@ -12,7 +12,7 @@ import { Configuration } from "./core/openapi";
 import injectGlobalProperties from "./plugin/injectGlobalProperties";
 import FetchApi from "./plugin/fetch";
 import { formatDate, formatNumber } from "./util/timestampUtils";
-import { translateUnit } from "./util/productUnit";
+import { translateUnit } from "./util/productUnitUtils";
 
 const app = createApp(App);
 
@@ -31,5 +31,6 @@ app.use(injectGlobalProperties, {
   formatDate,
   formatNumber,
   translateUnit
+  // capitalize
 });
 app.mount("#app");

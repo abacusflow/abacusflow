@@ -46,11 +46,11 @@
             </template>
             <template v-if="column.key === 'action'">
               <a-space>
-                <a-button type="link" @click="handleEditProduct(record)">编辑 </a-button>
+                <a-button type="link" shape="circle" @click="handleEditProduct(record)">编辑 </a-button>
 
                 <a-divider type="vertical" />
 
-                <a-popconfirm title="确定删除该产品？" @confirm="handleDeleteProduct(record.id)">
+                <a-popconfirm title="确定删除该产品？" shape="circle" @confirm="handleDeleteProduct(record.id)">
                   <a-button type="link">删除</a-button>
                 </a-popconfirm>
               </a-space>
@@ -150,7 +150,7 @@ const columns: StrictTableColumnsType<BasicProduct> = [
   { title: "供应商", dataIndex: "supplierName", key: "supplierName" },
   { title: "单位", dataIndex: "unit", key: "unit" },
   { title: "单价", dataIndex: "unitPrice", key: "unitPrice" },
-  // { title: "启用状态", dataIndex: "enabled", key: "enabled" },//TODO
+  { title: "启用状态", dataIndex: "enabled", key: "enabled" },
   { title: "操作", key: "action" }
 ];
 </script>

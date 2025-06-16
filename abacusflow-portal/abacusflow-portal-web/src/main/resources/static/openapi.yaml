@@ -1242,10 +1242,6 @@ components:
           type: string
           nullable: true
           description: 联系电话
-        email:
-          type: string
-          nullable: true
-          description: 邮箱地址
         address:
           type: string
           nullable: true
@@ -1290,11 +1286,6 @@ components:
           type: string
           nullable: true
           description: 联系电话
-        email:
-          type: string
-          nullable: true
-          format: email
-          description: 邮箱地址
         address:
           type: string
           nullable: true
@@ -1311,11 +1302,6 @@ components:
           type: string
           nullable: true
           description: 联系电话
-        email:
-          type: string
-          nullable: true
-          format: email
-          description: 邮箱地址
         address:
           type: string
           nullable: true
@@ -1330,9 +1316,8 @@ components:
         - unit
         - unitPrice
         - categoryId
-        - categoryName
         - supplierId
-        - supplierName
+        - enabled
         - createdAt
         - updatedAt
       properties:
@@ -1351,26 +1336,24 @@ components:
           type: integer
           format: int64
           description: 分类ID
-        categoryName:
-          type: string
-          description: 分类名称
         supplierId:
           type: integer
           format: int64
           description: 供应商ID
-        supplierName:
-          type: string
-          description: 供应商名称
         specification:
           type: string
           nullable: true
           description: 规格说明
         unit:
           $ref: "#/components/schemas/ProductUnit"
+        enabled:
+          type: boolean
+          description: 是否启用
         createdAt:
           type: integer
           format: int64
           description: 创建时间戳
+
         updatedAt:
           type: integer
           format: int64
@@ -1385,6 +1368,7 @@ components:
         - unitPrice
         - categoryName
         - supplierName
+        - enabled
       properties:
         id:
           type: integer
@@ -1405,6 +1389,9 @@ components:
           description: 供应商名称
         unit:
           $ref: "#/components/schemas/ProductUnit"
+        enabled:
+          type: boolean
+          description: 是否启用
 
     CreateProductInput:
       type: object
@@ -1491,10 +1478,6 @@ components:
           format: int64
           nullable: true
           description: 父分类ID
-        parentName:
-          type: string
-          nullable: true
-          description: 父分类名称
         createdAt:
           type: integer
           format: int64
@@ -1664,7 +1647,6 @@ components:
       required:
         - id
         - productId
-        - productName
         - quantity
         - reservedQuantity
         - availableQuantity
@@ -1681,16 +1663,10 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        productName:
-          type: string
-          description: 商品名称
         warehouseId:
           type: integer
           format: int64
           description: 仓库ID
-        warehouseName:
-          type: string
-          description: 仓库名称
         quantity:
           type: integer
           description: 总库存数量
@@ -1759,7 +1735,6 @@ components:
         - id
         - orderNo
         - customerId
-        - customerName
         - status
         - totalAmount
         - orderItems
@@ -1777,9 +1752,6 @@ components:
           type: integer
           format: int64
           description: 客户ID
-        customerName:
-          type: string
-          description: 客户名称
         status:
           $ref: "#/components/schemas/OrderStatus"
         note:
@@ -1904,7 +1876,6 @@ components:
         - id
         - orderNo
         - supplierId
-        - supplierName
         - status
         - totalAmount
         - orderItems
@@ -1922,9 +1893,6 @@ components:
           type: integer
           format: int64
           description: 供应商ID
-        supplierName:
-          type: string
-          description: 供应商名称
         status:
           $ref: "#/components/schemas/OrderStatus"
         note:
@@ -2048,7 +2016,6 @@ components:
       required:
         - id
         - productId
-        - productName
         - quantity
         - unitPrice
         - subtotal
@@ -2061,9 +2028,9 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        productName:
-          type: string
-          description: 商品名称
+        # productName:
+        #   type: string
+        #   description: 商品名称
         quantity:
           type: integer
           description: 数量
@@ -2102,7 +2069,6 @@ components:
       required:
         - id
         - productId
-        - productName
         - quantity
         - unitPrice
         - subtotal
@@ -2115,9 +2081,9 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        productName:
-          type: string
-          description: 商品名称
+        # productName:
+        #   type: string
+        #   description: 商品名称
         quantity:
           type: integer
           description: 数量
@@ -2220,3 +2186,14 @@ components:
       x-enum-descriptions:
         - 男
         - 女
+    Error:
+      description: 错误信息
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
