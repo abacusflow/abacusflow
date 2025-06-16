@@ -8,49 +8,10 @@
         v-model:selectedKeys="selectedKeys"
         theme="dark"
         mode="inline"
+        :items="menuItems"
+        :inlineCollapsed="false"
         @select="handleMenuSelect"
       >
-        <a-menu-item key="/dashboard">
-          <template #icon>
-            <DashboardOutlined />
-          </template>
-          <span>仪表盘</span>
-        </a-menu-item>
-        <a-menu-item key="/user">
-          <template #icon>
-            <UserOutlined />
-          </template>
-          <span>用户管理</span>
-        </a-menu-item>
-        <a-sub-menu key="/product">
-          <template #icon>
-            <ShoppingOutlined />
-          </template>
-          <template #title>产品管理</template>
-          <a-menu-item key="/product">产品列表</a-menu-item>
-          <a-menu-item key="/product/category">产品分类</a-menu-item>
-        </a-sub-menu>
-        <a-menu-item key="/warehouse">
-          <template #icon>
-            <ShopOutlined />
-          </template>
-          <span>仓库管理</span>
-        </a-menu-item>
-        <a-menu-item key="/inventory">
-          <template #icon>
-            <InboxOutlined />
-          </template>
-          <span>库存管理</span>
-        </a-menu-item>
-
-        <a-sub-menu key="/partner">
-          <template #icon>
-            <TeamOutlined />
-          </template>
-          <template #title>合作伙伴管理</template>
-          <a-menu-item key="/partner/customer">客户管理</a-menu-item>
-          <a-menu-item key="/partner/supplier">供应商管理</a-menu-item>
-        </a-sub-menu>
       </a-menu>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '200px' }">
@@ -63,16 +24,10 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import { useRoute, useRouter } from "vue-router";
-import { ref, watch } from "vue";
-import {
-  DashboardOutlined,
-  UserOutlined,
-  ShoppingOutlined,
-  ShopOutlined,
-  InboxOutlined,
-  TeamOutlined
-} from "@ant-design/icons-vue";
+import { useRoute, useRouter, type RouteRecordRaw } from "vue-router";
+import { capitalize, h, ref, watch, type VNode } from "vue";
+import * as Icons from "@ant-design/icons-vue"; // 用于动态渲染图标
+import { type ItemType } from "ant-design-vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -84,6 +39,52 @@ watch(
     selectedKeys.value = [newPath];
   }
 );
+
+/**
+ * 获取图标组件
+ */
+function renderIcon(iconName?: string): VNode | undefined {
+  if (!iconName) return undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const iconStr = (Icons as any)[capitalize(iconName) + "Outlined"];
+  return iconStr ? h(iconStr) : undefined;
+}
+
+/**
+ * 递归生成菜单项
+ */
+
+function generateMenuItems(routes: readonly RouteRecordRaw[], parentPath = ""): ItemType[] {
+  return routes
+    .filter((r) => r.meta?.title && !r.meta?.hidden)
+    .map((route) => {
+      const fullPath = route.path
+        ? route.path.startsWith("/")
+          ? route.path
+          : `${parentPath}/${route.path}`.replace(/\/+/g, "/")
+        : parentPath;
+
+      if (route.children && route.children.length > 0) {
+        return {
+          key: fullPath,
+          label: route.meta?.title ?? route.name,
+          icon: renderIcon(route.meta?.icon as string),
+          children: generateMenuItems(route.children, fullPath)
+        };
+      }
+
+      return {
+        key: fullPath,
+        icon: renderIcon(route.meta?.icon as string),
+        label: route.meta?.title
+      };
+    });
+}
+
+/**
+ * 菜单节点（计算属性）
+ */
+const menuItems = generateMenuItems(router.options.routes);
 
 const handleMenuSelect = ({ key }: { key: string }) => {
   // 只有当前路径不一致时才跳转

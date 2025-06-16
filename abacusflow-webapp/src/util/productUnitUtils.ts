@@ -3,7 +3,10 @@ import type { ProductUnit } from "@/core/openapi";
 /**
  * 将单位英文值翻译为中文
  */
-export function translateUnit(unit: ProductUnit): string {
+export function translateUnit(unit?: ProductUnit): string {
+  if (!unit) {
+    return "";
+  }
   const unitMap: Record<ProductUnit, string> = {
     item: "个",
     piece: "件",
