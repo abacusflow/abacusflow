@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class ProductCategoryServiceImpl(
+class ProductCategoriesServiceImpl(
     private val productCategoryRepository: ProductCategoryRepository
-) : ProductCategoryService {
+) : ProductCategoriesService {
     override fun createProductCategory(input: CreateProductCategoryInputTO): ProductCategoryTO {
         val parentCategoryFromInput = productCategoryRepository.findById(input.parentId)
             .orElseThrow { NoSuchElementException("Product category not found with id: ${input.parentId}") }

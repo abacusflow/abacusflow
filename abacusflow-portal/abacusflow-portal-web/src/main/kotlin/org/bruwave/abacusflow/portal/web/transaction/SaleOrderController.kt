@@ -63,7 +63,7 @@ class SaleOrderController(
         )
     }
 
-    override fun deleteSaleOrder(id: Long): ResponseEntity<SaleOrderVO> {
+    override fun deleteSaleOrder(id: Long): ResponseEntity<Unit> {
         saleOrderService.deleteSaleOrder(id)
         return ResponseEntity.ok().build()
     }

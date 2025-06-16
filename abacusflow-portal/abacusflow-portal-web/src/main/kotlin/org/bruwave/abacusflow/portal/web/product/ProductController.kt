@@ -67,7 +67,7 @@ class ProductController(
         )
     }
 
-    override fun deleteProduct(id: Long): ResponseEntity<ProductVO> {
+    override fun deleteProduct(id: Long): ResponseEntity<Unit> {
         productService.deleteProduct(id)
         return ResponseEntity.ok().build()
     }

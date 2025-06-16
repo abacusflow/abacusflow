@@ -61,7 +61,7 @@ class SupplierController(
         )
     }
 
-    override fun deleteSupplier(id: Long): ResponseEntity<SupplierVO> {
+    override fun deleteSupplier(id: Long): ResponseEntity<Unit> {
         supplierService.deleteSupplier(id)
         return ResponseEntity.ok().build()
     }

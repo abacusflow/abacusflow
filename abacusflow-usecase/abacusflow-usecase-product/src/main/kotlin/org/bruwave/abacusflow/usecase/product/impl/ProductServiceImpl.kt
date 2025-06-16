@@ -23,7 +23,7 @@ class ProductServiceImpl(
         val newProduct = Product(
             name = input.name,
             specification = input.specification,
-            unit = ProductUnit.valueOf(input.unit),
+            unit = mapProductUnitTOToDO(input.unit),
             unitPrice = input.unitPrice,
             category = newProductCategory,
             supplierId = input.supplierId
@@ -40,7 +40,7 @@ class ProductServiceImpl(
                 newName = input.name,
                 newSpecification = input.specification,
                 newUnitPrice = input.unitPrice,
-                newUnit = input.unit?.let { ProductUnit.valueOf(it) },
+                newUnit = input.unit?.let { mapProductUnitTOToDO(it) },
             )
 
             input.categoryId?.let { categoryId ->

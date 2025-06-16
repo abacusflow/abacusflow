@@ -60,7 +60,7 @@ class WarehouseController(
         )
     }
 
-    override fun deleteWarehouse(id: Long): ResponseEntity<WarehouseVO> {
+    override fun deleteWarehouse(id: Long): ResponseEntity<Unit> {
         warehouseService.deleteWarehouse(id)
         return ResponseEntity.ok().build()
     }

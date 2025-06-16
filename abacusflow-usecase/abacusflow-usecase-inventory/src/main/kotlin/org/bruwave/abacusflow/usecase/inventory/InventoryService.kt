@@ -1,11 +1,18 @@
 package org.bruwave.abacusflow.usecase.inventory
 
-interface InventoryService {
+interface InventoriesService {
+    fun listInventories(): List<BasicInventoryTO>
+    fun getInventory(id: Long): InventoryTO
+
     //TODO 创建库存实体是只要有新产品就会创建
     fun createInventory(input: CreateInventoryInputTO): InventoryTO
-    fun increaseInventory(id: Long, amount: Int): InventoryTO
-    fun decreaseInventory(id: Long, amount: Int): InventoryTO
-    fun getInventory(id: Long): InventoryTO
-    fun listInventories(): List<BasicInventoryTO>
+    fun increaseInventory(id: Long, amount: Int)
+    fun decreaseInventory(id: Long, amount: Int)
+    fun reserveInventory(id: Long, amount: Int)
+
+    fun assignWarehouse(id: Long, newWarehouseId: Long)
+
+    fun adjustWarningLine(id: Long, newSafetyStock: Int, newMaxStock: Int)
+
     fun checkSafetyStock(id: Long): Boolean
 }

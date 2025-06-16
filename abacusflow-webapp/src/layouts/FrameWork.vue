@@ -10,14 +10,47 @@
         mode="inline"
         @select="handleMenuSelect"
       >
-        <a-menu-item key="/dashboard" :route="{ path: '/dashboard' }">
-          <DashboardOutlined />
-          <span class="nav-text">仪表盘</span>
+        <a-menu-item key="/dashboard">
+          <template #icon>
+            <DashboardOutlined />
+          </template>
+          <span>仪表盘</span>
         </a-menu-item>
-        <a-menu-item key="/user" :route="{ path: '/user' }">
-          <UserOutlined />
-          <span class="nav-text">用户管理</span>
+        <a-menu-item key="/user">
+          <template #icon>
+            <UserOutlined />
+          </template>
+          <span>用户管理</span>
         </a-menu-item>
+        <a-sub-menu key="/product">
+          <template #icon>
+            <ShoppingOutlined />
+          </template>
+          <template #title>产品管理</template>
+          <a-menu-item key="/product">产品列表</a-menu-item>
+          <a-menu-item key="/product/category">产品分类</a-menu-item>
+        </a-sub-menu>
+        <a-menu-item key="/warehouse">
+          <template #icon>
+            <ShopOutlined />
+          </template>
+          <span>仓库管理</span>
+        </a-menu-item>
+        <a-menu-item key="/inventory">
+          <template #icon>
+            <InboxOutlined />
+          </template>
+          <span>库存管理</span>
+        </a-menu-item>
+
+        <a-sub-menu key="/partner">
+          <template #icon>
+            <TeamOutlined />
+          </template>
+          <template #title>合作伙伴管理</template>
+          <a-menu-item key="/partner/customer">客户管理</a-menu-item>
+          <a-menu-item key="/partner/supplier">供应商管理</a-menu-item>
+        </a-sub-menu>
       </a-menu>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '200px' }">
@@ -30,31 +63,38 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import {useRoute, useRouter} from 'vue-router'
-import {ref, watch} from 'vue'
-import {DashboardOutlined, UserOutlined} from '@ant-design/icons-vue'
+import { useRoute, useRouter } from "vue-router";
+import { ref, watch } from "vue";
+import {
+  DashboardOutlined,
+  UserOutlined,
+  ShoppingOutlined,
+  ShopOutlined,
+  InboxOutlined,
+  TeamOutlined
+} from "@ant-design/icons-vue";
 
-const route = useRoute()
-const router = useRouter()
-const selectedKeys = ref(['/'])
+const route = useRoute();
+const router = useRouter();
+const selectedKeys = ref(["/"]);
 
 watch(
   () => route.path,
   (newPath) => {
-    selectedKeys.value = [newPath]
-  },
-)
+    selectedKeys.value = [newPath];
+  }
+);
 
 const handleMenuSelect = ({ key }: { key: string }) => {
   // 只有当前路径不一致时才跳转
   if (route.path !== key) {
     router.push(key).catch((err: Error) => {
-      if (err.name !== 'NavigationDuplicated') {
-        console.error('路由跳转失败:', err)
+      if (err.name !== "NavigationDuplicated") {
+        console.error("路由跳转失败:", err);
       }
-    })
+    });
   }
-}
+};
 </script>
 <style scoped>
 #components-layout-demo-fixed-sider .logo {
@@ -66,7 +106,7 @@ const handleMenuSelect = ({ key }: { key: string }) => {
   background: #fff;
 }
 
-[data-theme='dark'] .site-layout .site-layout-background {
+[data-theme="dark"] .site-layout .site-layout-background {
   background: #141414;
 }
 </style>
