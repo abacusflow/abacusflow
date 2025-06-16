@@ -6,10 +6,10 @@
       <div class="logo" />
       <a-menu
         v-model:selectedKeys="selectedKeys"
+        v-model:openKeys="openKeys"
         theme="dark"
         mode="inline"
         :items="menuItems"
-        :inlineCollapsed="false"
         @select="handleMenuSelect"
       >
       </a-menu>
@@ -32,6 +32,7 @@ import { type ItemType } from "ant-design-vue";
 const route = useRoute();
 const router = useRouter();
 const selectedKeys = ref(["/"]);
+const openKeys = ref<string[]>([]);
 
 watch(
   () => route.path,
@@ -65,6 +66,9 @@ function generateMenuItems(routes: readonly RouteRecordRaw[], parentPath = ""): 
         : parentPath;
 
       if (route.children && route.children.length > 0) {
+        // 设置submenu展开
+        openKeys.value.push(route.path);
+
         return {
           key: fullPath,
           label: route.meta?.title ?? route.name,
