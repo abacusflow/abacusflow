@@ -28,14 +28,9 @@ dependencies {
 }
 
 ktlint {
-    version.set("1.4.1")
     filter {
-        include {
-            it.name.endsWith(".kt") || it.name.endsWith(".kts")
-        }
-        exclude { entry ->
-            entry.file.toString().contains("generated")
-        }
+        include("**/*.kt", "**/*.kts")
+        exclude("**/generated/**")
     }
 }
 

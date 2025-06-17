@@ -23,7 +23,7 @@ docker-java = "3.2.13"
 [plugins]
 jsonschema2pojo = { id = "org.jsonschema2pojo", version.ref = "jsonschema2pojo" }
 openapi-generator = { id = "org.openapi.generator", version.ref = "openapi-generator" }
-#ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 
 [libraries]
 

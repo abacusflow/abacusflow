@@ -1,2 +1,6 @@
 [*.{kt,kts}]
 ktlint_standard_filename = disabled
+
+# TODO 可以之后调整为合适的注释标准
+ktlint_standard_discouraged-comment-location = disabled
+ktlint_standard_if-else-wrapping = disabled
