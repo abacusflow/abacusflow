@@ -10,48 +10,51 @@ import org.bruwave.abacusflow.usecase.transaction.PurchaseItemInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 
-fun BasicPurchaseOrderTO.toBasicVO(): BasicPurchaseOrderVO = BasicPurchaseOrderVO(
-    id = id,
-    orderNo = orderNo.toString(),
-    supplierName = supplierName,
-    status = mapOrderStatusTOToVO(status),
-    totalAmount = totalAmount,
-    totalQuantity = totalQuantity,
-    itemCount = itemCount,
-    orderDate = orderDate
-)
+fun BasicPurchaseOrderTO.toBasicVO(): BasicPurchaseOrderVO =
+    BasicPurchaseOrderVO(
+        id = id,
+        orderNo = orderNo.toString(),
+        supplierName = supplierName,
+        status = mapOrderStatusTOToVO(status),
+        totalAmount = totalAmount,
+        totalQuantity = totalQuantity,
+        itemCount = itemCount,
+        orderDate = orderDate,
+    )
 
-fun PurchaseOrderTO.toVO(): PurchaseOrderVO = PurchaseOrderVO(
-    id = id,
-    orderNo = orderNo.toString(),
-    supplierId = supplierId,
-    status = mapOrderStatusTOToVO(status),
-    orderDate = orderDate,
-    orderItems = items.map { it.toVO() },
-    note = note,
-    createdAt = createdAt.toEpochMilli(),
-    updatedAt = updatedAt.toEpochMilli()
-)
+fun PurchaseOrderTO.toVO(): PurchaseOrderVO =
+    PurchaseOrderVO(
+        id = id,
+        orderNo = orderNo.toString(),
+        supplierId = supplierId,
+        status = mapOrderStatusTOToVO(status),
+        orderDate = orderDate,
+        orderItems = items.map { it.toVO() },
+        note = note,
+        createdAt = createdAt.toEpochMilli(),
+        updatedAt = updatedAt.toEpochMilli(),
+    )
 
-fun PurchaseOrderItemTO.toVO(): PurchaseOrderItemVO = PurchaseOrderItemVO(
-    id = id,
-    productId = productId,
-    quantity = quantity,
-    unitPrice = unitPrice,
-    subtotal = subtotal,
-)
+fun PurchaseOrderItemTO.toVO(): PurchaseOrderItemVO =
+    PurchaseOrderItemVO(
+        id = id,
+        productId = productId,
+        quantity = quantity,
+        unitPrice = unitPrice,
+        subtotal = subtotal,
+    )
 
-fun PurchaseOrderItemInputVO.toInputTO(): PurchaseItemInputTO = PurchaseItemInputTO(
-    productId = productId,
-    quantity = quantity,
-    unitPrice = unitPrice
-)
+fun PurchaseOrderItemInputVO.toInputTO(): PurchaseItemInputTO =
+    PurchaseItemInputTO(
+        productId = productId,
+        quantity = quantity,
+        unitPrice = unitPrice,
+    )
 
-fun mapOrderStatusTOToVO(orderStatus: String): OrderStatusVO {
-    return when (orderStatus.uppercase()) {
+fun mapOrderStatusTOToVO(orderStatus: String): OrderStatusVO =
+    when (orderStatus.uppercase()) {
         "PENDING" -> OrderStatusVO.pending
         "COMPLETED" -> OrderStatusVO.completed
         "CANCELLED" -> OrderStatusVO.cancelled
         else -> throw IllegalArgumentException("Unknown order status: $orderStatus")
     }
-}

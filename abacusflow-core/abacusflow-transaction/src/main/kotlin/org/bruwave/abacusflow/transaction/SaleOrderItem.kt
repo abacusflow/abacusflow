@@ -12,12 +12,10 @@ import jakarta.validation.constraints.PositiveOrZero
 @Table(name = "sale_order_items")
 class SaleOrderItem(
     val productId: Long,
-
     @field:Positive
     val quantity: Int,
-
     @field:PositiveOrZero
-    val unitPrice: Double
+    val unitPrice: Double,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

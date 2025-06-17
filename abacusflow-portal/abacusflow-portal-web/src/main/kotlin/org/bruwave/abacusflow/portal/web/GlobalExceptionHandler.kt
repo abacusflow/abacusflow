@@ -1,23 +1,20 @@
 package org.bruwave.abacusflow.portal.web
 
-import io.swagger.v3.oas.models.responses.ApiResponse
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
-import org.bruwave.abacusflow.portal.web.api.ApiException
-import org.bruwave.abacusflow.portal.web.api.NotFoundException
-import org.bruwave.abacusflow.portal.web.model.ErrorVO
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
-sealed class ControllerException(msg: String, val code: Int) : Exception(msg)
-class NotFoundException(msg: String, code: Int = HttpStatus.NOT_FOUND.value()) : ControllerException(msg, code)
+sealed class ControllerException(
+    msg: String,
+    val code: Int,
+) : Exception(msg)
+
+class NotFoundException(
+    msg: String,
+    code: Int = HttpStatus.NOT_FOUND.value(),
+) : ControllerException(msg, code)
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-
     //    // 处理自定义业务异常
 //    @ExceptionHandler(NotFoundException::class)
 //    fun handleBusinessException(

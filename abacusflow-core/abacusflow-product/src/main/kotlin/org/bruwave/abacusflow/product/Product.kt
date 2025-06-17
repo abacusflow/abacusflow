@@ -28,9 +28,8 @@ class Product(
     unitPrice: Double = 0.0,
     category: ProductCategory,
     supplierId: Long,
-    private val isNew: Boolean = false // 标志是否是新建的
+    private val isNew: Boolean = false, // 标志是否是新建的
 ) : AbstractAggregateRoot<Product>() {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0

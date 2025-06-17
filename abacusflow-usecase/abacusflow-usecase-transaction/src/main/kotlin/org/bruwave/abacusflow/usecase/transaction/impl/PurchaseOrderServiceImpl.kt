@@ -19,22 +19,27 @@ class PurchaseOrderServiceImpl(
     private val purchaseOrderRepository: PurchaseOrderRepository,
     private val supplierRepository: SupplierRepository,
 ) : PurchaseOrderService {
-
     override fun createPurchaseOrder(input: CreatePurchaseOrderInputTO): PurchaseOrderTO {
-        val purchaseOrder = PurchaseOrder(
-            supplierId = input.supplierId,
-            orderDate = input.orderDate,
-            note = input.note,
-        )
+        val purchaseOrder =
+            PurchaseOrder(
+                supplierId = input.supplierId,
+                orderDate = input.orderDate,
+                note = input.note,
+            )
         input.orderItems.forEach {
             purchaseOrder.addItem(it.productId, it.quantity, it.unitPrice)
         }
         return purchaseOrderRepository.save(purchaseOrder).toTO()
     }
 
-    override fun updatePurchaseOrder(id: Long, input: UpdatePurchaseOrderInputTO): PurchaseOrderTO {
-        val purchaseOrder = purchaseOrderRepository.findById(id)
-            .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
+    override fun updatePurchaseOrder(
+        id: Long,
+        input: UpdatePurchaseOrderInputTO,
+    ): PurchaseOrderTO {
+        val purchaseOrder =
+            purchaseOrderRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
 
         purchaseOrder.apply {
             input.supplierId?.let {
@@ -56,21 +61,25 @@ class PurchaseOrderServiceImpl(
     }
 
     override fun deletePurchaseOrder(id: Long): PurchaseOrderTO {
-        val purchaseOrder = purchaseOrderRepository.findById(id)
-            .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
+        val purchaseOrder =
+            purchaseOrderRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
         purchaseOrderRepository.delete(purchaseOrder)
         return purchaseOrder.toTO()
     }
 
-    override fun getPurchaseOrder(id: Long): PurchaseOrderTO {
-        return purchaseOrderRepository.findById(id)
+    override fun getPurchaseOrder(id: Long): PurchaseOrderTO =
+        purchaseOrderRepository
+            .findById(id)
             .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
             .toTO()
-    }
 
     override fun listPurchaseOrdersBySupplier(supplierId: Long): List<BasicPurchaseOrderTO> {
-        val supplier = supplierRepository.findById(supplierId)
-            .orElseThrow { NoSuchElementException("Supplier not found") }
+        val supplier =
+            supplierRepository
+                .findById(supplierId)
+                .orElseThrow { NoSuchElementException("Supplier not found") }
 
         return purchaseOrderRepository.findBySupplierId(supplierId).map { it.toBasicTO(supplier.name) }
     }
@@ -88,8 +97,10 @@ class PurchaseOrderServiceImpl(
     }
 
     override fun completeOrder(id: Long): PurchaseOrderTO {
-        val purchaseOrder = purchaseOrderRepository.findById(id)
-            .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
+        val purchaseOrder =
+            purchaseOrderRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
         purchaseOrder.completeOrder()
         return purchaseOrderRepository.save(purchaseOrder).toTO()
     }

@@ -13,7 +13,6 @@ import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
 
-
 @Entity
 @Table(name = "suppliers")
 class Supplier(
@@ -48,7 +47,11 @@ class Supplier(
     var updatedAt: Instant = Instant.now()
         private set
 
-    fun updateContactInfo(newName: String?, newContactPerson: String?, newPhone: String?) {
+    fun updateContactInfo(
+        newName: String?,
+        newContactPerson: String?,
+        newPhone: String?,
+    ) {
         newName?.let {
             name = it
         }
@@ -76,4 +79,3 @@ class Supplier(
         updatedAt = Instant.now()
     }
 }
-

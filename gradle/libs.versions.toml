@@ -18,6 +18,7 @@ jakarta-validation = "3.1.0"
 swagger = "2.2.25"
 springdoc-openapi-mvc-ui = "2.8.5"
 springdoc-openapi-ui = "1.8.0"
+docker-java = "3.2.13"
 
 [plugins]
 jsonschema2pojo = { id = "org.jsonschema2pojo", version.ref = "jsonschema2pojo" }
@@ -75,3 +76,4 @@ springdoc-openapi-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starte
 springdoc-openapi-ui = { module = "org.springdoc:springdoc-openapi-ui", version.ref = "springdoc-openapi-ui" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 jakarta-validation = { module = "jakarta.validation:jakarta.validation-api", version.ref = "jakarta-validation" }
+docker-java-core = { module = "com.github.docker-java:docker-java-core", version.ref = "docker-java" }

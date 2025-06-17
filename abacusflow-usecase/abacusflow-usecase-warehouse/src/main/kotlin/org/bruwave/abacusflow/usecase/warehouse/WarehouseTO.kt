@@ -9,5 +9,5 @@ data class WarehouseTO(
     val capacity: Int,
     val enabled: Boolean,
     val createdAt: Instant,
-    val updatedAt: Instant
-) 
+    val updatedAt: Instant,
+)

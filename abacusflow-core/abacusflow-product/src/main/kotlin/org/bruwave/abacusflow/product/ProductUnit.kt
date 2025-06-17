@@ -1,6 +1,8 @@
 package org.bruwave.abacusflow.product
 
-enum class ProductUnit(val displayName: String) {
+enum class ProductUnit(
+    val displayName: String,
+) {
     // 数量单位
     PIECE("件"),
     BOX("箱"),

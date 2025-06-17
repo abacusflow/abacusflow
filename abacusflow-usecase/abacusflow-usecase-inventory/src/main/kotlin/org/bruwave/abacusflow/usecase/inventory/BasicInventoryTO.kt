@@ -7,5 +7,5 @@ data class BasicInventoryTO(
     val quantity: Int,
     val availableQuantity: Int,
     val safetyStock: Int,
-    val maxStock: Int
+    val maxStock: Int,
 )

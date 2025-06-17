@@ -45,3 +45,7 @@ tasks.test {
 kotlin {
     jvmToolchain(17)
 }
+
+tasks.named("build") {
+    dependsOn("ktlintFormat")
+}

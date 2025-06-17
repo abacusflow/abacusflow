@@ -20,20 +20,26 @@ class SaleOrderServiceImpl(
     private val customerRepository: CustomerRepository,
 ) : SaleOrderService {
     override fun createSaleOrder(input: CreateSaleOrderInputTO): SaleOrderTO {
-        val saleOrder = SaleOrder(
-            customerId = input.customerId,
-            orderDate = input.orderDate,
-            note = input.note,
-        )
+        val saleOrder =
+            SaleOrder(
+                customerId = input.customerId,
+                orderDate = input.orderDate,
+                note = input.note,
+            )
         input.orderItems.forEach {
             saleOrder.addItem(it.productId, it.quantity, it.unitPrice)
         }
         return saleOrderRepository.save(saleOrder).toTO()
     }
 
-    override fun updateSaleOrder(id: Long, input: UpdateSaleOrderInputTO): SaleOrderTO {
-        val saleOrder = saleOrderRepository.findById(id)
-            .orElseThrow { NoSuchElementException("SaleOrder not found") }
+    override fun updateSaleOrder(
+        id: Long,
+        input: UpdateSaleOrderInputTO,
+    ): SaleOrderTO {
+        val saleOrder =
+            saleOrderRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("SaleOrder not found") }
 
         saleOrder.apply {
             input.customerId?.let {
@@ -55,21 +61,25 @@ class SaleOrderServiceImpl(
     }
 
     override fun deleteSaleOrder(id: Long): SaleOrderTO {
-        val saleOrder = saleOrderRepository.findById(id)
-            .orElseThrow { NoSuchElementException("SaleOrder not found") }
+        val saleOrder =
+            saleOrderRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("SaleOrder not found") }
         saleOrderRepository.delete(saleOrder)
         return saleOrder.toTO()
     }
 
-    override fun getSaleOrder(id: Long): SaleOrderTO {
-        return saleOrderRepository.findById(id)
+    override fun getSaleOrder(id: Long): SaleOrderTO =
+        saleOrderRepository
+            .findById(id)
             .orElseThrow { NoSuchElementException("SaleOrder not found") }
             .toTO()
-    }
 
     override fun listSaleOrdersByCustomer(customerId: Long): List<BasicSaleOrderTO> {
-        val customer = customerRepository.findById(customerId)
-            .orElseThrow { NoSuchElementException("Supplier not found") }
+        val customer =
+            customerRepository
+                .findById(customerId)
+                .orElseThrow { NoSuchElementException("Supplier not found") }
 
         return saleOrderRepository.findAll().map { it.toBasicTO(customer.name) }
     }
@@ -87,8 +97,10 @@ class SaleOrderServiceImpl(
     }
 
     override fun completeOrder(id: Long): SaleOrderTO {
-        val saleOrder = saleOrderRepository.findById(id)
-            .orElseThrow { NoSuchElementException("SaleOrder not found") }
+        val saleOrder =
+            saleOrderRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("SaleOrder not found") }
         saleOrder.completeOrder()
         return saleOrderRepository.save(saleOrder).toTO()
     }

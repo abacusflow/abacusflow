@@ -9,7 +9,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -23,9 +22,8 @@ import java.util.UUID
 class PurchaseOrder(
     supplierId: Long,
     orderDate: LocalDate = LocalDate.now(),
-    note: String?
+    note: String?,
 ) : AbstractAggregateRoot<PurchaseOrder>() {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
@@ -34,7 +32,7 @@ class PurchaseOrder(
     @Column(unique = true)
     val orderNo: UUID = UUID.randomUUID()
 
-    var supplierId: Long = supplierId  // 通过ID关联供应商
+    var supplierId: Long = supplierId // 通过ID关联供应商
         private set
 
     var status: OrderStatus = OrderStatus.PENDING
@@ -55,11 +53,10 @@ class PurchaseOrder(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "order_id")
-    val _items: MutableList<PurchaseOrderItem> = mutableListOf()
+    private val itemsMutable: MutableList<PurchaseOrderItem> = mutableListOf()
 
     val items: List<PurchaseOrderItem>
-        get() = _items.toList()
-
+        get() = itemsMutable.toList()
 
     fun updateBasicInfo(newNote: String?) {
         newNote?.let {
@@ -81,8 +78,12 @@ class PurchaseOrder(
     }
 
     // TODO 最佳方案是替换为增量更新
-    fun addItem(productId: Long, quantity: Int, unitPrice: Double) {
-        _items.add(PurchaseOrderItem(productId, quantity, unitPrice))
+    fun addItem(
+        productId: Long,
+        quantity: Int,
+        unitPrice: Double,
+    ) {
+        itemsMutable.add(PurchaseOrderItem(productId, quantity, unitPrice))
         updatedAt = Instant.now()
     }
 
@@ -90,13 +91,18 @@ class PurchaseOrder(
         require(status == OrderStatus.PENDING) { "只有待处理订单才能完成" }
         status = OrderStatus.COMPLETED
         updatedAt = Instant.now()
-        registerEvent(PurchaseOrderCompletedEvent(id, items.map {
-            PurchaseOrderItem(it.productId, it.quantity, it.unitPrice)
-        }))
+        registerEvent(
+            PurchaseOrderCompletedEvent(
+                id,
+                items.map {
+                    PurchaseOrderItem(it.productId, it.quantity, it.unitPrice)
+                },
+            ),
+        )
     }
 
     fun clearItems() {
-        _items.clear()
+        itemsMutable.clear()
     }
 
     val totalAmount: Double
@@ -106,4 +112,3 @@ class PurchaseOrder(
     val itemCount: Int
         get() = items.distinctBy { it.productId }.size
 }
-

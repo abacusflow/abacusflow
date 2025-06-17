@@ -8,5 +8,5 @@ data class SupplierTO(
     val contactPerson: String?,
     val phone: String?,
     val createdAt: Instant,
-    val updatedAt: Instant
-) 
+    val updatedAt: Instant,
+)
