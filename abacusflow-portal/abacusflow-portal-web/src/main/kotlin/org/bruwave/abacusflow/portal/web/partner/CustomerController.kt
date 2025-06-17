@@ -13,51 +13,52 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CustomerController(
-    private val customerService: CustomerService
+    private val customerService: CustomerService,
 ) : CustomersApi {
-
     override fun listCustomers(): ResponseEntity<List<BasicCustomerVO>> {
-        val customerVOs = customerService.listCustomers().map { customer ->
-            customer.toBasicVO()
-        }
+        val customerVOs =
+            customerService.listCustomers().map { customer ->
+                customer.toBasicVO()
+            }
         return ResponseEntity.ok(customerVOs)
     }
 
     override fun getCustomer(id: Long): ResponseEntity<CustomerVO> {
         val customer = customerService.getCustomer(id)
         return ResponseEntity.ok(
-            customer.toVO()
+            customer.toVO(),
         )
     }
 
     override fun addCustomer(createCustomerInputVO: CreateCustomerInputVO): ResponseEntity<CustomerVO> {
-        val customer = customerService.createCustomer(
-            CreateCustomerInputTO(
-                name = createCustomerInputVO.name,
-                phone = createCustomerInputVO.phone,
-                address = createCustomerInputVO.address,
+        val customer =
+            customerService.createCustomer(
+                CreateCustomerInputTO(
+                    name = createCustomerInputVO.name,
+                    phone = createCustomerInputVO.phone,
+                    address = createCustomerInputVO.address,
+                ),
             )
-        )
         return ResponseEntity.ok(
-            customer.toVO()
-
+            customer.toVO(),
         )
     }
 
     override fun updateCustomer(
         id: Long,
-        updateCustomerInputVO: UpdateCustomerInputVO
+        updateCustomerInputVO: UpdateCustomerInputVO,
     ): ResponseEntity<CustomerVO> {
-        val customer = customerService.updateCustomer(
-            id,
-            UpdateCustomerInputTO(
-                name = updateCustomerInputVO.name,
-                phone = updateCustomerInputVO.phone,
-                address = updateCustomerInputVO.address
+        val customer =
+            customerService.updateCustomer(
+                id,
+                UpdateCustomerInputTO(
+                    name = updateCustomerInputVO.name,
+                    phone = updateCustomerInputVO.phone,
+                    address = updateCustomerInputVO.address,
+                ),
             )
-        )
         return ResponseEntity.ok(
-            customer.toVO()
+            customer.toVO(),
         )
     }
 

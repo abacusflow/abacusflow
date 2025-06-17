@@ -13,5 +13,5 @@ data class BasicPurchaseOrderTO(
     val totalQuantity: Long,
     val itemCount: Int,
     val orderDate: LocalDate,
-    val createdAt: Instant
+    val createdAt: Instant,
 )

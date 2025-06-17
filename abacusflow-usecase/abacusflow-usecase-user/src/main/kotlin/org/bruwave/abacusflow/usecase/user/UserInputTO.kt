@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.usecase.user
 
-
 data class CreateUserInputTO(
     val name: String,
     val nick: String,

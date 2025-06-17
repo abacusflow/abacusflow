@@ -6,17 +6,18 @@ import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
 
-fun SaleOrder.toTO() = SaleOrderTO(
-    id = id,
-    customerId = customerId,
-    status = status.name,
-    items = items.map { it.toTO() },
-    createdAt = createdAt,
-    updatedAt = updatedAt,
-    orderNo = orderNo,
-    orderDate = orderDate,
-    note = note
-)
+fun SaleOrder.toTO() =
+    SaleOrderTO(
+        id = id,
+        customerId = customerId,
+        status = status.name,
+        items = items.map { it.toTO() },
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        orderNo = orderNo,
+        orderDate = orderDate,
+        note = note,
+    )
 
 fun SaleOrder.toBasicTO(customerName: String) =
     BasicSaleOrderTO(
@@ -31,10 +32,11 @@ fun SaleOrder.toBasicTO(customerName: String) =
         orderDate = orderDate,
     )
 
-fun SaleOrderItem.toTO() = SaleOrderItemTO(
-    id = id,
-    productId = productId,
-    quantity = quantity,
-    unitPrice = unitPrice,
-    subtotal = subtotal
-)
+fun SaleOrderItem.toTO() =
+    SaleOrderItemTO(
+        id = id,
+        productId = productId,
+        quantity = quantity,
+        unitPrice = unitPrice,
+        subtotal = subtotal,
+    )

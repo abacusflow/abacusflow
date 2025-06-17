@@ -8,5 +8,5 @@ data class CustomerTO(
     val phone: String?,
     val address: String?,
     val createdAt: Instant,
-    val updatedAt: Instant
-) 
+    val updatedAt: Instant,
+)

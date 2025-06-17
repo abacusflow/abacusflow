@@ -20,7 +20,6 @@ class Warehouse(
     location: String?,
     capacity: Int?,
 ) : AbstractAggregateRoot<Warehouse>() {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
@@ -48,7 +47,11 @@ class Warehouse(
     var updatedAt: Instant = Instant.now()
         private set
 
-    fun updateWarehouseInfo(newName: String?, newLocation: String? = null, newCapacity: Int? = null) {
+    fun updateWarehouseInfo(
+        newName: String?,
+        newLocation: String? = null,
+        newCapacity: Int? = null,
+    ) {
         newName?.let {
             name = it
         }
@@ -61,7 +64,6 @@ class Warehouse(
         updatedAt = Instant.now()
         registerEvent(WarehouseUpdatedEvent(id))
     }
-
 
     fun enable() {
         if (enabled) return

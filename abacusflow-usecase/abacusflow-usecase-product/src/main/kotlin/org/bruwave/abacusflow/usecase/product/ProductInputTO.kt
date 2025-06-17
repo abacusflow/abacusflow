@@ -6,7 +6,7 @@ data class CreateProductInputTO(
     val supplierId: Long,
     val unit: String,
     val unitPrice: Double,
-    val specification: String?
+    val specification: String?,
 )
 
 data class UpdateProductInputTO(
@@ -15,5 +15,5 @@ data class UpdateProductInputTO(
     val supplierId: Long?,
     val unit: String?,
     val unitPrice: Double?,
-    val specification: String?
+    val specification: String?,
 )

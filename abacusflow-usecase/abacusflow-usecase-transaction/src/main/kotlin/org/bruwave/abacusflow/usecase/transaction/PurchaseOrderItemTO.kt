@@ -5,5 +5,5 @@ data class PurchaseOrderItemTO(
     val productId: Long,
     val quantity: Int,
     val unitPrice: Double,
-    val subtotal: Double
+    val subtotal: Double,
 )

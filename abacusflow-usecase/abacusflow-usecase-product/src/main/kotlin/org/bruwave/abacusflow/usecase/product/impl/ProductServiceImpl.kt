@@ -5,8 +5,14 @@ import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.product.ProductDeletedEvent
-import org.bruwave.abacusflow.product.ProductUnit
-import org.bruwave.abacusflow.usecase.product.*
+import org.bruwave.abacusflow.usecase.product.BasicProductTO
+import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
+import org.bruwave.abacusflow.usecase.product.ProductService
+import org.bruwave.abacusflow.usecase.product.ProductTO
+import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
+import org.bruwave.abacusflow.usecase.product.mapProductUnitTOToDO
+import org.bruwave.abacusflow.usecase.product.toBasicTO
+import org.bruwave.abacusflow.usecase.product.toTO
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,30 +23,35 @@ class ProductServiceImpl(
     private val productRepository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
     private val supplierRepository: SupplierRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) : ProductService {
-
     override fun createProduct(input: CreateProductInputTO): ProductTO {
-        val newProductCategory = productCategoryRepository.findById(input.categoryId).orElseThrow {
-            NoSuchElementException("ProductCategory not found with id: ${input.categoryId}")
-        }
+        val newProductCategory =
+            productCategoryRepository.findById(input.categoryId).orElseThrow {
+                NoSuchElementException("ProductCategory not found with id: ${input.categoryId}")
+            }
 
-        val newProduct = Product(
-            isNew = true,
-
-            name = input.name,
-            specification = input.specification,
-            unit = mapProductUnitTOToDO(input.unit),
-            unitPrice = input.unitPrice,
-            category = newProductCategory,
-            supplierId = input.supplierId
-        )
+        val newProduct =
+            Product(
+                isNew = true,
+                name = input.name,
+                specification = input.specification,
+                unit = mapProductUnitTOToDO(input.unit),
+                unitPrice = input.unitPrice,
+                category = newProductCategory,
+                supplierId = input.supplierId,
+            )
         return productRepository.save(newProduct).toTO()
     }
 
-    override fun updateProduct(id: Long, input: UpdateProductInputTO): ProductTO {
-        val product = productRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Product not found with id: $id") }
+    override fun updateProduct(
+        id: Long,
+        input: UpdateProductInputTO,
+    ): ProductTO {
+        val product =
+            productRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Product not found with id: $id") }
 
         product.apply {
             updateBasicInfo(
@@ -51,9 +62,10 @@ class ProductServiceImpl(
             )
 
             input.categoryId?.let { categoryId ->
-                val newProductCategory = productCategoryRepository.findById(categoryId).orElseThrow {
-                    NoSuchElementException("Product not found with id: ${categoryId}")
-                }
+                val newProductCategory =
+                    productCategoryRepository.findById(categoryId).orElseThrow {
+                        NoSuchElementException("Product not found with id: $categoryId")
+                    }
 
                 changeCategory(newProductCategory)
             }
@@ -65,8 +77,10 @@ class ProductServiceImpl(
     }
 
     override fun deleteProduct(id: Long): ProductTO {
-        val product = productRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Product not found with id: $id") }
+        val product =
+            productRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Product not found with id: $id") }
 
         // TODO 这种聚合根之间的集联删除的最佳实践是什么
         productRepository.delete(product)
@@ -75,17 +89,17 @@ class ProductServiceImpl(
         return product.toTO()
     }
 
-    override fun getProduct(id: Long): ProductTO {
-        return productRepository.findById(id)
+    override fun getProduct(id: Long): ProductTO =
+        productRepository
+            .findById(id)
             .orElseThrow { NoSuchElementException("Product not found with id: $id") }
             .toTO()
-    }
 
-    override fun getProduct(name: String): ProductTO {
-        return productRepository.findByName(name)
+    override fun getProduct(name: String): ProductTO =
+        productRepository
+            .findByName(name)
             ?.toTO()
             ?: throw NoSuchElementException("Product not found")
-    }
 
     override fun listProducts(): List<BasicProductTO> {
         val products = productRepository.findAll()

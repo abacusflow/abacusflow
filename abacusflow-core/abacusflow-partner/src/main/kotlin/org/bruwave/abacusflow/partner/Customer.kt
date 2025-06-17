@@ -19,8 +19,7 @@ class Customer(
     name: String,
     phone: String?,
     address: String?,
-    ) : AbstractAggregateRoot<Customer>() {
-
+) : AbstractAggregateRoot<Customer>() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
@@ -48,7 +47,11 @@ class Customer(
     var updatedAt: Instant = Instant.now()
         private set
 
-    fun updateContactInfo(newName: String?, newAddress: String?, newPhone: String?) {
+    fun updateContactInfo(
+        newName: String?,
+        newAddress: String?,
+        newPhone: String?,
+    ) {
         newName?.let {
             name = it
         }

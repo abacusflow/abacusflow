@@ -84,13 +84,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, inject } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { ProductApi, Product, BasicProduct } from "@/core/openapi";
+import {inject, ref} from "vue";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
+import type {BasicProduct, Product, ProductApi} from "@/core/openapi";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
+import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
+import {message} from "ant-design-vue";
 
 const productApi = inject("productApi") as ProductApi;
 const queryClient = useQueryClient();

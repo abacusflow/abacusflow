@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.usecase.inventory
 
-import org.bruwave.abacusflow.inventory.Inventory
 import java.time.Instant
 
 data class InventoryTO(
@@ -14,5 +13,5 @@ data class InventoryTO(
     val maxStock: Int,
     val version: Long,
     val createdAt: Instant,
-    val updatedAt: Instant
+    val updatedAt: Instant,
 )

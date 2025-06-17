@@ -1,7 +1,6 @@
 package org.bruwave.abacusflow.usecase.transaction
 
 interface SaleOrderService {
-
     /**
      * 创建销售订单（包含订单项）
      */
@@ -10,7 +9,10 @@ interface SaleOrderService {
     /**
      * 更新销售订单状态（不修改订单项）
      */
-    fun updateSaleOrder(id: Long, input: UpdateSaleOrderInputTO): SaleOrderTO
+    fun updateSaleOrder(
+        id: Long,
+        input: UpdateSaleOrderInputTO,
+    ): SaleOrderTO
 
     /**
      * 删除销售订单

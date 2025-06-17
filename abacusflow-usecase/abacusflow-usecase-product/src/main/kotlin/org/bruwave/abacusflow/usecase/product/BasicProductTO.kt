@@ -8,5 +8,5 @@ data class BasicProductTO(
     val unit: String,
     val unitPrice: Double,
     val specification: String?,
-    val enabled: Boolean
+    val enabled: Boolean,
 )

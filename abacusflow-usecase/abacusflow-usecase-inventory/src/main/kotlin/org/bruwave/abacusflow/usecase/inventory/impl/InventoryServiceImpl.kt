@@ -4,67 +4,98 @@ import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.warehouse.WarehouseRepository
 import org.bruwave.abacusflow.inventory.Inventory
-import org.bruwave.abacusflow.usecase.inventory.*
+import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
+import org.bruwave.abacusflow.usecase.inventory.CreateInventoryInputTO
+import org.bruwave.abacusflow.usecase.inventory.InventoryService
+import org.bruwave.abacusflow.usecase.inventory.InventoryTO
+import org.bruwave.abacusflow.usecase.inventory.toBasicTO
+import org.bruwave.abacusflow.usecase.inventory.toTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class InventoriesServiceImpl(
+class InventoryServiceImpl(
     private val inventoryRepository: InventoryRepository,
     private val productRepository: ProductRepository,
-    private val warehouseRepository: WarehouseRepository
-) : InventoriesService {
-
+    private val warehouseRepository: WarehouseRepository,
+) : InventoryService {
     override fun createInventory(input: CreateInventoryInputTO): InventoryTO {
-        val inventory = Inventory(
-            productId = input.productId,
-            warehouseId = input.warehouseId,
-            quantity = input.quantity,
-        )
+        val inventory =
+            Inventory(
+                productId = input.productId,
+                warehouseId = input.warehouseId,
+                quantity = input.quantity,
+            )
         return inventoryRepository.save(inventory).toTO()
     }
 
-    override fun increaseInventory(id: Long, amount: Int) {
-        val inventory = inventoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Inventory not found") }
+    override fun increaseInventory(
+        id: Long,
+        amount: Int,
+    ) {
+        val inventory =
+            inventoryRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Inventory not found") }
         inventory.increaseQuantity(amount)
         inventoryRepository.save(inventory)
     }
 
-    override fun decreaseInventory(id: Long, amount: Int) {
-        val inventory = inventoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Inventory not found") }
+    override fun decreaseInventory(
+        id: Long,
+        amount: Int,
+    ) {
+        val inventory =
+            inventoryRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Inventory not found") }
         inventory.decreaseQuantity(amount)
         inventoryRepository.save(inventory)
     }
 
-    override fun reserveInventory(id: Long, amount: Int) {
-        val inventory = inventoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Inventory not found") }
+    override fun reserveInventory(
+        id: Long,
+        amount: Int,
+    ) {
+        val inventory =
+            inventoryRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Inventory not found") }
         inventory.reserveInventory(amount)
         inventoryRepository.save(inventory)
     }
 
-    override fun assignWarehouse(id: Long, newWarehouseId: Long) {
-        val inventory = inventoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Inventory not found") }
+    override fun assignWarehouse(
+        id: Long,
+        newWarehouseId: Long,
+    ) {
+        val inventory =
+            inventoryRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Inventory not found") }
         inventory.assignWarehouse(newWarehouseId)
         inventoryRepository.save(inventory)
     }
 
-    override fun adjustWarningLine(id: Long, newSafetyStock: Int, newMaxStock: Int) {
-        val inventory = inventoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Inventory not found") }
+    override fun adjustWarningLine(
+        id: Long,
+        newSafetyStock: Int,
+        newMaxStock: Int,
+    ) {
+        val inventory =
+            inventoryRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Inventory not found") }
         inventory.adjustWarningLine(newSafetyStock, newMaxStock)
         inventoryRepository.save(inventory)
     }
 
-    override fun getInventory(id: Long): InventoryTO {
-        return inventoryRepository.findById(id)
+    override fun getInventory(id: Long): InventoryTO =
+        inventoryRepository
+            .findById(id)
             .orElseThrow { NoSuchElementException("Inventory not found with id: $id") }
             .toTO()
-    }
 
     override fun listInventories(): List<BasicInventoryTO> {
         val inventories = inventoryRepository.findAll()
@@ -84,10 +115,11 @@ class InventoriesServiceImpl(
     }
 
     override fun checkSafetyStock(id: Long): Boolean {
-        val inventory = inventoryRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Inventory not found with id: $id") }
+        val inventory =
+            inventoryRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Inventory not found with id: $id") }
 
         return inventory.isBelowSafetyStock
     }
 }
-

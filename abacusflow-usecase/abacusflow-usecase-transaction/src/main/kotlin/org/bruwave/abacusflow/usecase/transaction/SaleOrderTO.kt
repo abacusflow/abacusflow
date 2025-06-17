@@ -13,7 +13,7 @@ data class SaleOrderTO(
     val items: List<SaleOrderItemTO>,
     val createdAt: Instant,
     val updatedAt: Instant,
-    val orderDate: LocalDate
+    val orderDate: LocalDate,
 )
 
 data class SaleOrderItemTO(
@@ -21,5 +21,5 @@ data class SaleOrderItemTO(
     val productId: Long,
     val quantity: Int,
     val unitPrice: Double,
-    val subtotal: Double
+    val subtotal: Double,
 )

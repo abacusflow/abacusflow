@@ -28,11 +28,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watchEffect } from "vue";
-import { message, type FormInstance } from "ant-design-vue";
-import { inject } from "vue";
-import { type UpdateWarehouseInput, type WarehouseApi } from "@/core/openapi";
-import { useMutation, useQuery } from "@tanstack/vue-query";
+import {inject, reactive, ref, watchEffect} from "vue";
+import {type FormInstance, message} from "ant-design-vue";
+import {type UpdateWarehouseInput, type WarehouseApi} from "@/core/openapi";
+import {useMutation, useQuery} from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 

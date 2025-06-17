@@ -13,52 +13,54 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class PurchaseOrderController(
-    private val purchaseOrderService: PurchaseOrderService
+    private val purchaseOrderService: PurchaseOrderService,
 ) : PurchaseOrdersApi {
-
     override fun listPurchaseOrders(): ResponseEntity<List<BasicPurchaseOrderVO>> {
-        val orderVOs = purchaseOrderService.listPurchaseOrders().map { order ->
-            order.toBasicVO()
-        }
+        val orderVOs =
+            purchaseOrderService.listPurchaseOrders().map { order ->
+                order.toBasicVO()
+            }
         return ResponseEntity.ok(orderVOs)
     }
 
     override fun getPurchaseOrder(id: Long): ResponseEntity<PurchaseOrderVO> {
         val order = purchaseOrderService.getPurchaseOrder(id)
         return ResponseEntity.ok(
-            order.toVO()
+            order.toVO(),
         )
     }
 
     override fun addPurchaseOrder(createPurchaseOrderInputVO: CreatePurchaseOrderInputVO): ResponseEntity<PurchaseOrderVO> {
-        val order = purchaseOrderService.createPurchaseOrder(
-            CreatePurchaseOrderInputTO(
-                supplierId = createPurchaseOrderInputVO.supplierId,
-                orderDate = createPurchaseOrderInputVO.orderDate,
-                orderItems = createPurchaseOrderInputVO.orderItems.map { it.toInputTO() },
-                note = createPurchaseOrderInputVO.note
+        val order =
+            purchaseOrderService.createPurchaseOrder(
+                CreatePurchaseOrderInputTO(
+                    supplierId = createPurchaseOrderInputVO.supplierId,
+                    orderDate = createPurchaseOrderInputVO.orderDate,
+                    orderItems = createPurchaseOrderInputVO.orderItems.map { it.toInputTO() },
+                    note = createPurchaseOrderInputVO.note,
+                ),
             )
-        )
         return ResponseEntity.ok(
-            order.toVO()
+            order.toVO(),
         )
     }
 
     override fun updatePurchaseOrder(
         id: Long,
-        updatePurchaseOrderInputVO: UpdatePurchaseOrderInputVO
+        updatePurchaseOrderInputVO: UpdatePurchaseOrderInputVO,
     ): ResponseEntity<PurchaseOrderVO> {
-        val order = purchaseOrderService.updatePurchaseOrder(
-            id,
-            UpdatePurchaseOrderInputTO(
-                supplierId = updatePurchaseOrderInputVO.supplierId,
-                orderDate = updatePurchaseOrderInputVO.orderDate,
-                orderItems = updatePurchaseOrderInputVO.orderItems?.map { it.toInputTO() },
-                note = updatePurchaseOrderInputVO.note
+        val order =
+            purchaseOrderService.updatePurchaseOrder(
+                id,
+                UpdatePurchaseOrderInputTO(
+                    supplierId = updatePurchaseOrderInputVO.supplierId,
+                    orderDate = updatePurchaseOrderInputVO.orderDate,
+                    orderItems = updatePurchaseOrderInputVO.orderItems?.map { it.toInputTO() },
+                    note = updatePurchaseOrderInputVO.note,
+                ),
             )
-        )
         return ResponseEntity.ok(
-            order.toVO()
+            order.toVO(),
         )
     }
 

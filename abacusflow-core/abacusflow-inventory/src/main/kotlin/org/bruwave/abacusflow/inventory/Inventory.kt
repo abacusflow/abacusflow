@@ -7,7 +7,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.persistence.Version
 import jakarta.validation.constraints.PositiveOrZero
-import jdk.jfr.internal.SecuritySupport.registerEvent
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
@@ -16,18 +15,16 @@ import java.time.Instant
 @Entity
 @Table(name = "inventories")
 class Inventory(
-    val productId: Long,  // 通过ID关联商品
-
+    val productId: Long, // 通过ID关联商品
     warehouseId: Long?,
     quantity: Int = 0,
     reservedQuantity: Int = 0,
 ) : AbstractAggregateRoot<Inventory>() {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
-    var warehouseId: Long? = warehouseId  // 通过ID关联仓库
+    var warehouseId: Long? = warehouseId // 通过ID关联仓库
         private set
 
     @field:PositiveOrZero
@@ -40,11 +37,11 @@ class Inventory(
 
     @field:PositiveOrZero
     var safetyStock: Int = 1
-        //安全库存量
+        // 安全库存量
         private set
 
     @field:PositiveOrZero
-    var maxStock: Int = 10 //安全库存量
+    var maxStock: Int = 10 // 安全库存量
         private set
 
     @Version
@@ -87,7 +84,6 @@ class Inventory(
 //        registerEvent(InventoryReservedEvent(id, productId, warehouseId, amount))
     }
 
-
     fun assignWarehouse(newWarehouseId: Long) {
         require(newWarehouseId > 0) { "无效的仓库ID" }
 
@@ -100,7 +96,10 @@ class Inventory(
 //        registerEvent(WarehouseAssignedEvent(id, productId, newWarehouseId))
     }
 
-    fun adjustWarningLine(newSafetyStock: Int, newMaxStock: Int) {
+    fun adjustWarningLine(
+        newSafetyStock: Int,
+        newMaxStock: Int,
+    ) {
         require(newSafetyStock >= 0) { "安全库存不能为负数" }
         require(newMaxStock >= newSafetyStock) { "最大库存必须大于或等于安全库存" }
 

@@ -13,51 +13,53 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SupplierController(
-    private val supplierService: SupplierService
+    private val supplierService: SupplierService,
 ) : SuppliersApi {
-
     override fun listSuppliers(): ResponseEntity<List<BasicSupplierVO>> {
         val suppliers = supplierService.listSuppliers()
-        val supplierVOs = suppliers.map { supplier ->
-            supplier.toBasicVO()
-        }
+        val supplierVOs =
+            suppliers.map { supplier ->
+                supplier.toBasicVO()
+            }
         return ResponseEntity.ok(supplierVOs)
     }
 
     override fun getSupplier(id: Long): ResponseEntity<SupplierVO> {
         val supplier = supplierService.getSupplier(id)
         return ResponseEntity.ok(
-            supplier.toVO()
+            supplier.toVO(),
         )
     }
 
     override fun addSupplier(createSupplierInputVO: CreateSupplierInputVO): ResponseEntity<SupplierVO> {
-        val supplier = supplierService.createSupplier(
-            CreateSupplierInputTO(
-                createSupplierInputVO.name,
-                createSupplierInputVO.contactPerson,
-                createSupplierInputVO.phone
+        val supplier =
+            supplierService.createSupplier(
+                CreateSupplierInputTO(
+                    createSupplierInputVO.name,
+                    createSupplierInputVO.contactPerson,
+                    createSupplierInputVO.phone,
+                ),
             )
-        )
         return ResponseEntity.ok(
-            supplier.toVO()
+            supplier.toVO(),
         )
     }
 
     override fun updateSupplier(
         id: Long,
-        updateSupplierInputVO: UpdateSupplierInputVO
+        updateSupplierInputVO: UpdateSupplierInputVO,
     ): ResponseEntity<SupplierVO> {
-        val supplier = supplierService.updateSupplier(
-            id,
-            UpdateSupplierInputTO(
-                name = updateSupplierInputVO.name,
-                contactPerson = updateSupplierInputVO.contactPerson,
-                phone = updateSupplierInputVO.phone
+        val supplier =
+            supplierService.updateSupplier(
+                id,
+                UpdateSupplierInputTO(
+                    name = updateSupplierInputVO.name,
+                    contactPerson = updateSupplierInputVO.contactPerson,
+                    phone = updateSupplierInputVO.phone,
+                ),
             )
-        )
         return ResponseEntity.ok(
-            supplier.toVO()
+            supplier.toVO(),
         )
     }
 

@@ -6,13 +6,12 @@ data class CreateSaleOrderInputTO(
     val customerId: Long,
     val orderDate: LocalDate,
     val orderItems: List<SaleItemInputTO>,
-    val note: String?
+    val note: String?,
 )
 
 data class UpdateSaleOrderInputTO(
     val customerId: Long?,
     val orderDate: LocalDate?,
     val orderItems: List<SaleItemInputTO>?,
-    val note: String?
+    val note: String?,
 )
-

@@ -69,13 +69,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, inject, computed } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { Customer, BasicCustomer, PartnerApi } from "@/core/openapi";
+import {computed, inject, ref} from "vue";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
+import type {BasicCustomer, Customer, PartnerApi} from "@/core/openapi";
 import CustomerAddView from "./CustomerAddView.vue";
 import CustomerEditView from "./CustomerEditView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
+import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
+import {message} from "ant-design-vue";
 
 const partnerApi = inject("partnerApi") as PartnerApi;
 const queryClient = useQueryClient();

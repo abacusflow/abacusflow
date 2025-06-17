@@ -2,7 +2,8 @@ package org.bruwave.abacusflow.commons
 
 enum class Sex {
     M,
-    F;
+    F,
+    ;
 
     companion object {
         fun fromString(value: String): Sex =

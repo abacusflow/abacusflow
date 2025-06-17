@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 class ProductEventListener(
     private val inventoryRepository: InventoryRepository,
 ) {
-
     @EventListener
     @Transactional
     fun handleProductCreated(event: ProductCreatedEvent) {
@@ -22,7 +21,7 @@ class ProductEventListener(
             Inventory(
                 productId = event.product.id,
                 warehouseId = null,
-            )
+            ),
         )
     }
 

@@ -13,5 +13,5 @@ data class PurchaseOrderTO(
     val items: List<PurchaseOrderItemTO>,
     val note: String?,
     val createdAt: Instant,
-    val updatedAt: Instant
+    val updatedAt: Instant,
 )

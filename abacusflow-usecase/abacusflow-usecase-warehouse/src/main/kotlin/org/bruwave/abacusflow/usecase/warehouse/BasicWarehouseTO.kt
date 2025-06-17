@@ -5,5 +5,5 @@ data class BasicWarehouseTO(
     val name: String,
     val location: String?,
     val capacity: Int,
-    val enabled: Boolean
+    val enabled: Boolean,
 )

@@ -13,53 +13,55 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SaleOrderController(
-    private val saleOrderService: SaleOrderService
+    private val saleOrderService: SaleOrderService,
 ) : SaleOrdersApi {
-
     override fun listSaleOrders(): ResponseEntity<List<BasicSaleOrderVO>> {
         val orders = saleOrderService.listSaleOrders()
-        val orderVOs = orders.map { order ->
-            order.toBasicVO()
-        }
+        val orderVOs =
+            orders.map { order ->
+                order.toBasicVO()
+            }
         return ResponseEntity.ok(orderVOs)
     }
 
     override fun getSaleOrder(id: Long): ResponseEntity<SaleOrderVO> {
         val order = saleOrderService.getSaleOrder(id)
         return ResponseEntity.ok(
-            order.toVO()
+            order.toVO(),
         )
     }
 
     override fun addSaleOrder(createSaleOrderInputVO: CreateSaleOrderInputVO): ResponseEntity<SaleOrderVO> {
-        val order = saleOrderService.createSaleOrder(
-            CreateSaleOrderInputTO(
-                createSaleOrderInputVO.customerId,
-                createSaleOrderInputVO.orderDate,
-                createSaleOrderInputVO.orderItems.map { it.toInputTO() },
-                createSaleOrderInputVO.note
+        val order =
+            saleOrderService.createSaleOrder(
+                CreateSaleOrderInputTO(
+                    createSaleOrderInputVO.customerId,
+                    createSaleOrderInputVO.orderDate,
+                    createSaleOrderInputVO.orderItems.map { it.toInputTO() },
+                    createSaleOrderInputVO.note,
+                ),
             )
-        )
         return ResponseEntity.ok(
-            order.toVO()
+            order.toVO(),
         )
     }
 
     override fun updateSaleOrder(
         id: Long,
-        updateSaleOrderInputVO: UpdateSaleOrderInputVO
+        updateSaleOrderInputVO: UpdateSaleOrderInputVO,
     ): ResponseEntity<SaleOrderVO> {
-        val order = saleOrderService.updateSaleOrder(
-            id,
-            UpdateSaleOrderInputTO(
-                customerId = updateSaleOrderInputVO.customerId,
-                orderDate = updateSaleOrderInputVO.orderDate,
-                orderItems = updateSaleOrderInputVO.orderItems?.map { it.toInputTO() },
-                note = updateSaleOrderInputVO.note
+        val order =
+            saleOrderService.updateSaleOrder(
+                id,
+                UpdateSaleOrderInputTO(
+                    customerId = updateSaleOrderInputVO.customerId,
+                    orderDate = updateSaleOrderInputVO.orderDate,
+                    orderItems = updateSaleOrderInputVO.orderItems?.map { it.toInputTO() },
+                    note = updateSaleOrderInputVO.note,
+                ),
             )
-        )
         return ResponseEntity.ok(
-            order.toVO()
+            order.toVO(),
         )
     }
 
@@ -67,4 +69,4 @@ class SaleOrderController(
         saleOrderService.deleteSaleOrder(id)
         return ResponseEntity.ok().build()
     }
-} 
+}
