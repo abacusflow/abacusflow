@@ -1,0 +1,35 @@
+include:
+  - path: ./docker-compose-base.yml
+
+services:
+  abacusflow-server:
+    container_name: abacusflow-server
+    image: brucewang5638/abacusflow-server:${ABACUSFLOW_SERVER_VERSION}
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - abacusflow-network
+    depends_on:
+      - db
+    expose:
+      - 8080
+    ports:
+      - "${ABACUSFLOW_SERVER_PORT}:8080"
+  abacusflow-web:
+    container_name: abacusflow-web
+    image: brucewang5638/abacusflow-web:${ABACUSFLOW_WEB_VERSION}
+    environment:
+      - ABACUSFLOW_SERVER_HOST=${ABACUSFLOW_SERVER_HOST}
+      - ABACUSFLOW_SERVER_PORT=${ABACUSFLOW_SERVER_PORT}
+    networks:
+      - abacusflow-network
+    depends_on:
+      - abacusflow-server
+    expose:
+      - 5173:80
+    ports:
+      - "${ABACUSFLOW_WEB_PORT}:80"
+

@@ -1,5 +1,3 @@
-import org.bruwave.abacusflow.build.DockerBuildPlugin
-
 plugins {
     id("abacusflow-base")
     id("org.springframework.boot")
@@ -10,4 +8,4 @@ dependencies {
     implementation(project(":abacusflow-portal:abacusflow-portal-web"))
 }
 
-apply<DockerBuildPlugin>()
+//apply<DockerBuildPlugin>()

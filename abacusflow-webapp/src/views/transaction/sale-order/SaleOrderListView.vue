@@ -82,13 +82,13 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref} from "vue";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
-import type {BasicSaleOrder, TransactionApi} from "@/core/openapi";
+import { computed, inject, ref } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { BasicSaleOrder, TransactionApi } from "@/core/openapi";
 import SaleOrderAddView from "./SaleOrderAddView.vue";
 import SaleOrderEditView from "./SaleOrderEditView.vue";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
-import {message} from "ant-design-vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { message } from "ant-design-vue";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();

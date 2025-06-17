@@ -30,7 +30,9 @@ dependencies {
 ktlint {
     filter {
         include("**/*.kt", "**/*.kts")
-        exclude("**/generated/**")
+        exclude {
+            it.file.path.toString().contains("build")
+        }
     }
 }
 
