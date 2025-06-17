@@ -62,13 +62,13 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, ref} from "vue";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
-import type {BasicWarehouse, Warehouse, WarehouseApi} from "@/core/openapi";
+import { inject, ref } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { BasicWarehouse, Warehouse, WarehouseApi } from "@/core/openapi";
 import WarehouseAddView from "./WarehouseAddView.vue";
 import WarehouseEditView from "./WarehouseEditView.vue";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
-import {message} from "ant-design-vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { message } from "ant-design-vue";
 
 const warehouseApi = inject("warehouseApi") as WarehouseApi;
 const queryClient = useQueryClient();

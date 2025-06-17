@@ -1,5 +1,5 @@
 // injectGlobalProperties.ts
-import type {App} from "vue";
+import type { App } from "vue";
 
 // 定义工具函数的键值对类型
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

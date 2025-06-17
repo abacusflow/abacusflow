@@ -150,8 +150,8 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, ref} from "vue";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
+import { inject, ref } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type {
   BasicInventory,
   IncreaseInventoryRequest,
@@ -159,8 +159,8 @@ import type {
   InventoryApi,
   ReserveInventoryRequest
 } from "@/core/openapi";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
-import {message} from "ant-design-vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { message } from "ant-design-vue";
 import InventoryAssignWarehouseView from "./InventoryAssignWarehouseView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
 
