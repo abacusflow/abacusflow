@@ -41,16 +41,25 @@
       <a-card :bordered="false">
         <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
           <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'unit'">
+              {{ $translateUnit(record.unit) }}
+            </template>
             <template v-if="column.key === 'enabled'">
               <a-switch v-model:checked="record.enabled" disabled />
             </template>
             <template v-if="column.key === 'action'">
               <a-space>
-                <a-button type="link" shape="circle" @click="handleEditProduct(record)">编辑 </a-button>
+                <a-button type="link" shape="circle" @click="handleEditProduct(record)"
+                  >编辑
+                </a-button>
 
                 <a-divider type="vertical" />
 
-                <a-popconfirm title="确定删除该产品？" shape="circle" @confirm="handleDeleteProduct(record.id)">
+                <a-popconfirm
+                  title="确定删除该产品？"
+                  shape="circle"
+                  @confirm="handleDeleteProduct(record.id)"
+                >
                   <a-button type="link">删除</a-button>
                 </a-popconfirm>
               </a-space>
@@ -122,7 +131,6 @@ const { data, isPending, refetch } = useQuery({
   queryFn: () => productApi.listProducts()
 });
 
-// 使用 Vue Query 获取分类列表
 const { data: categories } = useQuery({
   queryKey: ["categories"],
   queryFn: () => productApi.listProductCategories()

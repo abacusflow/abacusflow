@@ -9,17 +9,11 @@
         <a-input v-model:value="formState.name" />
       </a-form-item>
 
-      <a-form-item
-        label="仓库地址"
-        name="location"
-      >
+      <a-form-item label="仓库地址" name="location">
         <a-input v-model:value="formState.location" />
       </a-form-item>
 
-      <a-form-item
-        label="仓库容量"
-        name="capacity"
-      >
+      <a-form-item label="仓库容量" name="capacity">
         <a-input v-model:value="formState.capacity" />
       </a-form-item>
 
@@ -48,7 +42,7 @@ const warehouseApi = inject("warehouseApi") as WarehouseApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<UpdateWarehouseInput>({
+const formState = reactive<Partial<UpdateWarehouseInput>>({
   name: undefined,
   location: undefined,
   capacity: undefined

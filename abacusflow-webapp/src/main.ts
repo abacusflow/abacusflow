@@ -11,8 +11,9 @@ import { VueQueryPlugin } from "@tanstack/vue-query";
 import { Configuration } from "./core/openapi";
 import injectGlobalProperties from "./plugin/injectGlobalProperties";
 import FetchApi from "./plugin/fetch";
-import { formatDate, formatNumber } from "./util/timestampUtils";
+import { timestampToLocaleString, dateToFormattedString } from "./util/timestampUtils";
 import { translateUnit } from "./util/productUnitUtils";
+import { formatNumber } from "./util/numberUtils";
 
 const app = createApp(App);
 
@@ -28,9 +29,10 @@ const config = new Configuration({ basePath: "/api/v1" });
 app.use(FetchApi, config);
 // 全局工具函数注入
 app.use(injectGlobalProperties, {
-  formatDate,
+  timestampToLocaleString,
   formatNumber,
-  translateUnit
+  translateUnit,
+  dateToFormattedString
   // capitalize
 });
 app.mount("#app");

@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
@@ -22,13 +23,14 @@ import java.util.UUID
 class PurchaseOrder(
     supplierId: Long,
     orderDate: LocalDate = LocalDate.now(),
+    note: String?
 ) : AbstractAggregateRoot<PurchaseOrder>() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
-    @field:NotBlank
+    @field:NotNull
     @Column(unique = true)
     val orderNo: UUID = UUID.randomUUID()
 
@@ -39,6 +41,9 @@ class PurchaseOrder(
         private set
 
     var orderDate: LocalDate = orderDate
+        private set
+
+    var note: String? = note
         private set
 
     @CreationTimestamp
@@ -54,6 +59,13 @@ class PurchaseOrder(
 
     val items: List<PurchaseOrderItem>
         get() = _items.toList()
+
+
+    fun updateBasicInfo(newNote: String?) {
+        newNote?.let {
+            note = newNote
+        }
+    }
 
     fun changeOrderDate(newOrderDate: LocalDate?) {
         newOrderDate?.let {

@@ -6,7 +6,15 @@
         name="warehouseId"
         :rules="[{ required: true, message: '请选择仓库' }]"
       >
-        <a-input id="warehouseId" v-model:value="formState.warehouseId" />
+        <a-select v-model:value="formState.warehouseId" placeholder="请选择仓库">
+          <a-select-option
+            v-for="warehouse in warehouses"
+            :key="warehouse.id"
+            :value="warehouse.id"
+          >
+            {{ warehouse.name }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
 
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
@@ -23,7 +31,7 @@
 import { ref, reactive, watchEffect } from "vue";
 import { message, type FormInstance } from "ant-design-vue";
 import { inject } from "vue";
-import type { InventoryApi, AssignWarehouseRequest } from "@/core/openapi";
+import { type InventoryApi, type AssignWarehouseRequest, WarehouseApi } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
@@ -31,11 +39,12 @@ const formRef = ref<FormInstance>();
 const props = defineProps<{ inventoryId: number }>();
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
+const warehouseApi = inject("warehouseApi") as WarehouseApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<AssignWarehouseRequest>({
-  warehouseId: 1
+const formState = reactive<Partial<AssignWarehouseRequest>>({
+  warehouseId: undefined
 });
 
 // TODO: 当 props.inventoryId 变化时，没有重新获取库存数据，现在是在外层销毁重建了
@@ -54,6 +63,11 @@ watchEffect(() => {
     const { warehouseId } = fetchedInventory.value;
     formState.warehouseId = warehouseId || 1;
   }
+});
+
+const { data: warehouses } = useQuery({
+  queryKey: ["warehouses"],
+  queryFn: () => warehouseApi.listWarehouses()
 });
 
 const { mutate: assignWarehouse } = useMutation({

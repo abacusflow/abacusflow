@@ -23,6 +23,8 @@ class PurchaseOrderServiceImpl(
     override fun createPurchaseOrder(input: CreatePurchaseOrderInputTO): PurchaseOrderTO {
         val purchaseOrder = PurchaseOrder(
             supplierId = input.supplierId,
+            orderDate = input.orderDate,
+            note = input.note,
         )
         input.orderItems.forEach {
             purchaseOrder.addItem(it.productId, it.quantity, it.unitPrice)
@@ -37,6 +39,10 @@ class PurchaseOrderServiceImpl(
         purchaseOrder.apply {
             input.supplierId?.let {
                 changeSupplier(it)
+            }
+
+            input.orderDate?.let {
+                changeOrderDate(it)
             }
 
             clearItems()

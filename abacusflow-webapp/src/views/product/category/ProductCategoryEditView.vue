@@ -50,10 +50,10 @@ const productApi = inject("productApi") as ProductApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<UpdateProductCategoryInput>({
+const formState = reactive<Partial<UpdateProductCategoryInput>>({
   name: undefined,
   description: undefined,
-  parentId: 1
+  parentId: undefined
 });
 
 // TODO: 当 props.productCategoryId 变化时，没有重新获取产品类别数据，现在是在外层销毁重建了

@@ -27,35 +27,90 @@
       <a-card :bordered="false">
         <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
           <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'availableQuantity'">
+              <a-tooltip :title="stockHealthTip(record)">
+                <a-tag :color="stockHealthColor(record)">
+                  {{ record.availableQuantity }}
+                </a-tag>
+              </a-tooltip>
+            </template>
+
             <template v-if="column.key === 'action'">
               <a-space>
-                <!-- <a @click="handleAssignWarehouse(record)">分配仓库</a> -->
                 <a-button type="link" shape="circle" @click="handleAssignWarehouse(record)"
                   >分配仓库</a-button
                 >
 
                 <a-divider type="vertical" />
 
-                <a-popconfirm title="确定减库存？" @confirm="handleDecreaseInventory(record)">
+                <a-popover title="减少库存">
+                  <template #content>
+                    <a-flex justify="space-evenly" align="center">
+                      <a-input-number
+                        id="inputNumber"
+                        v-model:value="decreaseValue"
+                        :min="1"
+                        :max="100"
+                      />
+                      <a-button
+                        type="primary"
+                        size="small"
+                        @click="handleDecreaseInventory(record, decreaseValue)"
+                        >确定</a-button
+                      >
+                    </a-flex>
+                  </template>
                   <a-button type="link" shape="circle">减库存</a-button>
-                </a-popconfirm>
+                </a-popover>
 
                 <a-divider type="vertical" />
 
-                <a-popconfirm title="确定加库存？" @confirm="handleIncreaseInventory(record)">
+                <a-popover title="增加库存">
+                  <template #content>
+                    <a-flex justify="space-evenly" align="center">
+                      <a-input-number
+                        id="inputNumber"
+                        v-model:value="increaseValue"
+                        :min="1"
+                        :max="100"
+                      />
+                      <a-button
+                        type="primary"
+                        size="small"
+                        @click="handleIncreaseInventory(record, increaseValue)"
+                        >确定</a-button
+                      >
+                    </a-flex>
+                  </template>
                   <a-button type="link" shape="circle">加库存</a-button>
-                </a-popconfirm>
+                </a-popover>
+
+                <a-divider type="vertical" />
+
+                <a-popover title="冻结库存">
+                  <template #content>
+                    <a-flex justify="space-evenly" align="center">
+                      <a-input-number
+                        id="inputNumber"
+                        v-model:value="reserveValue"
+                        :min="1"
+                        :max="100"
+                      />
+                      <a-button
+                        type="primary"
+                        size="small"
+                        @click="handleReserveInventory(record, reserveValue)"
+                        >确定</a-button
+                      >
+                    </a-flex>
+                  </template>
+                  <a-button type="link" shape="circle">冻结库存</a-button>
+                </a-popover>
 
                 <a-divider type="vertical" />
 
                 <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
                   >调整预警线</a-button
-                >
-
-                <a-divider type="vertical" />
-
-                <a-button type="link" shape="circle" @click="handleReserveInventory(record)"
-                  >冻结库存</a-button
                 >
               </a-space>
             </template>
@@ -114,6 +169,9 @@ const queryClient = useQueryClient();
 
 const showAssignWarehouse = ref(false);
 const showEditWarningLine = ref(false);
+const increaseValue = ref<number>(1);
+const decreaseValue = ref<number>(1);
+const reserveValue = ref<number>(1);
 const editingInventory = ref<Inventory | null>(null);
 // 搜索表单
 const searchForm = ref({
@@ -147,7 +205,7 @@ const { mutate: increaseInventory } = useMutation({
     inventoryApi.increaseInventory({ id, increaseInventoryRequest: { amount } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ["inventories"] });
-    message.success("库存成功加1");
+    message.success("加库存成功");
   },
   onError: (error) => {
     message.error("操作失败");
@@ -160,7 +218,7 @@ const { mutate: decreaseInventory } = useMutation({
     inventoryApi.decreaseInventory({ id, increaseInventoryRequest: { amount } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ["inventories"] });
-    message.success("库存成功减1");
+    message.success("减库存成功");
   },
   onError: (error) => {
     message.error("操作失败");
@@ -173,7 +231,7 @@ const { mutate: reserveInventory } = useMutation({
     inventoryApi.reserveInventory({ id, reserveInventoryRequest: { amount } }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ["inventories"] });
-    message.success("操作成功");
+    message.success("冻结库存成功");
   },
   onError: (error) => {
     message.error("操作失败");
@@ -181,16 +239,16 @@ const { mutate: reserveInventory } = useMutation({
   }
 });
 
-function handleIncreaseInventory(inventory: Inventory) {
-  increaseInventory({ id: inventory.id, amount: 1 });
+function handleIncreaseInventory(inventory: Inventory, amount: number) {
+  increaseInventory({ id: inventory.id, amount });
 }
 
-function handleDecreaseInventory(inventory: Inventory) {
-  decreaseInventory({ id: inventory.id, amount: 1 });
+function handleDecreaseInventory(inventory: Inventory, amount: number) {
+  decreaseInventory({ id: inventory.id, amount });
 }
 
-function handleReserveInventory(inventory: Inventory) {
-  reserveInventory({ id: inventory.id, amount: 1 });
+function handleReserveInventory(inventory: Inventory, amount: number) {
+  reserveInventory({ id: inventory.id, amount });
 }
 
 function handleAssignWarehouse(inventory: Inventory) {
@@ -202,6 +260,50 @@ function handleAdjustWarningLine(inventory: Inventory) {
   editingInventory.value = inventory;
   showEditWarningLine.value = true;
 }
+
+const stockHealthTip = (record: Inventory): string => {
+  const value = record.availableQuantity ?? 0;
+  const min = record.safetyStock ?? 0;
+  const max = record.maxStock ?? Infinity;
+  const range = max - min;
+
+  if (value < min * 0.5) return "严重低于安全库存";
+  if (value < min) return "低于安全库存";
+  if (value > max * 1.2) return "严重超出最大库存";
+  if (value > max) return "超出最大库存";
+
+  if (range > 0) {
+    const lower = min + range * 0.25;
+    const upper = max - range * 0.25;
+
+    if (value <= lower) return "库存偏低";
+    if (value >= upper) return "库存偏高";
+    return "库存适中";
+  }
+
+  return "库存健康";
+};
+
+const stockHealthColor = (record: Inventory): string => {
+  const value = record.availableQuantity ?? 0;
+  const min = record.safetyStock ?? 0;
+  const max = record.maxStock ?? Infinity;
+  const range = max - min;
+
+  if (value < min * 0.5 || value > max * 1.2) return "red";
+  if (value < min || value > max) return "orange";
+
+  if (range > 0) {
+    const lower = min + range * 0.25;
+    const upper = max - range * 0.25;
+
+    if (value <= lower) return "blue";
+    if (value >= upper) return "cyan";
+    return "green";
+  }
+
+  return "green";
+};
 
 const columns: StrictTableColumnsType<BasicInventory> = [
   { title: "商品名称", dataIndex: "productName", key: "productName" },

@@ -38,24 +38,14 @@
             </template>
             <template v-if="column.key === 'action'">
               <a-space>
-                <a-button
-                  type="link"
-                  shape="circle"
-                  :disabled="record.name === 'admin'"
-                  @click="handleEditCustomer(record)"
+                <a-button type="link" shape="circle" @click="handleEditCustomer(record)"
                   >编辑</a-button
                 >
 
                 <a-divider type="vertical" />
 
-                <a-popconfirm
-                  title="确定删除该客户？"
-                  @confirm="handleDeleteCustomer(record.id)"
-                  :disabled="record.name === 'admin'"
-                >
-                  <a-button type="link" shape="circle" :disabled="record.name === 'admin'"
-                    >删除</a-button
-                  >
+                <a-popconfirm title="确定删除该客户？" @confirm="handleDeleteCustomer(record.id)">
+                  <a-button type="link" shape="circle">删除</a-button>
                 </a-popconfirm>
               </a-space>
             </template>

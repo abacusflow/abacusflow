@@ -33,7 +33,11 @@
             </template>
             <template v-if="column.key === 'action'">
               <a-space>
-                <a-button type="link" shape="circle" @click="handleEditProductCategory(record)"
+                <a-button
+                  type="link"
+                  shape="circle"
+                  :disabled="record.id === 1"
+                  @click="handleEditProductCategory(record)"
                   >编辑</a-button
                 >
 
@@ -42,8 +46,9 @@
                 <a-popconfirm
                   title="确定删除该产品类别？"
                   @confirm="handleDeleteProductCategory(record.id)"
+                  :disabled="record.id === 1"
                 >
-                  <a-button shape="circle" type="link">删除</a-button>
+                  <a-button shape="circle" type="link" :disabled="record.id === 1">删除</a-button>
                 </a-popconfirm>
               </a-space>
             </template>

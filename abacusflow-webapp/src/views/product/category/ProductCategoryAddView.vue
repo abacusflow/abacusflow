@@ -42,9 +42,9 @@ import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const formState = reactive<CreateProductCategoryInput>({
-  name: "",
-  parentId: 1,
+const formState = reactive<Partial<CreateProductCategoryInput>>({
+  name: undefined,
+  parentId: undefined,
   description: undefined
 });
 

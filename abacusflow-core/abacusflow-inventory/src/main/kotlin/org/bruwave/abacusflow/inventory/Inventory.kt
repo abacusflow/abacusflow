@@ -21,8 +21,6 @@ class Inventory(
     warehouseId: Long?,
     quantity: Int = 0,
     reservedQuantity: Int = 0,
-    safetyStock: Int?,
-    maxStock: Int?
 ) : AbstractAggregateRoot<Inventory>() {
 
     @Id
@@ -41,12 +39,12 @@ class Inventory(
         private set
 
     @field:PositiveOrZero
-    var safetyStock: Int = safetyStock ?: 1
+    var safetyStock: Int = 1
         //安全库存量
         private set
 
     @field:PositiveOrZero
-    var maxStock: Int = maxStock ?: 10 //安全库存量
+    var maxStock: Int = 10 //安全库存量
         private set
 
     @Version

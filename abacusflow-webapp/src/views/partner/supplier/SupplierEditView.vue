@@ -58,7 +58,7 @@ const partnerApi = inject("partnerApi") as PartnerApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<UpdateSupplierInput>({
+const formState = reactive<Partial<UpdateSupplierInput>>({
   name: undefined,
   contactPerson: undefined,
   phone: undefined,
