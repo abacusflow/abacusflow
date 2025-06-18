@@ -1,6 +1,6 @@
 server {
     listen       80;
-    server_name  abacusflow;
+    server_name  ABACUSFLOW;
 
     # 基础的反向代理请求头
     proxy_set_header        Host               $host;
@@ -32,6 +32,7 @@ server {
     # API 代理（支持大请求体）
     location /api/ {
         client_max_body_size 0;
-        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/api/;
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/;
     }
 }
