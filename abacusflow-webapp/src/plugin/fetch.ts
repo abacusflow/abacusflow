@@ -6,11 +6,12 @@ import {
   ProductApi,
   TransactionApi,
   UserApi,
-  WarehouseApi
+  WarehouseApi,
+  type Middleware
 } from "../core/openapi";
 
 export default {
-  install: (app: App, config: Configuration) => {
+  install: (app: App) => {
     // 使用提供的配置初始化 UserApi
     const userApi = new UserApi(config);
     const productApi = new ProductApi(config);
@@ -28,3 +29,38 @@ export default {
     app.provide("partnerApi", partnerApi);
   }
 };
+
+const authMiddleware: Middleware = {
+  pre: async (context) => {
+    const { url, init } = context;
+
+    const headers = new Headers(init?.headers || {});
+    headers.set("X-Requested-With", "XMLHttpRequest");
+
+    return {
+      url,
+      init: {
+        ...init,
+        headers
+      }
+    };
+  },
+  post: async (context) => {
+    if (context.response.status === 401) {
+      alert("身份认证已过期，请重新登录");
+      const redirectUrl = document.location.pathname;
+      window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
+      return context.response;
+    }
+    return;
+  },
+
+  onError: async (context) => {
+    console.error("请求发生错误:", context.error);
+    return;
+  }
+};
+const config = new Configuration({
+  basePath: `${window.location.origin}/api`,
+  middleware: [authMiddleware]
+});

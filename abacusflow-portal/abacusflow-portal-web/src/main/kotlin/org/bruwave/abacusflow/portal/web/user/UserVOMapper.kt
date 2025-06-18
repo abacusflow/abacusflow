@@ -10,16 +10,16 @@ import org.bruwave.abacusflow.usecase.user.UserTO
 
 fun UserTO.toVO(): UserVO =
     UserVO(
-        id,
-        name,
-        age,
-        nick,
-        roles,
-        enabled,
-        locked,
-        createdAt.toEpochMilli(),
-        updatedAt.toEpochMilli(),
-        sex?.let { mapSexTOToVO(it) },
+        id = id,
+        name = name,
+        age = age,
+        nick = nick,
+        roleIds = roleIds,
+        enabled = enabled,
+        locked = locked,
+        createdAt= createdAt.toEpochMilli(),
+        updatedAt= updatedAt.toEpochMilli(),
+        sex= sex?.let { mapSexTOToVO(it) },
     )
 
 fun BasicUserTO.toBasicVO(): BasicUserVO =

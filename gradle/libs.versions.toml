@@ -3,7 +3,7 @@ abacusflow = "0.0.1"
 kotlin = "2.1.0"
 spring = "6.2.0"
 spring-boot = "3.4.0"
-spring-security = "6.2.3"
+spring-security = "6.4.1"
 spring-kafka = "3.2.4"
 spring-expression = "6.2.0"
 jackson = "2.18.2"
@@ -42,6 +42,7 @@ spring-boot-starter-data-elasticsearch = { module = "org.springframework.boot:sp
 
 # Spring Components
 spring-security-config = { module = "org.springframework.security:spring-security-config", version.ref = "spring-security" }
+spring-security-core = { module = "org.springframework.security:spring-security-core", version.ref = "spring-security" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref = "spring-kafka" }
 spring-expression = { module = "org.springframework:spring-expression", version.ref = "spring-expression" }
 #spring-context = { module = "org.springframework:spring-context", version.ref = "xx" }

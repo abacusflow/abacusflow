@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation(libs.spring.security.core)
     implementation(project(":abacusflow-usecase:abacusflow-usecase-commons"))
     implementation(project(":abacusflow-core:abacusflow-user"))
 }

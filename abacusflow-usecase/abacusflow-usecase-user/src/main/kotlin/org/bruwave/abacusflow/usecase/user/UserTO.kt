@@ -8,7 +8,7 @@ data class UserTO(
     val sex: String?,
     val age: Int,
     val nick: String,
-    val roles: List<String>,
+    val roleIds: List<Long>,
     val enabled: Boolean,
     val locked: Boolean,
     val createdAt: Instant,
