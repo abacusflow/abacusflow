@@ -1,18 +1,37 @@
 server {
-    listen 80;
+    listen       80;
+    server_name  abacusflow;
 
+    # 基础的反向代理请求头
+    proxy_set_header        Host               $host;
+    proxy_set_header        X-Real-IP          $remote_addr;
+    proxy_set_header        X-Forwarded-For    $proxy_add_x_forwarded_for;
+
+    # 前端静态页面（SPA）
     location / {
         root /usr/share/nginx/html;
         index index.html;
         try_files $uri $uri/ /index.html;
     }
 
+    # 静态资源接口转发
+    location /static {
+        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/static;
+    }
+
+    # 登录接口
+    location /login {
+        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/login;
+    }
+
+    # 登出接口
+    location /logout {
+        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/logout;
+    }
+
+    # API 代理（支持大请求体）
     location /api/ {
         client_max_body_size 0;
         proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/api/;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 }
