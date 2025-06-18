@@ -50,11 +50,12 @@ class User(
     var nick: String = name
 
     @ManyToMany
-    val roles = mutableSetOf<Role>()
+    private val rolesMutable: MutableSet<Role> = mutableSetOf()
+    val roles: List<Role>
+        get() = rolesMutable.toList()
 
     @field:NotNull(message = "Password is required and cannot be blank")
-    @field:Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
-    var password: String = "12345678"
+    var password: String = ""
         private set
 
     @CreationTimestamp
@@ -72,13 +73,17 @@ class User(
     var locked = false
         private set
 
+    fun initPassword(password: String) {
+        this.password = password
+    }
+
     fun addRole(role: Role) {
-        roles.add(role)
+        rolesMutable.add(role)
         updatedAt = Instant.now()
     }
 
     fun removeRole(role: Role) {
-        roles.remove(role)
+        rolesMutable.remove(role)
         updatedAt = Instant.now()
     }
 
@@ -138,21 +143,29 @@ class User(
     fun changePassword(
         oldPassword: String,
         newPassword: String,
+        passwordEncoder: UserPasswordEncoder
     ) {
         require(enabled) { "User is not enabled" }
         require(!locked) { "User is locked" }
 
-        require(password == oldPassword) { "Old password is incorrect" }
+        require(oldPassword != newPassword) { "new password does not match cur password" }
 
-        password = newPassword
+        require(passwordEncoder.matches(oldPassword, password)) { "old password is incorrect" }
+
+        password = passwordEncoder.encode(newPassword)
         updatedAt = Instant.now()
     }
 
-    fun resetPassword(): String {
+    fun resetPassword(passwordEncoder: UserPasswordEncoder): String {
         require(enabled) { "User is not enabled" }
         require(!locked) { "User is locked" }
 
-        password = Random(8).toString()
-        return password
+        val newPassword = (1..10)
+            .map { chars.random() }
+            .joinToString("")
+        password = passwordEncoder.encode(newPassword)
+        return newPassword
     }
+
+    val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 }

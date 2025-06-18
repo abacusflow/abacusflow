@@ -1,5 +1,5 @@
 INSERT INTO public.users (age, created_at, enabled, locked, name, nick, password, sex, updated_at)
-VALUES (18, '2025-06-12 15:33:17.384000 +00:00', true, false, 'admin', '超级管理员', '123456', 'M',
+VALUES (18, '2025-06-12 15:33:17.384000 +00:00', true, false, 'admin', '超级管理员', '$2a$10$QfALGI1C/r3I5Ix7Lo7lh.9UaCY3ppZsdf/9xs.kylIxqrZnBCgJC', 'M',
         '2025-06-12 15:34:18.513000 +00:00');
 ALTER SEQUENCE users_id_seq RESTART WITH 100;
 

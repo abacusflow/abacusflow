@@ -4,7 +4,7 @@ info:
   version: 0.0.1
   description: 进销存系统服务接口文档
 servers:
-  - url: http://localhost:8080/api/v1
+  - url: http://localhost:8080
 tags:
   - name: inventory
     description: 管理商品库存状态和库存操作，包括库存数量、多仓库支持、库存调整与预警机制。
@@ -1006,7 +1006,7 @@ components:
         - name
         - age
         - nick
-        - roles
+        - roleIds
         - enabled
         - locked
         - createdAt
@@ -1027,10 +1027,11 @@ components:
         nick:
           type: string
           description: 昵称
-        roles:
+        roleIds:
           type: array
           items:
-            type: string
+            type: integer
+            format: int64
           description: 用户角色列表
         enabled:
           type: boolean

@@ -8,7 +8,6 @@ import router from "./router";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
 import { VueQueryPlugin } from "@tanstack/vue-query";
-import { Configuration } from "./core/openapi";
 import injectGlobalProperties from "./plugin/injectGlobalProperties";
 import FetchApi from "./plugin/fetch";
 import { dateToFormattedString, timestampToLocaleString } from "./util/timestampUtils";
@@ -25,8 +24,7 @@ app.use(Antd);
 // 引入 Vue Query 插件
 app.use(VueQueryPlugin);
 // 配置 Openapi-Generate-Api 插件
-const config = new Configuration({ basePath: "/api/v1" });
-app.use(FetchApi, config);
+app.use(FetchApi);
 // 全局工具函数注入
 app.use(injectGlobalProperties, {
   timestampToLocaleString,

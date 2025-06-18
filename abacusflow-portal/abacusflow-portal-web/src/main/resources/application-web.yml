@@ -1,3 +1,6 @@
-server:
-  servlet:
-    context-path: /api/v1
+#server:
+#  servlet:
+#    context-path: /api/v1
+logging:
+  level:DEBUG
+#  org.springframework.security=DEBUG

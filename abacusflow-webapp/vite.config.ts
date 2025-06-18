@@ -19,6 +19,15 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "/api": {
           target: envVars.VITE_SERVER_ENDPOINT,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, "") // 这一步就是去掉/api
+        },
+        "/login": {
+          target: envVars.VITE_SERVER_ENDPOINT,
+          changeOrigin: true
+        },
+        "/static": {
+          target: envVars.VITE_SERVER_ENDPOINT,
           changeOrigin: true
         }
       }
