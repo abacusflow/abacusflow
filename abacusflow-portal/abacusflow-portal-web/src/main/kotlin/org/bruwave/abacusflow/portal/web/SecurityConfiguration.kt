@@ -10,35 +10,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.session.ConcurrentSessionFilter
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @Configuration
-class SecurityConfiguration (
-){
-//    @Bean
+class SecurityConfiguration(
+) {
+    @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
-            authorizeHttpRequests {
-                // 允许静态资源无授权访问
-                authorize("/static/**", permitAll)
-                // 允许登录/退出无授权访问
-                authorize("/login", permitAll)
-                authorize("/logout", permitAll)
-                authorize(anyRequest, authenticated)
-            }
-            formLogin {
-                loginPage = "/login"
-                permitAll()
-            }
-            logout {
-                // GET请求访问/logout
-                logoutRequestMatcher = AntPathRequestMatcher("/logout", "GET")
-                permitAll()
-            }
+            csrf { disable() }
         }
         return http.build()
     }
+
 
     @Bean
     fun userDetailsService(): UserDetailsService {

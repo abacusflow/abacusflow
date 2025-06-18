@@ -7,6 +7,7 @@ plugins {
 
 dependencies {
     api(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.thymeleaf)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.swagger.annotations)
     implementation(libs.swagger.core)
