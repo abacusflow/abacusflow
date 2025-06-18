@@ -21,13 +21,13 @@ class MyUserDetailsService(
         return SecurityUser.builder()
             .username(user.name)
             .password(user.password) // 应为加密后的密码
-//            .accountLocked(user.locked)
-//            .disabled(!user.enabled)
+            .accountLocked(user.locked)
+            .disabled(!user.enabled)
             .roles(*user.roleNames.toTypedArray())
-            .disabled(false)
-            .accountExpired(false)
-            .credentialsExpired(false)
-            .accountLocked(false)
+//            .disabled(false)
+//            .accountExpired(false)
+//            .credentialsExpired(false)
+//            .accountLocked(false)
             .build()
     }
 }

@@ -31,11 +31,25 @@ export default {
 };
 
 const authMiddleware: Middleware = {
+  pre: async (context) => {
+    const { url, init } = context;
+
+    const headers = new Headers(init?.headers || {});
+    headers.set("X-Requested-With", "XMLHttpRequest");
+
+    return {
+      url,
+      init: {
+        ...init,
+        headers
+      }
+    };
+  },
   post: async (context) => {
     if (context.response.status === 401) {
       alert("身份认证已过期，请重新登录");
-      window.location.href = "/login";
-      // 可以返回context.response或不返回
+      const redirectUrl = document.location.pathname;
+      window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
       return context.response;
     }
     return;
@@ -46,4 +60,7 @@ const authMiddleware: Middleware = {
     return;
   }
 };
-const config = new Configuration({ basePath: "/api", middleware: [authMiddleware] });
+const config = new Configuration({
+  basePath: `${window.location.origin}/api`,
+  middleware: [authMiddleware]
+});

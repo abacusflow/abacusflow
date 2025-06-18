@@ -22,9 +22,6 @@ class MyAuthenticationSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication
     ) {
-        /**
-         * 重定向到登录页
-         */
         val redirect = request.getParameter("redirect")
 
         if (!redirect.isNullOrBlank() && isValidLocalUrl(redirect)) {

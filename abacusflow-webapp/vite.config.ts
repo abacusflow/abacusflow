@@ -23,8 +23,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api/, "") // 这一步就是去掉/api
         },
         "/login": {
-          target: envVars.VITE_SERVER_ENDPOINT,
-          changeOrigin: true
+          target: envVars.VITE_SERVER_ENDPOINT
         },
         "/static": {
           target: envVars.VITE_SERVER_ENDPOINT,
