@@ -25,10 +25,10 @@ class SaleOrderServiceImpl(
                 customerId = input.customerId,
                 orderDate = input.orderDate,
                 note = input.note,
-            )
-        input.orderItems.forEach {
-            saleOrder.addItem(it.productId, it.quantity, it.unitPrice)
-        }
+            ).apply {
+                addItems(input.orderItems.map { Triple(it.productId, it.quantity, it.unitPrice) })
+            }
+
         return saleOrderRepository.save(saleOrder).toTO()
     }
 
@@ -52,8 +52,8 @@ class SaleOrderServiceImpl(
 
             clearItems()
 
-            input.orderItems?.forEach {
-                saleOrder.addItem(it.productId, it.quantity, it.unitPrice)
+            input.orderItems?.let {
+                addItems(it.map { Triple(it.productId, it.quantity, it.unitPrice) })
             }
         }
 

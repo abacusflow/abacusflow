@@ -78,7 +78,7 @@ class PurchaseOrder(
     }
 
     // TODO 最佳方案是替换为增量更新
-    fun addItem(
+    private fun addItem(
         productId: Long,
         quantity: Int,
         unitPrice: Double,
@@ -87,18 +87,20 @@ class PurchaseOrder(
         updatedAt = Instant.now()
     }
 
+    fun addItems(itemsToAdd: List<Triple<Long, Int, Double>>) {
+        for ((productId, quantity, unitPrice) in itemsToAdd) {
+            addItem(productId, quantity, unitPrice)
+        }
+
+        registerEvent(PurchaseOrderItemChangedEvent(items))
+    }
+
     fun completeOrder() {
         require(status == OrderStatus.PENDING) { "只有待处理订单才能完成" }
         status = OrderStatus.COMPLETED
         updatedAt = Instant.now()
-        registerEvent(
-            PurchaseOrderCompletedEvent(
-                id,
-                items.map {
-                    PurchaseOrderItem(it.productId, it.quantity, it.unitPrice)
-                },
-            ),
-        )
+
+        registerEvent(PurchaseOrderCompletedEvent(this))
     }
 
     fun clearItems() {
