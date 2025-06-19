@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
+@Transactional
 class ProductEventListener(
     private val inventoryRepository: InventoryRepository,
 ) {
     @EventListener
-    @Transactional
     fun handleProductCreated(event: ProductCreatedEvent) {
         println("New product created: ${event.product.id}, ${event.product.name}")
 
@@ -25,8 +25,12 @@ class ProductEventListener(
         )
     }
 
+//    @EventListener
+//    fun handleProductUpdated(event: ProductUpdatedEvent) {
+//        println("product updated: ${event.product.id}, ${event.product.name}")
+//    }
+
     @EventListener
-    @Transactional
     fun handleProductDeleted(event: ProductDeletedEvent) {
         println("product deleted: ${event.product.id}, ${event.product.name}")
 
