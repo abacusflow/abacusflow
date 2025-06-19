@@ -1,14 +1,18 @@
 <template>
   <a-form :model="formState" ref="formRef" @finish="handleOk">
-    <a-form-item label="仓库名" name="name" :rules="[{ required: true, message: '请输入仓库名' }]">
+    <a-form-item
+      label="储存点名"
+      name="name"
+      :rules="[{ required: true, message: '请输入储存点名' }]"
+    >
       <a-input v-model:value="formState.name" />
     </a-form-item>
 
-    <a-form-item label="仓库地址" name="location">
+    <a-form-item label="储存点地址" name="location">
       <a-input v-model:value="formState.location" />
     </a-form-item>
 
-    <a-form-item label="仓库容量" name="capacity">
+    <a-form-item label="储存点容量" name="capacity">
       <a-input v-model:value="formState.capacity" />
     </a-form-item>
 

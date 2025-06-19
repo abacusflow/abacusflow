@@ -136,7 +136,7 @@ const router = createRouter({
       name: "depot",
       component: () => import("@/views/depot/DepotListView.vue"),
       meta: {
-        title: "仓库管理",
+        title: "储存点管理",
         icon: "home",
         permission: ["depot"]
       }

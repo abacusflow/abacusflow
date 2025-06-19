@@ -11,8 +11,8 @@
             <a-input v-model:value="searchForm.productId" placeholder="请选择产品" allow-clear />
           </a-form-item>
 
-          <a-form-item label="仓库" name="depotId">
-            <a-input v-model:value="searchForm.depotId" placeholder="请选择仓库" allow-clear />
+          <a-form-item label="储存点" name="depotId">
+            <a-input v-model:value="searchForm.depotId" placeholder="请选择储存点" allow-clear />
           </a-form-item>
 
           <a-form-item>
@@ -35,10 +35,18 @@
               </a-tooltip>
             </template>
 
+            <template v-if="column.key === 'expectedQuantity'">
+              <a-tooltip :title="expectedQuantityTooltip(record)">
+                <a-tag :color="expectedQuantityTagColor(record)">
+                  {{ record.expectedQuantity }}
+                </a-tag>
+              </a-tooltip>
+            </template>
+
             <template v-if="column.key === 'action'">
               <a-space>
                 <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
-                  >分配仓库</a-button
+                  >分配储存点</a-button
                 >
 
                 <a-divider type="vertical" />
@@ -120,7 +128,7 @@
     </a-space>
 
     <a-drawer
-      title="分配仓库"
+      title="分配储存点"
       :open="showAssignDepot"
       :closable="false"
       @close="showAssignDepot = false"
@@ -155,7 +163,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type {
   BasicInventory,
   IncreaseInventoryRequest,
-  Inventory,
   InventoryApi,
   ReserveInventoryRequest
 } from "@/core/openapi";
@@ -172,7 +179,7 @@ const showEditWarningLine = ref(false);
 const increaseValue = ref<number>(1);
 const decreaseValue = ref<number>(1);
 const reserveValue = ref<number>(1);
-const editingInventory = ref<Inventory | null>(null);
+const editingInventory = ref<BasicInventory | null>(null);
 // 搜索表单
 const searchForm = ref({
   productId: undefined,
@@ -239,29 +246,41 @@ const { mutate: reserveInventory } = useMutation({
   }
 });
 
-function handleIncreaseInventory(inventory: Inventory, amount: number) {
+function handleIncreaseInventory(inventory: BasicInventory, amount: number) {
   increaseInventory({ id: inventory.id, amount });
 }
 
-function handleDecreaseInventory(inventory: Inventory, amount: number) {
+function handleDecreaseInventory(inventory: BasicInventory, amount: number) {
   decreaseInventory({ id: inventory.id, amount });
 }
 
-function handleReserveInventory(inventory: Inventory, amount: number) {
+function handleReserveInventory(inventory: BasicInventory, amount: number) {
   reserveInventory({ id: inventory.id, amount });
 }
 
-function handleAssignDepot(inventory: Inventory) {
+function handleAssignDepot(inventory: BasicInventory) {
   editingInventory.value = inventory;
   showAssignDepot.value = true;
 }
 
-function handleAdjustWarningLine(inventory: Inventory) {
+function handleAdjustWarningLine(inventory: BasicInventory) {
   editingInventory.value = inventory;
   showEditWarningLine.value = true;
 }
 
-const stockHealthTip = (record: Inventory): string => {
+function expectedQuantityTagColor(record: BasicInventory): string {
+  return record.expectedQuantity === record.quantity ? "green" : "red";
+}
+
+function expectedQuantityTooltip(record: BasicInventory): string {
+  if (record.expectedQuantity === record.quantity) {
+    return "库存正常，预期与实际一致";
+  } else {
+    return `库存异常：预期为 ${record.expectedQuantity}，实际为 ${record.quantity}`;
+  }
+}
+
+const stockHealthTip = (record: BasicInventory): string => {
   const value = record.availableQuantity ?? 0;
   const min = record.safetyStock ?? 0;
   const max = record.maxStock ?? Infinity;
@@ -284,7 +303,7 @@ const stockHealthTip = (record: Inventory): string => {
   return "库存健康";
 };
 
-const stockHealthColor = (record: Inventory): string => {
+const stockHealthColor = (record: BasicInventory): string => {
   const value = record.availableQuantity ?? 0;
   const min = record.safetyStock ?? 0;
   const max = record.maxStock ?? Infinity;
@@ -307,9 +326,10 @@ const stockHealthColor = (record: Inventory): string => {
 
 const columns: StrictTableColumnsType<BasicInventory> = [
   { title: "商品名称", dataIndex: "productName", key: "productName" },
-  { title: "仓库名称", dataIndex: "depotName", key: "depotName" },
+  { title: "储存点名称", dataIndex: "depotName", key: "depotName" },
   { title: "总库存数量", dataIndex: "quantity", key: "quantity" },
   { title: "可用数量", dataIndex: "availableQuantity", key: "availableQuantity" },
+  { title: "期望数量", dataIndex: "expectedQuantity", key: "expectedQuantity" },
   { title: "安全库存预警线", dataIndex: "safetyStock", key: "safetyStock" },
   { title: "最大库存预警线", dataIndex: "maxStock", key: "maxStock" },
   { title: "操作", key: "action" }

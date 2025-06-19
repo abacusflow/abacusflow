@@ -21,7 +21,8 @@ class PurchaseOrderEventListener(
             val inventory = inventoryRepository.findByProductId(it.key)
                 ?: throw NoSuchElementException("Product with id ${it.key} not found")
 
-            inventory.increaseQuantity(it.value.size)
+            val sumQuantity = it.value.sumOf { it.quantity }
+            inventory.increaseQuantity(sumQuantity)
         }
     }
 }

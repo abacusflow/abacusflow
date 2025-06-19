@@ -26,6 +26,7 @@ fun BasicInventoryTO.toBasicVO(): BasicInventoryVO =
         depotName = depotName,
         quantity = quantity,
         availableQuantity = availableQuantity,
+        expectedQuantity = expectedQuantity,
         safetyStock = safetyStock,
         maxStock = maxStock,
     )

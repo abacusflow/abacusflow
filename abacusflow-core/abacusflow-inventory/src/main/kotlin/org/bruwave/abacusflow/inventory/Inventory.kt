@@ -23,8 +23,8 @@ class Inventory(
     @Column(name = "product_id", nullable = false)
     val productId: Long, // 通过ID关联商品
     depotId: Long?,
-    quantity: Int = 0,
-    reservedQuantity: Int = 0,
+    quantity: Long = 0,
+    reservedQuantity: Long = 0,
 ) : AbstractAggregateRoot<Inventory>() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,20 +34,20 @@ class Inventory(
         private set
 
     @field:PositiveOrZero
-    var quantity: Int = quantity // 当前库存
+    var quantity: Long = quantity // 当前库存
         private set
 
     @field:PositiveOrZero
-    var reservedQuantity: Int = reservedQuantity // 被锁定、预留或冻结的库存数量
+    var reservedQuantity: Long = reservedQuantity // 被锁定、预留或冻结的库存数量
         private set
 
     @field:PositiveOrZero
-    var safetyStock: Int = 1
+    var safetyStock: Long = 1
         // 安全库存量
         private set
 
     @field:PositiveOrZero
-    var maxStock: Int = 10 // 安全库存量
+    var maxStock: Long = 10 // 安全库存量
         private set
 
     @Version
@@ -61,7 +61,7 @@ class Inventory(
     var updatedAt: Instant = Instant.now()
         private set
 
-    fun resetQuantity(amount: Int) {
+    fun resetQuantity(amount: Long) {
         require(amount >= 0) { "库存数量必须为正数" }
         quantity = amount
         updatedAt = Instant.now()
@@ -110,8 +110,8 @@ class Inventory(
     }
 
     fun adjustWarningLine(
-        newSafetyStock: Int,
-        newMaxStock: Int,
+        newSafetyStock: Long,
+        newMaxStock: Long,
     ) {
         require(newSafetyStock >= 0) { "安全库存不能为负数" }
         require(newMaxStock >= newSafetyStock) { "最大库存必须大于或等于安全库存" }
@@ -127,7 +127,7 @@ class Inventory(
         get(): Boolean = quantity < safetyStock
 
     val availableQuantity
-        get(): Int = quantity - reservedQuantity
+        get(): Long = quantity - reservedQuantity
 
     companion object {
         private const val MAX_ADJUSTMENT = 100

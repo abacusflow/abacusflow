@@ -7,7 +7,7 @@ servers:
   - url: http://localhost:8080
 tags:
   - name: inventory
-    description: 管理商品库存状态和库存操作，包括库存数量、多仓库支持、库存调整与预警机制。
+    description: 管理商品库存状态和库存操作，包括库存数量、多储存点支持、库存调整与预警机制。
   - name: partner
     description: 管理客户和供应商等外部合作伙伴的信息，并与交易历史进行关联管理。
   - name: product
@@ -17,7 +17,7 @@ tags:
   - name: user
     description: 管理系统用户账户、权限控制及用户行为相关的信息。
   - name: depot
-    description: 管理物理仓库及其内部存储空间，包括库位分配、容量规划和仓库布局设计。
+    description: 管理物理储存点及其内部存储空间，包括库位分配、容量规划和储存点布局设计。
 
 paths:
   /users:
@@ -744,11 +744,11 @@ paths:
               properties:
                 safetyStock:
                   type: integer
-                  format: int32
+                  format: int64
                   minimum: 0
                 maxStock:
                   type: integer
-                  format: int32
+                  format: int64
                   minimum: 0
       responses:
         "200":
@@ -1554,19 +1554,19 @@ components:
         id:
           type: integer
           format: int64
-          description: 仓库唯一标识
+          description: 储存点唯一标识
         name:
           type: string
-          description: 仓库名称
+          description: 储存点名称
         location:
           type: string
           nullable: true
-          description: 仓库地址
+          description: 储存点地址
         capacity:
           type: integer
           nullable: true
           minimum: 0
-          description: 仓库容量
+          description: 储存点容量
         enabled:
           type: boolean
           description: 是否启用
@@ -1589,19 +1589,19 @@ components:
         id:
           type: integer
           format: int64
-          description: 仓库ID
+          description: 储存点ID
         name:
           type: string
-          description: 仓库名称
+          description: 储存点名称
         location:
           type: string
           nullable: true
-          description: 仓库地址
+          description: 储存点地址
         capacity:
           type: integer
           nullable: true
           minimum: 0
-          description: 仓库容量
+          description: 储存点容量
         enabled:
           type: boolean
           description: 是否启用
@@ -1614,16 +1614,16 @@ components:
         name:
           type: string
           minLength: 1
-          description: 仓库名称
+          description: 储存点名称
         location:
           type: string
           nullable: true
-          description: 仓库地址
+          description: 储存点地址
         capacity:
           type: integer
           nullable: true
           minimum: 0
-          description: 仓库容量
+          description: 储存点容量
 
     UpdateDepotInput:
       type: object
@@ -1631,16 +1631,16 @@ components:
         name:
           type: string
           minLength: 1
-          description: 仓库名称
+          description: 储存点名称
         location:
           type: string
           nullable: true
-          description: 仓库地址
+          description: 储存点地址
         capacity:
           type: integer
           nullable: true
           minimum: 0
-          description: 仓库容量
+          description: 储存点容量
 
     # ============= Inventory schemas =============
     Inventory:
@@ -1667,23 +1667,26 @@ components:
         depotId:
           type: integer
           format: int64
-          description: 仓库ID
+          description: 储存点ID
         quantity:
           type: integer
+          format: int64
           description: 总库存数量
         reservedQuantity:
           type: integer
+          format: int64
           description: 预留数量
         availableQuantity:
           type: integer
+          format: int64
           description: 可用数量
         safetyStock:
           type: integer
-          nullable: true
+          format: int64
           description: 安全库存预警线
         maxStock:
           type: integer
-          nullable: true
+          format: int64
           description: 最高库存预警线
         createdAt:
           type: integer
@@ -1701,6 +1704,7 @@ components:
         - productName
         - quantity
         - availableQuantity
+        - expectedQuantity
         - safetyStock
         - maxStock
       properties:
@@ -1713,20 +1717,26 @@ components:
           description: 商品名称
         depotName:
           type: string
-          description: 仓库名称
+          description: 储存点名称
         quantity:
           type: integer
+          format: int64
           description: 总库存数量
         availableQuantity:
           type: integer
+          format: int64
           description: 可用数量
+        expectedQuantity:
+          type: integer
+          format: int64
+          description: 期望数量
         safetyStock:
           type: integer
-          nullable: true
+          format: int64
           description: 安全库存预警线
         maxStock:
           type: integer
-          nullable: true
+          format: int64
           description: 最大库存预警线
 
     # ============= SaleOrder schemas =============

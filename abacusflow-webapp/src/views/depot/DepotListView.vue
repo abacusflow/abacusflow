@@ -2,15 +2,15 @@
   <div>
     <a-space direction="vertical" style="width: 100%">
       <a-flex justify="space-between" align="center">
-        <h1>仓库管理</h1>
+        <h1>储存点管理</h1>
         <a-button type="primary" @click="handleAddDepot" style="margin-bottom: 16px">
-          新增仓库
+          新增储存点
         </a-button>
       </a-flex>
 
       <a-card :bordered="false">
         <a-form layout="inline" :model="searchForm">
-          <a-form-item label="仓库名称">
+          <a-form-item label="储存点名称">
             <a-input v-model:value="searchForm.name" placeholder="请输入姓名" allow-clear />
           </a-form-item>
 
@@ -37,7 +37,7 @@
 
                 <a-divider type="vertical" />
 
-                <a-popconfirm title="确定删除该仓库？" @confirm="handleDeleteDepot(record.id)">
+                <a-popconfirm title="确定删除该储存点？" @confirm="handleDeleteDepot(record.id)">
                   <a-button type="link" shape="circle">删除</a-button>
                 </a-popconfirm>
               </a-space>
@@ -46,11 +46,11 @@
         </a-table>
       </a-card>
     </a-space>
-    <a-drawer title="新增仓库" :open="showAdd" :closable="false" @close="showAdd = false">
+    <a-drawer title="新增储存点" :open="showAdd" :closable="false" @close="showAdd = false">
       <DepotAddView v-if="showAdd" v-model:visible="showAdd" @success="refetch" />
     </a-drawer>
 
-    <a-drawer title="修改仓库" :open="showEdit" :closable="false" @close="showEdit = false">
+    <a-drawer title="修改储存点" :open="showEdit" :closable="false" @close="showEdit = false">
       <DepotEditView
         v-if="showEdit && editingDepot"
         v-model:visible="showEdit"
@@ -124,9 +124,9 @@ function handleDeleteDepot(id: number) {
 }
 
 const columns: StrictTableColumnsType<BasicDepot> = [
-  { title: "仓库名称", dataIndex: "name", key: "name" },
-  { title: "仓库地址", dataIndex: "location", key: "location" },
-  { title: "仓库容量", dataIndex: "capacity", key: "capacity" },
+  { title: "储存点名称", dataIndex: "name", key: "name" },
+  { title: "储存点地址", dataIndex: "location", key: "location" },
+  { title: "储存点容量", dataIndex: "capacity", key: "capacity" },
   { title: "启用状态", dataIndex: "enabled", key: "enabled" },
   { title: "操作", key: "action" }
 ];

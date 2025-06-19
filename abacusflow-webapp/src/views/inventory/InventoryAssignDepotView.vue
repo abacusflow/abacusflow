@@ -2,19 +2,15 @@
   <a-spin :spinning="isPending">
     <a-form :model="formState" ref="formRef" @finish="handleOk">
       <a-form-item
-        label="仓库名"
-        name="name"
-        :rules="[{ required: true, message: '请输入仓库名' }]"
+        label="储存点"
+        name="depotId"
+        :rules="[{ required: true, message: '请选择储存点' }]"
       >
-        <a-input v-model:value="formState.name" />
-      </a-form-item>
-
-      <a-form-item label="仓库地址" name="location">
-        <a-input v-model:value="formState.location" />
-      </a-form-item>
-
-      <a-form-item label="仓库容量" name="capacity">
-        <a-input v-model:value="formState.capacity" />
+        <a-select v-model:value="formState.depotId" placeholder="请选择储存点">
+          <a-select-option v-for="depot in depots" :key="depot.id" :value="depot.id">
+            {{ depot.name }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
 
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
@@ -30,48 +26,50 @@
 <script lang="ts" setup>
 import { inject, reactive, ref, watchEffect } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
-import { type UpdateDepotInput, type DepotApi } from "@/core/openapi";
+import { type AssignDepotRequest, type InventoryApi, DepotApi } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const props = defineProps<{ depotId: number }>();
+const props = defineProps<{ inventoryId: number }>();
 
+const inventoryApi = inject("inventoryApi") as InventoryApi;
 const depotApi = inject("depotApi") as DepotApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<Partial<UpdateDepotInput>>({
-  name: undefined,
-  location: undefined,
-  capacity: undefined
+const formState = reactive<Partial<AssignDepotRequest>>({
+  depotId: undefined
 });
 
-// TODO: 当 props.depotId 变化时，没有重新获取仓库数据，现在是在外层销毁重建了
+// TODO: 当 props.inventoryId 变化时，没有重新获取库存数据，现在是在外层销毁重建了
 const {
-  data: fetchedDepot,
+  data: fetchedInventory,
   isPending,
   isSuccess
 } = useQuery({
-  queryKey: ["depot", props.depotId],
-  queryFn: () => depotApi.getDepot({ id: props.depotId })
+  queryKey: ["inventory", props.inventoryId],
+  queryFn: () => inventoryApi.getInventory({ id: props.inventoryId })
 });
 
 // 当查询成功且有数据时，优先使用 API 数据
 watchEffect(() => {
-  if (isSuccess.value && fetchedDepot.value) {
-    const { name, location, capacity } = fetchedDepot.value;
-    formState.name = name;
-    formState.location = location;
-    formState.capacity = capacity;
+  if (isSuccess.value && fetchedInventory.value) {
+    const { depotId } = fetchedInventory.value;
+    formState.depotId = depotId;
   }
 });
 
-const { mutate: updateDepot } = useMutation({
-  mutationFn: (editedDepot: UpdateDepotInput) =>
-    depotApi.updateDepot({
-      id: props.depotId,
-      updateDepotInput: { ...editedDepot }
+const { data: depots } = useQuery({
+  queryKey: ["depots"],
+  queryFn: () => depotApi.listDepots()
+});
+
+const { mutate: assignDepot } = useMutation({
+  mutationFn: ({ depotId }: AssignDepotRequest) =>
+    inventoryApi.assignDepot({
+      id: props.inventoryId,
+      assignDepotRequest: { depotId }
     }),
   onSuccess: () => {
     message.success("修改成功");
@@ -80,7 +78,7 @@ const { mutate: updateDepot } = useMutation({
     closeDrawer();
   },
   onError: (error) => {
-    message.error("修改失败");
+    message.error("操作失败");
     console.error(error);
   }
 });
@@ -103,7 +101,7 @@ const handleOk = () => {
   formRef.value
     ?.validate()
     .then(() => {
-      updateDepot(formRef.value?.getFieldsValue() as UpdateDepotInput);
+      assignDepot(formRef.value?.getFieldsValue() as { id: number } & AssignDepotRequest);
     })
     .catch((error) => {
       console.error("表单验证失败", error);

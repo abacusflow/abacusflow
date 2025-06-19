@@ -30,8 +30,8 @@ interface InventoryService {
 
     fun adjustWarningLine(
         id: Long,
-        newSafetyStock: Int,
-        newMaxStock: Int,
+        newSafetyStock: Long,
+        newMaxStock: Long,
     )
 
     fun checkSafetyStock(id: Long): Boolean
