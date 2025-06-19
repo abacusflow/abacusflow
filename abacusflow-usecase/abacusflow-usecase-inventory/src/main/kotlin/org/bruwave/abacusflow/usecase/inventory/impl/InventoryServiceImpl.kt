@@ -2,7 +2,11 @@ package org.bruwave.abacusflow.usecase.inventory.impl
 
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
-import org.bruwave.abacusflow.db.warehouse.WarehouseRepository
+import org.bruwave.abacusflow.db.depot.DepotRepository
+import org.bruwave.abacusflow.db.transaction.PurchaseOrderItemRepository
+import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
+import org.bruwave.abacusflow.db.transaction.SaleOrderItemRepository
+import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.inventory.Inventory
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
 import org.bruwave.abacusflow.usecase.inventory.CreateInventoryInputTO
@@ -18,13 +22,15 @@ import org.springframework.transaction.annotation.Transactional
 class InventoryServiceImpl(
     private val inventoryRepository: InventoryRepository,
     private val productRepository: ProductRepository,
-    private val warehouseRepository: WarehouseRepository,
+    private val depotRepository: DepotRepository,
+    private val purchaseOrderItemRepository: PurchaseOrderItemRepository,
+    private val saleOrderItemRepository: SaleOrderItemRepository,
 ) : InventoryService {
     override fun createInventory(input: CreateInventoryInputTO): InventoryTO {
         val inventory =
             Inventory(
                 productId = input.productId,
-                warehouseId = input.warehouseId,
+                depotId = input.depotId,
                 quantity = input.quantity,
             )
         return inventoryRepository.save(inventory).toTO()
@@ -66,22 +72,22 @@ class InventoryServiceImpl(
         inventoryRepository.save(inventory)
     }
 
-    override fun assignWarehouse(
+    override fun assignDepot(
         id: Long,
-        newWarehouseId: Long,
+        newDepotId: Long,
     ) {
         val inventory =
             inventoryRepository
                 .findById(id)
                 .orElseThrow { NoSuchElementException("Inventory not found") }
-        inventory.assignWarehouse(newWarehouseId)
+        inventory.assignDepot(newDepotId)
         inventoryRepository.save(inventory)
     }
 
     override fun adjustWarningLine(
         id: Long,
-        newSafetyStock: Int,
-        newMaxStock: Int,
+        newSafetyStock: Long,
+        newMaxStock: Long,
     ) {
         val inventory =
             inventoryRepository
@@ -101,16 +107,20 @@ class InventoryServiceImpl(
         val inventories = inventoryRepository.findAll()
 
         val productIds = inventories.mapNotNull { it.productId }.toSet()
-        val warehouseIds = inventories.mapNotNull { it.warehouseId }.toSet()
+        val depotIds = inventories.mapNotNull { it.depotId }.toSet()
 
         // 批量获取所有涉及的产品和仓库
         val productMap = productRepository.findAllById(productIds).associateBy { it.id }
-        val warehouseMap = warehouseRepository.findAllById(warehouseIds).associateBy { it.id }
+        val depotMap = depotRepository.findAllById(depotIds).associateBy { it.id }
+
 
         return inventories.map { inventory ->
+            val incomingQuantity = purchaseOrderItemRepository.findTotalQuantityByProductId(inventory.productId) ?: 0
+            val outgoingQuantity = saleOrderItemRepository.findTotalQuantityByProductId(inventory.productId) ?: 0
+
             val productName = productMap[inventory.productId]?.name ?: "unknown"
-            val warehouseName = warehouseMap[inventory.warehouseId]?.name ?: "unknown"
-            inventory.toBasicTO(productName, warehouseName)
+            val depotName = depotMap[inventory.depotId]?.name ?: "unknown"
+            inventory.toBasicTO(productName, depotName, incomingQuantity - outgoingQuantity)
         }
     }
 

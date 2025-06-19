@@ -2,7 +2,7 @@ package org.bruwave.abacusflow.portal.web.inventory
 
 import org.bruwave.abacusflow.portal.web.api.InventoriesApi
 import org.bruwave.abacusflow.portal.web.model.AdjustWarningLineRequestVO
-import org.bruwave.abacusflow.portal.web.model.AssignWarehouseRequestVO
+import org.bruwave.abacusflow.portal.web.model.AssignDepotRequestVO
 import org.bruwave.abacusflow.portal.web.model.BasicInventoryVO
 import org.bruwave.abacusflow.portal.web.model.IncreaseInventoryRequestVO
 import org.bruwave.abacusflow.portal.web.model.InventoryVO
@@ -54,11 +54,11 @@ class InventoryController(
         return ResponseEntity.ok().build()
     }
 
-    override fun assignWarehouse(
+    override fun assignDepot(
         id: Long,
-        assignWarehouseRequestVO: AssignWarehouseRequestVO,
+        assignDepotRequestVO: AssignDepotRequestVO,
     ): ResponseEntity<Unit> {
-        inventoryService.assignWarehouse(id, assignWarehouseRequestVO.warehouseId)
+        inventoryService.assignDepot(id, assignDepotRequestVO.depotId)
         return ResponseEntity.ok().build()
     }
 

@@ -6,12 +6,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface InventoryRepository : JpaRepository<Inventory, Long> {
-    fun findByProductIdAndWarehouseId(
+    fun findByProductIdAndDepotId(
         productId: Long,
-        warehouseId: Long,
+        depotId: Long,
     ): Inventory?
 
-    fun findByProductId(productId: Long): List<Inventory>
+    fun findByProductId(productId: Long): Inventory?
 
-    fun findByWarehouseId(warehouseId: Long): List<Inventory>
+    fun findByDepotId(depotId: Long): List<Inventory>
 }

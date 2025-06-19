@@ -9,6 +9,9 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.PrePersist
+import jakarta.persistence.PreRemove
+import jakarta.persistence.PreUpdate
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -70,8 +73,24 @@ class Product(
     var updatedAt: Instant = Instant.now()
         private set
 
-    init {
+//    init {
+//        registerEvent(ProductCreatedEvent(this))
+//    }
+
+    @PrePersist
+    fun prePersist() {
         registerEvent(ProductCreatedEvent(this))
+    }
+
+//    // update最佳实践是在每个单独方法,或者说不应该使用ProductUpdatedEvent这么宽泛的事件
+//    @PreUpdate
+//    fun preUpdate() {
+//        registerEvent(ProductUpdatedEvent(this))
+//    }
+
+    @PreRemove
+    fun preRemove() {
+        registerEvent(ProductDeletedEvent(this))
     }
 
     fun updateBasicInfo(

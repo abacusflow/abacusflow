@@ -7,7 +7,7 @@ servers:
   - url: http://localhost:8080
 tags:
   - name: inventory
-    description: 管理商品库存状态和库存操作，包括库存数量、多仓库支持、库存调整与预警机制。
+    description: 管理商品库存状态和库存操作，包括库存数量、多储存点支持、库存调整与预警机制。
   - name: partner
     description: 管理客户和供应商等外部合作伙伴的信息，并与交易历史进行关联管理。
   - name: product
@@ -16,8 +16,8 @@ tags:
     description: 处理采购和销售订单的全流程，涵盖订单创建、状态跟踪及订单明细处理。
   - name: user
     description: 管理系统用户账户、权限控制及用户行为相关的信息。
-  - name: warehouse
-    description: 管理物理仓库及其内部存储空间，包括库位分配、容量规划和仓库布局设计。
+  - name: depot
+    description: 管理物理储存点及其内部存储空间，包括库位分配、容量规划和储存点布局设计。
 
 paths:
   /users:
@@ -495,46 +495,46 @@ paths:
         "200":
           description: Product category deleted
 
-  /warehouses:
+  /depots:
     get:
-      operationId: listWarehouses
+      operationId: listDepots
       tags:
-        - warehouse
-      summary: List all warehouses
+        - depot
+      summary: List all depots
       responses:
         "200":
-          description: List of warehouses
+          description: List of depots
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/BasicWarehouse"
+                  $ref: "#/components/schemas/BasicDepot"
     post:
-      operationId: addWarehouse
+      operationId: addDepot
       tags:
-        - warehouse
-      summary: Create a new warehouse
+        - depot
+      summary: Create a new depot
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateWarehouseInput"
+              $ref: "#/components/schemas/CreateDepotInput"
       responses:
         "200":
-          description: Warehouse created
+          description: Depot created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Warehouse"
+                $ref: "#/components/schemas/Depot"
 
-  /warehouses/{id}:
+  /depots/{id}:
     get:
-      operationId: getWarehouse
+      operationId: getDepot
       tags:
-        - warehouse
-      summary: Get warehouse by ID
+        - depot
+      summary: Get depot by ID
       parameters:
         - name: id
           in: path
@@ -544,16 +544,16 @@ paths:
             format: int64
       responses:
         "200":
-          description: Warehouse details
+          description: Depot details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Warehouse"
+                $ref: "#/components/schemas/Depot"
     put:
-      operationId: updateWarehouse
+      operationId: updateDepot
       tags:
-        - warehouse
-      summary: Update warehouse
+        - depot
+      summary: Update depot
       parameters:
         - name: id
           in: path
@@ -566,19 +566,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateWarehouseInput"
+              $ref: "#/components/schemas/UpdateDepotInput"
       responses:
         "200":
-          description: Warehouse updated
+          description: Depot updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Warehouse"
+                $ref: "#/components/schemas/Depot"
     delete:
-      operationId: deleteWarehouse
+      operationId: deleteDepot
       tags:
-        - warehouse
-      summary: Delete warehouse
+        - depot
+      summary: Delete depot
       parameters:
         - name: id
           in: path
@@ -588,7 +588,7 @@ paths:
             format: int64
       responses:
         "200":
-          description: Warehouse deleted
+          description: Depot deleted
 
   /inventories:
     get:
@@ -689,12 +689,12 @@ paths:
         "200":
           description: Inventory decreased
 
-  /inventories/{id}/assign-warehouse:
+  /inventories/{id}/assign-depot:
     post:
-      operationId: assignWarehouse
+      operationId: assignDepot
       tags:
         - inventory
-      summary: Assign inventory to another warehouse
+      summary: Assign inventory to another depot
       parameters:
         - name: id
           in: path
@@ -709,15 +709,15 @@ paths:
             schema:
               type: object
               required:
-                - warehouseId
+                - depotId
               properties:
-                warehouseId:
+                depotId:
                   type: integer
                   format: int64
-                  description: ID of the warehouse to assign
+                  description: ID of the depot to assign
       responses:
         "200":
-          description: Warehouse assigned successfully
+          description: Depot assigned successfully
 
   /inventories/{id}/adjust-warning-line:
     post:
@@ -744,11 +744,11 @@ paths:
               properties:
                 safetyStock:
                   type: integer
-                  format: int32
+                  format: int64
                   minimum: 0
                 maxStock:
                   type: integer
-                  format: int32
+                  format: int64
                   minimum: 0
       responses:
         "200":
@@ -1542,8 +1542,8 @@ components:
           nullable: true
           description: 父分类ID
 
-    # ============= Warehouse schemas =============
-    Warehouse:
+    # ============= Depot schemas =============
+    Depot:
       type: object
       required:
         - id
@@ -1554,19 +1554,19 @@ components:
         id:
           type: integer
           format: int64
-          description: 仓库唯一标识
+          description: 储存点唯一标识
         name:
           type: string
-          description: 仓库名称
+          description: 储存点名称
         location:
           type: string
           nullable: true
-          description: 仓库地址
+          description: 储存点地址
         capacity:
           type: integer
           nullable: true
           minimum: 0
-          description: 仓库容量
+          description: 储存点容量
         enabled:
           type: boolean
           description: 是否启用
@@ -1579,7 +1579,7 @@ components:
           format: int64
           description: 更新时间戳
 
-    BasicWarehouse:
+    BasicDepot:
       type: object
       required:
         - id
@@ -1589,24 +1589,24 @@ components:
         id:
           type: integer
           format: int64
-          description: 仓库ID
+          description: 储存点ID
         name:
           type: string
-          description: 仓库名称
+          description: 储存点名称
         location:
           type: string
           nullable: true
-          description: 仓库地址
+          description: 储存点地址
         capacity:
           type: integer
           nullable: true
           minimum: 0
-          description: 仓库容量
+          description: 储存点容量
         enabled:
           type: boolean
           description: 是否启用
 
-    CreateWarehouseInput:
+    CreateDepotInput:
       type: object
       required:
         - name
@@ -1614,33 +1614,33 @@ components:
         name:
           type: string
           minLength: 1
-          description: 仓库名称
+          description: 储存点名称
         location:
           type: string
           nullable: true
-          description: 仓库地址
+          description: 储存点地址
         capacity:
           type: integer
           nullable: true
           minimum: 0
-          description: 仓库容量
+          description: 储存点容量
 
-    UpdateWarehouseInput:
+    UpdateDepotInput:
       type: object
       properties:
         name:
           type: string
           minLength: 1
-          description: 仓库名称
+          description: 储存点名称
         location:
           type: string
           nullable: true
-          description: 仓库地址
+          description: 储存点地址
         capacity:
           type: integer
           nullable: true
           minimum: 0
-          description: 仓库容量
+          description: 储存点容量
 
     # ============= Inventory schemas =============
     Inventory:
@@ -1664,26 +1664,29 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        warehouseId:
+        depotId:
           type: integer
           format: int64
-          description: 仓库ID
+          description: 储存点ID
         quantity:
           type: integer
+          format: int64
           description: 总库存数量
         reservedQuantity:
           type: integer
+          format: int64
           description: 预留数量
         availableQuantity:
           type: integer
+          format: int64
           description: 可用数量
         safetyStock:
           type: integer
-          nullable: true
+          format: int64
           description: 安全库存预警线
         maxStock:
           type: integer
-          nullable: true
+          format: int64
           description: 最高库存预警线
         createdAt:
           type: integer
@@ -1701,6 +1704,7 @@ components:
         - productName
         - quantity
         - availableQuantity
+        - expectedQuantity
         - safetyStock
         - maxStock
       properties:
@@ -1711,22 +1715,28 @@ components:
         productName:
           type: string
           description: 商品名称
-        warehouseName:
+        depotName:
           type: string
-          description: 仓库名称
+          description: 储存点名称
         quantity:
           type: integer
+          format: int64
           description: 总库存数量
         availableQuantity:
           type: integer
+          format: int64
           description: 可用数量
+        expectedQuantity:
+          type: integer
+          format: int64
+          description: 期望数量
         safetyStock:
           type: integer
-          nullable: true
+          format: int64
           description: 安全库存预警线
         maxStock:
           type: integer
-          nullable: true
+          format: int64
           description: 最大库存预警线
 
     # ============= SaleOrder schemas =============

@@ -41,7 +41,8 @@ class ProductServiceImpl(
                 category = newProductCategory,
                 supplierId = input.supplierId,
             )
-        return productRepository.save(newProduct).toTO()
+        val product = productRepository.save(newProduct)
+        return  product.toTO()
     }
 
     override fun updateProduct(
@@ -73,7 +74,9 @@ class ProductServiceImpl(
             input.supplierId?.let { supplierId -> changeSupplier(supplierId) }
         }
 
-        return productRepository.save(product).toTO()
+        val updatedProduct = productRepository.saveAndFlush(product)
+
+        return updatedProduct.toTO()
     }
 
     override fun deleteProduct(id: Long): ProductTO {
@@ -82,10 +85,8 @@ class ProductServiceImpl(
                 .findById(id)
                 .orElseThrow { NoSuchElementException("Product not found with id: $id") }
 
-        // TODO 这种聚合根之间的集联删除的最佳实践是什么
         productRepository.delete(product)
 
-        applicationEventPublisher.publishEvent(ProductDeletedEvent(product))
         return product.toTO()
     }
 

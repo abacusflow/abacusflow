@@ -23,15 +23,15 @@ interface InventoryService {
         amount: Int,
     )
 
-    fun assignWarehouse(
+    fun assignDepot(
         id: Long,
-        newWarehouseId: Long,
+        newDepotId: Long,
     )
 
     fun adjustWarningLine(
         id: Long,
-        newSafetyStock: Int,
-        newMaxStock: Int,
+        newSafetyStock: Long,
+        newMaxStock: Long,
     )
 
     fun checkSafetyStock(id: Long): Boolean

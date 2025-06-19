@@ -4,22 +4,24 @@ import org.bruwave.abacusflow.inventory.Inventory
 
 fun Inventory.toBasicTO(
     productName: String,
-    warehouseName: String,
+    depotName: String,
+    expectedQuantity: Long,
 ) = BasicInventoryTO(
     id = id,
     productName = productName,
-    warehouseName = warehouseName,
+    depotName = depotName,
     quantity = quantity,
     availableQuantity = availableQuantity,
     safetyStock = safetyStock,
     maxStock = maxStock,
+    expectedQuantity = expectedQuantity
 )
 
 fun Inventory.toTO() =
     InventoryTO(
         id = id,
         productId = productId,
-        warehouseId = warehouseId,
+        depotId = depotId,
         quantity = quantity,
         reservedQuantity = reservedQuantity,
         availableQuantity = availableQuantity,
