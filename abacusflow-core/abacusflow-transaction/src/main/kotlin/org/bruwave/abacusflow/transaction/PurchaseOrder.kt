@@ -92,7 +92,7 @@ class PurchaseOrder(
             addItem(productId, quantity, unitPrice)
         }
 
-        registerEvent(PurchaseOrderItemChangedEvent(items))
+        registerEvent(PurchaseOrderItemChangedEvent(id, orderNo, items))
     }
 
     fun completeOrder() {

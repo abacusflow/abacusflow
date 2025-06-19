@@ -1,4 +1,4 @@
-package org.bruwave.abacusflow.warehouse
+package org.bruwave.abacusflow.depot
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -14,12 +14,12 @@ import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
 
 @Entity
-@Table(name = "warehouses")
-class Warehouse(
+@Table(name = "depots")
+class Depot(
     name: String,
     location: String?,
     capacity: Int?,
-) : AbstractAggregateRoot<Warehouse>() {
+) : AbstractAggregateRoot<Depot>() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
@@ -47,7 +47,7 @@ class Warehouse(
     var updatedAt: Instant = Instant.now()
         private set
 
-    fun updateWarehouseInfo(
+    fun updateDepotInfo(
         newName: String?,
         newLocation: String? = null,
         newCapacity: Int? = null,
@@ -62,7 +62,7 @@ class Warehouse(
             capacity = it
         }
         updatedAt = Instant.now()
-        registerEvent(WarehouseUpdatedEvent(id))
+        registerEvent(DepotUpdatedEvent(id))
     }
 
     fun enable() {

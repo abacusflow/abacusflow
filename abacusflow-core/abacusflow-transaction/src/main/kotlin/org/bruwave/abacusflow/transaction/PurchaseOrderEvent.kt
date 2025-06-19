@@ -1,5 +1,7 @@
 package org.bruwave.abacusflow.transaction
 
+import java.util.UUID
+
 class PurchaseOrderCreatedEvent(
     val order: PurchaseOrder,
 )
@@ -9,6 +11,8 @@ class PurchaseOrderCompletedEvent(
 )
 
 class PurchaseOrderItemChangedEvent(
-    val order: PurchaseOrder,
+    val orderId: Long,
+    val orderNo: UUID,
+    val items: List<PurchaseOrderItem>,
 )
 

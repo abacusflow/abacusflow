@@ -6,7 +6,7 @@ import {
   ProductApi,
   TransactionApi,
   UserApi,
-  WarehouseApi,
+  DepotApi,
   type Middleware
 } from "../core/openapi";
 
@@ -15,7 +15,7 @@ export default {
     // 使用提供的配置初始化 UserApi
     const userApi = new UserApi(config);
     const productApi = new ProductApi(config);
-    const warehouseApi = new WarehouseApi(config);
+    const depotApi = new DepotApi(config);
     const inventoryApi = new InventoryApi(config);
     const transactionApi = new TransactionApi(config);
     const partnerApi = new PartnerApi(config);
@@ -23,7 +23,7 @@ export default {
     // 提供 API 实例
     app.provide("userApi", userApi);
     app.provide("productApi", productApi);
-    app.provide("warehouseApi", warehouseApi);
+    app.provide("depotApi", depotApi);
     app.provide("inventoryApi", inventoryApi);
     app.provide("transactionApi", transactionApi);
     app.provide("partnerApi", partnerApi);

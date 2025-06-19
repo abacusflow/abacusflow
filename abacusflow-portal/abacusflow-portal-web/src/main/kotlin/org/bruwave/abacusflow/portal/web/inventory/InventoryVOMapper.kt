@@ -9,7 +9,7 @@ fun InventoryTO.toVO(): InventoryVO =
     InventoryVO(
         id = id,
         productId = productId,
-        warehouseId = warehouseId,
+        depotId = depotId,
         quantity = quantity,
         reservedQuantity = reservedQuantity,
         availableQuantity = availableQuantity,
@@ -23,7 +23,7 @@ fun BasicInventoryTO.toBasicVO(): BasicInventoryVO =
     BasicInventoryVO(
         id = id,
         productName = productName,
-        warehouseName = warehouseName,
+        depotName = depotName,
         quantity = quantity,
         availableQuantity = availableQuantity,
         safetyStock = safetyStock,

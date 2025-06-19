@@ -10,6 +10,6 @@ dependencies {
     implementation(project(":abacusflow-core:abacusflow-inventory"))
     implementation(project(":abacusflow-core:abacusflow-transaction"))
     implementation(project(":abacusflow-core:abacusflow-partner"))
-    implementation(project(":abacusflow-core:abacusflow-warehouse"))
+    implementation(project(":abacusflow-core:abacusflow-depot"))
     api(libs.spring.data.jpa)
 }

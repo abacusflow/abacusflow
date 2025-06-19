@@ -1,8 +1,8 @@
-package org.bruwave.abacusflow.usecase.warehouse
+package org.bruwave.abacusflow.usecase.depot
 
 import java.time.Instant
 
-data class WarehouseTO(
+data class DepotTO(
     val id: Long,
     val name: String,
     val location: String?,

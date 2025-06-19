@@ -1,6 +1,6 @@
-package org.bruwave.abacusflow.usecase.warehouse
+package org.bruwave.abacusflow.usecase.depot
 
-data class BasicWarehouseTO(
+data class BasicDepotTO(
     val id: Long,
     val name: String,
     val location: String?,

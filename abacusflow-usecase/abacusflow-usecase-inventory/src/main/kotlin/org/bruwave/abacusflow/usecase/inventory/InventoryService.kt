@@ -23,9 +23,9 @@ interface InventoryService {
         amount: Int,
     )
 
-    fun assignWarehouse(
+    fun assignDepot(
         id: Long,
-        newWarehouseId: Long,
+        newDepotId: Long,
     )
 
     fun adjustWarningLine(

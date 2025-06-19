@@ -11,8 +11,8 @@
             <a-input v-model:value="searchForm.productId" placeholder="请选择产品" allow-clear />
           </a-form-item>
 
-          <a-form-item label="仓库" name="warehouseId">
-            <a-input v-model:value="searchForm.warehouseId" placeholder="请选择仓库" allow-clear />
+          <a-form-item label="仓库" name="depotId">
+            <a-input v-model:value="searchForm.depotId" placeholder="请选择仓库" allow-clear />
           </a-form-item>
 
           <a-form-item>
@@ -37,7 +37,7 @@
 
             <template v-if="column.key === 'action'">
               <a-space>
-                <a-button type="link" shape="circle" @click="handleAssignWarehouse(record)"
+                <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
                   >分配仓库</a-button
                 >
 
@@ -121,13 +121,13 @@
 
     <a-drawer
       title="分配仓库"
-      :open="showAssignWarehouse"
+      :open="showAssignDepot"
       :closable="false"
-      @close="showAssignWarehouse = false"
+      @close="showAssignDepot = false"
     >
-      <InventoryAssignWarehouseView
-        v-if="showAssignWarehouse && editingInventory"
-        v-model:visible="showAssignWarehouse"
+      <InventoryAssignDepotView
+        v-if="showAssignDepot && editingInventory"
+        v-model:visible="showAssignDepot"
         :inventoryId="editingInventory.id"
         @success="refetch"
       />
@@ -161,13 +161,13 @@ import type {
 } from "@/core/openapi";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
-import InventoryAssignWarehouseView from "./InventoryAssignWarehouseView.vue";
+import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
 const queryClient = useQueryClient();
 
-const showAssignWarehouse = ref(false);
+const showAssignDepot = ref(false);
 const showEditWarningLine = ref(false);
 const increaseValue = ref<number>(1);
 const decreaseValue = ref<number>(1);
@@ -176,7 +176,7 @@ const editingInventory = ref<Inventory | null>(null);
 // 搜索表单
 const searchForm = ref({
   productId: undefined,
-  warehouseId: undefined
+  depotId: undefined
 });
 
 // 搜索
@@ -189,7 +189,7 @@ const handleSearch = () => {
 const resetSearch = () => {
   searchForm.value = {
     productId: undefined,
-    warehouseId: undefined
+    depotId: undefined
   };
   queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
@@ -251,9 +251,9 @@ function handleReserveInventory(inventory: Inventory, amount: number) {
   reserveInventory({ id: inventory.id, amount });
 }
 
-function handleAssignWarehouse(inventory: Inventory) {
+function handleAssignDepot(inventory: Inventory) {
   editingInventory.value = inventory;
-  showAssignWarehouse.value = true;
+  showAssignDepot.value = true;
 }
 
 function handleAdjustWarningLine(inventory: Inventory) {
@@ -307,7 +307,7 @@ const stockHealthColor = (record: Inventory): string => {
 
 const columns: StrictTableColumnsType<BasicInventory> = [
   { title: "商品名称", dataIndex: "productName", key: "productName" },
-  { title: "仓库名称", dataIndex: "warehouseName", key: "warehouseName" },
+  { title: "仓库名称", dataIndex: "depotName", key: "depotName" },
   { title: "总库存数量", dataIndex: "quantity", key: "quantity" },
   { title: "可用数量", dataIndex: "availableQuantity", key: "availableQuantity" },
   { title: "安全库存预警线", dataIndex: "safetyStock", key: "safetyStock" },

@@ -30,48 +30,48 @@
 <script lang="ts" setup>
 import { inject, reactive, ref, watchEffect } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
-import { type UpdateWarehouseInput, type WarehouseApi } from "@/core/openapi";
+import { type UpdateDepotInput, type DepotApi } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const props = defineProps<{ warehouseId: number }>();
+const props = defineProps<{ depotId: number }>();
 
-const warehouseApi = inject("warehouseApi") as WarehouseApi;
+const depotApi = inject("depotApi") as DepotApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<Partial<UpdateWarehouseInput>>({
+const formState = reactive<Partial<UpdateDepotInput>>({
   name: undefined,
   location: undefined,
   capacity: undefined
 });
 
-// TODO: 当 props.warehouseId 变化时，没有重新获取仓库数据，现在是在外层销毁重建了
+// TODO: 当 props.depotId 变化时，没有重新获取仓库数据，现在是在外层销毁重建了
 const {
-  data: fetchedWarehouse,
+  data: fetchedDepot,
   isPending,
   isSuccess
 } = useQuery({
-  queryKey: ["warehouse", props.warehouseId],
-  queryFn: () => warehouseApi.getWarehouse({ id: props.warehouseId })
+  queryKey: ["depot", props.depotId],
+  queryFn: () => depotApi.getDepot({ id: props.depotId })
 });
 
 // 当查询成功且有数据时，优先使用 API 数据
 watchEffect(() => {
-  if (isSuccess.value && fetchedWarehouse.value) {
-    const { name, location, capacity } = fetchedWarehouse.value;
+  if (isSuccess.value && fetchedDepot.value) {
+    const { name, location, capacity } = fetchedDepot.value;
     formState.name = name;
     formState.location = location;
     formState.capacity = capacity;
   }
 });
 
-const { mutate: updateWarehouse } = useMutation({
-  mutationFn: (editedWarehouse: UpdateWarehouseInput) =>
-    warehouseApi.updateWarehouse({
-      id: props.warehouseId,
-      updateWarehouseInput: { ...editedWarehouse }
+const { mutate: updateDepot } = useMutation({
+  mutationFn: (editedDepot: UpdateDepotInput) =>
+    depotApi.updateDepot({
+      id: props.depotId,
+      updateDepotInput: { ...editedDepot }
     }),
   onSuccess: () => {
     message.success("修改成功");
@@ -103,7 +103,7 @@ const handleOk = () => {
   formRef.value
     ?.validate()
     .then(() => {
-      updateWarehouse(formRef.value?.getFieldsValue() as UpdateWarehouseInput);
+      updateDepot(formRef.value?.getFieldsValue() as UpdateDepotInput);
     })
     .catch((error) => {
       console.error("表单验证失败", error);

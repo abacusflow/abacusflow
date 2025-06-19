@@ -132,13 +132,13 @@ const router = createRouter({
       ]
     },
     {
-      path: "/warehouse",
-      name: "warehouse",
-      component: () => import("@/views/warehouse/WarehouseListView.vue"),
+      path: "/depot",
+      name: "depot",
+      component: () => import("@/views/depot/DepotListView.vue"),
       meta: {
         title: "仓库管理",
         icon: "home",
-        permission: ["warehouse"]
+        permission: ["depot"]
       }
     },
     {

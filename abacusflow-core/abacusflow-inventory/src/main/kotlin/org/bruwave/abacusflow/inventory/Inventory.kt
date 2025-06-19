@@ -1,10 +1,12 @@
 package org.bruwave.abacusflow.inventory
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import jakarta.persistence.Version
 import jakarta.validation.constraints.PositiveOrZero
 import org.hibernate.annotations.CreationTimestamp
@@ -13,10 +15,14 @@ import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
 
 @Entity
-@Table(name = "inventories")
+@Table(
+    name = "inventories",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["product_id"])]
+)
 class Inventory(
+    @Column(name = "product_id", nullable = false)
     val productId: Long, // 通过ID关联商品
-    warehouseId: Long?,
+    depotId: Long?,
     quantity: Int = 0,
     reservedQuantity: Int = 0,
 ) : AbstractAggregateRoot<Inventory>() {
@@ -24,7 +30,7 @@ class Inventory(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
-    var warehouseId: Long? = warehouseId // 通过ID关联仓库
+    var depotId: Long? = depotId // 通过ID关联仓库
         private set
 
     @field:PositiveOrZero
@@ -55,12 +61,19 @@ class Inventory(
     var updatedAt: Instant = Instant.now()
         private set
 
+    fun resetQuantity(amount: Int) {
+        require(amount >= 0) { "库存数量必须为正数" }
+        quantity = amount
+        updatedAt = Instant.now()
+//        registerEvent(InventoryIncreasedEvent(id, productId, depotId, amount))
+    }
+
     fun increaseQuantity(amount: Int) {
         require(amount > 0) { "增加数量必须为正数" }
         require(amount <= MAX_ADJUSTMENT) { "每次减少的库存数量不能超过 $MAX_ADJUSTMENT 个" }
         quantity += amount
         updatedAt = Instant.now()
-//        registerEvent(InventoryIncreasedEvent(id, productId, warehouseId, amount))
+//        registerEvent(InventoryIncreasedEvent(id, productId, depotId, amount))
     }
 
     fun decreaseQuantity(amount: Int) {
@@ -70,7 +83,7 @@ class Inventory(
         quantity -= amount
         version++
         updatedAt = Instant.now()
-//        registerEvent(InventoryDecreasedEvent(id, productId, warehouseId, amount))
+//        registerEvent(InventoryDecreasedEvent(id, productId, depotId, amount))
     }
 
     fun reserveInventory(amount: Int) {
@@ -81,19 +94,19 @@ class Inventory(
         reservedQuantity += amount
         updatedAt = Instant.now()
 
-//        registerEvent(InventoryReservedEvent(id, productId, warehouseId, amount))
+//        registerEvent(InventoryReservedEvent(id, productId, depotId, amount))
     }
 
-    fun assignWarehouse(newWarehouseId: Long) {
-        require(newWarehouseId > 0) { "无效的仓库ID" }
+    fun assignDepot(newDepotId: Long) {
+        require(newDepotId > 0) { "无效的仓库ID" }
 
-        if (this.warehouseId == newWarehouseId) return
+        if (this.depotId == newDepotId) return
 
         // 实际上需要将字段变为 var 才能赋值
-        this.warehouseId = newWarehouseId
+        this.depotId = newDepotId
         this.updatedAt = Instant.now()
 
-//        registerEvent(WarehouseAssignedEvent(id, productId, newWarehouseId))
+//        registerEvent(DepotAssignedEvent(id, productId, newDepotId))
     }
 
     fun adjustWarningLine(
@@ -107,7 +120,7 @@ class Inventory(
         this.maxStock = newMaxStock
         this.updatedAt = Instant.now()
 
-//        registerEvent(WarningLineAdjustedEvent(id, productId, warehouseId, newSafetyStock, newMaxStock))
+//        registerEvent(WarningLineAdjustedEvent(id, productId, depotId, newSafetyStock, newMaxStock))
     }
 
     val isBelowSafetyStock

@@ -24,24 +24,24 @@
 <script lang="ts" setup>
 import { inject, reactive, ref } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
-import { type CreateWarehouseInput, WarehouseApi } from "@/core/openapi";
+import { type CreateDepotInput, DepotApi } from "@/core/openapi";
 import { useMutation } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
-const formState = reactive<Partial<CreateWarehouseInput>>({
+const formState = reactive<Partial<CreateDepotInput>>({
   name: undefined,
   location: undefined,
   capacity: undefined
 });
 
-const warehouseApi = inject("warehouseApi") as WarehouseApi;
+const depotApi = inject("depotApi") as DepotApi;
 
 const emit = defineEmits(["success", "update:visible"]);
 
-const { mutate: createWarehouse } = useMutation({
-  mutationFn: (newWarehouse: CreateWarehouseInput) =>
-    warehouseApi.addWarehouse({ createWarehouseInput: { ...newWarehouse } }),
+const { mutate: createDepot } = useMutation({
+  mutationFn: (newDepot: CreateDepotInput) =>
+    depotApi.addDepot({ createDepotInput: { ...newDepot } }),
   onSuccess: () => {
     message.success("添加成功");
     resetForm();
@@ -72,7 +72,7 @@ const handleOk = () => {
   formRef.value
     ?.validate()
     .then(() => {
-      createWarehouse(formRef.value?.getFieldsValue() as CreateWarehouseInput);
+      createDepot(formRef.value?.getFieldsValue() as CreateDepotInput);
     })
     .catch((error) => {
       console.error("表单验证失败", error);

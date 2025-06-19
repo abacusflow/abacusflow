@@ -20,7 +20,7 @@ class ProductEventListener(
         inventoryRepository.save(
             Inventory(
                 productId = event.product.id,
-                warehouseId = null,
+                depotId = null,
             ),
         )
     }
@@ -34,7 +34,8 @@ class ProductEventListener(
     fun handleProductDeleted(event: ProductDeletedEvent) {
         println("product deleted: ${event.product.id}, ${event.product.name}")
 
-        val inventories = inventoryRepository.findByProductId(event.product.id)
-        inventoryRepository.deleteAll(inventories)
+        val inventory = inventoryRepository.findByProductId(event.product.id)
+            ?: throw NoSuchElementException("Product with id ${event.product.id} not found")
+        inventoryRepository.delete(inventory)
     }
 }

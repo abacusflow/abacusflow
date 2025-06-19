@@ -1,9 +1,9 @@
-package org.bruwave.abacusflow.usecase.warehouse
+package org.bruwave.abacusflow.usecase.depot
 
-import org.bruwave.abacusflow.warehouse.Warehouse
+import org.bruwave.abacusflow.depot.Depot
 
-fun Warehouse.toTO() =
-    WarehouseTO(
+fun Depot.toTO() =
+    DepotTO(
         id = id,
         name = name,
         location = location,
@@ -13,8 +13,8 @@ fun Warehouse.toTO() =
         enabled = enabled,
     )
 
-fun Warehouse.toBasicTO() =
-    BasicWarehouseTO(
+fun Depot.toBasicTO() =
+    BasicDepotTO(
         id = id,
         name = name,
         location = location,

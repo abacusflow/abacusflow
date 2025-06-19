@@ -1,12 +1,12 @@
-package org.bruwave.abacusflow.usecase.warehouse
+package org.bruwave.abacusflow.usecase.depot
 
-data class CreateWarehouseInputTO(
+data class CreateDepotInputTO(
     val name: String,
     val location: String?,
     val capacity: Int?,
 )
 
-data class UpdateWarehouseInputTO(
+data class UpdateDepotInputTO(
     val name: String?,
     val location: String?,
     val capacity: Int?,

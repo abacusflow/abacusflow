@@ -35,7 +35,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         "org.bruwave.abacusflow.partner",
         "org.bruwave.abacusflow.product",
         "org.bruwave.abacusflow.transaction",
-        "org.bruwave.abacusflow.warehouse",
+        "org.bruwave.abacusflow.depot",
     ],
 )
 @PropertySource("classpath:application-core.yml", factory = YamlPropertySourceFactory::class)

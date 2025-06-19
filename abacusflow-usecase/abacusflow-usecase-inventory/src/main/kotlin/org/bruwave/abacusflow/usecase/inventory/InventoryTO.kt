@@ -5,7 +5,7 @@ import java.time.Instant
 data class InventoryTO(
     val id: Long,
     val productId: Long,
-    val warehouseId: Long?,
+    val depotId: Long?,
     val quantity: Int,
     val reservedQuantity: Int,
     val availableQuantity: Int,

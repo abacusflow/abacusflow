@@ -82,7 +82,7 @@ class SaleOrder(
             addItem(productId, quantity, unitPrice)
         }
 
-        registerEvent(SaleOrderItemChangedEvent(items))
+        registerEvent(SaleOrderItemChangedEvent(id, orderNo, items))
     }
 
     // TODO 最佳方案是替换为增量更新

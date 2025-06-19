@@ -3,7 +3,7 @@
     <a-space direction="vertical" style="width: 100%">
       <a-flex justify="space-between" align="center">
         <h1>仓库管理</h1>
-        <a-button type="primary" @click="handleAddWarehouse" style="margin-bottom: 16px">
+        <a-button type="primary" @click="handleAddDepot" style="margin-bottom: 16px">
           新增仓库
         </a-button>
       </a-flex>
@@ -31,13 +31,13 @@
             </template>
             <template v-if="column.key === 'action'">
               <a-space>
-                <a-button type="link" shape="circle" @click="handleEditWarehouse(record)"
+                <a-button type="link" shape="circle" @click="handleEditDepot(record)"
                   >编辑
                 </a-button>
 
                 <a-divider type="vertical" />
 
-                <a-popconfirm title="确定删除该仓库？" @confirm="handleDeleteWarehouse(record.id)">
+                <a-popconfirm title="确定删除该仓库？" @confirm="handleDeleteDepot(record.id)">
                   <a-button type="link" shape="circle">删除</a-button>
                 </a-popconfirm>
               </a-space>
@@ -47,14 +47,14 @@
       </a-card>
     </a-space>
     <a-drawer title="新增仓库" :open="showAdd" :closable="false" @close="showAdd = false">
-      <WarehouseAddView v-if="showAdd" v-model:visible="showAdd" @success="refetch" />
+      <DepotAddView v-if="showAdd" v-model:visible="showAdd" @success="refetch" />
     </a-drawer>
 
     <a-drawer title="修改仓库" :open="showEdit" :closable="false" @close="showEdit = false">
-      <WarehouseEditView
-        v-if="showEdit && editingWarehouse"
+      <DepotEditView
+        v-if="showEdit && editingDepot"
         v-model:visible="showEdit"
-        :warehouseId="editingWarehouse.id"
+        :depotId="editingDepot.id"
         @success="refetch"
       />
     </a-drawer>
@@ -64,18 +64,18 @@
 <script lang="ts" setup>
 import { inject, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicWarehouse, Warehouse, WarehouseApi } from "@/core/openapi";
-import WarehouseAddView from "./WarehouseAddView.vue";
-import WarehouseEditView from "./WarehouseEditView.vue";
+import type { BasicDepot, Depot, DepotApi } from "@/core/openapi";
+import DepotAddView from "./DepotAddView.vue";
+import DepotEditView from "./DepotEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
 
-const warehouseApi = inject("warehouseApi") as WarehouseApi;
+const depotApi = inject("depotApi") as DepotApi;
 const queryClient = useQueryClient();
 
 const showAdd = ref(false);
 const showEdit = ref(false);
-const editingWarehouse = ref<Warehouse | null>(null);
+const editingDepot = ref<Depot | null>(null);
 // 搜索表单
 const searchForm = ref({
   name: ""
@@ -83,7 +83,7 @@ const searchForm = ref({
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["warehouses"] });
+  queryClient.invalidateQueries({ queryKey: ["depots"] });
   refetch();
 };
 
@@ -92,25 +92,25 @@ const resetSearch = () => {
   searchForm.value = {
     name: ""
   };
-  queryClient.invalidateQueries({ queryKey: ["warehouses"] });
+  queryClient.invalidateQueries({ queryKey: ["depots"] });
   refetch();
 };
 
-const handleAddWarehouse = () => (showAdd.value = true);
-const handleEditWarehouse = (warehouse: Warehouse) => {
-  editingWarehouse.value = warehouse;
+const handleAddDepot = () => (showAdd.value = true);
+const handleEditDepot = (depot: Depot) => {
+  editingDepot.value = depot;
   showEdit.value = true;
 };
 
 const { data, isPending, refetch } = useQuery({
-  queryKey: ["warehouses"],
-  queryFn: () => warehouseApi.listWarehouses()
+  queryKey: ["depots"],
+  queryFn: () => depotApi.listDepots()
 });
 
-const { mutate: deleteWarehouse } = useMutation({
-  mutationFn: (id: number) => warehouseApi.deleteWarehouse({ id }),
+const { mutate: deleteDepot } = useMutation({
+  mutationFn: (id: number) => depotApi.deleteDepot({ id }),
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["warehouses"] });
+    queryClient.invalidateQueries({ queryKey: ["depots"] });
     message.success("删除成功");
   },
   onError: (error) => {
@@ -119,11 +119,11 @@ const { mutate: deleteWarehouse } = useMutation({
   }
 });
 
-function handleDeleteWarehouse(id: number) {
-  deleteWarehouse(id);
+function handleDeleteDepot(id: number) {
+  deleteDepot(id);
 }
 
-const columns: StrictTableColumnsType<BasicWarehouse> = [
+const columns: StrictTableColumnsType<BasicDepot> = [
   { title: "仓库名称", dataIndex: "name", key: "name" },
   { title: "仓库地址", dataIndex: "location", key: "location" },
   { title: "仓库容量", dataIndex: "capacity", key: "capacity" },

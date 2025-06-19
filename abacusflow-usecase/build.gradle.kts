@@ -9,7 +9,7 @@ dependencies {
     api(project("abacusflow-usecase-product"))
     api(project("abacusflow-usecase-transaction"))
     api(project("abacusflow-usecase-user"))
-    api(project("abacusflow-usecase-warehouse"))
+    api(project("abacusflow-usecase-depot"))
     implementation(libs.postgresql)
     implementation(libs.spring.boot.starter.data.jpa)
 }

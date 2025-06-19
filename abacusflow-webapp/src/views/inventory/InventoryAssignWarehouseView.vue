@@ -3,16 +3,16 @@
     <a-form :model="formState" ref="formRef" @finish="handleOk">
       <a-form-item
         label="仓库"
-        name="warehouseId"
+        name="depotId"
         :rules="[{ required: true, message: '请选择仓库' }]"
       >
-        <a-select v-model:value="formState.warehouseId" placeholder="请选择仓库">
+        <a-select v-model:value="formState.depotId" placeholder="请选择仓库">
           <a-select-option
-            v-for="warehouse in warehouses"
-            :key="warehouse.id"
-            :value="warehouse.id"
+            v-for="depot in depots"
+            :key="depot.id"
+            :value="depot.id"
           >
-            {{ warehouse.name }}
+            {{ depot.name }}
           </a-select-option>
         </a-select>
       </a-form-item>
@@ -30,7 +30,7 @@
 <script lang="ts" setup>
 import { inject, reactive, ref, watchEffect } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
-import { type AssignWarehouseRequest, type InventoryApi, WarehouseApi } from "@/core/openapi";
+import { type AssignDepotRequest, type InventoryApi, DepotApi } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
@@ -38,12 +38,12 @@ const formRef = ref<FormInstance>();
 const props = defineProps<{ inventoryId: number }>();
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
-const warehouseApi = inject("warehouseApi") as WarehouseApi;
+const depotApi = inject("depotApi") as DepotApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<Partial<AssignWarehouseRequest>>({
-  warehouseId: undefined
+const formState = reactive<Partial<AssignDepotRequest>>({
+  depotId: undefined
 });
 
 // TODO: 当 props.inventoryId 变化时，没有重新获取库存数据，现在是在外层销毁重建了
@@ -59,21 +59,21 @@ const {
 // 当查询成功且有数据时，优先使用 API 数据
 watchEffect(() => {
   if (isSuccess.value && fetchedInventory.value) {
-    const { warehouseId } = fetchedInventory.value;
-    formState.warehouseId = warehouseId || 1;
+    const { depotId } = fetchedInventory.value;
+    formState.depotId = depotId || 1;
   }
 });
 
-const { data: warehouses } = useQuery({
-  queryKey: ["warehouses"],
-  queryFn: () => warehouseApi.listWarehouses()
+const { data: depots } = useQuery({
+  queryKey: ["depots"],
+  queryFn: () => depotApi.listDepots()
 });
 
-const { mutate: assignWarehouse } = useMutation({
-  mutationFn: ({ warehouseId }: AssignWarehouseRequest) =>
-    inventoryApi.assignWarehouse({
+const { mutate: assignDepot } = useMutation({
+  mutationFn: ({ depotId }: AssignDepotRequest) =>
+    inventoryApi.assignDepot({
       id: props.inventoryId,
-      assignWarehouseRequest: { warehouseId }
+      assignDepotRequest: { depotId }
     }),
   onSuccess: () => {
     message.success("修改成功");
@@ -105,7 +105,7 @@ const handleOk = () => {
   formRef.value
     ?.validate()
     .then(() => {
-      assignWarehouse(formRef.value?.getFieldsValue() as { id: number } & AssignWarehouseRequest);
+      assignDepot(formRef.value?.getFieldsValue() as { id: number } & AssignDepotRequest);
     })
     .catch((error) => {
       console.error("表单验证失败", error);
