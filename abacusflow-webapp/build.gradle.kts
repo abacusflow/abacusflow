@@ -43,7 +43,7 @@ tasks.register<NpmTask>("openapiGenerateTs") {
 tasks.register<NpmTask>("buildFrontend") {
     group = "build"
     description = "前端打包构建"
-    dependsOn("installDependencies", "lint-ts", "openapiGenerate")
+    dependsOn("installDependencies", "lint-ts", "openapiGenerateTs")
     args.set(listOf("run", "build"))
     inputs.files(
         "package.json",
