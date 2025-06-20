@@ -12,9 +12,10 @@ class ProductInstanceController(
     private val productInstanceService: ProductInstanceService,
 ) : ProductInstanceApi {
     override fun listProductInstances(): ResponseEntity<List<BasicProductInstanceVO>> {
-        val productVOs = productInstanceService.listProductInstances().map { product ->
-            product.toVO()
-        }
+        val productVOs =
+            productInstanceService.listProductInstances().map { product ->
+                product.toVO()
+            }
         return ResponseEntity.ok(productVOs)
     }
 }

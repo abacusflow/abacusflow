@@ -92,8 +92,8 @@ class PurchaseOrder(
                 productType,
                 quantity,
                 unitPrice,
-                serialNumber = serialNumber
-            )
+                serialNumber = serialNumber,
+            ),
         )
         updatedAt = Instant.now()
     }

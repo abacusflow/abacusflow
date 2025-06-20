@@ -20,16 +20,19 @@ class ProductionPurchaseOrderEventListener(
     @EventListener
     fun handlePurchaseOrderItemAssetProductCreatedEvent(event: PurchaseOrderCreatedEvent) {
         println("PurchaseOrder Created orderNo: ${event.order.no}")
-        val products = productRepository.findAllById(
-            event.order.items
-                .map { it.productId }
-                .distinct()
-        )
+        val products =
+            productRepository.findAllById(
+                event.order.items
+                    .map { it.productId }
+                    .distinct(),
+            )
         val productMapById = products.associateBy { it.id }
 
-        val needCreateProductInstances = getNeedCreateProductInstancesByOrder(
-            event.order, productMapById
-        )
+        val needCreateProductInstances =
+            getNeedCreateProductInstancesByOrder(
+                event.order,
+                productMapById,
+            )
 
         if (needCreateProductInstances.size > 0) {
             val createdInstances = productInstanceRepository.saveAll(needCreateProductInstances)
@@ -45,14 +48,15 @@ class ProductionPurchaseOrderEventListener(
                 TransactionProductType.MATERIAL -> null
                 TransactionProductType.ASSET -> {
                     val serialNumber = requireNotNull(item.serialNumber) { "" }
-                    val product = productMapById[item.productId]
-                        ?: throw RuntimeException("Product with id ${item.productId} not found")
+                    val product =
+                        productMapById[item.productId]
+                            ?: throw RuntimeException("Product with id ${item.productId} not found")
 
                     ProductInstance(
                         serialNumber = serialNumber,
                         product = product,
                         purchaseOrderId = order.id,
-                        saleOrderId = null
+                        saleOrderId = null,
                     )
                 }
             }

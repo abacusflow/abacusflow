@@ -11,14 +11,14 @@ import org.springframework.transaction.annotation.Transactional
 class InventoryPurchaseOrderEventListener(
     private val inventoryRepository: InventoryRepository,
 ) {
-
     @EventListener
     fun handlePurchaseOrderChanged(event: PurchaseOrderItemChangedEvent) {
         println("PurchaseOrder Changed orderNo: ${event.orderNo}")
 
         event.items.groupBy { it.productId }.forEach {
-            val inventory = inventoryRepository.findByProductId(it.key)
-                ?: throw NoSuchElementException("Product with id ${it.key} not found")
+            val inventory =
+                inventoryRepository.findByProductId(it.key)
+                    ?: throw NoSuchElementException("Product with id ${it.key} not found")
 
             val sumQuantity = it.value.sumOf { it.quantity }
             inventory.increaseQuantity(sumQuantity)

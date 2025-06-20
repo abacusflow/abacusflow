@@ -7,8 +7,8 @@ import org.bruwave.abacusflow.portal.web.model.ProductVO
 import org.bruwave.abacusflow.portal.web.model.UpdateProductInputVO
 import org.bruwave.abacusflow.portal.web.product.mapper.toVO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
-import org.bruwave.abacusflow.usecase.product.service.ProductService
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
+import org.bruwave.abacusflow.usecase.product.service.ProductService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
@@ -18,11 +18,12 @@ class ProductController(
 ) : ProductsApi {
     override fun listProducts(
         categoryId: Long?,
-        name: String?
+        name: String?,
     ): ResponseEntity<List<BasicProductVO>> {
-        val productVOs = productService.listProducts(categoryId).map { product ->
-            product.toVO()
-        }
+        val productVOs =
+            productService.listProducts(categoryId).map { product ->
+                product.toVO()
+            }
         return ResponseEntity.ok(productVOs)
     }
 
@@ -56,19 +57,20 @@ class ProductController(
         id: Long,
         updateProductInputVO: UpdateProductInputVO,
     ): ResponseEntity<ProductVO> {
-        val product = productService.updateProduct(
-            id,
-            UpdateProductInputTO(
-                name = updateProductInputVO.name,
-                categoryId = updateProductInputVO.categoryId,
-                supplierId = updateProductInputVO.supplierId,
-                unit = updateProductInputVO.unit?.name,
-                unitPrice = updateProductInputVO.unitPrice,
-                note = updateProductInputVO.note,
-                type = updateProductInputVO.type?.name,
-                specification = updateProductInputVO.specification,
-            ),
-        )
+        val product =
+            productService.updateProduct(
+                id,
+                UpdateProductInputTO(
+                    name = updateProductInputVO.name,
+                    categoryId = updateProductInputVO.categoryId,
+                    supplierId = updateProductInputVO.supplierId,
+                    unit = updateProductInputVO.unit?.name,
+                    unitPrice = updateProductInputVO.unitPrice,
+                    note = updateProductInputVO.note,
+                    type = updateProductInputVO.type?.name,
+                    specification = updateProductInputVO.specification,
+                ),
+            )
         return ResponseEntity.ok(
             product.toVO(),
         )

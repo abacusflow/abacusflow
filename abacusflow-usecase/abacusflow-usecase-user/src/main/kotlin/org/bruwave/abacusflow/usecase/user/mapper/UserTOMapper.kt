@@ -4,7 +4,6 @@ import org.bruwave.abacusflow.usecase.user.BasicUserTO
 import org.bruwave.abacusflow.usecase.user.UserTO
 import org.bruwave.abacusflow.user.User
 
-
 fun User.toTO() =
     UserTO(
         id = id,

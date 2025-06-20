@@ -14,14 +14,13 @@ import kotlin.text.contains
 
 @Component
 class MyAuthenticationEntryPointHandler(
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
 ) : AuthenticationEntryPoint {
-
     @Throws(IOException::class)
     override fun commence(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        exception: AuthenticationException
+        exception: AuthenticationException,
     ) {
         // 1. 检查是否为AJAX/API请求
         val isApiRequest = isApiCall(request)
@@ -43,25 +42,25 @@ class MyAuthenticationEntryPointHandler(
 
         // 判断标准：接受JSON内容 或 是AJAX请求 或 内容类型为JSON
         return acceptHeader.contains(MediaType.APPLICATION_JSON_VALUE) ||
-                requestedWith.equals("XMLHttpRequest", ignoreCase = true) ||
-                contentType.contains(MediaType.APPLICATION_JSON_VALUE)
+            requestedWith.equals("XMLHttpRequest", ignoreCase = true) ||
+            contentType.contains(MediaType.APPLICATION_JSON_VALUE)
     }
 
     private fun sendJsonError(
         response: HttpServletResponse,
-        exception: AuthenticationException?
+        exception: AuthenticationException?,
     ) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = StandardCharsets.UTF_8.name()
 
-        val errorResponse = ErrorVO(
-            code = HttpServletResponse.SC_UNAUTHORIZED,
-            message = exception?.message ?: "Authentication required",
-        )
+        val errorResponse =
+            ErrorVO(
+                code = HttpServletResponse.SC_UNAUTHORIZED,
+                message = exception?.message ?: "Authentication required",
+            )
 
         response.writer.write(objectMapper.writeValueAsString(errorResponse))
         response.writer.flush()
     }
-
 }

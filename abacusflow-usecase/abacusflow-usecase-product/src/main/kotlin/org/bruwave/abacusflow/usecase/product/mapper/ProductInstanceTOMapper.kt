@@ -4,7 +4,10 @@ import org.bruwave.abacusflow.product.ProductInstance
 import org.bruwave.abacusflow.usecase.product.BasicProductInstanceTO
 import java.util.UUID
 
-fun ProductInstance.toBasicTO(purchaseOrderNo: UUID, saleOrderNo: UUID?): BasicProductInstanceTO =
+fun ProductInstance.toBasicTO(
+    purchaseOrderNo: UUID,
+    saleOrderNo: UUID?,
+): BasicProductInstanceTO =
     BasicProductInstanceTO(
         id = id,
         name = name,
@@ -12,5 +15,5 @@ fun ProductInstance.toBasicTO(purchaseOrderNo: UUID, saleOrderNo: UUID?): BasicP
         productId = product.id,
         productName = product.name,
         purchaseOrderNo = purchaseOrderNo,
-        saleOrderNo = saleOrderNo
+        saleOrderNo = saleOrderNo,
     )

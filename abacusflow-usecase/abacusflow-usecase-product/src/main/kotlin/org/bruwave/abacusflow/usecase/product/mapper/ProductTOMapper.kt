@@ -22,20 +22,22 @@ fun Product.toTO() =
         updatedAt = updatedAt,
     )
 
-fun Product.toBasicTO(supplierName: String, instances: List<BasicProductInstanceTO>?) =
-    BasicProductTO(
-        id = id,
-        name = name,
-        specification = specification,
-        type = type.name,
-        categoryName = category.name,
-        supplierName = supplierName,
-        unit = unit.name,
-        unitPrice = unitPrice,
-        note = note,
-        enabled = enabled,
-        instances = instances
-    )
+fun Product.toBasicTO(
+    supplierName: String,
+    instances: List<BasicProductInstanceTO>?,
+) = BasicProductTO(
+    id = id,
+    name = name,
+    specification = specification,
+    type = type.name,
+    categoryName = category.name,
+    supplierName = supplierName,
+    unit = unit.name,
+    unitPrice = unitPrice,
+    note = note,
+    enabled = enabled,
+    instances = instances,
+)
 
 fun mapProductUnitTOToDO(unit: String): ProductUnit =
     when (unit.uppercase()) {

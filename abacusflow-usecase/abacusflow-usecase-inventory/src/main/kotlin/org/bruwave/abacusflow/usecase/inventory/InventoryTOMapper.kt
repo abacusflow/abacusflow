@@ -14,7 +14,7 @@ fun Inventory.toBasicTO(
     availableQuantity = availableQuantity,
     safetyStock = safetyStock,
     maxStock = maxStock,
-    expectedQuantity = expectedQuantity
+    expectedQuantity = expectedQuantity,
 )
 
 fun Inventory.toTO() =

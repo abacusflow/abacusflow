@@ -21,7 +21,6 @@ class SaleOrderItem(
     val quantity: Int,
     @field:PositiveOrZero
     val unitPrice: Double,
-
     var productInstanceId: Long?,
 ) {
     @Id

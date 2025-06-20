@@ -34,8 +34,9 @@ class ProductEventListener(
     fun handleProductDeleted(event: ProductDeletedEvent) {
         println("product deleted: ${event.product.id}, ${event.product.name}")
 
-        val inventory = inventoryRepository.findByProductId(event.product.id)
-            ?: throw NoSuchElementException("Product with id ${event.product.id} not found")
+        val inventory =
+            inventoryRepository.findByProductId(event.product.id)
+                ?: throw NoSuchElementException("Product with id ${event.product.id} not found")
         inventoryRepository.delete(inventory)
     }
 }

@@ -1,7 +1,6 @@
 package org.bruwave.abacusflow.usecase.product.service.impl
 
 import org.bruwave.abacusflow.db.product.ProductInstanceRepository
-import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.usecase.product.BasicProductInstanceTO
@@ -28,9 +27,10 @@ class ProductInstanceServiceImpl(
 
         return instances.map { instance ->
             val purchaseOrderNo = purchaseOrderMap.getValue(instance.purchaseOrderId).no
-            val saleOrderNo = instance.saleOrderId?.let {
-                saleOrderMap.getValue(it).no
-            }
+            val saleOrderNo =
+                instance.saleOrderId?.let {
+                    saleOrderMap.getValue(it).no
+                }
             instance.toBasicTO(purchaseOrderNo, saleOrderNo)
         }
     }

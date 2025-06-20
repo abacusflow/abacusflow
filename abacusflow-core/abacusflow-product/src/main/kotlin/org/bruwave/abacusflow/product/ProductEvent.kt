@@ -8,6 +8,6 @@ class ProductDeletedEvent(
     val product: Product,
 )
 
-//class ProductUpdatedEvent(
+// class ProductUpdatedEvent(
 //    val product: Product,
-//)
+// )

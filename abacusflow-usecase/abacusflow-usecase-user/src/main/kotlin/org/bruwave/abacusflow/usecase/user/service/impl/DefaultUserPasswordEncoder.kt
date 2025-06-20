@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component
 class DefaultUserPasswordEncoder : UserPasswordEncoder {
     private val instance = BCryptPasswordEncoder()
 
-    override fun matches(password: String, encodedPassword: String): Boolean {
+    override fun matches(
+        password: String,
+        encodedPassword: String,
+    ): Boolean {
         return instance.matches(password, encodedPassword)
     }
 

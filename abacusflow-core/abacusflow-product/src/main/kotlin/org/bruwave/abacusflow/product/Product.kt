@@ -27,7 +27,6 @@ import java.time.Instant
 @Table(name = "products")
 class Product(
     name: String,
-
     @Enumerated(EnumType.STRING)
     val type: ProductType = ProductType.MATERIAL,
     specification: String?,
@@ -45,7 +44,6 @@ class Product(
     @field:Size(max = 100)
     var name: String = name
         private set
-
 
     @field:Size(max = 50)
     var specification: String? = specification
@@ -73,7 +71,6 @@ class Product(
     @field:Size(max = 10000)
     var note: String? = note
         private set
-
 
     var enabled: Boolean = true
         private set
@@ -146,7 +143,6 @@ class Product(
         updatedAt = Instant.now()
     }
 
-
     @PrePersist
     fun prePersist() {
         registerEvent(ProductCreatedEvent(this))
@@ -165,6 +161,6 @@ class Product(
 
     enum class ProductType {
         MATERIAL, // 普通商品，按数量采购
-        ASSET     // 一物一码，按实例采购
+        ASSET, // 一物一码，按实例采购
     }
 }

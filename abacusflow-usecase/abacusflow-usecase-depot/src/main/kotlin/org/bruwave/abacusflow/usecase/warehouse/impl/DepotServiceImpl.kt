@@ -1,14 +1,14 @@
 package org.bruwave.abacusflow.usecase.depot.impl
 
 import org.bruwave.abacusflow.db.depot.DepotRepository
+import org.bruwave.abacusflow.depot.Depot
 import org.bruwave.abacusflow.usecase.depot.BasicDepotTO
 import org.bruwave.abacusflow.usecase.depot.CreateDepotInputTO
-import org.bruwave.abacusflow.usecase.depot.UpdateDepotInputTO
 import org.bruwave.abacusflow.usecase.depot.DepotService
 import org.bruwave.abacusflow.usecase.depot.DepotTO
+import org.bruwave.abacusflow.usecase.depot.UpdateDepotInputTO
 import org.bruwave.abacusflow.usecase.depot.toBasicTO
 import org.bruwave.abacusflow.usecase.depot.toTO
-import org.bruwave.abacusflow.depot.Depot
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

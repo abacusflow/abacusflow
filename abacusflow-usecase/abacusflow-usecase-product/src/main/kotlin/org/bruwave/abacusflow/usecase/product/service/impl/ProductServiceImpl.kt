@@ -10,13 +10,13 @@ import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.usecase.product.BasicProductInstanceTO
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
-import org.bruwave.abacusflow.usecase.product.service.ProductService
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductTypeTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductUnitTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
+import org.bruwave.abacusflow.usecase.product.service.ProductService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -55,14 +55,15 @@ class ProductServiceImpl(
         id: Long,
         input: UpdateProductInputTO,
     ): ProductTO {
-        val product = productRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Product not found with id: $id") }
+        val product =
+            productRepository.findById(id)
+                .orElseThrow { NoSuchElementException("Product not found with id: $id") }
 
-        val newProductCategory = input.categoryId?.let {
-            productCategoryRepository.findById(it)
-                .orElseThrow { NoSuchElementException("ProductCategory not found with id: $id") }
-        }
-
+        val newProductCategory =
+            input.categoryId?.let {
+                productCategoryRepository.findById(it)
+                    .orElseThrow { NoSuchElementException("ProductCategory not found with id: $id") }
+            }
 
         product.apply {
             updateBasicInfo(
@@ -71,7 +72,7 @@ class ProductServiceImpl(
                 newUnitPrice = input.unitPrice,
                 newUnit = input.unit?.let { mapProductUnitTOToDO(it) },
                 newSpecification = input.specification,
-                newCategory = newProductCategory
+                newCategory = newProductCategory,
             )
 
             input.categoryId?.let { categoryId ->
@@ -115,10 +116,11 @@ class ProductServiceImpl(
             ?: throw NoSuchElementException("Product not found")
 
     override fun listProducts(categoryId: Long?): List<BasicProductTO> {
-        val products = categoryId?.let {
-            val ids = getAllSonCategoryIds(categoryId)
-            productRepository.findByCategoryIdIn(ids)
-        } ?: productRepository.findAll()
+        val products =
+            categoryId?.let {
+                val ids = getAllSonCategoryIds(categoryId)
+                productRepository.findByCategoryIdIn(ids)
+            } ?: productRepository.findAll()
         val productInstances = productInstanceRepository.findAll()
 
         // 批量查依赖实体
@@ -130,13 +132,14 @@ class ProductServiceImpl(
         val purchaseOrderMap = purchaseOrderRepository.findAllById(purchaseOrderIds).associateBy { it.id }
         val saleOrderMap = saleOrderRepository.findAllById(saleOrderIds).associateBy { it.id }
 
-        val instancesByProductId: Map<Long, List<BasicProductInstanceTO>> = productInstances
-            .map { instance ->
-                val purchaseOrderNo = purchaseOrderMap[instance.purchaseOrderId]!!.no
-                val saleOrderNo = instance.saleOrderId?.let { saleOrderMap[it]?.no }
-                instance.toBasicTO(purchaseOrderNo, saleOrderNo)
-            }
-            .groupBy { it.productId }
+        val instancesByProductId: Map<Long, List<BasicProductInstanceTO>> =
+            productInstances
+                .map { instance ->
+                    val purchaseOrderNo = purchaseOrderMap[instance.purchaseOrderId]!!.no
+                    val saleOrderNo = instance.saleOrderId?.let { saleOrderMap[it]?.no }
+                    instance.toBasicTO(purchaseOrderNo, saleOrderNo)
+                }
+                .groupBy { it.productId }
 
         return products.map { product ->
             val supplierName = supplierMap[product.supplierId]?.name ?: "unknown"

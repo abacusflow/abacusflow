@@ -10,7 +10,7 @@ fun BasicCustomerTO.toBasicVO(): BasicCustomerVO =
         id,
         name,
         phone,
-        address
+        address,
     )
 
 fun CustomerTO.toVO(): CustomerVO =

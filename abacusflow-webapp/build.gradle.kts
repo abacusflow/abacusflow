@@ -20,14 +20,14 @@ tasks.register<NpmTask>("installDependencies") {
 }
 
 tasks.register<NpmTask>("format") {
-    group = "code-lint"
+    group = "formatting"
     description = "prettier代码风格统一"
     dependsOn("installDependencies")
     args.set(listOf("run", "format"))
 }
 
 tasks.register<NpmTask>("lint") {
-    group = "code-lint"
+    group = "formatting"
     description = "eslint代码检查"
     dependsOn("installDependencies", "format")
     args.set(listOf("run", "lint"))
