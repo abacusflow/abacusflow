@@ -9,16 +9,8 @@
         <a-input v-model:value="formState.name" />
       </a-form-item>
 
-      <a-form-item
-        label="供应商"
-        name="supplierId"
-        :rules="[{ required: true, message: '请输入供应商' }]"
-      >
-        <a-select v-model:value="formState.supplierId" placeholder="请选择供应商">
-          <a-select-option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
-            {{ supplier.name }}
-          </a-select-option>
-        </a-select>
+      <a-form-item label="产品规格" name="specification">
+        <a-input v-model:value="formState.specification" />
       </a-form-item>
 
       <a-form-item
@@ -29,6 +21,18 @@
         <a-select v-model:value="formState.categoryId" placeholder="请选择分类">
           <a-select-option v-for="category in categories" :key="category.id" :value="category.id">
             {{ category.name }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+
+      <a-form-item
+        label="供应商"
+        name="supplierId"
+        :rules="[{ required: true, message: '请输入供应商' }]"
+      >
+        <a-select v-model:value="formState.supplierId" placeholder="请选择供应商">
+          <a-select-option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+            {{ supplier.name }}
           </a-select-option>
         </a-select>
       </a-form-item>
@@ -54,12 +58,8 @@
         />
       </a-form-item>
 
-      <a-form-item label="备注" name="note" extra="例如：'256GB','A4纸'">
-        <a-textarea
-          v-model:value="formState.note"
-          :rows="3"
-          placeholder="请输入备注"
-        />
+      <a-form-item label="备注" name="note">
+        <a-textarea v-model:value="formState.note" :rows="3" placeholder="请输入备注" />
       </a-form-item>
 
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
@@ -89,6 +89,7 @@ const emit = defineEmits(["success", "close", "update:visible"]);
 
 const formState = reactive<Partial<UpdateProductInput>>({
   name: undefined,
+  specification: undefined,
   categoryId: undefined,
   unit: ProductUnit.Item,
   unitPrice: 0,
@@ -119,8 +120,10 @@ const { data: categories } = useQuery({
 // 当查询成功且有数据时，优先使用 API 数据
 watchEffect(() => {
   if (isSuccess.value && fetchedProduct.value) {
-    const { name, categoryId, unit, unitPrice, note, supplierId } = fetchedProduct.value;
+    const { name, specification, categoryId, unit, unitPrice, note, supplierId } =
+      fetchedProduct.value;
     formState.name = name;
+    formState.specification = specification;
     formState.categoryId = categoryId;
     formState.unit = unit;
     formState.unitPrice = unitPrice;

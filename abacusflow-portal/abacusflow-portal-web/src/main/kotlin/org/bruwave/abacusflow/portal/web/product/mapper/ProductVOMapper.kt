@@ -11,6 +11,7 @@ fun ProductTO.toVO(): ProductVO =
     ProductVO(
         id = id,
         name = name,
+        specification = specification,
         type = mapProductTypeTOToVO(type),
         supplierId = supplierId,
         unit = mapProductUnitTOToVO(unit),

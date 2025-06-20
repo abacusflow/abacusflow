@@ -9,6 +9,7 @@ fun Product.toTO() =
     ProductTO(
         id = id,
         name = name,
+        specification = specification,
         type = type.name,
         unit = unit.name,
         unitPrice = unitPrice,

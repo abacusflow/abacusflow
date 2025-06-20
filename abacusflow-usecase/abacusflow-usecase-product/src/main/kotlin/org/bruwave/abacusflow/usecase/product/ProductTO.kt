@@ -6,6 +6,7 @@ data class ProductTO(
     val id: Long,
     val type: String,
     val name: String,
+    val specification: String?,
     val unit: String,
     val unitPrice: Double,
     val categoryId: Long,
