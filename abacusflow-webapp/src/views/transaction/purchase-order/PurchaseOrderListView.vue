@@ -42,16 +42,25 @@
             <template v-if="column.key === 'action'">
               <a-space>
                 <a-button type="link" shape="circle" @click="handleEditPurchaseOrder(record)"
-                  >编辑</a-button
+                  >详情</a-button
                 >
 
                 <a-divider type="vertical" />
 
                 <a-popconfirm
-                  title="确定删除该采购单？"
-                  @confirm="handleDeletePurchaseOrder(record.id)"
+                  title="确定完成该采购单？"
+                  @confirm="handleCompletePurchaseOrder(record.id)"
                 >
-                  <a-button type="link" shape="circle">删除</a-button>
+                  <a-button type="link" shape="circle">完成订单</a-button>
+                </a-popconfirm>
+
+                <a-divider type="vertical" />
+
+                <a-popconfirm
+                  title="确定取消该采购单？"
+                  @confirm="handleCancelPurchaseOrder(record.id)"
+                >
+                  <a-button type="link" shape="circle">取消订单</a-button>
                 </a-popconfirm>
               </a-space>
             </template>
@@ -70,7 +79,7 @@
     </a-drawer>
 
     <a-drawer
-      title="修改采购单"
+      title="查看采购单详情"
       width="500"
       :open="showEdit"
       :closable="false"
@@ -91,7 +100,7 @@ import { computed, inject, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { BasicPurchaseOrder, TransactionApi } from "@/core/openapi";
 import PurchaseOrderAddView from "./PurchaseOrderAddView.vue";
-import PurchaseOrderEditView from "./PurchaseOrderEditView.vue";
+import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
 
@@ -143,20 +152,36 @@ const filteredData = computed(() => {
   });
 });
 
-const { mutate: deletePurchaseOrder } = useMutation({
-  mutationFn: (id: number) => transactionApi.deletePurchaseOrder({ id }),
+const { mutate: completePurchaseOrder } = useMutation({
+  mutationFn: (id: number) => transactionApi.completePurchaseOrder({ id }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ["purchaseOrders"] });
-    message.success("删除成功");
+    message.success("操作成功");
   },
   onError: (error) => {
-    message.error("删除失败");
+    message.error("操作失败");
     console.error(error);
   }
 });
 
-function handleDeletePurchaseOrder(id: number) {
-  deletePurchaseOrder(id);
+const { mutate: cancelPurchaseOrder } = useMutation({
+  mutationFn: (id: number) => transactionApi.cancelPurchaseOrder({ id }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["purchaseOrders"] });
+    message.success("操作成功");
+  },
+  onError: (error) => {
+    message.error("操作失败");
+    console.error(error);
+  }
+});
+
+function handleCompletePurchaseOrder(id: number) {
+  completePurchaseOrder(id);
+}
+
+function handleCancelPurchaseOrder(id: number) {
+  cancelPurchaseOrder(id);
 }
 
 const columns: StrictTableColumnsType<BasicPurchaseOrder> = [

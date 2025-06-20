@@ -3,7 +3,6 @@ package org.bruwave.abacusflow.usecase.transaction.mapper
 import org.bruwave.abacusflow.transaction.PurchaseOrder
 import org.bruwave.abacusflow.transaction.PurchaseOrderItem
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
-import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 
 fun PurchaseOrder.toTO() =
@@ -33,7 +32,7 @@ fun PurchaseOrder.toBasicTO(supplierName: String) =
     )
 
 fun PurchaseOrderItem.toTO() =
-    PurchaseOrderItemTO(
+    PurchaseOrderTO.PurchaseOrderItemTO(
         id = id,
         productId = productId,
         quantity = quantity,

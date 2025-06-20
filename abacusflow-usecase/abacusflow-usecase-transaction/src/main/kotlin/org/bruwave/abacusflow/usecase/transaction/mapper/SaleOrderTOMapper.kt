@@ -3,7 +3,6 @@ package org.bruwave.abacusflow.usecase.transaction.mapper
 import org.bruwave.abacusflow.transaction.SaleOrder
 import org.bruwave.abacusflow.transaction.SaleOrderItem
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
-import org.bruwave.abacusflow.usecase.transaction.SaleOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
 
 fun SaleOrder.toTO() =
@@ -33,7 +32,7 @@ fun SaleOrder.toBasicTO(customerName: String) =
     )
 
 fun SaleOrderItem.toTO() =
-    SaleOrderItemTO(
+    SaleOrderTO.SaleOrderItemTO(
         id = id,
         productId = productId,
         quantity = quantity,

@@ -6,7 +6,6 @@ import org.bruwave.abacusflow.portal.web.model.SaleOrderItemVO
 import org.bruwave.abacusflow.portal.web.model.SaleOrderVO
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.SaleItemInputTO
-import org.bruwave.abacusflow.usecase.transaction.SaleOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
 
 fun BasicSaleOrderTO.toBasicVO(): BasicSaleOrderVO =
@@ -34,7 +33,7 @@ fun SaleOrderTO.toVO(): SaleOrderVO =
         orderDate = orderDate,
     )
 
-fun SaleOrderItemTO.toVO(): SaleOrderItemVO =
+fun SaleOrderTO.SaleOrderItemTO.toVO(): SaleOrderItemVO =
     SaleOrderItemVO(
         id = id,
         productId = productId,

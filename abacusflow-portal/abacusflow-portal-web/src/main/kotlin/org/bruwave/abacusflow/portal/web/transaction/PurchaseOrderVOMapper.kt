@@ -7,7 +7,6 @@ import org.bruwave.abacusflow.portal.web.model.PurchaseOrderItemVO
 import org.bruwave.abacusflow.portal.web.model.PurchaseOrderVO
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseItemInputTO
-import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderItemTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 
 fun BasicPurchaseOrderTO.toBasicVO(): BasicPurchaseOrderVO =
@@ -35,7 +34,7 @@ fun PurchaseOrderTO.toVO(): PurchaseOrderVO =
         updatedAt = updatedAt.toEpochMilli(),
     )
 
-fun PurchaseOrderItemTO.toVO(): PurchaseOrderItemVO =
+fun PurchaseOrderTO.PurchaseOrderItemTO.toVO(): PurchaseOrderItemVO =
     PurchaseOrderItemVO(
         id = id,
         productId = productId,
@@ -56,6 +55,6 @@ fun mapOrderStatusTOToVO(orderStatus: String): OrderStatusVO =
     when (orderStatus.uppercase()) {
         "PENDING" -> OrderStatusVO.pending
         "COMPLETED" -> OrderStatusVO.completed
-        "CANCELLED" -> OrderStatusVO.cancelled
+        "CANCELED" -> OrderStatusVO.cancelled
         else -> throw IllegalArgumentException("Unknown order status: $orderStatus")
     }

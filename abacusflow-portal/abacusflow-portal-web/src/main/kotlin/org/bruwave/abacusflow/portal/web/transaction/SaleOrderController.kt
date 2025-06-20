@@ -4,10 +4,8 @@ import org.bruwave.abacusflow.portal.web.api.SaleOrdersApi
 import org.bruwave.abacusflow.portal.web.model.BasicSaleOrderVO
 import org.bruwave.abacusflow.portal.web.model.CreateSaleOrderInputVO
 import org.bruwave.abacusflow.portal.web.model.SaleOrderVO
-import org.bruwave.abacusflow.portal.web.model.UpdateSaleOrderInputVO
 import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
-import org.bruwave.abacusflow.usecase.transaction.SaleOrderService
-import org.bruwave.abacusflow.usecase.transaction.UpdateSaleOrderInputTO
+import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
@@ -46,27 +44,13 @@ class SaleOrderController(
         )
     }
 
-    override fun updateSaleOrder(
-        id: Long,
-        updateSaleOrderInputVO: UpdateSaleOrderInputVO,
-    ): ResponseEntity<SaleOrderVO> {
-        val order =
-            saleOrderService.updateSaleOrder(
-                id,
-                UpdateSaleOrderInputTO(
-                    customerId = updateSaleOrderInputVO.customerId,
-                    orderDate = updateSaleOrderInputVO.orderDate,
-                    orderItems = updateSaleOrderInputVO.orderItems?.map { it.toInputTO() },
-                    note = updateSaleOrderInputVO.note,
-                ),
-            )
-        return ResponseEntity.ok(
-            order.toVO(),
-        )
+    override fun completeSaleOrder(id: Long): ResponseEntity<Unit> {
+        saleOrderService.completeOrder(id)
+        return ResponseEntity.ok().build()
     }
 
-    override fun deleteSaleOrder(id: Long): ResponseEntity<Unit> {
-        saleOrderService.deleteSaleOrder(id)
+    override fun cancelSaleOrder(id: Long): ResponseEntity<Unit> {
+        saleOrderService.cancelSaleOrder(id)
         return ResponseEntity.ok().build()
     }
 }
