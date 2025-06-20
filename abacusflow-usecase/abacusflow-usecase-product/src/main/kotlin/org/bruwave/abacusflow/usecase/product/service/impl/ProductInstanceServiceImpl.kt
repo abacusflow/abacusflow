@@ -14,29 +14,24 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ProductInstanceServiceImpl(
     private val productInstanceRepository: ProductInstanceRepository,
-    private val productRepository: ProductRepository,
     private val purchaseOrderRepository: PurchaseOrderRepository,
     private val saleOrderRepository: SaleOrderRepository,
 ) : ProductInstanceService {
     override fun listProductInstances(): List<BasicProductInstanceTO> {
         val instances = productInstanceRepository.findAll()
 
-        val productIds = instances.map { it.product.id }.toSet()
         val purchaseOrderIds = instances.mapNotNull { it.purchaseOrderId }.toSet()
         val saleOrderIds = instances.mapNotNull { it.saleOrderId }.toSet()
 
-        val productMap = productRepository.findAllById(productIds).associateBy { it.id }
         val purchaseOrderMap = purchaseOrderRepository.findAllById(purchaseOrderIds).associateBy { it.id }
         val saleOrderMap = saleOrderRepository.findAllById(saleOrderIds).associateBy { it.id }
 
-
         return instances.map { instance ->
-            val productName = productMap[instance.product.id]?.name ?: "[未知产品]"
             val purchaseOrderNo = purchaseOrderMap.getValue(instance.purchaseOrderId).no
             val saleOrderNo = instance.saleOrderId?.let {
                 saleOrderMap.getValue(it).no
             }
-            instance.toBasicTO(productName, purchaseOrderNo, saleOrderNo)
+            instance.toBasicTO(purchaseOrderNo, saleOrderNo)
         }
     }
 }

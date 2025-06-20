@@ -1452,6 +1452,10 @@ components:
           description: 供应商名称
         unit:
           $ref: "#/components/schemas/ProductUnit"
+        instances:
+          type: array
+          items:
+            $ref: "#/components/schemas/BasicProductInstance"
         enabled:
           type: boolean
           description: 是否启用
@@ -2176,7 +2180,7 @@ components:
         productInstanceId:
           type: integer
           format: int64
-          description: 产品实例ID
+          description: 资产ID
 
     PurchaseOrderItem:
       type: object

@@ -16,5 +16,5 @@ fun BasicProductInstanceTO.toVO(): BasicProductInstanceVO =
         name = name,
         serialNumber = serialNumber,
         purchaseOrderNo = purchaseOrderNo.toString(),
-        saleOrderNo = saleOrderNo.toString()
+        saleOrderNo = saleOrderNo?.toString()
     )

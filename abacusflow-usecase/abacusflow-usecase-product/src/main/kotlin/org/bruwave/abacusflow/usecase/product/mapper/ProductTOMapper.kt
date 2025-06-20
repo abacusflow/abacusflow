@@ -2,6 +2,7 @@ package org.bruwave.abacusflow.usecase.product.mapper
 
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.product.ProductUnit
+import org.bruwave.abacusflow.usecase.product.BasicProductInstanceTO
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 
@@ -21,7 +22,7 @@ fun Product.toTO() =
         updatedAt = updatedAt,
     )
 
-fun Product.toBasicTO(supplierName: String) =
+fun Product.toBasicTO(supplierName: String, instances: List<BasicProductInstanceTO>?) =
     BasicProductTO(
         id = id,
         name = name,
@@ -33,6 +34,7 @@ fun Product.toBasicTO(supplierName: String) =
         unitPrice = unitPrice,
         note = note,
         enabled = enabled,
+        instances = instances
     )
 
 fun mapProductUnitTOToDO(unit: String): ProductUnit =

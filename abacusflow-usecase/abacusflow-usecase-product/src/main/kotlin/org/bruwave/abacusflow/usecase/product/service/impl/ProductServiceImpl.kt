@@ -2,8 +2,12 @@ package org.bruwave.abacusflow.usecase.product.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
+import org.bruwave.abacusflow.db.product.ProductInstanceRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
+import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
+import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.product.Product
+import org.bruwave.abacusflow.usecase.product.BasicProductInstanceTO
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
 import org.bruwave.abacusflow.usecase.product.service.ProductService
@@ -13,7 +17,6 @@ import org.bruwave.abacusflow.usecase.product.mapper.mapProductTypeTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductUnitTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,9 +24,11 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ProductServiceImpl(
     private val productRepository: ProductRepository,
+    private val productInstanceRepository: ProductInstanceRepository,
     private val productCategoryRepository: ProductCategoryRepository,
     private val supplierRepository: SupplierRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val purchaseOrderRepository: PurchaseOrderRepository,
+    private val saleOrderRepository: SaleOrderRepository,
 ) : ProductService {
     override fun createProduct(input: CreateProductInputTO): ProductTO {
         val newProductCategory =
@@ -109,32 +114,34 @@ class ProductServiceImpl(
             ?.toTO()
             ?: throw NoSuchElementException("Product not found")
 
-    override fun listProducts(): List<BasicProductTO> {
-        val products = productRepository.findAll()
-
-        val supplierIds = products.mapNotNull { it.supplierId }.toSet()
-
-        val productMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
-
-        return products.map { product ->
-            val supplierName = productMap[product.supplierId]?.name ?: "unknown"
-            product.toBasicTO(supplierName)
-        }
-    }
-
     override fun listProducts(categoryId: Long?): List<BasicProductTO> {
         val products = categoryId?.let {
             val ids = getAllSonCategoryIds(categoryId)
             productRepository.findByCategoryIdIn(ids)
         } ?: productRepository.findAll()
+        val productInstances = productInstanceRepository.findAll()
 
+        // 批量查依赖实体
         val supplierIds = products.mapNotNull { it.supplierId }.toSet()
+        val purchaseOrderIds = productInstances.mapNotNull { it.purchaseOrderId }.toSet()
+        val saleOrderIds = productInstances.mapNotNull { it.saleOrderId }.toSet()
 
-        val productMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
+        val supplierMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
+        val purchaseOrderMap = purchaseOrderRepository.findAllById(purchaseOrderIds).associateBy { it.id }
+        val saleOrderMap = saleOrderRepository.findAllById(saleOrderIds).associateBy { it.id }
+
+        val instancesByProductId: Map<Long, List<BasicProductInstanceTO>> = productInstances
+            .map { instance ->
+                val purchaseOrderNo = purchaseOrderMap[instance.purchaseOrderId]!!.no
+                val saleOrderNo = instance.saleOrderId?.let { saleOrderMap[it]?.no }
+                instance.toBasicTO(purchaseOrderNo, saleOrderNo)
+            }
+            .groupBy { it.productId }
 
         return products.map { product ->
-            val supplierName = productMap[product.supplierId]?.name ?: "unknown"
-            product.toBasicTO(supplierName)
+            val supplierName = supplierMap[product.supplierId]?.name ?: "unknown"
+            val instances = instancesByProductId[product.id] ?: emptyList()
+            product.toBasicTO(supplierName, instances)
         }
     }
 

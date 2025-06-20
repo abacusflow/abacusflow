@@ -14,24 +14,9 @@
           <a-card :bordered="false">
             <a-form layout="inline" :model="searchForm">
               <a-form-item label="产品名称">
-                <a-input v-model:value="searchForm.name" placeholder="请输入姓名" allow-clear />
+                <a-input v-model:value="searchForm.name" placeholder="请输入产品名称" allow-clear />
               </a-form-item>
-              <a-form-item label="分类">
-                <a-select
-                  v-model:value="searchForm.categoryId"
-                  placeholder="请选择分类"
-                  allow-clear
-                  style="width: 200px"
-                >
-                  <a-select-option
-                    v-for="category in categories"
-                    :key="category.id"
-                    :value="category.id"
-                  >
-                    {{ category.name }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
+
               <a-form-item>
                 <a-space>
                   <a-button type="primary" @click="handleSearch">搜索</a-button>
@@ -77,6 +62,15 @@
                   </a-space>
                 </template>
               </template>
+
+              <template #expandedRowRender="{ record }">
+                <a-table
+                  :columns="innerColumns"
+                  :data-source="record.instances"
+                  :pagination="false"
+                >
+                </a-table>
+              </template>
             </a-table>
           </a-card>
         </a-flex>
@@ -100,7 +94,7 @@
 <script lang="ts" setup>
 import { computed, inject, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicProduct, Product, ProductApi } from "@/core/openapi";
+import type { BasicProduct, BasicProductInstance, Product, ProductApi } from "@/core/openapi";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
@@ -120,8 +114,7 @@ const categoryId = computed(() => route.query.categoryId);
 
 // 搜索表单
 const searchForm = ref({
-  name: "",
-  categoryId: undefined
+  name: ""
 });
 
 // 搜索
@@ -133,8 +126,7 @@ const handleSearch = () => {
 // 重置搜索
 const resetSearch = () => {
   searchForm.value = {
-    name: "",
-    categoryId: undefined
+    name: ""
   };
   queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
@@ -152,11 +144,6 @@ const { data, isPending, refetch } = useQuery({
     const id = Number(categoryId.value);
     return productApi.listProducts(isNaN(id) ? undefined : { categoryId: id });
   }
-});
-
-const { data: categories } = useQuery({
-  queryKey: ["categories"],
-  queryFn: () => productApi.listProductCategories()
 });
 
 const { mutate: deleteProduct } = useMutation({
@@ -192,7 +179,15 @@ const columns: StrictTableColumnsType<BasicProduct> = [
   { title: "供应商", dataIndex: "supplierName", key: "supplierName" },
   { title: "单位", dataIndex: "unit", key: "unit" },
   { title: "单价", dataIndex: "unitPrice", key: "unitPrice" },
+  { title: "资产", dataIndex: "instances", key: "instances" },
   { title: "启用状态", dataIndex: "enabled", key: "enabled" },
   { title: "操作", key: "action" }
+];
+
+const innerColumns: StrictTableColumnsType<BasicProductInstance> = [
+  { title: "资产名称", dataIndex: "name", key: "name" },
+  { title: "序列号", dataIndex: "serialNumber", key: "serialNumber" },
+  { title: "采购单号", dataIndex: "purchaseOrderNo", key: "purchaseOrderNo" },
+  { title: "销售单号", dataIndex: "saleOrderNo", key: "saleOrderNo" }
 ];
 </script>

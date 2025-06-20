@@ -195,9 +195,15 @@ const categoryTree = computed<TreeCategory[]>(() => {
   return buildTree("__root__");
 });
 // 监听树变化并更新展开项
-watch(categoryTree, (tree) => {
-  expandedRowKeys.value = getExpandedRowKeysFromTree(tree);
-});
+watch(
+  categoryTree,
+  (tree) => {
+    expandedRowKeys.value = getExpandedRowKeysFromTree(tree);
+  },
+  {
+    immediate: true
+  }
+);
 
 function getExpandedRowKeysFromTree(tree: TreeCategory[]): (string | number)[] {
   const keys: (string | number)[] = [];

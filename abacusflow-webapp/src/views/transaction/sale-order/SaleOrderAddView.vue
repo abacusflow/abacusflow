@@ -79,14 +79,14 @@
           />
         </a-form-item>
 
-        <!-- 产品实例：仅资产类产品显示 -->
+        <!-- 资产：仅资产类产品显示 -->
         <a-form-item
           v-if="isAsset(item.productId, products!)"
-          label="产品实例"
+          label="资产"
           :name="['orderItems', index, 'productInstanceId']"
-          :rules="[{ required: true, message: '资产类产品必须选产品实例' }]"
+          :rules="[{ required: true, message: '资产类产品必须选资产' }]"
         >
-          <a-select v-model:value="item.productInstanceId" placeholder="请选择产品实例">
+          <a-select v-model:value="item.productInstanceId" placeholder="请选择资产">
             <a-select-option
               v-for="productInstance in productInstances"
               :key="productInstance.id"
