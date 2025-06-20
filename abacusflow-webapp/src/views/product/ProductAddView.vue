@@ -3,6 +3,19 @@
     <a-form-item label="产品名" name="name" :rules="[{ required: true, message: '请输入产品名' }]">
       <a-input v-model:value="formState.name" />
     </a-form-item>
+
+    <a-form-item label="产品规格" name="specification">
+      <a-input v-model:value="formState.specification" />
+    </a-form-item>
+
+    <a-form-item label="类型" name="type" :rules="[{ required: true, message: '请选择产品类型' }]">
+      <a-select v-model:value="formState.type" placeholder="请选择产品类型">
+        <a-select-option v-for="value in Object.values(ProductType)" :key="value" :value="value">
+          {{ $translateType(value) }}
+        </a-select-option>
+      </a-select>
+    </a-form-item>
+
     <a-form-item
       label="分类"
       name="categoryId"
@@ -44,8 +57,8 @@
       />
     </a-form-item>
 
-    <a-form-item label="规格说明" name="specification" extra="例如：'256GB','A4纸'">
-      <a-textarea v-model:value="formState.specification" :rows="3" placeholder="请输入规格说明" />
+    <a-form-item label="备注" name="note">
+      <a-textarea v-model:value="formState.note" :rows="3" placeholder="请输入备注" />
     </a-form-item>
 
     <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
@@ -60,17 +73,25 @@
 <script lang="ts" setup>
 import { inject, reactive, ref } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
-import { type CreateProductInput, PartnerApi, ProductApi, ProductUnit } from "@/core/openapi";
+import {
+  type CreateProductInput,
+  PartnerApi,
+  ProductApi,
+  ProductUnit,
+  ProductType
+} from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 
 const formState = reactive<Partial<CreateProductInput>>({
   name: undefined,
+  type: ProductType.Material,
+  specification: undefined,
   categoryId: undefined,
   unit: ProductUnit.Item,
   unitPrice: 0,
-  specification: undefined,
+  note: undefined,
   supplierId: undefined
 });
 

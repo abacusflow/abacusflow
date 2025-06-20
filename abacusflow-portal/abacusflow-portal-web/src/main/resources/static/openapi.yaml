@@ -495,6 +495,21 @@ paths:
         "200":
           description: Product category deleted
 
+  /product-instance:
+    get:
+      operationId: listProductInstances
+      tags:
+        - product
+      summary: List all productInstances
+      responses:
+        "200":
+          description: List of productInstances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BasicProductInstance"
   /depots:
     get:
       operationId: listDepots
@@ -1314,6 +1329,7 @@ components:
       required:
         - id
         - name
+        - type
         - unit
         - unitPrice
         - categoryId
@@ -1329,10 +1345,15 @@ components:
         name:
           type: string
           description: 商品名称
+        type:
+          $ref: "#/components/schemas/ProductType"
         unitPrice:
           type: number
           format: double
           description: 单价
+        specification:
+          type: string
+          description: 规格
         categoryId:
           type: integer
           format: int64
@@ -1341,10 +1362,10 @@ components:
           type: integer
           format: int64
           description: 供应商ID
-        specification:
+        note:
           type: string
           nullable: true
-          description: 规格说明
+          description: 备注
         unit:
           $ref: "#/components/schemas/ProductUnit"
         enabled:
@@ -1365,6 +1386,7 @@ components:
       required:
         - id
         - name
+        - type
         - unit
         - unitPrice
         - categoryName
@@ -1378,6 +1400,11 @@ components:
         name:
           type: string
           description: 商品名称
+        type:
+          $ref: "#/components/schemas/ProductType"
+        specification:
+          type: string
+          description: 商品规格
         unitPrice:
           type: number
           format: double
@@ -1398,6 +1425,7 @@ components:
       type: object
       required:
         - name
+        - type
         - unit
         - unitPrice
         - categoryId
@@ -1407,6 +1435,11 @@ components:
           type: string
           minLength: 1
           description: 商品名称
+        type:
+          $ref: "#/components/schemas/ProductType"
+        specification:
+          type: string
+          description: 商品规格
         unitPrice:
           type: number
           format: double
@@ -1420,10 +1453,10 @@ components:
           type: integer
           format: int64
           description: 供应商ID
-        specification:
+        note:
           type: string
           nullable: true
-          description: 规格说明
+          description: 备注
         unit:
           $ref: "#/components/schemas/ProductUnit"
 
@@ -1434,6 +1467,11 @@ components:
           type: string
           minLength: 1
           description: 商品名称
+        type:
+          $ref: "#/components/schemas/ProductType"
+        specification:
+          type: string
+          description: 商品规格
         unitPrice:
           type: number
           format: double
@@ -1447,10 +1485,10 @@ components:
           type: integer
           format: int64
           description: 供应商ID
-        specification:
+        note:
           type: string
           nullable: true
-          description: 规格说明
+          description: 备注
         unit:
           $ref: "#/components/schemas/ProductUnit"
 
@@ -1541,6 +1579,32 @@ components:
           format: int64
           nullable: true
           description: 父分类ID
+    # ============= ProductInstance schemas =============
+    BasicProductInstance:
+      type: object
+      required:
+        - id
+        - name
+        - serialNumber
+        - productName
+        - purchaseOrderNo
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 商品实例ID
+        name:
+          type: string
+          description: 名字
+        serialNumber:
+          type: string
+          description: 序列号
+        purchaseOrderNo:
+          type: string
+          description: 采购单号
+        saleOrderNo:
+          type: string
+          description: 销售单号
 
     # ============= Depot schemas =============
     Depot:
@@ -2074,6 +2138,10 @@ components:
           format: double
           minimum: 0
           description: 单价
+        productInstanceId:
+          type: integer
+          format: int64
+          description: 产品实例ID
 
     PurchaseOrderItem:
       type: object
@@ -2102,6 +2170,12 @@ components:
           type: number
           format: double
           description: 单价
+        productInstanceId:
+          type: integer
+          format: int64
+          description: 商品实例ID
+        serialNumber:
+          type: string
         subtotal:
           type: number
           format: double
@@ -2127,6 +2201,8 @@ components:
           format: double
           minimum: 0
           description: 单价
+        serialNumber:
+          type: string
 
     ProductUnit:
       type: string
@@ -2167,6 +2243,17 @@ components:
         - 袋
         - 张
         - 卷
+
+    ProductType:
+      type: string
+      description: 商品类型
+      enum:
+        - material
+        - asset
+      x-enum-descriptions:
+        - 普通商品
+        - 资产
+
     OrderStatus:
       type: string
       description: 订单状态

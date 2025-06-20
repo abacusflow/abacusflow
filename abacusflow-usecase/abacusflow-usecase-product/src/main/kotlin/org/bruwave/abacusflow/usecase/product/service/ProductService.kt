@@ -1,4 +1,9 @@
-package org.bruwave.abacusflow.usecase.product
+package org.bruwave.abacusflow.usecase.product.service
+
+import org.bruwave.abacusflow.usecase.product.BasicProductTO
+import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
+import org.bruwave.abacusflow.usecase.product.ProductTO
+import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 
 interface ProductService {
     fun createProduct(input: CreateProductInputTO): ProductTO

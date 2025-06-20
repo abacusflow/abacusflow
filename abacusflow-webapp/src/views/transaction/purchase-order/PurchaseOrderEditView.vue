@@ -1,6 +1,13 @@
 <template>
   <a-spin :spinning="isPending">
-    <a-form :model="formState" ref="formRef" @finish="handleOk">
+    <a-checkbox
+      :checked="componentDisabled"
+      @change="(e: Event) => (componentDisabled = (e.target as HTMLInputElement).checked)"
+    >
+      表单已禁用
+    </a-checkbox>
+
+    <a-form :model="formState" ref="formRef" :disabled="componentDisabled" @finish="handleOk">
       <a-form-item
         label="供应商"
         name="supplierId"
@@ -111,6 +118,7 @@ import dayjs, { Dayjs } from "dayjs";
 const dateFormat = "YYYY/MM/DD";
 
 const formRef = ref<FormInstance>();
+const componentDisabled = ref(true);
 
 const props = defineProps<{ purchaseOrderId: number }>();
 

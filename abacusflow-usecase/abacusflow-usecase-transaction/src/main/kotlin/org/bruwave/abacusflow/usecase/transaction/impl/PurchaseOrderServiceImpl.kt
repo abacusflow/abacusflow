@@ -1,10 +1,17 @@
 package org.bruwave.abacusflow.usecase.transaction.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
+import org.bruwave.abacusflow.db.product.ProductInstanceRepository
+import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
+import org.bruwave.abacusflow.product.Product
+import org.bruwave.abacusflow.product.ProductInstance
 import org.bruwave.abacusflow.transaction.PurchaseOrder
+import org.bruwave.abacusflow.transaction.PurchaseOrderItem
+import org.bruwave.abacusflow.transaction.TransactionProductType
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
+import org.bruwave.abacusflow.usecase.transaction.PurchaseItemInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderService
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.UpdatePurchaseOrderInputTO
@@ -18,16 +25,24 @@ import org.springframework.transaction.annotation.Transactional
 class PurchaseOrderServiceImpl(
     private val purchaseOrderRepository: PurchaseOrderRepository,
     private val supplierRepository: SupplierRepository,
+    private val productRepository: ProductRepository,
 ) : PurchaseOrderService {
     override fun createPurchaseOrder(input: CreatePurchaseOrderInputTO): PurchaseOrderTO {
-        val purchaseOrder =
-            PurchaseOrder(
-                supplierId = input.supplierId,
-                orderDate = input.orderDate,
-                note = input.note,
-            ).apply {
-                addItems(input.orderItems.map { Triple(it.productId, it.quantity, it.unitPrice) })
-            }
+        val products = productRepository.findAllById(
+            input.orderItems
+                .map { it.productId }
+                .distinct()
+        )
+        val productMapById = products.associateBy { it.id }
+
+        val purchaseOrder = PurchaseOrder(
+            supplierId = input.supplierId,
+            orderDate = input.orderDate,
+            note = input.note,
+        ).apply {
+            val orderItems = mapInputOrderItemToOrderItem(input.orderItems, productMapById);
+            addItems(orderItems)
+        }
 
         return purchaseOrderRepository.save(purchaseOrder).toTO()
     }
@@ -36,10 +51,9 @@ class PurchaseOrderServiceImpl(
         id: Long,
         input: UpdatePurchaseOrderInputTO,
     ): PurchaseOrderTO {
-        val purchaseOrder =
-            purchaseOrderRepository
-                .findById(id)
-                .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
+        val purchaseOrder = purchaseOrderRepository
+            .findById(id)
+            .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
 
         purchaseOrder.apply {
             input.supplierId?.let {
@@ -50,10 +64,18 @@ class PurchaseOrderServiceImpl(
                 changeOrderDate(it)
             }
 
-            clearItems()
-
             input.orderItems?.let {
-                addItems(it.map { Triple(it.productId, it.quantity, it.unitPrice) })
+                clearItems()
+
+                val products = productRepository.findAllById(
+                    it
+                        .map { it.productId }
+                        .distinct()
+                )
+                val productMapById = products.associateBy { it.id }
+
+                val orderItems = mapInputOrderItemToOrderItem(input.orderItems, productMapById);
+                addItems(orderItems)
             }
         }
 
@@ -103,5 +125,36 @@ class PurchaseOrderServiceImpl(
                 .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
         purchaseOrder.completeOrder()
         return purchaseOrderRepository.save(purchaseOrder).toTO()
+    }
+
+
+    private fun mapInputOrderItemToOrderItem(
+        orderItemsForInput: List<PurchaseItemInputTO>,
+        productMapById: Map<Long, Product>
+    ): List<PurchaseOrder.PurchaseOrderItemInput> {
+        return orderItemsForInput.map { item ->
+            val product = productMapById.getValue(item.productId)
+
+            when (product.type) {
+                Product.ProductType.MATERIAL -> PurchaseOrder.PurchaseOrderItemInput(
+                    item.productId,
+                    TransactionProductType.MATERIAL,
+                    item.quantity,
+                    item.unitPrice,
+                    serialNumber = null
+                )
+
+                Product.ProductType.ASSET -> {
+                    requireNotNull(item.serialNumber) { "asset item's serial number must not be null" }
+                    PurchaseOrder.PurchaseOrderItemInput(
+                        item.productId,
+                        TransactionProductType.ASSET,
+                        1,
+                        item.unitPrice,
+                        serialNumber = item.serialNumber
+                    )
+                }
+            }
+        }
     }
 }

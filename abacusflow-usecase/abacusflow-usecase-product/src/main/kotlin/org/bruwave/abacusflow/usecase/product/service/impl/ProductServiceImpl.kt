@@ -1,18 +1,18 @@
-package org.bruwave.abacusflow.usecase.product.impl
+package org.bruwave.abacusflow.usecase.product.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.Product
-import org.bruwave.abacusflow.product.ProductDeletedEvent
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
-import org.bruwave.abacusflow.usecase.product.ProductService
+import org.bruwave.abacusflow.usecase.product.service.ProductService
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
-import org.bruwave.abacusflow.usecase.product.mapProductUnitTOToDO
-import org.bruwave.abacusflow.usecase.product.toBasicTO
-import org.bruwave.abacusflow.usecase.product.toTO
+import org.bruwave.abacusflow.usecase.product.mapper.mapProductTypeTOToDO
+import org.bruwave.abacusflow.usecase.product.mapper.mapProductUnitTOToDO
+import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
+import org.bruwave.abacusflow.usecase.product.mapper.toTO
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -33,33 +33,40 @@ class ProductServiceImpl(
 
         val newProduct =
             Product(
-                isNew = true,
                 name = input.name,
-                specification = input.specification,
+                type = mapProductTypeTOToDO(input.type),
                 unit = mapProductUnitTOToDO(input.unit),
                 unitPrice = input.unitPrice,
                 category = newProductCategory,
                 supplierId = input.supplierId,
+                specification = input.specification,
+                note = input.note,
             )
         val product = productRepository.save(newProduct)
-        return  product.toTO()
+        return product.toTO()
     }
 
     override fun updateProduct(
         id: Long,
         input: UpdateProductInputTO,
     ): ProductTO {
-        val product =
-            productRepository
-                .findById(id)
-                .orElseThrow { NoSuchElementException("Product not found with id: $id") }
+        val product = productRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Product not found with id: $id") }
+
+        val newProductCategory = input.categoryId?.let {
+            productCategoryRepository.findById(it)
+                .orElseThrow { NoSuchElementException("ProductCategory not found with id: $id") }
+        }
+
 
         product.apply {
             updateBasicInfo(
                 newName = input.name,
-                newSpecification = input.specification,
+                newNote = input.note,
                 newUnitPrice = input.unitPrice,
                 newUnit = input.unit?.let { mapProductUnitTOToDO(it) },
+                newSpecification = input.specification,
+                newCategory = newProductCategory
             )
 
             input.categoryId?.let { categoryId ->

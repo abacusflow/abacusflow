@@ -10,9 +10,11 @@ class PurchaseOrderCompletedEvent(
     val order: PurchaseOrder,
 )
 
+
 class PurchaseOrderItemChangedEvent(
     val orderId: Long,
     val orderNo: UUID,
     val items: List<PurchaseOrderItem>,
 )
+
 

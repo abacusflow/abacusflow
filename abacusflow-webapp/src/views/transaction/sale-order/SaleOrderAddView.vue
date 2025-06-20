@@ -45,7 +45,18 @@
           :name="['orderItems', index, 'quantity']"
           :rules="[{ required: true, message: '请输入数量' }]"
         >
+          <a-tooltip v-if="isAsset(item.productId, products!)" title="该产品为资产类，数量不可修改">
+            <a-input-number
+              v-model:value="item.quantity"
+              :disabled="true"
+              :min="1"
+              placeholder="数量"
+              style="width: 100%"
+            />
+          </a-tooltip>
+
           <a-input-number
+            v-else
             v-model:value="item.quantity"
             :min="1"
             placeholder="数量"
@@ -66,6 +77,24 @@
             :precision="2"
             style="width: 100%"
           />
+        </a-form-item>
+
+        <!-- 产品实例：仅资产类产品显示 -->
+        <a-form-item
+          v-if="isAsset(item.productId, products!)"
+          label="产品实例"
+          :name="['orderItems', index, 'productInstanceId']"
+          :rules="[{ required: true, message: '资产类产品必须选产品实例' }]"
+        >
+          <a-select v-model:value="item.productInstanceId" placeholder="请选择产品实例">
+            <a-select-option
+              v-for="productInstance in productInstances"
+              :key="productInstance.id"
+              :value="productInstance.id"
+            >
+              {{ productInstance.name }}
+            </a-select-option>
+          </a-select>
         </a-form-item>
 
         <!-- 删除按钮 -->
@@ -92,12 +121,14 @@
 <script lang="ts" setup>
 import { inject, reactive, ref } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
-import type {
-  CreateSaleOrderInput,
-  PartnerApi,
-  ProductApi,
-  SaleOrderItemInput,
-  TransactionApi
+import {
+  ProductType,
+  type BasicProduct,
+  type CreateSaleOrderInput,
+  type PartnerApi,
+  type ProductApi,
+  type SaleOrderItemInput,
+  type TransactionApi
 } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import dayjs, { Dayjs } from "dayjs";
@@ -131,6 +162,10 @@ const { data: products } = useQuery({
   queryKey: ["products"],
   queryFn: () => productApi.listProducts()
 });
+const { data: productInstances } = useQuery({
+  queryKey: ["productInstances"],
+  queryFn: () => productApi.listProductInstances()
+});
 
 const { mutate: createSaleOrder } = useMutation({
   mutationFn: (newSaleOrder: CreateSaleOrderInput) =>
@@ -157,6 +192,14 @@ function addOrderItem() {
 
 function removeOrderItem(index: number) {
   formState.orderItems?.splice(index, 1);
+}
+
+function isAsset(productId?: number, products?: BasicProduct[]): boolean {
+  if (!productId) return false;
+  if (!products) return false;
+
+  const product = products.find((p) => p.id === productId);
+  return product?.type === ProductType.Asset;
 }
 
 const handleCancel = () => {

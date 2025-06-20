@@ -14,7 +14,7 @@ fun SaleOrder.toTO() =
         items = items.map { it.toTO() },
         createdAt = createdAt,
         updatedAt = updatedAt,
-        orderNo = orderNo,
+        orderNo = no,
         orderDate = orderDate,
         note = note,
     )
@@ -25,7 +25,7 @@ fun SaleOrder.toBasicTO(customerName: String) =
         status = status.name,
         itemCount = items.count(),
         createdAt = createdAt,
-        orderNo = orderNo,
+        orderNo = no,
         customerName = customerName,
         totalAmount = totalAmount,
         totalQuantity = totalQuantity,

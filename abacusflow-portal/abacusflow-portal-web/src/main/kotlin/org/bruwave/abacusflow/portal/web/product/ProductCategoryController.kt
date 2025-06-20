@@ -5,8 +5,9 @@ import org.bruwave.abacusflow.portal.web.model.BasicProductCategoryVO
 import org.bruwave.abacusflow.portal.web.model.CreateProductCategoryInputVO
 import org.bruwave.abacusflow.portal.web.model.ProductCategoryVO
 import org.bruwave.abacusflow.portal.web.model.UpdateProductCategoryInputVO
+import org.bruwave.abacusflow.portal.web.product.mapper.toVO
 import org.bruwave.abacusflow.usecase.product.CreateProductCategoryInputTO
-import org.bruwave.abacusflow.usecase.product.ProductCategoryService
+import org.bruwave.abacusflow.usecase.product.service.ProductCategoryService
 import org.bruwave.abacusflow.usecase.product.UpdateProductCategoryInputTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController

@@ -48,4 +48,5 @@ fun SaleOrderItemInputVO.toInputTO(): SaleItemInputTO =
         productId = productId,
         quantity = quantity,
         unitPrice = unitPrice,
+        productInstanceId = productInstanceId,
     )

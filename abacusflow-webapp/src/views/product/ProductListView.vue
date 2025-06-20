@@ -44,6 +44,9 @@
             <template v-if="column.key === 'unit'">
               {{ $translateUnit(record.unit) }}
             </template>
+            <template v-if="column.key === 'type'">
+              {{ $translateType(record.type) }}
+            </template>
             <template v-if="column.key === 'enabled'">
               <a-switch v-model:checked="record.enabled" disabled />
             </template>
@@ -154,6 +157,8 @@ function handleDeleteProduct(id: number) {
 
 const columns: StrictTableColumnsType<BasicProduct> = [
   { title: "产品名称", dataIndex: "name", key: "name" },
+  { title: "产品规格", dataIndex: "specification", key: "specification" },
+  { title: "产品类型", dataIndex: "type", key: "type" },
   { title: "产品类别", dataIndex: "categoryName", key: "categoryName" },
   { title: "供应商", dataIndex: "supplierName", key: "supplierName" },
   { title: "单位", dataIndex: "unit", key: "unit" },

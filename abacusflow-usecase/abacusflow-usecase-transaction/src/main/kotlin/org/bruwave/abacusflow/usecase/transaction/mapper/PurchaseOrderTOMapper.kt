@@ -9,7 +9,7 @@ import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 fun PurchaseOrder.toTO() =
     PurchaseOrderTO(
         id = id,
-        orderNo = orderNo,
+        orderNo = no,
         supplierId = supplierId,
         status = status.name,
         items = items.map { it.toTO() },
@@ -26,7 +26,7 @@ fun PurchaseOrder.toBasicTO(supplierName: String) =
         status = status.name,
         itemCount = items.size,
         createdAt = createdAt,
-        orderNo = orderNo,
+        orderNo = no,
         totalAmount = totalAmount,
         totalQuantity = totalQuantity,
         orderDate = orderDate,

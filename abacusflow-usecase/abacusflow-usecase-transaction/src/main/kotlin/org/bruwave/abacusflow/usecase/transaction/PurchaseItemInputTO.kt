@@ -4,4 +4,5 @@ data class PurchaseItemInputTO(
     val productId: Long,
     val quantity: Int,
     val unitPrice: Double,
+    val serialNumber: String?,
 )

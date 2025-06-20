@@ -1,4 +1,4 @@
-import type { ProductUnit } from "@/core/openapi";
+import type { ProductType, ProductUnit } from "@/core/openapi";
 
 /**
  * 将单位英文值翻译为中文
@@ -30,8 +30,26 @@ export function translateUnit(unit?: ProductUnit): string {
   return unitMap[unit] || unit;
 }
 
+/**
+ * 将单位英文值翻译为中文
+ */
+export function translateType(type?: ProductType): string {
+  if (!type) {
+    return "";
+  }
+  const typeMap: Record<ProductType, string> = {
+    material: "普通商品",
+    asset: "资产"
+  };
+
+  return typeMap[type] || type;
+}
+
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $translateUnit: (unit: ProductUnit) => string;
+  }
+  interface ComponentCustomProperties {
+    $translateType: (type: ProductType) => string;
   }
 }
