@@ -84,7 +84,6 @@ class PurchaseOrder(
         productType: TransactionProductType,
         quantity: Int,
         unitPrice: Double,
-        productInstanceId: Long?,
         serialNumber: String?,
     ) {
         itemsMutable.add(
@@ -93,16 +92,15 @@ class PurchaseOrder(
                 productType,
                 quantity,
                 unitPrice,
-                productInstanceId,
                 serialNumber = serialNumber
             )
         )
         updatedAt = Instant.now()
     }
 
-    fun addItems(itemsInput: List<PurchaseOrderItem>) {
+    fun addItems(itemsInput: List<PurchaseOrderItemInput>) {
         itemsInput.forEach {
-            addItem(it.productId, it.productType, it.quantity, it.unitPrice, it.productInstanceId,it.serialNumber)
+            addItem(it.productId, it.productType, it.quantity, it.unitPrice, it.serialNumber)
         }
         registerEvent(PurchaseOrderItemChangedEvent(id, no, items))
     }
@@ -130,11 +128,12 @@ class PurchaseOrder(
     fun prePersist() {
         registerEvent(PurchaseOrderCreatedEvent(this))
     }
-//    data class PurchaseOrderItemRequest(
-//        val productId: Long,
-//        val productType: TransactionProductType,
-//        val quantity: Int,
-//        val unitPrice: Double,
-//        val instanceId: Long? = null
-//    )
+
+    data class PurchaseOrderItemInput(
+        val productId: Long,
+        val productType: TransactionProductType,
+        val quantity: Int,
+        val unitPrice: Double,
+        val serialNumber: String?,
+    )
 }

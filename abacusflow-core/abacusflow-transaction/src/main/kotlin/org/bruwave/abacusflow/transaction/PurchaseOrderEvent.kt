@@ -17,7 +17,4 @@ class PurchaseOrderItemChangedEvent(
     val items: List<PurchaseOrderItem>,
 )
 
-class AssetProductPurchaseRequestedEvent(
-    val order: PurchaseOrder,
-)
 

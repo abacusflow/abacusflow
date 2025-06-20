@@ -1,5 +1,12 @@
 <template>
   <a-spin :spinning="isPending">
+    <a-checkbox
+      :checked="componentDisabled"
+      @change="(e: Event) => (componentDisabled = (e.target as HTMLInputElement).checked)"
+    >
+      表单已禁用
+    </a-checkbox>
+
     <a-form :model="formState" ref="formRef" :disabled="componentDisabled" @finish="handleOk">
       <a-form-item
         label="供应商"

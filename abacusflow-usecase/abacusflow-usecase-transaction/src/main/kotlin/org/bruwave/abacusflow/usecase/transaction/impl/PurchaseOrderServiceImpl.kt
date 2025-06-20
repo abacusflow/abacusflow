@@ -41,7 +41,6 @@ class PurchaseOrderServiceImpl(
             note = input.note,
         ).apply {
             val orderItems = mapInputOrderItemToOrderItem(input.orderItems, productMapById);
-
             addItems(orderItems)
         }
 
@@ -75,34 +74,8 @@ class PurchaseOrderServiceImpl(
                 )
                 val productMapById = products.associateBy { it.id }
 
-
-                addItems(it.map { item ->
-                    val product = productMapById.getValue(item.productId)
-                        ?: throw IllegalArgumentException("Product not found")
-
-                    when (product.type) {
-                        Product.ProductType.MATERIAL -> PurchaseOrderItem(
-                            item.productId,
-                            TransactionProductType.MATERIAL,
-                            item.quantity,
-                            item.unitPrice,
-                            productInstanceId = null,
-                            serialNumber = null
-                        )
-
-                        Product.ProductType.ASSET -> {
-                            requireNotNull(item.serialNumber) { "asset item's serial number must not be null" }
-                            PurchaseOrderItem(
-                                item.productId,
-                                TransactionProductType.ASSET,
-                                1,
-                                item.unitPrice,
-                                productInstanceId = -1, // -1表示随后领域事件分配
-                                serialNumber = item.serialNumber
-                            )
-                        }
-                    }
-                })
+                val orderItems = mapInputOrderItemToOrderItem(input.orderItems, productMapById);
+                addItems(orderItems)
             }
         }
 
@@ -158,28 +131,26 @@ class PurchaseOrderServiceImpl(
     private fun mapInputOrderItemToOrderItem(
         orderItemsForInput: List<PurchaseItemInputTO>,
         productMapById: Map<Long, Product>
-    ): List<PurchaseOrderItem> {
+    ): List<PurchaseOrder.PurchaseOrderItemInput> {
         return orderItemsForInput.map { item ->
             val product = productMapById.getValue(item.productId)
 
             when (product.type) {
-                Product.ProductType.MATERIAL -> PurchaseOrderItem(
+                Product.ProductType.MATERIAL -> PurchaseOrder.PurchaseOrderItemInput(
                     item.productId,
                     TransactionProductType.MATERIAL,
                     item.quantity,
                     item.unitPrice,
-                    productInstanceId = null,
                     serialNumber = null
                 )
 
                 Product.ProductType.ASSET -> {
                     requireNotNull(item.serialNumber) { "asset item's serial number must not be null" }
-                    PurchaseOrderItem(
+                    PurchaseOrder.PurchaseOrderItemInput(
                         item.productId,
                         TransactionProductType.ASSET,
                         1,
                         item.unitPrice,
-                        productInstanceId = -1, // -1表示随后领域事件分配
                         serialNumber = item.serialNumber
                     )
                 }

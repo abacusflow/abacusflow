@@ -22,37 +22,24 @@ class PurchaseOrderItem(
     @field:PositiveOrZero
     val unitPrice: Double,
 
-    productInstanceId: Long?,
-
     val serialNumber: String?,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
-
-    var productInstanceId: Long? = productInstanceId
-        private set
-
     init {
         when (productType) {
             TransactionProductType.MATERIAL -> {
                 // 对于物料类，productInstanceId 应为空
-                require(productInstanceId == null) { "普通商品不应填写 productInstanceId" }
             }
 
             TransactionProductType.ASSET -> {
                 // 对于资产类，必须只有一个
                 require(quantity == 1) { "资产类商品数量只能为 1" }
-                requireNotNull(productInstanceId) { "资产类商品必须指定 productInstanceId，-1表示待分配" }
                 requireNotNull(serialNumber) { "资产类商品必须指定 sn，-1表示待分配" }
             }
         }
-    }
-
-    fun fillRealProductInstance( realProductInstanceId: Long){
-        require(productInstanceId == -1L) { "productInstanceId It's been filled." }
-        this.productInstanceId = realProductInstanceId
     }
 
     val subtotal: Double
