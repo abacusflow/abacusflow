@@ -11,8 +11,9 @@ import { VueQueryPlugin } from "@tanstack/vue-query";
 import injectGlobalProperties from "./plugin/injectGlobalProperties";
 import FetchApi from "./plugin/fetch";
 import { dateToFormattedString, timestampToLocaleString } from "./util/timestampUtils";
-import { translateType, translateUnit } from "./util/productUtils";
 import { formatNumber } from "./util/numberUtils";
+import { translateOrderStatus } from "./util/orderUtil";
+import { translateProductUnit, translateProductType } from "./util/productUtils";
 
 const app = createApp(App);
 
@@ -29,8 +30,9 @@ app.use(FetchApi);
 app.use(injectGlobalProperties, {
   timestampToLocaleString,
   formatNumber,
-  translateUnit,
-  translateType,
+  translateProductUnit,
+  translateProductType,
+  translateOrderStatus,
   dateToFormattedString
   // capitalize
 });

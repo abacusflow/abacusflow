@@ -21,6 +21,7 @@ class SupplierServiceImpl(
                 name = supplier.name,
                 phone = supplier.phone,
                 contactPerson = supplier.contactPerson,
+                address = supplier.address,
             )
         return supplierRepository.save(newSupplier).toTO()
     }
@@ -37,6 +38,7 @@ class SupplierServiceImpl(
             newName = supplierTO.name,
             newContactPerson = supplierTO.contactPerson,
             newPhone = supplierTO.phone,
+            newAddress = supplierTO.address,
         )
         return supplierRepository.save(supplier).toTO()
     }
@@ -80,5 +82,6 @@ class SupplierServiceImpl(
             name = name,
             contactPerson = contactPerson,
             phone = phone,
+            address = address,
         )
 }

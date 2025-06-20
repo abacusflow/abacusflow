@@ -8,7 +8,6 @@ import java.time.Duration
 
 @Configuration
 class WebConfig : WebMvcConfigurer {
-
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         // 确保 /static/** 正确映射
         registry.addResourceHandler("/static/**")

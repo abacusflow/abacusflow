@@ -21,7 +21,6 @@ class PurchaseOrderItem(
     val quantity: Int = 1,
     @field:PositiveOrZero
     val unitPrice: Double,
-
     val serialNumber: String?,
 ) {
     @Id

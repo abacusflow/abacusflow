@@ -27,7 +27,8 @@
           :columns="columns"
           :data-source="filteredData"
           :loading="isPending"
-          :row-key="'id'"
+          row-key="id"
+          size="small"
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'enabled'">
@@ -145,6 +146,7 @@ const columns: StrictTableColumnsType<BasicSupplier> = [
   { title: "供应商名", dataIndex: "name", key: "name" },
   { title: "联系人", dataIndex: "contactPerson", key: "contactPerson" },
   { title: "联系电话", dataIndex: "phone", key: "phone" },
+  { title: "联系地址", dataIndex: "address", key: "address" },
   { title: "操作", key: "action" }
 ];
 </script>

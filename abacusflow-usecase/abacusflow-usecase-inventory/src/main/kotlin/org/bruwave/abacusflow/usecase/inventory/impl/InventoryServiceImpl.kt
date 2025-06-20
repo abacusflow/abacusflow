@@ -1,12 +1,10 @@
 package org.bruwave.abacusflow.usecase.inventory.impl
 
+import org.bruwave.abacusflow.db.depot.DepotRepository
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
-import org.bruwave.abacusflow.db.depot.DepotRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderItemRepository
-import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderItemRepository
-import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.inventory.Inventory
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
 import org.bruwave.abacusflow.usecase.inventory.CreateInventoryInputTO
@@ -112,7 +110,6 @@ class InventoryServiceImpl(
         // 批量获取所有涉及的产品和仓库
         val productMap = productRepository.findAllById(productIds).associateBy { it.id }
         val depotMap = depotRepository.findAllById(depotIds).associateBy { it.id }
-
 
         return inventories.map { inventory ->
             val incomingQuantity = purchaseOrderItemRepository.findTotalQuantityByProductId(inventory.productId) ?: 0

@@ -5,4 +5,5 @@ data class BasicSupplierTO(
     val name: String,
     val contactPerson: String?,
     val phone: String?,
+    val address: String?,
 )

@@ -19,5 +19,5 @@ interface ProductService {
 
     fun getProduct(name: String): ProductTO
 
-    fun listProducts(): List<BasicProductTO>
+    fun listProducts(categoryId: Long?): List<BasicProductTO>
 }

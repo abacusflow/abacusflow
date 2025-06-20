@@ -311,6 +311,33 @@ paths:
       tags:
         - product
       summary: List all products
+      parameters:
+        - name: categoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+        # - name: pageIndex
+        #   in: query
+        #   required: true
+        #   schema:
+        #     type: integer
+        #     format: int32
+        #     minimum: 1
+        # - name: pageSize
+        #   in: query
+        #   required: true
+        #   schema:
+        #     type: integer
+        #     format: int32
+        #     minimum: 10
+        #     maximum: 100
       responses:
         "200":
           description: List of products
@@ -1185,6 +1212,10 @@ components:
           type: string
           nullable: true
           description: 联系电话
+        address:
+          type: string
+          nullable: true
+          description: 地址
 
     CreateSupplierInput:
       type: object
@@ -1288,6 +1319,10 @@ components:
           type: string
           nullable: true
           description: 联系电话
+        address:
+          type: string
+          nullable: true
+          description: 地址
 
     CreateCustomerInput:
       type: object
@@ -1417,6 +1452,10 @@ components:
           description: 供应商名称
         unit:
           $ref: "#/components/schemas/ProductUnit"
+        instances:
+          type: array
+          items:
+            $ref: "#/components/schemas/BasicProductInstance"
         enabled:
           type: boolean
           description: 是否启用
@@ -2141,7 +2180,7 @@ components:
         productInstanceId:
           type: integer
           format: int64
-          description: 产品实例ID
+          description: 资产ID
 
     PurchaseOrderItem:
       type: object

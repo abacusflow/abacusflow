@@ -20,7 +20,6 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
-import kotlin.random.Random
 
 @Entity
 @Table(
@@ -55,7 +54,7 @@ class User(
     @JoinTable(
         name = "users_roles",
         joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "role_id")]
+        inverseJoinColumns = [JoinColumn(name = "role_id")],
     )
     private val rolesMutable: MutableSet<Role> = mutableSetOf()
     val roles: List<Role>
@@ -150,7 +149,7 @@ class User(
     fun changePassword(
         oldPassword: String,
         newPassword: String,
-        passwordEncoder: UserPasswordEncoder
+        passwordEncoder: UserPasswordEncoder,
     ) {
         require(enabled) { "User is not enabled" }
         require(!locked) { "User is locked" }
@@ -167,9 +166,10 @@ class User(
         require(enabled) { "User is not enabled" }
         require(!locked) { "User is locked" }
 
-        val newPassword = (1..10)
-            .map { chars.random() }
-            .joinToString("")
+        val newPassword =
+            (1..10)
+                .map { chars.random() }
+                .joinToString("")
         password = passwordEncoder.encode(newPassword)
         return newPassword
     }

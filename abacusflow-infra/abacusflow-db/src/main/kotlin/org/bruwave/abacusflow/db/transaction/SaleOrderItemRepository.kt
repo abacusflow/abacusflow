@@ -13,7 +13,9 @@ interface SaleOrderItemRepository : JpaRepository<SaleOrderItem, Long> {
     @Query(
         """
         SELECT SUM(p.quantity) FROM SaleOrderItem p WHERE p.productId = :productId
-    """
+    """,
     )
-    fun findTotalQuantityByProductId(@Param("productId") productId: Long): Long?
+    fun findTotalQuantityByProductId(
+        @Param("productId") productId: Long,
+    ): Long?
 }

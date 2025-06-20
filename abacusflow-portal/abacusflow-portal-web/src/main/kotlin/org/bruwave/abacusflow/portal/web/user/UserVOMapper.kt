@@ -17,9 +17,9 @@ fun UserTO.toVO(): UserVO =
         roleIds = roleIds,
         enabled = enabled,
         locked = locked,
-        createdAt= createdAt.toEpochMilli(),
-        updatedAt= updatedAt.toEpochMilli(),
-        sex= sex?.let { mapSexTOToVO(it) },
+        createdAt = createdAt.toEpochMilli(),
+        updatedAt = updatedAt.toEpochMilli(),
+        sex = sex?.let { mapSexTOToVO(it) },
     )
 
 fun BasicUserTO.toBasicVO(): BasicUserVO =

@@ -51,8 +51,9 @@ class UserServiceImpl(
     }
 
     override fun getUser(id: Long): UserTO? {
-        val user = userRepository.findById(id)
-            .orElseThrow { NoSuchElementException("User not found") }
+        val user =
+            userRepository.findById(id)
+                .orElseThrow { NoSuchElementException("User not found") }
 
         return user.toTO()
     }
@@ -64,5 +65,4 @@ class UserServiceImpl(
             ?: throw NoSuchElementException("User not found")
 
     override fun listUsers(): List<BasicUserTO> = userRepository.findAll().map { it.toBasicTO() }
-
 }

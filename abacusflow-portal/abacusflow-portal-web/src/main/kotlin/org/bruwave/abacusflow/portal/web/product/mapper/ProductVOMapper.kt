@@ -34,6 +34,7 @@ fun BasicProductTO.toVO(): BasicProductVO =
         categoryName = categoryName,
         supplierName = supplierName,
         enabled = enabled,
+        instances = instances?.map { it.toVO() },
     )
 
 fun mapProductUnitTOToVO(unit: String): ProductUnitVO =

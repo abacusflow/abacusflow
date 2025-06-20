@@ -15,7 +15,7 @@ class MyAuthenticationFailureHandler : AuthenticationFailureHandler {
     override fun onAuthenticationFailure(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        exception: AuthenticationException
+        exception: AuthenticationException,
     ) {
         println("===== AUTHENTICATION FAILURE =====")
         println("异常类型: ${exception.javaClass.name}")

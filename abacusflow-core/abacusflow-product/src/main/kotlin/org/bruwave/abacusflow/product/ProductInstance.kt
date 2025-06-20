@@ -6,7 +6,6 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
@@ -19,24 +18,22 @@ import java.time.Instant
 @Entity
 @Table(
     name = "product_instances",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["serial_number"])]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["serial_number"])],
 )
 class ProductInstance(
     // 唯一编码，如 SN 编号、序列号
     val serialNumber: String,
     @ManyToOne
     val product: Product,
-
     val purchaseOrderId: Long,
-
-    saleOrderId: Long? = null
+    saleOrderId: Long? = null,
 ) : AbstractAggregateRoot<ProductInstance>() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
     @field:NotBlank
-    val name: String = "${product.name}-${serialNumber}"
+    val name: String = "${product.name}-$serialNumber"
 
     @Enumerated(EnumType.STRING)
     var status: ProductInstanceStatus = ProductInstanceStatus.CREATED
@@ -58,8 +55,8 @@ class ProductInstance(
     }
 
     enum class ProductInstanceStatus {
-        CREATED,       // 创建但未入库
-        IN_STOCK,      // 已入库
-        SOLD,          // 已售出
+        CREATED, // 创建但未入库
+        IN_STOCK, // 已入库
+        SOLD, // 已售出
     }
 }

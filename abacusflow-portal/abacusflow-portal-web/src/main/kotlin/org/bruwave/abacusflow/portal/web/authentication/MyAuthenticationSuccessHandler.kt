@@ -15,12 +15,11 @@ import java.net.URISyntaxException
 class MyAuthenticationSuccessHandler(
     private val userAuthenticationService: UserAuthenticationService,
 ) : AuthenticationSuccessHandler {
-
     @Throws(IOException::class, ServletException::class)
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        authentication: Authentication
+        authentication: Authentication,
     ) {
         val redirect = request.getParameter("redirect")
 

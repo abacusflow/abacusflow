@@ -1,13 +1,11 @@
 package org.bruwave.abacusflow.portal.web.authentication
 
 import org.bruwave.abacusflow.usecase.user.service.UserAuthenticationService
-import org.hibernate.validator.internal.util.Contracts.assertTrue
-import org.springframework.security.core.userdetails.User as SecurityUser
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
+import org.springframework.security.core.userdetails.User as SecurityUser
 
 @Component
 class MyUserDetailsService(

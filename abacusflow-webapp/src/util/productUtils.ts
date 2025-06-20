@@ -1,10 +1,10 @@
-import type { ProductType, ProductUnit } from "@/core/openapi";
+import type { ProductUnit, ProductType } from "@/core/openapi";
 
 /**
  * 将单位英文值翻译为中文
  */
-export function translateUnit(unit?: ProductUnit): string {
-  if (!unit) {
+export function translateProductUnit(input?: ProductUnit): string {
+  if (!input) {
     return "";
   }
   const unitMap: Record<ProductUnit, string> = {
@@ -27,14 +27,14 @@ export function translateUnit(unit?: ProductUnit): string {
     roll: "卷"
   };
 
-  return unitMap[unit] || unit;
+  return unitMap[input] || input;
 }
 
 /**
  * 将单位英文值翻译为中文
  */
-export function translateType(type?: ProductType): string {
-  if (!type) {
+export function translateProductType(input?: ProductType): string {
+  if (!input) {
     return "";
   }
   const typeMap: Record<ProductType, string> = {
@@ -42,14 +42,14 @@ export function translateType(type?: ProductType): string {
     asset: "资产"
   };
 
-  return typeMap[type] || type;
+  return typeMap[input] || input;
 }
 
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
-    $translateUnit: (unit: ProductUnit) => string;
+    $translateProductUnit: (input: ProductUnit) => string;
   }
   interface ComponentCustomProperties {
-    $translateType: (type: ProductType) => string;
+    $translateProductType: (input: ProductType) => string;
   }
 }
