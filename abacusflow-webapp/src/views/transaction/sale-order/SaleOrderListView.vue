@@ -35,6 +35,16 @@
               {{ $dateToFormattedString(record.orderDate, "YYYY-MM-DD") }}
             </template>
 
+            <template v-if="column.key === 'autoCompleteDate'">
+              <a-tag :color="getAutoCompleteColor(record.autoCompleteDate)">
+                {{
+                  record.autoCompleteDate
+                    ? `剩 ${dayjs().diff(record.autoCompleteDate, "day") * -1} 天`
+                    : "已完成"
+                }}
+              </a-tag>
+            </template>
+
             <template v-if="column.key === 'status'">
               {{ $translateOrderStatus(record.status) }}
             </template>
@@ -42,16 +52,25 @@
             <template v-if="column.key === 'action'">
               <a-space>
                 <a-button type="link" shape="circle" @click="handleEditSaleOrder(record)"
-                  >编辑</a-button
+                  >详情</a-button
                 >
 
                 <a-divider type="vertical" />
 
                 <a-popconfirm
-                  title="确定删除该销售单？"
-                  @confirm="handleDeleteSaleOrder(record.id)"
+                  title="确定完成该销售单？"
+                  @confirm="handleCompleteSaleOrder(record.id)"
                 >
-                  <a-button type="link" shape="circle">删除</a-button>
+                  <a-button type="link" shape="circle">完成订单</a-button>
+                </a-popconfirm>
+
+                <a-divider type="vertical" />
+
+                <a-popconfirm
+                  title="确定取消该销售单？"
+                  @confirm="handleCancelSaleOrder(record.id)"
+                >
+                  <a-button type="link" shape="circle">取消订单</a-button>
                 </a-popconfirm>
               </a-space>
             </template>
@@ -70,7 +89,7 @@
     </a-drawer>
 
     <a-drawer
-      title="修改销售单"
+      title="查看销售单详情"
       width="500"
       :open="showEdit"
       :closable="false"
@@ -91,9 +110,10 @@ import { computed, inject, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { BasicSaleOrder, TransactionApi } from "@/core/openapi";
 import SaleOrderAddView from "./SaleOrderAddView.vue";
-import SaleOrderEditView from "./SaleOrderEditView.vue";
+import SaleOrderEditView from "./SaleOrderDetailView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
+import dayjs from "dayjs";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();
@@ -143,20 +163,47 @@ const filteredData = computed(() => {
   });
 });
 
-const { mutate: deleteSaleOrder } = useMutation({
-  mutationFn: (id: number) => transactionApi.deleteSaleOrder({ id }),
+const { mutate: completeSaleOrder } = useMutation({
+  mutationFn: (id: number) => transactionApi.completeSaleOrder({ id }),
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ["saleOrders"] });
-    message.success("删除成功");
+    message.success("操作成功");
   },
   onError: (error) => {
-    message.error("删除失败");
+    message.error("操作失败");
     console.error(error);
   }
 });
 
-function handleDeleteSaleOrder(id: number) {
-  deleteSaleOrder(id);
+const { mutate: cancelSaleOrder } = useMutation({
+  mutationFn: (id: number) => transactionApi.cancelSaleOrder({ id }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["saleOrders"] });
+    message.success("操作成功");
+  },
+  onError: (error) => {
+    message.error("操作失败");
+    console.error(error);
+  }
+});
+
+function handleCompleteSaleOrder(id: number) {
+  completeSaleOrder(id);
+}
+
+function handleCancelSaleOrder(id: number) {
+  cancelSaleOrder(id);
+}
+
+function getAutoCompleteColor(autoCompleteDate?: string): string {
+  if (!autoCompleteDate) return "default";
+
+  const daysLeft = dayjs(autoCompleteDate).diff(dayjs(), "day");
+
+  if (daysLeft < 0) return "red"; // 已超时
+  if (daysLeft <= 1) return "orange"; // 紧急
+  if (daysLeft <= 3) return "gold"; // 即将到期
+  return "green"; // 正常
 }
 
 const columns: StrictTableColumnsType<BasicSaleOrder> = [
@@ -167,6 +214,7 @@ const columns: StrictTableColumnsType<BasicSaleOrder> = [
   { title: "总销售数量", dataIndex: "totalQuantity", key: "totalQuantity" },
   { title: "商品种类数", dataIndex: "itemCount", key: "itemCount" },
   { title: "订单日期", dataIndex: "orderDate", key: "orderDate" },
+  { title: "自动完成天数", dataIndex: "autoCompleteDate", key: "autoCompleteDate" },
   { title: "操作", key: "action" }
 ];
 </script>

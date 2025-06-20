@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Component
 @Transactional
-class ProductEventListener(
+class InventoryProductEventListener(
     private val inventoryRepository: InventoryRepository,
 ) {
     @EventListener

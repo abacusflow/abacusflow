@@ -65,6 +65,7 @@ class ProductCategory(
 
     fun changeParent(newParent: ProductCategory) {
         if (parent == newParent) return
+        require(newParent != this) { "Categories cannot be set as their own parent category" }
 
         parent = newParent
 

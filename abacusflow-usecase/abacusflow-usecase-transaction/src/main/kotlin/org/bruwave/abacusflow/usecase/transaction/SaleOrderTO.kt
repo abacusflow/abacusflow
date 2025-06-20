@@ -14,12 +14,12 @@ data class SaleOrderTO(
     val createdAt: Instant,
     val updatedAt: Instant,
     val orderDate: LocalDate,
-)
-
-data class SaleOrderItemTO(
-    val id: Long,
-    val productId: Long,
-    val quantity: Int,
-    val unitPrice: Double,
-    val subtotal: Double,
-)
+) {
+    data class SaleOrderItemTO(
+        val id: Long,
+        val productId: Long,
+        val quantity: Int,
+        val unitPrice: Double,
+        val subtotal: Double,
+    )
+}

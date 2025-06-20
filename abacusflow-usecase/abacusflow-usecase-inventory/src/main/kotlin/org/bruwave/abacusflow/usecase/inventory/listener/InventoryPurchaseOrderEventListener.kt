@@ -1,7 +1,7 @@
 package org.bruwave.abacusflow.usecase.inventory.listener
 
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
-import org.bruwave.abacusflow.transaction.PurchaseOrderItemChangedEvent
+import org.bruwave.abacusflow.transaction.PurchaseOrderCompletedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -12,10 +12,11 @@ class InventoryPurchaseOrderEventListener(
     private val inventoryRepository: InventoryRepository,
 ) {
     @EventListener
-    fun handlePurchaseOrderChanged(event: PurchaseOrderItemChangedEvent) {
-        println("PurchaseOrder Changed orderNo: ${event.orderNo}")
+    fun handlePurchaseOrderCompletedEvent(event: PurchaseOrderCompletedEvent) {
+        val order = event.order
+        println("PurchaseOrder Completed orderNo: ${order.no}")
 
-        event.items.groupBy { it.productId }.forEach {
+        order.items.groupBy { it.productId }.forEach {
             val inventory =
                 inventoryRepository.findByProductId(it.key)
                     ?: throw NoSuchElementException("Product with id ${it.key} not found")

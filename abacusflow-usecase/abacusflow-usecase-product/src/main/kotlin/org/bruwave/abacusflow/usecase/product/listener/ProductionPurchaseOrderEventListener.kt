@@ -5,7 +5,7 @@ import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.product.ProductInstance
 import org.bruwave.abacusflow.transaction.PurchaseOrder
-import org.bruwave.abacusflow.transaction.PurchaseOrderCreatedEvent
+import org.bruwave.abacusflow.transaction.PurchaseOrderCompletedEvent
 import org.bruwave.abacusflow.transaction.TransactionProductType
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -18,7 +18,7 @@ class ProductionPurchaseOrderEventListener(
     private val productInstanceRepository: ProductInstanceRepository,
 ) {
     @EventListener
-    fun handlePurchaseOrderItemAssetProductCreatedEvent(event: PurchaseOrderCreatedEvent) {
+    fun handlePurchaseOrderCompletedEvent(event: PurchaseOrderCompletedEvent) {
         println("PurchaseOrder Created orderNo: ${event.order.no}")
         val products =
             productRepository.findAllById(
@@ -35,7 +35,7 @@ class ProductionPurchaseOrderEventListener(
             )
 
         if (needCreateProductInstances.size > 0) {
-            val createdInstances = productInstanceRepository.saveAll(needCreateProductInstances)
+            productInstanceRepository.saveAll(needCreateProductInstances)
         }
     }
 

@@ -4,10 +4,8 @@ import org.bruwave.abacusflow.portal.web.api.PurchaseOrdersApi
 import org.bruwave.abacusflow.portal.web.model.BasicPurchaseOrderVO
 import org.bruwave.abacusflow.portal.web.model.CreatePurchaseOrderInputVO
 import org.bruwave.abacusflow.portal.web.model.PurchaseOrderVO
-import org.bruwave.abacusflow.portal.web.model.UpdatePurchaseOrderInputVO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
-import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderService
-import org.bruwave.abacusflow.usecase.transaction.UpdatePurchaseOrderInputTO
+import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
@@ -45,27 +43,13 @@ class PurchaseOrderController(
         )
     }
 
-    override fun updatePurchaseOrder(
-        id: Long,
-        updatePurchaseOrderInputVO: UpdatePurchaseOrderInputVO,
-    ): ResponseEntity<PurchaseOrderVO> {
-        val order =
-            purchaseOrderService.updatePurchaseOrder(
-                id,
-                UpdatePurchaseOrderInputTO(
-                    supplierId = updatePurchaseOrderInputVO.supplierId,
-                    orderDate = updatePurchaseOrderInputVO.orderDate,
-                    orderItems = updatePurchaseOrderInputVO.orderItems?.map { it.toInputTO() },
-                    note = updatePurchaseOrderInputVO.note,
-                ),
-            )
-        return ResponseEntity.ok(
-            order.toVO(),
-        )
+    override fun completePurchaseOrder(id: Long): ResponseEntity<Unit> {
+        purchaseOrderService.completeOrder(id)
+        return ResponseEntity.ok().build()
     }
 
-    override fun deletePurchaseOrder(id: Long): ResponseEntity<Unit> {
-        purchaseOrderService.deletePurchaseOrder(id)
+    override fun cancelPurchaseOrder(id: Long): ResponseEntity<Unit> {
+        purchaseOrderService.cancelOrder(id)
         return ResponseEntity.ok().build()
     }
 }

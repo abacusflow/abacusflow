@@ -14,4 +14,12 @@ data class PurchaseOrderTO(
     val note: String?,
     val createdAt: Instant,
     val updatedAt: Instant,
-)
+) {
+    data class PurchaseOrderItemTO(
+        val id: Long,
+        val productId: Long,
+        val quantity: Int,
+        val unitPrice: Double,
+        val subtotal: Double,
+    )
+}

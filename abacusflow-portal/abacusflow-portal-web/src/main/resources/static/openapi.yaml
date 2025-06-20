@@ -902,36 +902,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SaleOrder"
-    put:
-      operationId: updateSaleOrder
+
+  /sale-orders/{id}/complete:
+    post:
+      operationId: completeSaleOrder
       tags:
         - transaction
-      summary: Update sale order
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateSaleOrderInput"
-      responses:
-        "200":
-          description: Sale order updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SaleOrder"
-    delete:
-      operationId: deleteSaleOrder
-      tags:
-        - transaction
-      summary: Delete sale order
+      summary: Complete a sale order
       parameters:
         - name: id
           in: path
@@ -941,7 +918,24 @@ paths:
             format: int64
       responses:
         "200":
-          description: Sale order deleted
+          description: Sale order marked as completed
+
+  /sale-orders/{id}/cancel:
+    post:
+      operationId: cancelSaleOrder
+      tags:
+        - transaction
+      summary: Cancel a sale order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Sale order marked as canceled
 
   /purchase-orders:
     get:
@@ -997,36 +991,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PurchaseOrder"
-    put:
-      operationId: updatePurchaseOrder
+
+  /purchase-orders/{id}/complete:
+    post:
+      operationId: completePurchaseOrder
       tags:
         - transaction
-      summary: Update purchase order
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdatePurchaseOrderInput"
-      responses:
-        "200":
-          description: Purchase order updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PurchaseOrder"
-    delete:
-      operationId: deletePurchaseOrder
-      tags:
-        - transaction
-      summary: Delete purchase order
+      summary: Complete a purchase order
       parameters:
         - name: id
           in: path
@@ -1036,7 +1007,24 @@ paths:
             format: int64
       responses:
         "200":
-          description: Purchase order deleted
+          description: Purchase order marked as completeSaleOrder
+
+  /purchase-orders/{id}/cancel:
+    post:
+      operationId: cancelPurchaseOrder
+      tags:
+        - transaction
+      summary: Cancel a purchase order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Purchase order marked as canceled
 
 components:
   schemas:
@@ -1931,6 +1919,11 @@ components:
           format: date
           example: "1970-01-01"
           description: 订单日期
+        autoCompleteDate:
+          type: string
+          format: date
+          example: "1970-01-07"
+          description: 自动完成天数
 
     CreateSaleOrderInput:
       type: object
@@ -1957,30 +1950,6 @@ components:
           items:
             $ref: "#/components/schemas/SaleOrderItemInput"
           minItems: 1
-          description: 订单明细
-
-    UpdateSaleOrderInput:
-      type: object
-      properties:
-        customerId:
-          type: integer
-          format: int64
-          description: 客户ID
-        status:
-          $ref: "#/components/schemas/OrderStatus"
-        note:
-          type: string
-          nullable: true
-          description: 备注
-        orderDate:
-          type: string
-          format: date
-          example: "1970-01-01"
-          description: 订单日期
-        orderItems:
-          type: array
-          items:
-            $ref: "#/components/schemas/SaleOrderItemInput"
           description: 订单明细
 
     # ============= PurchaseOrder schemas =============
@@ -2072,6 +2041,11 @@ components:
           format: date
           example: "1970-01-01"
           description: 订单日期
+        autoCompleteDate:
+          type: string
+          format: date
+          example: "1970-01-07"
+          description: 自动完成天数
 
     CreatePurchaseOrderInput:
       type: object
@@ -2098,30 +2072,6 @@ components:
           items:
             $ref: "#/components/schemas/PurchaseOrderItemInput"
           minItems: 1
-          description: 订单明细
-
-    UpdatePurchaseOrderInput:
-      type: object
-      properties:
-        supplierId:
-          type: integer
-          format: int64
-          description: 供应商ID
-        status:
-          $ref: "#/components/schemas/OrderStatus"
-        note:
-          type: string
-          nullable: true
-          description: 备注
-        orderDate:
-          type: string
-          format: date
-          example: "1970-01-01"
-          description: 订单日期
-        orderItems:
-          type: array
-          items:
-            $ref: "#/components/schemas/PurchaseOrderItemInput"
           description: 订单明细
 
     # ============= OrderItem schemas =============

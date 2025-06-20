@@ -1,13 +1,6 @@
 <template>
   <a-spin :spinning="isPending">
-    <a-checkbox
-      :checked="componentDisabled"
-      @change="(e: Event) => (componentDisabled = (e.target as HTMLInputElement).checked)"
-    >
-      表单已禁用
-    </a-checkbox>
-
-    <a-form :model="formState" ref="formRef" :disabled="componentDisabled" @finish="handleOk">
+    <a-form :model="formState" ref="formRef" disabled>
       <a-form-item
         label="供应商"
         name="supplierId"
@@ -79,24 +72,11 @@
               style="width: 100%"
             />
           </a-form-item>
-
-          <!-- 删除按钮 -->
-          <a-button danger type="link" @click="removeOrderItem(index)"> 删除该商品 </a-button>
         </div>
-
-        <!-- 添加一项 -->
-        <a-button type="dashed" block @click="addOrderItem"> 添加商品明细 </a-button>
       </a-form-item>
 
       <a-form-item label="备注" name="note">
-        <a-textarea v-model:value="formState.note" placeholder="请输入备注" />
-      </a-form-item>
-
-      <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-        <a-space>
-          <a-button type="primary" html-type="submit">提交</a-button>
-          <a-button @click="handleCancel">取消</a-button>
-        </a-space>
+        <a-textarea v-model:value="formState.note" />
       </a-form-item>
     </a-form>
   </a-spin>
@@ -104,37 +84,24 @@
 
 <script lang="ts" setup>
 import { inject, reactive, ref, watchEffect } from "vue";
-import { type FormInstance, message } from "ant-design-vue";
-import type {
-  PartnerApi,
-  ProductApi,
-  PurchaseOrderItemInput,
-  TransactionApi,
-  UpdatePurchaseOrderInput
-} from "@/core/openapi";
-import { useMutation, useQuery } from "@tanstack/vue-query";
+import { type FormInstance } from "ant-design-vue";
+import type { PartnerApi, ProductApi, PurchaseOrder, TransactionApi } from "@/core/openapi";
+import { useQuery } from "@tanstack/vue-query";
 import dayjs, { Dayjs } from "dayjs";
 
 const dateFormat = "YYYY/MM/DD";
-
 const formRef = ref<FormInstance>();
-const componentDisabled = ref(true);
 
 const props = defineProps<{ purchaseOrderId: number }>();
-
-console.log(props.purchaseOrderId, "props.purchaseOrderId");
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const productApi = inject("productApi") as ProductApi;
 const partnerApi = inject("partnerApi") as PartnerApi;
 
-const emit = defineEmits(["success", "close", "update:visible"]);
-
-type UpdatePurchaseOrderInputForm = Omit<UpdatePurchaseOrderInput, "orderDate" | "orderItems"> & {
+type PurchaseOrderForm = Omit<PurchaseOrder, "orderDate"> & {
   orderDate: Dayjs;
-  orderItems: Partial<PurchaseOrderItemInput>[];
 };
-const formState = reactive<Partial<UpdatePurchaseOrderInputForm>>({
+const formState = reactive<Partial<PurchaseOrderForm>>({
   supplierId: undefined,
   orderDate: dayjs(dayjs().format(dateFormat), dateFormat),
   note: undefined,
@@ -159,7 +126,6 @@ watchEffect(() => {
     formState.orderDate = dayjs(orderDate);
     formState.note = note;
     formState.orderItems = reactive([...orderItems]);
-    // formState.orderItems?.splice(0, formState.orderItems.length, ...orderItems);
   }
 });
 
@@ -172,59 +138,4 @@ const { data: products } = useQuery({
   queryKey: ["products"],
   queryFn: () => productApi.listProducts()
 });
-
-const { mutate: updatePurchaseOrder } = useMutation({
-  mutationFn: (editedPurchaseOrder: UpdatePurchaseOrderInput) =>
-    transactionApi.updatePurchaseOrder({
-      id: props.purchaseOrderId,
-      updatePurchaseOrderInput: { ...editedPurchaseOrder }
-    }),
-  onSuccess: () => {
-    message.success("修改成功");
-    resetForm();
-    emit("success"); // 通知父组件修改成功
-    closeDrawer();
-  },
-  onError: (error) => {
-    message.error("修改失败");
-    console.error(error);
-  }
-});
-
-function addOrderItem() {
-  formState.orderItems?.push({
-    productId: undefined,
-    quantity: 1,
-    unitPrice: 0
-  });
-}
-
-function removeOrderItem(index: number) {
-  formState.orderItems?.splice(index, 1);
-}
-
-const handleCancel = () => {
-  resetForm();
-
-  closeDrawer();
-};
-
-const closeDrawer = () => {
-  emit("update:visible", false); // 触发 v-model:visible 改变
-};
-
-const resetForm = () => {
-  formRef.value?.resetFields();
-};
-
-const handleOk = () => {
-  formRef.value
-    ?.validate()
-    .then(() => {
-      updatePurchaseOrder(formRef.value?.getFieldsValue() as UpdatePurchaseOrderInput);
-    })
-    .catch((error) => {
-      console.error("表单验证失败", error);
-    });
-};
 </script>

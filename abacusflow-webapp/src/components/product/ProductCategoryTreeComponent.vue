@@ -48,7 +48,7 @@ const emit = defineEmits<{
 const selectedKeys = ref<(string | number)[]>([]);
 
 // ✅ 查询数据
-const { data, isPending, refetch } = useQuery({
+const { data, isPending } = useQuery({
   queryKey: ["productCategories"],
   queryFn: () => productApi.listProductCategories()
 });
