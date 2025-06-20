@@ -54,11 +54,11 @@
         />
       </a-form-item>
 
-      <a-form-item label="规格说明" name="specification" extra="例如：'256GB','A4纸'">
+      <a-form-item label="备注" name="note" extra="例如：'256GB','A4纸'">
         <a-textarea
-          v-model:value="formState.specification"
+          v-model:value="formState.note"
           :rows="3"
-          placeholder="请输入规格说明"
+          placeholder="请输入备注"
         />
       </a-form-item>
 
@@ -92,7 +92,7 @@ const formState = reactive<Partial<UpdateProductInput>>({
   categoryId: undefined,
   unit: ProductUnit.Item,
   unitPrice: 0,
-  specification: undefined,
+  note: undefined,
   supplierId: undefined
 });
 
@@ -119,12 +119,12 @@ const { data: categories } = useQuery({
 // 当查询成功且有数据时，优先使用 API 数据
 watchEffect(() => {
   if (isSuccess.value && fetchedProduct.value) {
-    const { name, categoryId, unit, unitPrice, specification, supplierId } = fetchedProduct.value;
+    const { name, categoryId, unit, unitPrice, note, supplierId } = fetchedProduct.value;
     formState.name = name;
     formState.categoryId = categoryId;
     formState.unit = unit;
     formState.unitPrice = unitPrice;
-    formState.specification = specification;
+    formState.note = note;
     formState.supplierId = supplierId;
   }
 });

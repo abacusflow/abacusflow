@@ -49,6 +49,7 @@ fun PurchaseOrderItemInputVO.toInputTO(): PurchaseItemInputTO =
         productId = productId,
         quantity = quantity,
         unitPrice = unitPrice,
+        serialNumber = serialNumber,
     )
 
 fun mapOrderStatusTOToVO(orderStatus: String): OrderStatusVO =

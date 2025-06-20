@@ -47,7 +47,6 @@ const authMiddleware: Middleware = {
   },
   post: async (context) => {
     if (context.response.status === 401) {
-      alert("身份认证已过期，请重新登录");
       const redirectUrl = document.location.pathname;
       window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
       return context.response;

@@ -40,6 +40,8 @@ class ProductController(
                     supplierId = createProductInputVO.supplierId,
                     unit = createProductInputVO.unit.name,
                     unitPrice = createProductInputVO.unitPrice,
+                    note = createProductInputVO.note,
+                    type = createProductInputVO.type.name,
                     specification = createProductInputVO.specification,
                 ),
             )
@@ -52,18 +54,19 @@ class ProductController(
         id: Long,
         updateProductInputVO: UpdateProductInputVO,
     ): ResponseEntity<ProductVO> {
-        val product =
-            productService.updateProduct(
-                id,
-                UpdateProductInputTO(
-                    name = updateProductInputVO.name,
-                    categoryId = updateProductInputVO.categoryId,
-                    supplierId = updateProductInputVO.supplierId,
-                    unit = updateProductInputVO.unit?.name,
-                    unitPrice = updateProductInputVO.unitPrice,
-                    specification = updateProductInputVO.specification,
-                ),
-            )
+        val product = productService.updateProduct(
+            id,
+            UpdateProductInputTO(
+                name = updateProductInputVO.name,
+                categoryId = updateProductInputVO.categoryId,
+                supplierId = updateProductInputVO.supplierId,
+                unit = updateProductInputVO.unit?.name,
+                unitPrice = updateProductInputVO.unitPrice,
+                note = updateProductInputVO.note,
+                type = updateProductInputVO.type?.name,
+                specification = updateProductInputVO.specification,
+            ),
+        )
         return ResponseEntity.ok(
             product.toVO(),
         )

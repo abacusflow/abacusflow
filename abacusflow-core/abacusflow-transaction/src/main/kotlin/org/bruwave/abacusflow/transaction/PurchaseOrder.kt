@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
+import jakarta.persistence.PrePersist
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.CreationTimestamp
@@ -30,7 +31,7 @@ class PurchaseOrder(
 
     @field:NotNull
     @Column(unique = true)
-    val orderNo: UUID = UUID.randomUUID()
+    val no: UUID = UUID.randomUUID()
 
     var supplierId: Long = supplierId // 通过ID关联供应商
         private set
@@ -80,19 +81,30 @@ class PurchaseOrder(
     // TODO 最佳方案是替换为增量更新
     private fun addItem(
         productId: Long,
+        productType: TransactionProductType,
         quantity: Int,
         unitPrice: Double,
+        productInstanceId: Long?,
+        serialNumber: String?,
     ) {
-        itemsMutable.add(PurchaseOrderItem(productId, quantity, unitPrice))
+        itemsMutable.add(
+            PurchaseOrderItem(
+                productId,
+                productType,
+                quantity,
+                unitPrice,
+                productInstanceId,
+                serialNumber = serialNumber
+            )
+        )
         updatedAt = Instant.now()
     }
 
-    fun addItems(itemsToAdd: List<Triple<Long, Int, Double>>) {
-        for ((productId, quantity, unitPrice) in itemsToAdd) {
-            addItem(productId, quantity, unitPrice)
+    fun addItems(itemsInput: List<PurchaseOrderItem>) {
+        itemsInput.forEach {
+            addItem(it.productId, it.productType, it.quantity, it.unitPrice, it.productInstanceId,it.serialNumber)
         }
-
-        registerEvent(PurchaseOrderItemChangedEvent(id, orderNo, items))
+        registerEvent(PurchaseOrderItemChangedEvent(id, no, items))
     }
 
     fun completeOrder() {
@@ -113,4 +125,16 @@ class PurchaseOrder(
         get() = items.sumOf { it.quantity.toLong() }
     val itemCount: Int
         get() = items.distinctBy { it.productId }.size
+
+    @PrePersist
+    fun prePersist() {
+        registerEvent(PurchaseOrderCreatedEvent(this))
+    }
+//    data class PurchaseOrderItemRequest(
+//        val productId: Long,
+//        val productType: TransactionProductType,
+//        val quantity: Int,
+//        val unitPrice: Double,
+//        val instanceId: Long? = null
+//    )
 }

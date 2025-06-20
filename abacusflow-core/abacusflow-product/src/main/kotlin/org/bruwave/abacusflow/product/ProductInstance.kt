@@ -1,0 +1,57 @@
+package org.bruwave.abacusflow.product
+
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.domain.AbstractAggregateRoot
+import java.time.Instant
+
+@Entity
+@Table(name = "product_instances")
+class ProductInstance(
+    // 唯一编码，如 SN 编号、序列号
+    val serialNumber: String,
+    @ManyToOne
+    val product: Product,
+
+    val purchaseOrderId: Long,
+
+    saleOrderId: Long? = null
+) : AbstractAggregateRoot<ProductInstance>() {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0
+
+    @Enumerated(EnumType.STRING)
+    var status: ProductInstanceStatus = ProductInstanceStatus.CREATED
+
+    var saleOrderId: Long? = saleOrderId
+        private set
+
+    @CreationTimestamp
+    val createdAt: Instant = Instant.now()
+
+    @UpdateTimestamp
+    var updatedAt: Instant = Instant.now()
+        private set
+
+    fun linkSaleOrder(newSaleOrderId: Long) {
+        saleOrderId = newSaleOrderId
+
+        updatedAt = Instant.now()
+    }
+
+    enum class ProductInstanceStatus {
+        CREATED,       // 创建但未入库
+        IN_STOCK,      // 已入库
+        SOLD,          // 已售出
+    }
+}

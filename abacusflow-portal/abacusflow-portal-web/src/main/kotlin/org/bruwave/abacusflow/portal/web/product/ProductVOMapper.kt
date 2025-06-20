@@ -1,6 +1,7 @@
 package org.bruwave.abacusflow.portal.web.product
 
 import org.bruwave.abacusflow.portal.web.model.BasicProductVO
+import org.bruwave.abacusflow.portal.web.model.ProductTypeVO
 import org.bruwave.abacusflow.portal.web.model.ProductUnitVO
 import org.bruwave.abacusflow.portal.web.model.ProductVO
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
@@ -10,10 +11,11 @@ fun ProductTO.toVO(): ProductVO =
     ProductVO(
         id = id,
         name = name,
+        type = mapProductTypeTOToVO(type),
         supplierId = supplierId,
         unit = mapProductUnitTOToVO(unit),
         unitPrice = unitPrice,
-        specification = specification,
+        note = note,
         categoryId = categoryId,
         enabled = enabled,
         updatedAt = updatedAt.toEpochMilli(),
@@ -24,6 +26,8 @@ fun BasicProductTO.toVO(): BasicProductVO =
     BasicProductVO(
         id = id,
         name = name,
+        specification = specification,
+        type = mapProductTypeTOToVO(type),
         unit = mapProductUnitTOToVO(unit),
         unitPrice = unitPrice,
         categoryName = categoryName,
@@ -51,4 +55,11 @@ fun mapProductUnitTOToVO(unit: String): ProductUnitVO =
         "SHEET" -> ProductUnitVO.sheet
         "ROLL" -> ProductUnitVO.roll
         else -> throw IllegalArgumentException("Unknown product unit: $unit")
+    }
+
+fun mapProductTypeTOToVO(type: String): ProductTypeVO =
+    when (type.uppercase()) {
+        "MATERIAL" -> ProductTypeVO.material
+        "ASSET" -> ProductTypeVO.asset
+        else -> throw IllegalArgumentException("Unknown product unit: $type")
     }

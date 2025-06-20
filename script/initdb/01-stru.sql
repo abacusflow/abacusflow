@@ -67,7 +67,7 @@ create table products
     enabled       boolean          not null,
     is_new        boolean          not null,
     name          varchar(100)     not null,
-    specification varchar(50),
+    note varchar(50),
     supplier_id   bigint           not null,
     unit          varchar(255)     not null
         constraint products_unit_check

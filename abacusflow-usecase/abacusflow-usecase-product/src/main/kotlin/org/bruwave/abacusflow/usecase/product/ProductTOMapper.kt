@@ -7,11 +7,12 @@ fun Product.toTO() =
     ProductTO(
         id = id,
         name = name,
+        type = type.name,
         unit = unit.name,
         unitPrice = unitPrice,
         categoryId = category.id,
         supplierId = supplierId,
-        specification = specification,
+        note = note,
         enabled = enabled,
         createdAt = createdAt,
         updatedAt = updatedAt,
@@ -21,11 +22,13 @@ fun Product.toBasicTO(supplierName: String) =
     BasicProductTO(
         id = id,
         name = name,
+        specification = specification,
+        type = type.name,
         categoryName = category.name,
         supplierName = supplierName,
         unit = unit.name,
         unitPrice = unitPrice,
-        specification = specification,
+        note = note,
         enabled = enabled,
     )
 
@@ -49,4 +52,11 @@ fun mapProductUnitTOToDO(unit: String): ProductUnit =
         "SHEET" -> ProductUnit.SHEET
         "ROLL" -> ProductUnit.ROLL
         else -> throw IllegalArgumentException("Unknown product unit: $unit")
+    }
+
+fun mapProductTypeTOToDO(type: String): Product.ProductType =
+    when (type.uppercase()) {
+        "MATERIAL" -> Product.ProductType.MATERIAL
+        "ASSET" -> Product.ProductType.ASSET
+        else -> throw IllegalArgumentException("Unknown product type: $type")
     }

@@ -1314,6 +1314,7 @@ components:
       required:
         - id
         - name
+        - type
         - unit
         - unitPrice
         - categoryId
@@ -1329,10 +1330,15 @@ components:
         name:
           type: string
           description: 商品名称
+        type:
+          $ref: "#/components/schemas/ProductType"
         unitPrice:
           type: number
           format: double
           description: 单价
+        specification:
+          type: string
+          description: 规格
         categoryId:
           type: integer
           format: int64
@@ -1341,10 +1347,10 @@ components:
           type: integer
           format: int64
           description: 供应商ID
-        specification:
+        note:
           type: string
           nullable: true
-          description: 规格说明
+          description: 备注
         unit:
           $ref: "#/components/schemas/ProductUnit"
         enabled:
@@ -1365,6 +1371,7 @@ components:
       required:
         - id
         - name
+        - type
         - unit
         - unitPrice
         - categoryName
@@ -1378,6 +1385,11 @@ components:
         name:
           type: string
           description: 商品名称
+        type:
+          $ref: "#/components/schemas/ProductType"
+        specification:
+          type: string
+          description: 商品规格
         unitPrice:
           type: number
           format: double
@@ -1398,6 +1410,7 @@ components:
       type: object
       required:
         - name
+        - type
         - unit
         - unitPrice
         - categoryId
@@ -1407,6 +1420,11 @@ components:
           type: string
           minLength: 1
           description: 商品名称
+        type:
+          $ref: "#/components/schemas/ProductType"
+        specification:
+          type: string
+          description: 商品规格
         unitPrice:
           type: number
           format: double
@@ -1420,10 +1438,10 @@ components:
           type: integer
           format: int64
           description: 供应商ID
-        specification:
+        note:
           type: string
           nullable: true
-          description: 规格说明
+          description: 备注
         unit:
           $ref: "#/components/schemas/ProductUnit"
 
@@ -1434,6 +1452,11 @@ components:
           type: string
           minLength: 1
           description: 商品名称
+        type:
+          $ref: "#/components/schemas/ProductType"
+        specification:
+          type: string
+          description: 商品规格
         unitPrice:
           type: number
           format: double
@@ -1447,10 +1470,10 @@ components:
           type: integer
           format: int64
           description: 供应商ID
-        specification:
+        note:
           type: string
           nullable: true
-          description: 规格说明
+          description: 备注
         unit:
           $ref: "#/components/schemas/ProductUnit"
 
@@ -2102,6 +2125,12 @@ components:
           type: number
           format: double
           description: 单价
+        productInstanceId:
+          type: integer
+          format: int64
+          description: 商品实例ID
+        serialNumber:
+          type: string
         subtotal:
           type: number
           format: double
@@ -2127,6 +2156,8 @@ components:
           format: double
           minimum: 0
           description: 单价
+        serialNumber:
+          type: string
 
     ProductUnit:
       type: string
@@ -2167,6 +2198,17 @@ components:
         - 袋
         - 张
         - 卷
+
+    ProductType:
+      type: string
+      description: 商品类型
+      enum:
+        - material
+        - asset
+      x-enum-descriptions:
+        - 普通商品
+        - 资产
+
     OrderStatus:
       type: string
       description: 订单状态
