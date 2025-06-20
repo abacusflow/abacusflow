@@ -9,13 +9,18 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
+import jakarta.validation.constraints.NotBlank
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
 
 @Entity
-@Table(name = "product_instances")
+@Table(
+    name = "product_instances",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["serial_number"])]
+)
 class ProductInstance(
     // 唯一编码，如 SN 编号、序列号
     val serialNumber: String,
@@ -29,6 +34,9 @@ class ProductInstance(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
+
+    @field:NotBlank
+    val name: String = "${product.name}-${serialNumber}"
 
     @Enumerated(EnumType.STRING)
     var status: ProductInstanceStatus = ProductInstanceStatus.CREATED

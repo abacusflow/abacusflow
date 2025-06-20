@@ -98,8 +98,8 @@ class PurchaseOrder(
         updatedAt = Instant.now()
     }
 
-    fun addItems(itemsInput: List<PurchaseOrderItemInput>) {
-        itemsInput.forEach {
+    fun addItems(itemsToAdd: List<PurchaseOrderItemInput>) {
+        itemsToAdd.forEach {
             addItem(it.productId, it.productType, it.quantity, it.unitPrice, it.serialNumber)
         }
         registerEvent(PurchaseOrderItemChangedEvent(id, no, items))

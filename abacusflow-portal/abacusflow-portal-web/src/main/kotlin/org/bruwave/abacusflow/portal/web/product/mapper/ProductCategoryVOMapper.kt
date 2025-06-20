@@ -1,4 +1,4 @@
-package org.bruwave.abacusflow.portal.web.product
+package org.bruwave.abacusflow.portal.web.product.mapper
 
 import org.bruwave.abacusflow.portal.web.model.BasicProductCategoryVO
 import org.bruwave.abacusflow.portal.web.model.ProductCategoryVO

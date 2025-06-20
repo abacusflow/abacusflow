@@ -1,4 +1,4 @@
-package org.bruwave.abacusflow.usecase.product.impl
+package org.bruwave.abacusflow.usecase.product.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
@@ -6,13 +6,13 @@ import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
-import org.bruwave.abacusflow.usecase.product.ProductService
+import org.bruwave.abacusflow.usecase.product.service.ProductService
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
-import org.bruwave.abacusflow.usecase.product.mapProductTypeTOToDO
-import org.bruwave.abacusflow.usecase.product.mapProductUnitTOToDO
-import org.bruwave.abacusflow.usecase.product.toBasicTO
-import org.bruwave.abacusflow.usecase.product.toTO
+import org.bruwave.abacusflow.usecase.product.mapper.mapProductTypeTOToDO
+import org.bruwave.abacusflow.usecase.product.mapper.mapProductUnitTOToDO
+import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
+import org.bruwave.abacusflow.usecase.product.mapper.toTO
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

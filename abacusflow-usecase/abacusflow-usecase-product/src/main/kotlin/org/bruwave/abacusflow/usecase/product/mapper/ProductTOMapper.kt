@@ -1,7 +1,9 @@
-package org.bruwave.abacusflow.usecase.product
+package org.bruwave.abacusflow.usecase.product.mapper
 
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.product.ProductUnit
+import org.bruwave.abacusflow.usecase.product.BasicProductTO
+import org.bruwave.abacusflow.usecase.product.ProductTO
 
 fun Product.toTO() =
     ProductTO(

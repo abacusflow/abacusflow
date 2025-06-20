@@ -64,9 +64,9 @@ class PurchaseOrderServiceImpl(
                 changeOrderDate(it)
             }
 
-            clearItems()
-
             input.orderItems?.let {
+                clearItems()
+
                 val products = productRepository.findAllById(
                     it
                         .map { it.productId }

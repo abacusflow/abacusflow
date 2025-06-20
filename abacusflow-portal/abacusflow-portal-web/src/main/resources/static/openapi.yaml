@@ -495,6 +495,21 @@ paths:
         "200":
           description: Product category deleted
 
+  /product-instance:
+    get:
+      operationId: listProductInstances
+      tags:
+        - product
+      summary: List all productInstances
+      responses:
+        "200":
+          description: List of productInstances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BasicProductInstance"
   /depots:
     get:
       operationId: listDepots
@@ -1564,6 +1579,32 @@ components:
           format: int64
           nullable: true
           description: 父分类ID
+    # ============= ProductInstance schemas =============
+    BasicProductInstance:
+      type: object
+      required:
+        - id
+        - name
+        - serialNumber
+        - productName
+        - purchaseOrderNo
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 商品实例ID
+        name:
+          type: string
+          description: 名字
+        serialNumber:
+          type: string
+          description: 序列号
+        purchaseOrderNo:
+          type: string
+          description: 采购单号
+        saleOrderNo:
+          type: string
+          description: 销售单号
 
     # ============= Depot schemas =============
     Depot:
@@ -2097,6 +2138,10 @@ components:
           format: double
           minimum: 0
           description: 单价
+        productInstanceId:
+          type: integer
+          format: int64
+          description: 产品实例ID
 
     PurchaseOrderItem:
       type: object

@@ -30,7 +30,7 @@ class SaleOrder(
 
     @field:NotNull
     @Column(unique = true)
-    val orderNo: UUID = UUID.randomUUID()
+    val no: UUID = UUID.randomUUID()
 
     var customerId: Long = customerId // 通过ID关联客户
         private set
@@ -77,21 +77,23 @@ class SaleOrder(
         updatedAt = Instant.now()
     }
 
-    fun addItems(itemsToAdd: List<Triple<Long, Int, Double>>) {
-        for ((productId, quantity, unitPrice) in itemsToAdd) {
-            addItem(productId, quantity, unitPrice)
+    fun addItems(itemsToAdd: List<SaleOrderItemInput>) {
+        itemsToAdd.forEach {
+            addItem(it.productId, it.productType, it.quantity, it.unitPrice, it.productInstanceId)
         }
 
-        registerEvent(SaleOrderItemChangedEvent(id, orderNo, items))
+        registerEvent(SaleOrderItemChangedEvent(id, no, items))
     }
 
     // TODO 最佳方案是替换为增量更新
     private fun addItem(
         productId: Long,
+        productType: TransactionProductType,
         quantity: Int,
         unitPrice: Double,
+        productInstanceId: Long?,
     ) {
-        itemsMutable.add(SaleOrderItem(productId, quantity, unitPrice))
+        itemsMutable.add(SaleOrderItem(productId, productType, quantity, unitPrice, productInstanceId))
         updatedAt = Instant.now()
     }
 
@@ -113,4 +115,12 @@ class SaleOrder(
         get() = items.sumOf { it.quantity.toLong() }
     val itemCount: Int
         get() = items.distinctBy { it.productId }.size
+
+    data class SaleOrderItemInput(
+        val productId: Long,
+        val productType: TransactionProductType,
+        val quantity: Int,
+        val unitPrice: Double,
+        val productInstanceId: Long?,
+    )
 }

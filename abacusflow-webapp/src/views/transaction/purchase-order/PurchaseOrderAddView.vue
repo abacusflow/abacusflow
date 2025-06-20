@@ -45,10 +45,7 @@
           :name="['orderItems', index, 'quantity']"
           :rules="[{ required: true, message: '请输入数量' }]"
         >
-          <a-tooltip
-            v-if="isDisabledQuantity(item.productId, products!)"
-            title="该产品为资产类，数量不可修改"
-          >
+          <a-tooltip v-if="isAsset(item.productId, products!)" title="该产品为资产类，数量不可修改">
             <a-input-number
               v-model:value="item.quantity"
               :disabled="true"
@@ -83,8 +80,13 @@
         </a-form-item>
 
         <!-- 序列号 -->
-        <a-form-item label="序列号" :name="['orderItems', index, 'serialNumber']">
-          <a-input v-model:value="item.serialNumber" />
+        <a-form-item
+          v-if="isAsset(item.productId, products!)"
+          label="序列号"
+          :name="['orderItems', index, 'serialNumber']"
+          :rules="[{ required: true, message: '资产类产品必须填写序列号' }]"
+        >
+          <a-input v-model:value="item.serialNumber" placeholder="请输入序列号" />
         </a-form-item>
 
         <!-- 删除按钮 -->
@@ -181,7 +183,7 @@ function removeOrderItem(index: number) {
   formState.orderItems?.splice(index, 1);
 }
 
-function isDisabledQuantity(productId?: number, products?: BasicProduct[]): boolean {
+function isAsset(productId?: number, products?: BasicProduct[]): boolean {
   if (!productId) return false;
   if (!products) return false;
 
