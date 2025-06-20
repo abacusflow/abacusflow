@@ -27,11 +27,16 @@
           :columns="columns"
           :data-source="filteredData"
           :loading="isPending"
-          :row-key="'id'"
+          row-key="id"
+          size="small"
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'orderDate'">
               {{ $dateToFormattedString(record.orderDate, "YYYY-MM-DD") }}
+            </template>
+
+            <template v-if="column.key === 'status'">
+              {{ $translateOrderStatus(record.status) }}
             </template>
 
             <template v-if="column.key === 'action'">

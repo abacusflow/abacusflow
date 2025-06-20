@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RestController
 class ProductController(
     private val productService: ProductService,
 ) : ProductsApi {
-    override fun listProducts(): ResponseEntity<List<BasicProductVO>> {
-        val products = productService.listProducts()
-        val productVOs =
-            products.map { product ->
-                product.toVO()
-            }
+    override fun listProducts(
+        categoryId: Long?,
+        name: String?
+    ): ResponseEntity<List<BasicProductVO>> {
+        val productVOs = productService.listProducts(categoryId).map { product ->
+            product.toVO()
+        }
         return ResponseEntity.ok(productVOs)
     }
 

@@ -1,5 +1,6 @@
 package org.bruwave.abacusflow.portal.web.partner
 
+import org.apache.tomcat.jni.Buffer.address
 import org.bruwave.abacusflow.portal.web.model.BasicSupplierVO
 import org.bruwave.abacusflow.portal.web.model.SupplierVO
 import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
@@ -11,6 +12,7 @@ fun BasicSupplierTO.toBasicVO(): BasicSupplierVO =
         name = name,
         contactPerson = contactPerson,
         phone = phone,
+        address = address,
     )
 
 fun SupplierTO.toVO(): SupplierVO =

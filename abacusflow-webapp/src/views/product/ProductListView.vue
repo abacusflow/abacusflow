@@ -8,68 +8,79 @@
         </a-button>
       </a-flex>
 
-      <a-card :bordered="false">
-        <a-form layout="inline" :model="searchForm">
-          <a-form-item label="产品名称">
-            <a-input v-model:value="searchForm.name" placeholder="请输入姓名" allow-clear />
-          </a-form-item>
-          <a-form-item label="分类">
-            <a-select
-              v-model:value="searchForm.categoryId"
-              placeholder="请选择分类"
-              allow-clear
-              style="width: 200px"
-            >
-              <a-select-option
-                v-for="category in categories"
-                :key="category.id"
-                :value="category.id"
-              >
-                {{ category.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item>
-            <a-space>
-              <a-button type="primary" @click="handleSearch">搜索</a-button>
-              <a-button @click="resetSearch">重置</a-button>
-            </a-space>
-          </a-form-item>
-        </a-form>
-      </a-card>
-
-      <a-card :bordered="false">
-        <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'unit'">
-              {{ $translateUnit(record.unit) }}
-            </template>
-            <template v-if="column.key === 'type'">
-              {{ $translateType(record.type) }}
-            </template>
-            <template v-if="column.key === 'enabled'">
-              <a-switch v-model:checked="record.enabled" disabled />
-            </template>
-            <template v-if="column.key === 'action'">
-              <a-space>
-                <a-button type="link" shape="circle" @click="handleEditProduct(record)"
-                  >编辑
-                </a-button>
-
-                <a-divider type="vertical" />
-
-                <a-popconfirm
-                  title="确定删除该产品？"
-                  shape="circle"
-                  @confirm="handleDeleteProduct(record.id)"
+      <a-flex justify="flex-starrt" align="center" style="height: 100%">
+        <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
+        <a-flex vertical style="flex: 1; padding-left: 16px">
+          <a-card :bordered="false">
+            <a-form layout="inline" :model="searchForm">
+              <a-form-item label="产品名称">
+                <a-input v-model:value="searchForm.name" placeholder="请输入姓名" allow-clear />
+              </a-form-item>
+              <a-form-item label="分类">
+                <a-select
+                  v-model:value="searchForm.categoryId"
+                  placeholder="请选择分类"
+                  allow-clear
+                  style="width: 200px"
                 >
-                  <a-button type="link">删除</a-button>
-                </a-popconfirm>
-              </a-space>
-            </template>
-          </template>
-        </a-table>
-      </a-card>
+                  <a-select-option
+                    v-for="category in categories"
+                    :key="category.id"
+                    :value="category.id"
+                  >
+                    {{ category.name }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item>
+                <a-space>
+                  <a-button type="primary" @click="handleSearch">搜索</a-button>
+                  <a-button @click="resetSearch">重置</a-button>
+                </a-space>
+              </a-form-item>
+            </a-form>
+          </a-card>
+
+          <a-card :bordered="false">
+            <a-table
+              :columns="columns"
+              :data-source="data"
+              :loading="isPending"
+              row-key="id"
+              size="small"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'unit'">
+                  {{ $translateProductUnit(record.unit) }}
+                </template>
+                <template v-if="column.key === 'type'">
+                  {{ $translateProductType(record.type) }}
+                </template>
+                <template v-if="column.key === 'enabled'">
+                  <a-switch v-model:checked="record.enabled" disabled />
+                </template>
+                <template v-if="column.key === 'action'">
+                  <a-space>
+                    <a-button type="link" shape="circle" @click="handleEditProduct(record)"
+                      >编辑
+                    </a-button>
+
+                    <a-divider type="vertical" />
+
+                    <a-popconfirm
+                      title="确定删除该产品？"
+                      shape="circle"
+                      @confirm="handleDeleteProduct(record.id)"
+                    >
+                      <a-button type="link">删除</a-button>
+                    </a-popconfirm>
+                  </a-space>
+                </template>
+              </template>
+            </a-table>
+          </a-card>
+        </a-flex>
+      </a-flex>
     </a-space>
     <a-drawer title="新增产品" :open="showAdd" :closable="false" @close="showAdd = false">
       <ProductAddView v-if="showAdd" v-model:visible="showAdd" @success="refetch" />
@@ -87,20 +98,26 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { BasicProduct, Product, ProductApi } from "@/core/openapi";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
+import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
+import { useRoute, useRouter } from "vue-router";
 
 const productApi = inject("productApi") as ProductApi;
 const queryClient = useQueryClient();
+const router = useRouter();
+const route = useRoute();
 
 const showAdd = ref(false);
 const showEdit = ref(false);
 const editingProduct = ref<Product | null>(null);
+const categoryId = computed(() => route.query.categoryId);
+
 // 搜索表单
 const searchForm = ref({
   name: "",
@@ -130,8 +147,11 @@ const handleEditProduct = (product: Product) => {
 };
 
 const { data, isPending, refetch } = useQuery({
-  queryKey: ["products"],
-  queryFn: () => productApi.listProducts()
+  queryKey: ["products", categoryId],
+  queryFn: () => {
+    const id = Number(categoryId.value);
+    return productApi.listProducts(isNaN(id) ? undefined : { categoryId: id });
+  }
 });
 
 const { data: categories } = useQuery({
@@ -151,6 +171,15 @@ const { mutate: deleteProduct } = useMutation({
   }
 });
 
+function onCategorySelected(categoryId: string | number) {
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      categoryId
+    }
+  });
+}
 function handleDeleteProduct(id: number) {
   deleteProduct(id);
 }

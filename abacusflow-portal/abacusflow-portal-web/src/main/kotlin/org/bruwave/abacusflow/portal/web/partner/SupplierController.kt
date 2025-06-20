@@ -38,6 +38,7 @@ class SupplierController(
                     createSupplierInputVO.name,
                     createSupplierInputVO.contactPerson,
                     createSupplierInputVO.phone,
+                    createSupplierInputVO.address,
                 ),
             )
         return ResponseEntity.ok(
@@ -56,6 +57,7 @@ class SupplierController(
                     name = updateSupplierInputVO.name,
                     contactPerson = updateSupplierInputVO.contactPerson,
                     phone = updateSupplierInputVO.phone,
+                    address = updateSupplierInputVO.address,
                 ),
             )
         return ResponseEntity.ok(

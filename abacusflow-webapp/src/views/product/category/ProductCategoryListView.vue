@@ -3,9 +3,6 @@
     <a-space direction="vertical" style="width: 100%">
       <a-flex justify="space-between" align="center">
         <h1>产品类别管理</h1>
-        <a-button type="primary" @click="handleAddProductCategory" style="margin-bottom: 16px">
-          新增产品类别
-        </a-button>
       </a-flex>
 
       <a-card :bordered="false">
@@ -23,7 +20,14 @@
       </a-card>
 
       <a-card :bordered="false">
-        <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
+        <a-table
+          :columns="columns"
+          :data-source="categoryTree"
+          :loading="isPending"
+          row-key="key"
+          v-model:expandedRowKeys="expandedRowKeys"
+          size="small"
+        >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'enabled'">
               <a-switch v-model:checked="record.enabled" disabled />
@@ -34,9 +38,19 @@
             <template v-if="column.key === 'action'">
               <a-space>
                 <a-button
+                  primary
                   type="link"
                   shape="circle"
-                  :disabled="record.id === 1"
+                  @click="handleAddProductCategory(record)"
+                  >新增</a-button
+                >
+
+                <a-divider type="vertical" />
+
+                <a-button
+                  type="link"
+                  shape="circle"
+                  :disabled="record.name == '根节点'"
                   @click="handleEditProductCategory(record)"
                   >编辑</a-button
                 >
@@ -46,7 +60,7 @@
                 <a-popconfirm
                   title="确定删除该产品类别？"
                   @confirm="handleDeleteProductCategory(record.id)"
-                  :disabled="record.id === 1"
+                  :disabled="record.name == '根节点'"
                 >
                   <a-button shape="circle" type="link" :disabled="record.id === 1">删除</a-button>
                 </a-popconfirm>
@@ -57,14 +71,19 @@
       </a-card>
     </a-space>
     <a-drawer title="新增产品类别" :open="showAdd" :closable="false" @close="showAdd = false">
-      <ProductCategoryAddView v-if="showAdd" v-model:visible="showAdd" @success="refetch" />
+      <ProductCategoryAddView
+        v-if="showAdd && editingProductCategory"
+        v-model:visible="showAdd"
+        :parentCategoryId="editingProductCategory.key"
+        @success="refetch"
+      />
     </a-drawer>
 
     <a-drawer title="修改产品类别" :open="showEdit" :closable="false" @close="showEdit = false">
       <ProductCategoryEditView
         v-if="showEdit && editingProductCategory"
         v-model:visible="showEdit"
-        :productCategoryId="editingProductCategory.id"
+        :productCategoryId="editingProductCategory.key"
         @success="refetch"
       />
     </a-drawer>
@@ -72,20 +91,28 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
-import type { BasicProductCategory, ProductApi, ProductCategory } from "@/core/openapi";
+import type { BasicProductCategory, ProductApi } from "@/core/openapi";
 import ProductCategoryAddView from "./ProductCategoryAddView.vue";
 import ProductCategoryEditView from "./ProductCategoryEditView.vue";
+
+interface TreeCategory {
+  key: number;
+  name: string;
+  children?: TreeCategory[];
+}
 
 const productApi = inject("productApi") as ProductApi;
 const queryClient = useQueryClient();
 
 const showAdd = ref(false);
 const showEdit = ref(false);
-const editingProductCategory = ref<ProductCategory | null>(null);
+const editingProductCategory = ref<TreeCategory | null>(null);
+const expandedRowKeys = ref<(string | number)[]>([]);
+
 // 搜索表单
 const searchForm = ref({
   keyword: "",
@@ -108,8 +135,12 @@ const resetSearch = () => {
   refetch();
 };
 
-const handleAddProductCategory = () => (showAdd.value = true);
-const handleEditProductCategory = (productCategory: ProductCategory) => {
+const handleAddProductCategory = (productCategory: TreeCategory) => {
+  editingProductCategory.value = productCategory;
+  showAdd.value = true;
+};
+
+const handleEditProductCategory = (productCategory: TreeCategory) => {
   editingProductCategory.value = productCategory;
   showEdit.value = true;
 };
@@ -135,9 +166,56 @@ function handleDeleteProductCategory(id: number) {
   deleteProductCategory(id);
 }
 
+// 转成树结构
+const categoryTree = computed<TreeCategory[]>(() => {
+  const flat: BasicProductCategory[] = data.value || [];
+
+  const map = new Map<string, TreeCategory[]>();
+
+  for (const category of flat) {
+    const parent = category.parentName ?? "__root__";
+    if (!map.has(parent)) map.set(parent, []);
+    map.get(parent)!.push({
+      key: category.id,
+      name: category.name
+    });
+  }
+
+  const buildTree = (parentName: string): TreeCategory[] => {
+    const children = map.get(parentName) || [];
+    for (const child of children) {
+      const subChildren = buildTree(child.name);
+      if (subChildren.length > 0) {
+        child.children = subChildren; // ✅ 仅当有子项时设置 children
+      }
+    }
+    return children;
+  };
+
+  return buildTree("__root__");
+});
+// 监听树变化并更新展开项
+watch(categoryTree, (tree) => {
+  expandedRowKeys.value = getExpandedRowKeysFromTree(tree);
+});
+
+function getExpandedRowKeysFromTree(tree: TreeCategory[]): (string | number)[] {
+  const keys: (string | number)[] = [];
+
+  for (const root of tree) {
+    keys.push(root.key); // ✅ 加入根节点
+    if (root.children?.length) {
+      for (const child of root.children) {
+        keys.push(child.key);
+      }
+    }
+  }
+
+  return keys;
+}
+
 const columns: StrictTableColumnsType<BasicProductCategory> = [
   { title: "产品类别名", dataIndex: "name", key: "name" },
-  { title: "父类别名", dataIndex: "parentName", key: "parentName" },
   { title: "操作", key: "action" }
 ];
 </script>

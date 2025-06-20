@@ -40,10 +40,11 @@ import type { CreateProductCategoryInput, ProductApi } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
+const props = defineProps<{ parentCategoryId: number }>();
 
 const formState = reactive<Partial<CreateProductCategoryInput>>({
   name: undefined,
-  parentId: undefined,
+  parentId: props.parentCategoryId,
   description: undefined
 });
 

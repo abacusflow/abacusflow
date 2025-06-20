@@ -40,7 +40,7 @@
       <a-form-item label="单位" name="unit" :rules="[{ required: true, message: '请选择单位' }]">
         <a-select v-model:value="formState.unit" placeholder="请选择单位">
           <a-select-option v-for="value in Object.values(ProductUnit)" :key="value" :value="value">
-            {{ $translateUnit(value) }}
+            {{ $translateProductUnit(value) }}
           </a-select-option>
         </a-select>
       </a-form-item>

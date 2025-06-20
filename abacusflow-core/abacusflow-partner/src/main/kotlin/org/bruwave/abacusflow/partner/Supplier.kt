@@ -19,6 +19,7 @@ class Supplier(
     name: String,
     phone: String?,
     contactPerson: String?,
+    address: String?,
 ) : AbstractAggregateRoot<Supplier>() {
     @field:NotBlank
     @field:Size(max = 100)
@@ -37,6 +38,10 @@ class Supplier(
     var phone: String? = phone
         private set
 
+    @field:Size(max = 200)
+    var address: String? = address
+        private set
+
     var enabled: Boolean = true
         private set
 
@@ -51,6 +56,7 @@ class Supplier(
         newName: String?,
         newContactPerson: String?,
         newPhone: String?,
+        newAddress: String?,
     ) {
         newName?.let {
             name = it
@@ -60,6 +66,9 @@ class Supplier(
         }
         newPhone?.let {
             phone = it
+        }
+        newAddress?.let {
+            address = it
         }
         updatedAt = Instant.now()
         registerEvent(SupplierUpdatedEvent(id))

@@ -121,4 +121,36 @@ class ProductServiceImpl(
             product.toBasicTO(supplierName)
         }
     }
+
+    override fun listProducts(categoryId: Long?): List<BasicProductTO> {
+        val products = categoryId?.let {
+            val ids = getAllSonCategoryIds(categoryId)
+            productRepository.findByCategoryIdIn(ids)
+        } ?: productRepository.findAll()
+
+        val supplierIds = products.mapNotNull { it.supplierId }.toSet()
+
+        val productMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
+
+        return products.map { product ->
+            val supplierName = productMap[product.supplierId]?.name ?: "unknown"
+            product.toBasicTO(supplierName)
+        }
+    }
+
+    private fun getAllSonCategoryIds(categoryId: Long): List<Long> {
+        val allCategories = productCategoryRepository.findAll() // 拿到全量分类
+        val result = mutableListOf<Long>()
+
+        fun collectChildren(id: Long) {
+            result += id
+            val children = allCategories.filter { it.parent?.id == id }
+            for (child in children) {
+                collectChildren(child.id)
+            }
+        }
+
+        collectChildren(categoryId)
+        return result
+    }
 }

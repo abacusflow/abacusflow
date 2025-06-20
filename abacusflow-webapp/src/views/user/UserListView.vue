@@ -23,12 +23,7 @@
       </a-card>
 
       <a-card :bordered="false">
-        <a-table
-          :columns="columns"
-          :data-source="filteredData"
-          :loading="isPending"
-          :row-key="'id'"
-        >
+        <a-table :columns="columns" :data-source="filteredData" :loading="isPending" row-key="id">
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'enabled'">
               <a-switch v-model:checked="record.enabled" disabled />

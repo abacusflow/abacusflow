@@ -13,4 +13,6 @@ interface ProductRepository : JpaRepository<Product, Long> {
     fun findByCategoryId(categoryId: Long): List<Product>
 
     fun findBySupplierId(supplierId: Long): List<Product>
+
+    fun findByCategoryIdIn(categoryIds: List<Long>): List<Product>
 }

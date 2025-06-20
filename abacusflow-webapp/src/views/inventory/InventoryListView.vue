@@ -25,7 +25,13 @@
       </a-card>
 
       <a-card :bordered="false">
-        <a-table :columns="columns" :data-source="data" :loading="isPending" :row-key="'id'">
+        <a-table
+          :columns="columns"
+          :data-source="data"
+          :loading="isPending"
+          row-key="id"
+          size="small"
+        >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'availableQuantity'">
               <a-tooltip :title="stockHealthTip(record)">
@@ -45,9 +51,25 @@
 
             <template v-if="column.key === 'action'">
               <a-space>
-                <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
-                  >分配储存点</a-button
-                >
+                <a-popover title="增加库存">
+                  <template #content>
+                    <a-flex justify="space-evenly" align="center">
+                      <a-input-number
+                        id="inputNumber"
+                        v-model:value="increaseValue"
+                        :min="1"
+                        :max="100"
+                      />
+                      <a-button
+                        type="primary"
+                        size="small"
+                        @click="handleIncreaseInventory(record, increaseValue)"
+                        >确定</a-button
+                      >
+                    </a-flex>
+                  </template>
+                  <a-button type="link" shape="circle">加库存</a-button>
+                </a-popover>
 
                 <a-divider type="vertical" />
 
@@ -69,28 +91,6 @@
                     </a-flex>
                   </template>
                   <a-button type="link" shape="circle">减库存</a-button>
-                </a-popover>
-
-                <a-divider type="vertical" />
-
-                <a-popover title="增加库存">
-                  <template #content>
-                    <a-flex justify="space-evenly" align="center">
-                      <a-input-number
-                        id="inputNumber"
-                        v-model:value="increaseValue"
-                        :min="1"
-                        :max="100"
-                      />
-                      <a-button
-                        type="primary"
-                        size="small"
-                        @click="handleIncreaseInventory(record, increaseValue)"
-                        >确定</a-button
-                      >
-                    </a-flex>
-                  </template>
-                  <a-button type="link" shape="circle">加库存</a-button>
                 </a-popover>
 
                 <a-divider type="vertical" />
@@ -119,6 +119,12 @@
 
                 <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
                   >调整预警线</a-button
+                >
+
+                <a-divider type="vertical" />
+
+                <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
+                  >分配储存点</a-button
                 >
               </a-space>
             </template>
