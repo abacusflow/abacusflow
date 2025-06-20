@@ -18,6 +18,7 @@ fun BasicSaleOrderTO.toBasicVO(): BasicSaleOrderVO =
         totalQuantity = totalQuantity,
         itemCount = itemCount,
         orderDate = orderDate,
+        autoCompleteDate = autoCompleteDate,
     )
 
 fun SaleOrderTO.toVO(): SaleOrderVO =

@@ -1,9 +1,11 @@
 package org.bruwave.abacusflow.usecase.transaction.mapper
 
+import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.transaction.PurchaseOrder
 import org.bruwave.abacusflow.transaction.PurchaseOrderItem
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
+import java.time.LocalDate
 
 fun PurchaseOrder.toTO() =
     PurchaseOrderTO(
@@ -18,8 +20,12 @@ fun PurchaseOrder.toTO() =
         updatedAt = updatedAt,
     )
 
-fun PurchaseOrder.toBasicTO(supplierName: String) =
-    BasicPurchaseOrderTO(
+fun PurchaseOrder.toBasicTO(supplierName: String): BasicPurchaseOrderTO {
+    val autoCompleteDate: LocalDate? = if (status == OrderStatus.PENDING) {
+        orderDate.plusDays(7)
+    } else null
+
+    return BasicPurchaseOrderTO(
         id = id,
         supplierName = supplierName,
         status = status.name,
@@ -29,7 +35,9 @@ fun PurchaseOrder.toBasicTO(supplierName: String) =
         totalAmount = totalAmount,
         totalQuantity = totalQuantity,
         orderDate = orderDate,
+        autoCompleteDate = autoCompleteDate
     )
+}
 
 fun PurchaseOrderItem.toTO() =
     PurchaseOrderTO.PurchaseOrderItemTO(

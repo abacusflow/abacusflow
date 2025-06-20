@@ -14,4 +14,5 @@ data class BasicPurchaseOrderTO(
     val itemCount: Int,
     val orderDate: LocalDate,
     val createdAt: Instant,
-)
+    val autoCompleteDate: LocalDate?,
+    )

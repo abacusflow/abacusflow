@@ -1919,6 +1919,11 @@ components:
           format: date
           example: "1970-01-01"
           description: 订单日期
+        autoCompleteDate:
+          type: string
+          format: date
+          example: "1970-01-07"
+          description: 自动完成天数
 
     CreateSaleOrderInput:
       type: object
@@ -2036,6 +2041,11 @@ components:
           format: date
           example: "1970-01-01"
           description: 订单日期
+        autoCompleteDate:
+          type: string
+          format: date
+          example: "1970-01-07"
+          description: 自动完成天数
 
     CreatePurchaseOrderInput:
       type: object
