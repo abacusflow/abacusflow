@@ -19,22 +19,22 @@ tasks.register<NpmTask>("installDependencies") {
     inputs.files("package.json", "package-lock.json")
 }
 
-tasks.register<NpmTask>("format") {
+tasks.register<NpmTask>("tsFormat") {
     group = "formatting"
     description = "prettier代码风格统一"
     dependsOn("installDependencies")
     args.set(listOf("run", "format"))
 }
 
-tasks.register<NpmTask>("lint") {
-    group = "formatting"
+tasks.register<NpmTask>("lint-ts") {
+    group = "lint"
     description = "eslint代码检查"
-    dependsOn("installDependencies", "format")
+    dependsOn("installDependencies", "tsFormat")
     args.set(listOf("run", "lint"))
 }
 
-tasks.register<NpmTask>("openapiGenerate") {
-    group = "generate"
+tasks.register<NpmTask>("openapiGenerateTs") {
+    group = "openapi tools"
     description = "OpenAPI 客户端代码生成"
     dependsOn("installDependencies")
     args.set(listOf("run", "generate"))
@@ -43,7 +43,7 @@ tasks.register<NpmTask>("openapiGenerate") {
 tasks.register<NpmTask>("buildFrontend") {
     group = "build"
     description = "前端打包构建"
-    dependsOn("installDependencies", "lint", "openapiGenerate")
+    dependsOn("installDependencies", "lint-ts", "openapiGenerate")
     args.set(listOf("run", "build"))
     inputs.files(
         "package.json",
