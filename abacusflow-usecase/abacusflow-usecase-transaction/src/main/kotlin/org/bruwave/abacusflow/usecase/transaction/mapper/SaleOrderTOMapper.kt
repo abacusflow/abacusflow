@@ -47,4 +47,5 @@ fun SaleOrderItem.toTO() =
         quantity = quantity,
         unitPrice = unitPrice,
         subtotal = subtotal,
+        productInstanceId = productInstanceId,
     )

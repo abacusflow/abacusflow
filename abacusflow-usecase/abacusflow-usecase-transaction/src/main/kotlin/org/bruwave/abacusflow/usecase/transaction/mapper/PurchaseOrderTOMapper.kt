@@ -46,4 +46,5 @@ fun PurchaseOrderItem.toTO() =
         quantity = quantity,
         unitPrice = unitPrice,
         subtotal = subtotal,
+        serialNumber = serialNumber,
     )

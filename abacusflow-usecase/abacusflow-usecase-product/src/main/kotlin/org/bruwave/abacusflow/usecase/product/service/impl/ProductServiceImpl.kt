@@ -10,11 +10,13 @@ import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.usecase.product.BasicProductInstanceTO
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
+import org.bruwave.abacusflow.usecase.product.ProductInstanceForBasicProductTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductTypeTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductUnitTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
+import org.bruwave.abacusflow.usecase.product.mapper.toForBasicProductTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
 import org.bruwave.abacusflow.usecase.product.service.ProductService
 import org.springframework.stereotype.Service
@@ -125,19 +127,13 @@ class ProductServiceImpl(
 
         // 批量查依赖实体
         val supplierIds = products.mapNotNull { it.supplierId }.toSet()
-        val purchaseOrderIds = productInstances.mapNotNull { it.purchaseOrderId }.toSet()
-        val saleOrderIds = productInstances.mapNotNull { it.saleOrderId }.toSet()
 
         val supplierMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
-        val purchaseOrderMap = purchaseOrderRepository.findAllById(purchaseOrderIds).associateBy { it.id }
-        val saleOrderMap = saleOrderRepository.findAllById(saleOrderIds).associateBy { it.id }
 
-        val instancesByProductId: Map<Long, List<BasicProductInstanceTO>> =
+        val instancesByProductId: Map<Long, List<ProductInstanceForBasicProductTO>> =
             productInstances
                 .map { instance ->
-                    val purchaseOrderNo = purchaseOrderMap[instance.purchaseOrderId]!!.no
-                    val saleOrderNo = instance.saleOrderId?.let { saleOrderMap[it]?.no }
-                    instance.toBasicTO(purchaseOrderNo, saleOrderNo)
+                    instance.toForBasicProductTO()
                 }
                 .groupBy { it.productId }
 

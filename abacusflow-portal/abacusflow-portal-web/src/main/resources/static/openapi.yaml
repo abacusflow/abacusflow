@@ -1413,7 +1413,7 @@ components:
         - unit
         - unitPrice
         - categoryName
-        - supplierName
+        - supplierName·
         - enabled
       properties:
         id:
@@ -1443,7 +1443,28 @@ components:
         instances:
           type: array
           items:
-            $ref: "#/components/schemas/BasicProductInstance"
+            type: object
+            required:
+              - id
+              - name
+              - serialNumber
+              - unitPrice
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: 商品实例ID
+              name:
+                type: string
+                description: 名字
+              serialNumber:
+                type: string
+                description: 序列号
+              unitPrice:
+                type: number
+                format: double
+                minimum: 0
+                description: 单价
         enabled:
           type: boolean
           description: 是否启用
@@ -1613,6 +1634,7 @@ components:
         - id
         - name
         - serialNumber
+        - unitPrice
         - productName
         - purchaseOrderNo
       properties:
@@ -1626,6 +1648,11 @@ components:
         serialNumber:
           type: string
           description: 序列号
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
         purchaseOrderNo:
           type: string
           description: 采购单号
@@ -2092,9 +2119,10 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        # productName:
-        #   type: string
-        #   description: 商品名称
+        productInstanceId:
+          type: integer
+          format: int64
+          description: 商品实例ID
         quantity:
           type: integer
           description: 数量
@@ -2149,9 +2177,6 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        # productName:
-        #   type: string
-        #   description: 商品名称
         quantity:
           type: integer
           description: 数量

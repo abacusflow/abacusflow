@@ -72,6 +72,16 @@
               style="width: 100%"
             />
           </a-form-item>
+
+          <!-- 序列号 -->
+          <a-form-item
+            v-if="isAsset(item.productId, products!)"
+            label="序列号"
+            :name="['orderItems', index, 'serialNumber']"
+            :rules="[{ required: true, message: '资产类产品必须填写序列号' }]"
+          >
+            <a-input v-model:value="item.serialNumber" placeholder="请输入序列号" />
+          </a-form-item>
         </div>
       </a-form-item>
 
@@ -85,7 +95,14 @@
 <script lang="ts" setup>
 import { inject, reactive, ref, watchEffect } from "vue";
 import { type FormInstance } from "ant-design-vue";
-import type { PartnerApi, ProductApi, PurchaseOrder, TransactionApi } from "@/core/openapi";
+import {
+  ProductType,
+  type BasicProduct,
+  type PartnerApi,
+  type ProductApi,
+  type PurchaseOrder,
+  type TransactionApi
+} from "@/core/openapi";
 import { useQuery } from "@tanstack/vue-query";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -138,4 +155,12 @@ const { data: products } = useQuery({
   queryKey: ["products"],
   queryFn: () => productApi.listProducts()
 });
+
+function isAsset(productId?: number, products?: BasicProduct[]): boolean {
+  if (!productId) return false;
+  if (!products) return false;
+
+  const product = products.find((p) => p.id === productId);
+  return product?.type === ProductType.Asset;
+}
 </script>

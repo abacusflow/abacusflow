@@ -11,5 +11,5 @@ data class BasicProductTO(
     val unitPrice: Double,
     val note: String?,
     val enabled: Boolean,
-    val instances: List<BasicProductInstanceTO>?,
+    val instances: List<ProductInstanceForBasicProductTO>?,
 )

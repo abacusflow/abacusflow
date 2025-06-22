@@ -21,5 +21,6 @@ data class PurchaseOrderTO(
         val quantity: Int,
         val unitPrice: Double,
         val subtotal: Double,
+        val serialNumber: String?,
     )
 }

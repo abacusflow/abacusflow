@@ -42,6 +42,7 @@ fun PurchaseOrderTO.PurchaseOrderItemTO.toVO(): PurchaseOrderItemVO =
         quantity = quantity,
         unitPrice = unitPrice,
         subtotal = subtotal,
+        serialNumber = serialNumber,
     )
 
 fun PurchaseOrderItemInputVO.toInputTO(): PurchaseItemInputTO =
