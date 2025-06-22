@@ -43,9 +43,7 @@ class ProductServiceImpl(
                 name = input.name,
                 type = mapProductTypeTOToDO(input.type),
                 unit = mapProductUnitTOToDO(input.unit),
-                unitPrice = input.unitPrice,
                 category = newProductCategory,
-                supplierId = input.supplierId,
                 specification = input.specification,
                 note = input.note,
             )
@@ -71,7 +69,6 @@ class ProductServiceImpl(
             updateBasicInfo(
                 newName = input.name,
                 newNote = input.note,
-                newUnitPrice = input.unitPrice,
                 newUnit = input.unit?.let { mapProductUnitTOToDO(it) },
                 newSpecification = input.specification,
                 newCategory = newProductCategory,
@@ -85,8 +82,6 @@ class ProductServiceImpl(
 
                 changeCategory(newProductCategory)
             }
-
-            input.supplierId?.let { supplierId -> changeSupplier(supplierId) }
         }
 
         val updatedProduct = productRepository.saveAndFlush(product)
@@ -125,11 +120,6 @@ class ProductServiceImpl(
             } ?: productRepository.findAll()
         val productInstances = productInstanceRepository.findAll()
 
-        // 批量查依赖实体
-        val supplierIds = products.mapNotNull { it.supplierId }.toSet()
-
-        val supplierMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
-
         val instancesByProductId: Map<Long, List<ProductInstanceForBasicProductTO>> =
             productInstances
                 .map { instance ->
@@ -138,9 +128,8 @@ class ProductServiceImpl(
                 .groupBy { it.productId }
 
         return products.map { product ->
-            val supplierName = supplierMap[product.supplierId]?.name ?: "unknown"
             val instances = instancesByProductId[product.id] ?: emptyList()
-            product.toBasicTO(supplierName, instances)
+            product.toBasicTO(instances)
         }
     }
 

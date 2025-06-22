@@ -13,9 +13,7 @@ fun ProductTO.toVO(): ProductVO =
         name = name,
         specification = specification,
         type = mapProductTypeTOToVO(type),
-        supplierId = supplierId,
         unit = mapProductUnitTOToVO(unit),
-        unitPrice = unitPrice,
         note = note,
         categoryId = categoryId,
         enabled = enabled,
@@ -30,10 +28,9 @@ fun BasicProductTO.toVO(): BasicProductVO =
         specification = specification,
         type = mapProductTypeTOToVO(type),
         unit = mapProductUnitTOToVO(unit),
-        unitPrice = unitPrice,
         categoryName = categoryName,
-        supplierName = supplierName,
         enabled = enabled,
+        note = note,
         instances = instances?.map { it.toVO() },
     )
 

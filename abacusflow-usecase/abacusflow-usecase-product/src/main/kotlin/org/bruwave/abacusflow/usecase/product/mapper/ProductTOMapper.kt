@@ -14,9 +14,7 @@ fun Product.toTO() =
         specification = specification,
         type = type.name,
         unit = unit.name,
-        unitPrice = unitPrice,
         categoryId = category.id,
-        supplierId = supplierId,
         note = note,
         enabled = enabled,
         createdAt = createdAt,
@@ -24,7 +22,6 @@ fun Product.toTO() =
     )
 
 fun Product.toBasicTO(
-    supplierName: String,
     instances: List<ProductInstanceForBasicProductTO>?,
 ) = BasicProductTO(
     id = id,
@@ -32,9 +29,7 @@ fun Product.toBasicTO(
     specification = specification,
     type = type.name,
     categoryName = category.name,
-    supplierName = supplierName,
     unit = unit.name,
-    unitPrice = unitPrice,
     note = note,
     enabled = enabled,
     instances = instances,

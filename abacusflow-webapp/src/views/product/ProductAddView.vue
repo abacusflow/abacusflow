@@ -28,33 +28,12 @@
       </a-select>
     </a-form-item>
 
-    <a-form-item
-      label="供应商"
-      name="supplierId"
-      :rules="[{ required: true, message: '请输入供应商' }]"
-    >
-      <a-select v-model:value="formState.supplierId" placeholder="请选择供应商">
-        <a-select-option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
-          {{ supplier.name }}
-        </a-select-option>
-      </a-select>
-    </a-form-item>
-
     <a-form-item label="单位" name="unit" :rules="[{ required: true, message: '请选择单位' }]">
       <a-select v-model:value="formState.unit" placeholder="请选择单位">
         <a-select-option v-for="value in Object.values(ProductUnit)" :key="value" :value="value">
           {{ $translateProductUnit(value) }}
         </a-select-option>
       </a-select>
-    </a-form-item>
-
-    <a-form-item label="单价" name="unitPrice" :rules="[{ required: true, message: '请输入单价' }]">
-      <a-input-number
-        v-model:value="formState.unitPrice"
-        :min="0"
-        :precision="2"
-        style="width: 100%"
-      />
     </a-form-item>
 
     <a-form-item label="备注" name="note">
@@ -73,13 +52,7 @@
 <script lang="ts" setup>
 import { inject, reactive, ref } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
-import {
-  type CreateProductInput,
-  PartnerApi,
-  ProductApi,
-  ProductUnit,
-  ProductType
-} from "@/core/openapi";
+import { type CreateProductInput, ProductApi, ProductUnit, ProductType } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
@@ -90,20 +63,12 @@ const formState = reactive<Partial<CreateProductInput>>({
   specification: undefined,
   categoryId: undefined,
   unit: ProductUnit.Item,
-  unitPrice: 0,
-  note: undefined,
-  supplierId: undefined
+  note: undefined
 });
 
 const productApi = inject("productApi") as ProductApi;
-const partnerApi = inject("partnerApi") as PartnerApi;
 
 const emit = defineEmits(["success", "update:visible"]);
-
-const { data: suppliers } = useQuery({
-  queryKey: ["suppliers"],
-  queryFn: () => partnerApi.listSuppliers()
-});
 
 const { data: categories } = useQuery({
   queryKey: ["categories"],

@@ -31,9 +31,7 @@ class Product(
     val type: ProductType = ProductType.MATERIAL,
     specification: String?,
     unit: ProductUnit,
-    unitPrice: Double = 0.0,
     category: ProductCategory,
-    supplierId: Long,
     note: String?,
 ) : AbstractAggregateRoot<Product>() {
     @Id
@@ -54,16 +52,9 @@ class Product(
     var unit: ProductUnit = unit
         private set
 
-    @field:PositiveOrZero
-    var unitPrice: Double = unitPrice
-        private set
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     var category: ProductCategory = category
-        private set
-
-    var supplierId: Long = supplierId // 通过ID关联供应商，不直接引用
         private set
 
     @Lob
@@ -88,7 +79,6 @@ class Product(
         newSpecification: String?,
         newNote: String?,
         newUnit: ProductUnit?,
-        newUnitPrice: Double?,
     ) {
         newName?.let {
             name = newName
@@ -106,10 +96,6 @@ class Product(
             unit = newUnit
         }
 
-        newUnitPrice?.let {
-            unitPrice = newUnitPrice
-        }
-
         updatedAt = Instant.now()
     }
 
@@ -117,14 +103,6 @@ class Product(
         if (category == newCategory) return
 
         category = newCategory
-
-        updatedAt = Instant.now()
-    }
-
-    fun changeSupplier(newSupplierId: Long) {
-        if (supplierId == newSupplierId) return
-
-        supplierId = newSupplierId
 
         updatedAt = Instant.now()
     }

@@ -40,9 +40,7 @@ class ProductController(
                 CreateProductInputTO(
                     name = createProductInputVO.name,
                     categoryId = createProductInputVO.categoryId,
-                    supplierId = createProductInputVO.supplierId,
                     unit = createProductInputVO.unit.name,
-                    unitPrice = createProductInputVO.unitPrice,
                     note = createProductInputVO.note,
                     type = createProductInputVO.type.name,
                     specification = createProductInputVO.specification,
@@ -63,9 +61,7 @@ class ProductController(
                 UpdateProductInputTO(
                     name = updateProductInputVO.name,
                     categoryId = updateProductInputVO.categoryId,
-                    supplierId = updateProductInputVO.supplierId,
                     unit = updateProductInputVO.unit?.name,
-                    unitPrice = updateProductInputVO.unitPrice,
                     note = updateProductInputVO.note,
                     type = updateProductInputVO.type?.name,
                     specification = updateProductInputVO.specification,

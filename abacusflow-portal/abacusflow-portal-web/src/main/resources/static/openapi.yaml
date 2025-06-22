@@ -1370,10 +1370,6 @@ components:
           description: 商品名称
         type:
           $ref: "#/components/schemas/ProductType"
-        unitPrice:
-          type: number
-          format: double
-          description: 单价
         specification:
           type: string
           description: 规格
@@ -1381,10 +1377,6 @@ components:
           type: integer
           format: int64
           description: 分类ID
-        supplierId:
-          type: integer
-          format: int64
-          description: 供应商ID
         note:
           type: string
           nullable: true
@@ -1428,16 +1420,9 @@ components:
         specification:
           type: string
           description: 商品规格
-        unitPrice:
-          type: number
-          format: double
-          description: 单价
         categoryName:
           type: string
           description: 分类名称
-        supplierName:
-          type: string
-          description: 供应商名称
         unit:
           $ref: "#/components/schemas/ProductUnit"
         instances:
@@ -1468,6 +1453,9 @@ components:
         enabled:
           type: boolean
           description: 是否启用
+        note:
+          type: string
+          description: 备注
 
     CreateProductInput:
       type: object
@@ -1475,9 +1463,7 @@ components:
         - name
         - type
         - unit
-        - unitPrice
         - categoryId
-        - supplierId
       properties:
         name:
           type: string
@@ -1488,19 +1474,10 @@ components:
         specification:
           type: string
           description: 商品规格
-        unitPrice:
-          type: number
-          format: double
-          minimum: 0
-          description: 单价
         categoryId:
           type: integer
           format: int64
           description: 分类ID
-        supplierId:
-          type: integer
-          format: int64
-          description: 供应商ID
         note:
           type: string
           nullable: true
@@ -1520,19 +1497,10 @@ components:
         specification:
           type: string
           description: 商品规格
-        unitPrice:
-          type: number
-          format: double
-          minimum: 0
-          description: 单价
         categoryId:
           type: integer
           format: int64
           description: 分类ID
-        supplierId:
-          type: integer
-          format: int64
-          description: 供应商ID
         note:
           type: string
           nullable: true
