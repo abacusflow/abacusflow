@@ -827,6 +827,37 @@ paths:
         "200":
           description: Reserved inventory successfully
 
+  /inventories/{id}/release:
+    post:
+      operationId: releaseInventory
+      tags:
+        - inventory
+      summary: Release part of the inventory (释放部分库存)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: integer
+                  format: int32
+                  minimum: 1
+                  description: 要释放的库存数量
+      responses:
+        "200":
+          description: Released inventory successfully
+
   /inventories/{id}/safety-check:
     get:
       operationId: checkSafetyStock

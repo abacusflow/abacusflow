@@ -39,10 +39,7 @@ class InventoryServiceImpl(
         return inventoryRepository.save(inventory).toTO()
     }
 
-    override fun increaseInventory(
-        id: Long,
-        amount: Int,
-    ) {
+    override fun increaseInventory(id: Long, amount: Int,) {
         val inventory =
             inventoryRepository
                 .findById(id)
@@ -51,10 +48,7 @@ class InventoryServiceImpl(
         inventoryRepository.save(inventory)
     }
 
-    override fun decreaseInventory(
-        id: Long,
-        amount: Int,
-    ) {
+    override fun decreaseInventory(id: Long, amount: Int,) {
         val inventory =
             inventoryRepository
                 .findById(id)
@@ -63,10 +57,7 @@ class InventoryServiceImpl(
         inventoryRepository.save(inventory)
     }
 
-    override fun reserveInventory(
-        id: Long,
-        amount: Int,
-    ) {
+    override fun reserveInventory(id: Long,amount: Int, ) {
         val inventory =
             inventoryRepository
                 .findById(id)
@@ -75,10 +66,16 @@ class InventoryServiceImpl(
         inventoryRepository.save(inventory)
     }
 
-    override fun assignDepot(
-        id: Long,
-        newDepotId: Long,
-    ) {
+    override fun releaseReservedInventory(id: Long, amount: Int) {
+        val inventory =
+            inventoryRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("Inventory not found") }
+        inventory.releaseReservedInventory(amount)
+        inventoryRepository.save(inventory)
+    }
+
+    override fun assignDepot(id: Long, newDepotId: Long) {
         val inventory =
             inventoryRepository
                 .findById(id)

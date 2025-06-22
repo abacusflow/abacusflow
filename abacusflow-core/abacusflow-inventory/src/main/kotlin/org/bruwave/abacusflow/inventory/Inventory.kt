@@ -79,7 +79,7 @@ class Inventory(
     fun decreaseQuantity(amount: Int) {
         require(amount > 0) { "减少数量必须为正数" }
         require(amount <= MAX_ADJUSTMENT) { "每次减少的库存数量不能超过 $MAX_ADJUSTMENT 个" }
-        require(quantity >= amount) { "库存不足" }
+        require(availableQuantity >= amount) { "可用库存不足" }
         quantity -= amount
         version++
         updatedAt = Instant.now()
@@ -96,6 +96,17 @@ class Inventory(
 
 //        registerEvent(InventoryReservedEvent(id, productId, depotId, amount))
     }
+
+    fun releaseReservedInventory(amount: Int) {
+        require(amount > 0) { "释放数量必须为正数" }
+        require(amount <= reservedQuantity) { "冻结库存不足，无法释放 $amount 个库存" }
+
+        reservedQuantity -= amount
+        updatedAt = Instant.now()
+
+//    registerEvent(InventoryUnreservedEvent(id, productId, depotId, amount))
+    }
+
 
     fun assignDepot(newDepotId: Long) {
         require(newDepotId > 0) { "无效的仓库ID" }
