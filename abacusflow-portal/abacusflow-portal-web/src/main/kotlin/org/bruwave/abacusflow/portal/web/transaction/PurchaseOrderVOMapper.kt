@@ -57,6 +57,7 @@ fun mapOrderStatusTOToVO(orderStatus: String): OrderStatusVO =
     when (orderStatus.uppercase()) {
         "PENDING" -> OrderStatusVO.pending
         "COMPLETED" -> OrderStatusVO.completed
-        "CANCELED" -> OrderStatusVO.cancelled
+        "CANCELED" -> OrderStatusVO.canceled
+        "REVERSED" -> OrderStatusVO.reversed
         else -> throw IllegalArgumentException("Unknown order status: $orderStatus")
     }

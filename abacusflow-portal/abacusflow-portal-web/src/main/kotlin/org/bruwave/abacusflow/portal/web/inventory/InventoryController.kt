@@ -6,6 +6,7 @@ import org.bruwave.abacusflow.portal.web.model.AssignDepotRequestVO
 import org.bruwave.abacusflow.portal.web.model.BasicInventoryVO
 import org.bruwave.abacusflow.portal.web.model.IncreaseInventoryRequestVO
 import org.bruwave.abacusflow.portal.web.model.InventoryVO
+import org.bruwave.abacusflow.portal.web.model.ReleaseInventoryRequestVO
 import org.bruwave.abacusflow.portal.web.model.ReserveInventoryRequestVO
 import org.bruwave.abacusflow.usecase.inventory.InventoryService
 import org.springframework.http.ResponseEntity
@@ -51,6 +52,14 @@ class InventoryController(
         reserveInventoryRequestVO: ReserveInventoryRequestVO,
     ): ResponseEntity<Unit> {
         inventoryService.reserveInventory(id, reserveInventoryRequestVO.amount)
+        return ResponseEntity.ok().build()
+    }
+
+    override fun releaseInventory(
+        id: Long,
+        releaseInventoryRequestVO: ReleaseInventoryRequestVO
+    ): ResponseEntity<Unit> {
+        inventoryService.releaseReservedInventory(id, releaseInventoryRequestVO.amount)
         return ResponseEntity.ok().build()
     }
 

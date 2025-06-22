@@ -52,4 +52,9 @@ class PurchaseOrderController(
         purchaseOrderService.cancelOrder(id)
         return ResponseEntity.ok().build()
     }
+
+    override fun reversePurchaseOrder(id: Long): ResponseEntity<Unit> {
+        purchaseOrderService.reverseOrder(id)
+        return ResponseEntity.ok().build()
+    }
 }

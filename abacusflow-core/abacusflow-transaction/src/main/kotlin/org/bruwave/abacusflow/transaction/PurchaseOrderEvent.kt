@@ -11,3 +11,6 @@ class PurchaseOrderCompletedEvent(
 class PurchaseOrderCanceledEvent(
     val order: PurchaseOrder,
 )
+class PurchaseOrderReversedEvent(
+    val order: PurchaseOrder,
+)

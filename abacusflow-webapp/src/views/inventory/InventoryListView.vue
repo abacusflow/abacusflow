@@ -117,6 +117,28 @@
 
                 <a-divider type="vertical" />
 
+                <a-popover title="释放库存">
+                  <template #content>
+                    <a-flex justify="space-evenly" align="center">
+                      <a-input-number
+                        id="inputNumber"
+                        v-model:value="releaseValue"
+                        :min="1"
+                        :max="100"
+                      />
+                      <a-button
+                        type="primary"
+                        size="small"
+                        @click="handleReleaseInventory(record, releaseValue)"
+                        >确定</a-button
+                      >
+                    </a-flex>
+                  </template>
+                  <a-button type="link" shape="circle">释放库存</a-button>
+                </a-popover>
+
+                <a-divider type="vertical" />
+
                 <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
                   >调整预警线</a-button
                 >
@@ -185,6 +207,7 @@ const showEditWarningLine = ref(false);
 const increaseValue = ref<number>(1);
 const decreaseValue = ref<number>(1);
 const reserveValue = ref<number>(1);
+const releaseValue = ref<number>(1);
 const editingInventory = ref<BasicInventory | null>(null);
 // 搜索表单
 const searchForm = ref({
@@ -252,6 +275,19 @@ const { mutate: reserveInventory } = useMutation({
   }
 });
 
+const { mutate: releaseInventory } = useMutation({
+  mutationFn: ({ id, amount }: { id: number } & ReserveInventoryRequest) =>
+    inventoryApi.releaseInventory({ id, releaseInventoryRequest: { amount } }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["inventories"] });
+    message.success("释放库存成功");
+  },
+  onError: (error) => {
+    message.error("操作失败");
+    console.error(error);
+  }
+});
+
 function handleIncreaseInventory(inventory: BasicInventory, amount: number) {
   increaseInventory({ id: inventory.id, amount });
 }
@@ -262,6 +298,10 @@ function handleDecreaseInventory(inventory: BasicInventory, amount: number) {
 
 function handleReserveInventory(inventory: BasicInventory, amount: number) {
   reserveInventory({ id: inventory.id, amount });
+}
+
+function handleReleaseInventory(inventory: BasicInventory, amount: number) {
+  releaseInventory({ id: inventory.id, amount });
 }
 
 function handleAssignDepot(inventory: BasicInventory) {

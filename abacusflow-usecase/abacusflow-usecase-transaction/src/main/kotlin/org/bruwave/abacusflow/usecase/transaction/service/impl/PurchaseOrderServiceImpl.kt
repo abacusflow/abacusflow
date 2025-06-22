@@ -83,6 +83,14 @@ class PurchaseOrderServiceImpl(
         return purchaseOrderRepository.save(purchaseOrder).toTO()
     }
 
+    override fun reverseOrder(id: Long): PurchaseOrderTO {
+        val purchaseOrder =
+            purchaseOrderRepository.findById(id)
+                .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
+        purchaseOrder.reverseOrder()
+        return purchaseOrderRepository.save(purchaseOrder).toTO()
+    }
+
     private fun mapInputOrderItemToOrderItem(
         item: PurchaseItemInputTO,
         productMapById: Map<Long, Product>,

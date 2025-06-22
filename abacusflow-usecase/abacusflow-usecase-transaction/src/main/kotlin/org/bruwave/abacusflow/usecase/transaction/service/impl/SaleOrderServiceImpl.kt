@@ -77,12 +77,21 @@ class SaleOrderServiceImpl(
         return saleOrderRepository.save(saleOrder).toTO()
     }
 
-    override fun cancelSaleOrder(id: Long): SaleOrderTO {
+    override fun cancelOrder(id: Long): SaleOrderTO {
         val saleOrder =
             saleOrderRepository
                 .findById(id)
                 .orElseThrow { NoSuchElementException("SaleOrder not found") }
         saleOrder.cancelOrder()
+        return saleOrderRepository.save(saleOrder).toTO()
+    }
+
+    override fun reverseOrder(id: Long): SaleOrderTO {
+        val saleOrder =
+            saleOrderRepository
+                .findById(id)
+                .orElseThrow { NoSuchElementException("SaleOrder not found") }
+        saleOrder.reverseOrder()
         return saleOrderRepository.save(saleOrder).toTO()
     }
 

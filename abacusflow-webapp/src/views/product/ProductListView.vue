@@ -46,7 +46,7 @@
                 </template>
                 <template v-if="column.key === 'note'">
                   <a-tooltip :title="record.note">
-                    {{ record.note.length > 15 ? record.note.slice(0, 15) + "…" : record.note }}
+                    {{ record?.note?.length > 15 ? record?.note.slice(0, 15) + "…" : record?.note }}
                   </a-tooltip>
                 </template>
                 <template v-if="column.key === 'action'">

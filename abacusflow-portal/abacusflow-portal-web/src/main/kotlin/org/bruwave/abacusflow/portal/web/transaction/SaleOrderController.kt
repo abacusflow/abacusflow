@@ -50,7 +50,12 @@ class SaleOrderController(
     }
 
     override fun cancelSaleOrder(id: Long): ResponseEntity<Unit> {
-        saleOrderService.cancelSaleOrder(id)
+        saleOrderService.cancelOrder(id)
+        return ResponseEntity.ok().build()
+    }
+
+    override fun reverseSaleOrder(id: Long): ResponseEntity<Unit> {
+        saleOrderService.reverseOrder(id)
         return ResponseEntity.ok().build()
     }
 }

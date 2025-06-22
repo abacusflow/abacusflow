@@ -28,5 +28,7 @@ interface SaleOrderService {
     /**
      * 取消订单
      */
-    fun cancelSaleOrder(id: Long): SaleOrderTO
+    fun cancelOrder(id: Long): SaleOrderTO
+
+    fun reverseOrder(id: Long): SaleOrderTO
 }

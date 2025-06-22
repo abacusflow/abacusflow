@@ -72,6 +72,14 @@
                 >
                   <a-button type="link" shape="circle">取消订单</a-button>
                 </a-popconfirm>
+                <a-divider type="vertical" />
+
+                <a-popconfirm
+                  title="确定撤回该采购单？"
+                  @confirm="handleReversePurchaseOrder(record.id)"
+                >
+                  <a-button type="link" shape="circle">撤回订单</a-button>
+                </a-popconfirm>
               </a-space>
             </template>
           </template>
@@ -187,12 +195,28 @@ const { mutate: cancelPurchaseOrder } = useMutation({
   }
 });
 
+const { mutate: reversePurchaseOrder } = useMutation({
+  mutationFn: (id: number) => transactionApi.reversePurchaseOrder({ id }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["purchaseOrders"] });
+    message.success("操作成功");
+  },
+  onError: (error) => {
+    message.error("操作失败");
+    console.error(error);
+  }
+});
+
 function handleCompletePurchaseOrder(id: number) {
   completePurchaseOrder(id);
 }
 
 function handleCancelPurchaseOrder(id: number) {
   cancelPurchaseOrder(id);
+}
+
+function handleReversePurchaseOrder(id: number) {
+  reversePurchaseOrder(id);
 }
 
 function getAutoCompleteColor(autoCompleteDate?: string): string {
