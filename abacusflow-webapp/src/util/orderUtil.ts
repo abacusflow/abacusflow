@@ -10,7 +10,8 @@ export function translateOrderStatus(input?: OrderStatus): string {
   const typeMap: Record<OrderStatus, string> = {
     pending: "进行中",
     completed: "已完成",
-    cancelled: "已取消"
+    canceled: "已取消",
+    reversed: "已撤回"
   };
 
   return typeMap[input] || input;

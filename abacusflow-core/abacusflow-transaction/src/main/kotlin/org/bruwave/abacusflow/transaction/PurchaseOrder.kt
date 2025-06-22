@@ -62,6 +62,14 @@ class PurchaseOrder(
         registerEvent(PurchaseOrderCanceledEvent(this))
     }
 
+    fun reverseOrder() {
+        require(status == OrderStatus.COMPLETED) { "只有已完成订单才能撤回" }
+        status = OrderStatus.REVERSED
+        updatedAt = Instant.now()
+
+        registerEvent(PurchaseOrderReversedEvent(this))
+    }
+
     val totalAmount: Double
         get() = items.sumOf { it.subtotal }
     val totalQuantity: Long

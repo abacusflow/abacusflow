@@ -14,4 +14,6 @@ interface PurchaseOrderService {
     fun completeOrder(id: Long): PurchaseOrderTO
 
     fun cancelOrder(id: Long): PurchaseOrderTO
+
+    fun reverseOrder(id: Long): PurchaseOrderTO
 }

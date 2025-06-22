@@ -1,7 +1,9 @@
 package org.bruwave.abacusflow.usecase.inventory.listener
 
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
+import org.bruwave.abacusflow.transaction.SaleOrderCanceledEvent
 import org.bruwave.abacusflow.transaction.SaleOrderCompletedEvent
+import org.bruwave.abacusflow.transaction.SaleOrderReversedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -24,5 +26,21 @@ class InventorySaleOrderEventListener(
             val sumQuantity = it.value.sumOf { it.quantity }
             inventory.decreaseQuantity(sumQuantity)
         }
+    }
+
+    @EventListener
+    fun handleSaleOrderReversedEvent(event: SaleOrderReversedEvent) {
+        val order = event.order
+        println("SaleOrder Reversed orderNo: ${order.no}")
+
+        order.items.groupBy { it.productId }.forEach {
+            val inventory =
+                inventoryRepository.findByProductId(it.key)
+                    ?: throw NoSuchElementException("Product with id ${it.key} not found")
+
+            val sumQuantity = it.value.sumOf { it.quantity }
+            inventory.increaseQuantity(sumQuantity)
+        }
+
     }
 }
