@@ -1370,10 +1370,6 @@ components:
           description: 商品名称
         type:
           $ref: "#/components/schemas/ProductType"
-        unitPrice:
-          type: number
-          format: double
-          description: 单价
         specification:
           type: string
           description: 规格
@@ -1381,10 +1377,6 @@ components:
           type: integer
           format: int64
           description: 分类ID
-        supplierId:
-          type: integer
-          format: int64
-          description: 供应商ID
         note:
           type: string
           nullable: true
@@ -1413,7 +1405,7 @@ components:
         - unit
         - unitPrice
         - categoryName
-        - supplierName
+        - supplierName·
         - enabled
       properties:
         id:
@@ -1428,25 +1420,42 @@ components:
         specification:
           type: string
           description: 商品规格
-        unitPrice:
-          type: number
-          format: double
-          description: 单价
         categoryName:
           type: string
           description: 分类名称
-        supplierName:
-          type: string
-          description: 供应商名称
         unit:
           $ref: "#/components/schemas/ProductUnit"
         instances:
           type: array
           items:
-            $ref: "#/components/schemas/BasicProductInstance"
+            type: object
+            required:
+              - id
+              - name
+              - serialNumber
+              - unitPrice
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: 商品实例ID
+              name:
+                type: string
+                description: 名字
+              serialNumber:
+                type: string
+                description: 序列号
+              unitPrice:
+                type: number
+                format: double
+                minimum: 0
+                description: 单价
         enabled:
           type: boolean
           description: 是否启用
+        note:
+          type: string
+          description: 备注
 
     CreateProductInput:
       type: object
@@ -1454,9 +1463,7 @@ components:
         - name
         - type
         - unit
-        - unitPrice
         - categoryId
-        - supplierId
       properties:
         name:
           type: string
@@ -1467,19 +1474,10 @@ components:
         specification:
           type: string
           description: 商品规格
-        unitPrice:
-          type: number
-          format: double
-          minimum: 0
-          description: 单价
         categoryId:
           type: integer
           format: int64
           description: 分类ID
-        supplierId:
-          type: integer
-          format: int64
-          description: 供应商ID
         note:
           type: string
           nullable: true
@@ -1499,19 +1497,10 @@ components:
         specification:
           type: string
           description: 商品规格
-        unitPrice:
-          type: number
-          format: double
-          minimum: 0
-          description: 单价
         categoryId:
           type: integer
           format: int64
           description: 分类ID
-        supplierId:
-          type: integer
-          format: int64
-          description: 供应商ID
         note:
           type: string
           nullable: true
@@ -1613,6 +1602,7 @@ components:
         - id
         - name
         - serialNumber
+        - unitPrice
         - productName
         - purchaseOrderNo
       properties:
@@ -1626,6 +1616,11 @@ components:
         serialNumber:
           type: string
           description: 序列号
+        unitPrice:
+          type: number
+          format: double
+          minimum: 0
+          description: 单价
         purchaseOrderNo:
           type: string
           description: 采购单号
@@ -2092,9 +2087,10 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        # productName:
-        #   type: string
-        #   description: 商品名称
+        productInstanceId:
+          type: integer
+          format: int64
+          description: 商品实例ID
         quantity:
           type: integer
           description: 数量
@@ -2149,9 +2145,6 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        # productName:
-        #   type: string
-        #   description: 商品名称
         quantity:
           type: integer
           description: 数量

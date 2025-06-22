@@ -4,8 +4,11 @@ import org.bruwave.abacusflow.db.depot.DepotRepository
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderItemRepository
+import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderItemRepository
+import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.inventory.Inventory
+import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
 import org.bruwave.abacusflow.usecase.inventory.CreateInventoryInputTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryService
@@ -21,7 +24,9 @@ class InventoryServiceImpl(
     private val inventoryRepository: InventoryRepository,
     private val productRepository: ProductRepository,
     private val depotRepository: DepotRepository,
+    private val purchaseOrderRepository: PurchaseOrderRepository,
     private val purchaseOrderItemRepository: PurchaseOrderItemRepository,
+    private val saleOrderRepository: SaleOrderRepository,
     private val saleOrderItemRepository: SaleOrderItemRepository,
 ) : InventoryService {
     override fun createInventory(input: CreateInventoryInputTO): InventoryTO {
@@ -112,8 +117,8 @@ class InventoryServiceImpl(
         val depotMap = depotRepository.findAllById(depotIds).associateBy { it.id }
 
         return inventories.map { inventory ->
-            val incomingQuantity = purchaseOrderItemRepository.findTotalQuantityByProductId(inventory.productId) ?: 0
-            val outgoingQuantity = saleOrderItemRepository.findTotalQuantityByProductId(inventory.productId) ?: 0
+            val incomingQuantity = purchaseOrderRepository.sumItemQuantityByProductId(inventory.productId, OrderStatus.COMPLETED) ?: 0
+            val outgoingQuantity = saleOrderRepository.sumItemQuantityByProductId(inventory.productId, OrderStatus.COMPLETED) ?: 0
 
             val productName = productMap[inventory.productId]?.name ?: "unknown"
             val depotName = depotMap[inventory.depotId]?.name ?: "unknown"

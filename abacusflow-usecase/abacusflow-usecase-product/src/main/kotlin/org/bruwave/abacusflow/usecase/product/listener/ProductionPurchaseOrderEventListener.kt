@@ -54,6 +54,7 @@ class ProductionPurchaseOrderEventListener(
 
                     ProductInstance(
                         serialNumber = serialNumber,
+                        unitPrice= item.unitPrice,
                         product = product,
                         purchaseOrderId = order.id,
                         saleOrderId = null,

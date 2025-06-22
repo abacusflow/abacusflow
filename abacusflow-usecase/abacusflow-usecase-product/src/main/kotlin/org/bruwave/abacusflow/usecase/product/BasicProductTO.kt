@@ -6,10 +6,8 @@ data class BasicProductTO(
     val specification: String?,
     val type: String,
     val categoryName: String,
-    val supplierName: String,
     val unit: String,
-    val unitPrice: Double,
     val note: String?,
     val enabled: Boolean,
-    val instances: List<BasicProductInstanceTO>?,
+    val instances: List<ProductInstanceForBasicProductTO>?,
 )

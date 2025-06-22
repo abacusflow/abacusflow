@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.PositiveOrZero
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
@@ -23,6 +24,8 @@ import java.time.Instant
 class ProductInstance(
     // 唯一编码，如 SN 编号、序列号
     val serialNumber: String,
+    @field:PositiveOrZero
+    val unitPrice: Double,
     @ManyToOne
     val product: Product,
     val purchaseOrderId: Long,

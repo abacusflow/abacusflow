@@ -41,6 +41,7 @@ fun SaleOrderTO.SaleOrderItemTO.toVO(): SaleOrderItemVO =
         quantity = quantity,
         unitPrice = unitPrice,
         subtotal = subtotal,
+        productInstanceId = productInstanceId,
     )
 
 fun SaleOrderItemInputVO.toInputTO(): SaleItemInputTO =

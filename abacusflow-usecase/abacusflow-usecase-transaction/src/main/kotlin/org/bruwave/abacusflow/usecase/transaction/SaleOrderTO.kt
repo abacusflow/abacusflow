@@ -21,5 +21,6 @@ data class SaleOrderTO(
         val quantity: Int,
         val unitPrice: Double,
         val subtotal: Double,
+        val productInstanceId: Long?,
     )
 }

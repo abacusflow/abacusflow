@@ -34,38 +34,6 @@ const router = createRouter({
       }
     },
     {
-      path: "/product",
-      name: "product",
-      component: RouterView,
-      meta: {
-        title: "产品中心",
-        icon: "appstore",
-        permission: ["product:*"]
-      },
-      children: [
-        {
-          path: "",
-          name: "product-home",
-          component: () => import("@/views/product/ProductListView.vue"),
-          meta: {
-            title: "产品管理",
-            icon: "appstore",
-            permission: ["product:list"]
-          }
-        },
-        {
-          path: "category",
-          name: "product-category",
-          component: () => import("@/views/product/category/ProductCategoryListView.vue"),
-          meta: {
-            title: "产品分类",
-            icon: "tags",
-            permission: ["product:category"]
-          }
-        }
-      ]
-    },
-    {
       path: "/transaction",
       name: "transaction",
       component: RouterView,
@@ -93,6 +61,38 @@ const router = createRouter({
             title: "销售单管理",
             icon: "shopping-cart",
             permission: ["transaction:sale-order"]
+          }
+        }
+      ]
+    },
+    {
+      path: "/product",
+      name: "product",
+      component: RouterView,
+      meta: {
+        title: "产品中心",
+        icon: "appstore",
+        permission: ["product:*"]
+      },
+      children: [
+        {
+          path: "",
+          name: "product-home",
+          component: () => import("@/views/product/ProductListView.vue"),
+          meta: {
+            title: "产品管理",
+            icon: "appstore",
+            permission: ["product:list"]
+          }
+        },
+        {
+          path: "category",
+          name: "product-category",
+          component: () => import("@/views/product/category/ProductCategoryListView.vue"),
+          meta: {
+            title: "产品类别管理",
+            icon: "tags",
+            permission: ["product:category"]
           }
         }
       ]

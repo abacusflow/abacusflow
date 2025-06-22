@@ -44,6 +44,11 @@
                 <template v-if="column.key === 'enabled'">
                   <a-switch v-model:checked="record.enabled" disabled />
                 </template>
+                <template v-if="column.key === 'note'">
+                  <a-tooltip :title="record.note">
+                    {{ record.note.length > 15 ? record.note.slice(0, 15) + "…" : record.note }}
+                  </a-tooltip>
+                </template>
                 <template v-if="column.key === 'action'">
                   <a-space>
                     <a-button type="link" shape="circle" @click="handleEditProduct(record)"
@@ -94,7 +99,7 @@
 <script lang="ts" setup>
 import { computed, inject, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicProduct, BasicProductInstance, Product, ProductApi } from "@/core/openapi";
+import type { BasicProduct, BasicProductInstancesInner, Product, ProductApi } from "@/core/openapi";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
@@ -176,18 +181,16 @@ const columns: StrictTableColumnsType<BasicProduct> = [
   { title: "产品规格", dataIndex: "specification", key: "specification" },
   { title: "产品类型", dataIndex: "type", key: "type" },
   { title: "产品类别", dataIndex: "categoryName", key: "categoryName" },
-  { title: "供应商", dataIndex: "supplierName", key: "supplierName" },
   { title: "单位", dataIndex: "unit", key: "unit" },
-  { title: "单价", dataIndex: "unitPrice", key: "unitPrice" },
-  { title: "资产", dataIndex: "instances", key: "instances" },
   { title: "启用状态", dataIndex: "enabled", key: "enabled" },
+  { title: "备注", dataIndex: "note", key: "note" },
   { title: "操作", key: "action" }
 ];
 
-const innerColumns: StrictTableColumnsType<BasicProductInstance> = [
+const innerColumns: StrictTableColumnsType<BasicProductInstancesInner> = [
   { title: "资产名称", dataIndex: "name", key: "name" },
   { title: "序列号", dataIndex: "serialNumber", key: "serialNumber" },
-  { title: "采购单号", dataIndex: "purchaseOrderNo", key: "purchaseOrderNo" },
-  { title: "销售单号", dataIndex: "saleOrderNo", key: "saleOrderNo" }
+  { title: "单价", dataIndex: "unitPrice", key: "unitPrice" },
+  { title: "操作", key: "action" }
 ];
 </script>
