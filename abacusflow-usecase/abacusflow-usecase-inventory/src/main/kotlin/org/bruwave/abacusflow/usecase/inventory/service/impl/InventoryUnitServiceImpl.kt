@@ -2,11 +2,9 @@ package org.bruwave.abacusflow.usecase.inventory.service.impl
 
 import org.bruwave.abacusflow.db.inventory.InventoryUnitRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
-import org.bruwave.abacusflow.db.transaction.PurchaseOrderItemRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
-import org.bruwave.abacusflow.usecase.inventory.service.InventoryService
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitService
 import org.bruwave.abacusflow.usecase.inventory.toBasicTO
 import org.springframework.stereotype.Service

@@ -10,7 +10,6 @@ fun InventoryUnit.toBasicTO(
     return when (this) {
         is InventoryUnit.InstanceInventoryUnit -> BasicInventoryUnitTO(
             id = id,
-            name = id,
             unitType = InventoryUnit.UnitType.INSTANCE.toString(),
             purchaseOrderNo = purchaseOrderNo,
             depotId = depotId,

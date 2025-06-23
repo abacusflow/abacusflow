@@ -2,7 +2,7 @@
 abacusflow = "0.0.1"
 kotlin = "2.1.0"
 spring = "6.2.0"
-spring-boot = "3.4.0"
+spring-boot = "3.5.1"
 spring-security = "6.4.1"
 spring-kafka = "3.2.4"
 spring-expression = "6.2.0"
@@ -10,19 +10,23 @@ jackson = "2.18.2"
 netty = "4.1.119.Final"
 jsonschema-validator = "1.5.6"
 ktlint = "12.2.0"
-postgresql = "42.7.5"
+postgresql = "42.7.3"
 hibernate = "6.6.2.Final"
 jakarta-validation = "3.1.0"
 swagger = "2.2.25"
 springdoc-openapi-mvc-ui = "2.8.5"
 springdoc-openapi-ui = "1.8.0"
 docker-java = "3.2.13"
+querydsl = "5.1.0"
+jooq = "3.19.15"
 
 [plugins]
-jsonschema2pojo = { id = "org.jsonschema2pojo", version = "1.2.2"}
+jsonschema2pojo = { id = "org.jsonschema2pojo", version = "1.2.2" }
 openapi-generator = { id = "org.openapi.generator", version = "7.12.0" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 node-gradle = { id = "com.github.node-gradle.node", version = "7.1.0" }
+jooq-codegen = { id = "org.jooq.jooq-codegen-gradle", version.ref = "jooq" }
+
 [libraries]
 
 # Spring Boot Starters
@@ -59,6 +63,10 @@ spring-data-commons = { module = "org.springframework.data:spring-data-commons",
 
 # Hibernate
 hibernate = { module = "org.hibernate:hibernate-core", version.ref = "hibernate" }
+
+# querydsl
+querydsl-jpa = { module = "com.querydsl:querydsl-jpa", version.ref = "querydsl" }
+querydsl-apt = { module = "com.querydsl:querydsl-apt", version.ref = "querydsl" }
 
 # json
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }

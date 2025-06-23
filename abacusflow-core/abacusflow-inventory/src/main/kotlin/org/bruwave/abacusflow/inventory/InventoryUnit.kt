@@ -37,10 +37,7 @@ abstract class InventoryUnit(
     open val unitPrice: Double,
     depotId: Long?
 ) {
-    // TODO : 使用json+custom-query
-    @ElementCollection
-//    @CollectionTable(name = "inventory_unit_sale_orders", joinColumns = [JoinColumn(name = "inventory_unit_id")])
-//    @Column(name = "sale_order_ids")
+    @Column(columnDefinition = "jsonb")
     private val saleOrderIdsMutable: MutableSet<Long> = mutableSetOf()
 
     val saleOrderIds: List<Long>

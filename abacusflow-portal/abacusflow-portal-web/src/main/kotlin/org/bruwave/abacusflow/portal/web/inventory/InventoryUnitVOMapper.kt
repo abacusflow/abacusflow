@@ -7,7 +7,6 @@ import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
 fun BasicInventoryUnitTO.toBasicVO(): BasicInventoryUnitVO =
     BasicInventoryUnitVO(
         id = id,
-        name = name,
         type = mapInventoryUnitTypeTOToVO(unitType),
         purchaseOrderNo = purchaseOrderNo,
         saleOrderNos = saleOrderNos,
