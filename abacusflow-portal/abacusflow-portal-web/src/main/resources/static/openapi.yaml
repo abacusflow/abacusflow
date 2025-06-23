@@ -1800,8 +1800,6 @@ components:
         - id
         - productId
         - quantity
-        - reservedQuantity
-        - availableQuantity
         - safetyStock
         - maxStock
         - createdAt
@@ -1815,22 +1813,10 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        depotId:
-          type: integer
-          format: int64
-          description: 储存点ID
         quantity:
           type: integer
           format: int64
           description: 总库存数量
-        reservedQuantity:
-          type: integer
-          format: int64
-          description: 预留数量
-        availableQuantity:
-          type: integer
-          format: int64
-          description: 可用数量
         safetyStock:
           type: integer
           format: int64
@@ -1854,8 +1840,6 @@ components:
         - id
         - productName
         - quantity
-        - availableQuantity
-        - expectedQuantity
         - safetyStock
         - maxStock
       properties:
@@ -1866,21 +1850,10 @@ components:
         productName:
           type: string
           description: 商品名称
-        depotName:
-          type: string
-          description: 储存点名称
         quantity:
           type: integer
           format: int64
           description: 总库存数量
-        availableQuantity:
-          type: integer
-          format: int64
-          description: 可用数量
-        expectedQuantity:
-          type: integer
-          format: int64
-          description: 期望数量
         safetyStock:
           type: integer
           format: int64
@@ -2139,7 +2112,7 @@ components:
       type: object
       required:
         - id
-        - productId
+        - inventoryUnitId
         - quantity
         - unitPrice
         - subtotal
@@ -2148,10 +2121,10 @@ components:
           type: integer
           format: int64
           description: 订单明细ID
-        productId:
+        inventoryUnitId:
           type: integer
           format: int64
-          description: 商品ID
+          description: 库存单元ID
         productInstanceId:
           type: integer
           format: int64
@@ -2171,14 +2144,14 @@ components:
     SaleOrderItemInput:
       type: object
       required:
-        - productId
+        - inventoryUnitId
         - quantity
         - unitPrice
       properties:
-        productId:
+        inventoryUnitId:
           type: integer
           format: int64
-          description: 商品ID
+          description: 库存单元ID
         quantity:
           type: integer
           minimum: 1

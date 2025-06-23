@@ -6,7 +6,7 @@ import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.transaction.SaleOrder
 import org.bruwave.abacusflow.transaction.SaleOrderItem
-import org.bruwave.abacusflow.transaction.TransactionProductType
+import org.bruwave.abacusflow.transaction.TransactionInventoryUnitType
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.SaleItemInputTO
@@ -29,7 +29,7 @@ class SaleOrderServiceImpl(
         val products =
             productRepository.findAllById(
                 input.orderItems
-                    .map { it.productId }
+                    .map { it.inventoryUnitId }
                     .distinct(),
             )
         val productMapById = products.associateBy { it.id }
@@ -99,26 +99,23 @@ class SaleOrderServiceImpl(
         item: SaleItemInputTO,
         productMapById: Map<Long, Product>,
     ): SaleOrderItem {
-        val product = productMapById.getValue(item.productId)
+        val product = productMapById.getValue(item.inventoryUnitId)
 
         return when (product.type) {
             Product.ProductType.MATERIAL ->
                 SaleOrderItem(
-                    item.productId,
-                    TransactionProductType.MATERIAL,
+                    item.inventoryUnitId,
+                    TransactionInventoryUnitType.BATCH,
                     item.quantity,
                     item.unitPrice,
-                    productInstanceId = null,
                 )
 
             Product.ProductType.ASSET -> {
-                requireNotNull(item.productInstanceId) { "asset item's productInstanceId must not be null" }
                 SaleOrderItem(
-                    item.productId,
-                    TransactionProductType.ASSET,
+                    item.inventoryUnitId,
+                    TransactionInventoryUnitType.INSTANCE,
                     1, // 资产类固定数量为1
                     item.unitPrice,
-                    productInstanceId = item.productInstanceId,
                 )
             }
         }

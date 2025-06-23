@@ -17,10 +17,9 @@ data class SaleOrderTO(
 ) {
     data class SaleOrderItemTO(
         val id: Long,
-        val productId: Long,
+        val inventoryUnitId: Long,
         val quantity: Int,
         val unitPrice: Double,
         val subtotal: Double,
-        val productInstanceId: Long?,
     )
 }

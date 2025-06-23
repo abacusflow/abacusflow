@@ -31,46 +31,6 @@ class InventoryController(
         )
     }
 
-    override fun increaseInventory(
-        id: Long,
-        increaseInventoryRequestVO: IncreaseInventoryRequestVO,
-    ): ResponseEntity<Unit> {
-        inventoryService.increaseInventory(id, increaseInventoryRequestVO.amount)
-        return ResponseEntity.ok().build()
-    }
-
-    override fun decreaseInventory(
-        id: Long,
-        increaseInventoryRequestVO: IncreaseInventoryRequestVO,
-    ): ResponseEntity<Unit> {
-        inventoryService.decreaseInventory(id, increaseInventoryRequestVO.amount)
-        return ResponseEntity.ok().build()
-    }
-
-    override fun reserveInventory(
-        id: Long,
-        reserveInventoryRequestVO: ReserveInventoryRequestVO,
-    ): ResponseEntity<Unit> {
-        inventoryService.reserveInventory(id, reserveInventoryRequestVO.amount)
-        return ResponseEntity.ok().build()
-    }
-
-    override fun releaseInventory(
-        id: Long,
-        releaseInventoryRequestVO: ReleaseInventoryRequestVO
-    ): ResponseEntity<Unit> {
-        inventoryService.releaseReservedInventory(id, releaseInventoryRequestVO.amount)
-        return ResponseEntity.ok().build()
-    }
-
-    override fun assignDepot(
-        id: Long,
-        assignDepotRequestVO: AssignDepotRequestVO,
-    ): ResponseEntity<Unit> {
-        inventoryService.assignDepot(id, assignDepotRequestVO.depotId)
-        return ResponseEntity.ok().build()
-    }
-
     override fun adjustWarningLine(
         id: Long,
         adjustWarningLineRequestVO: AdjustWarningLineRequestVO,

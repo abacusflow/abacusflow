@@ -2,6 +2,7 @@ package org.bruwave.abacusflow.usecase.inventory.impl
 
 import org.bruwave.abacusflow.db.depot.DepotRepository
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
+import org.bruwave.abacusflow.db.inventory.InventoryUnitRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderItemRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class InventoryServiceImpl(
     private val inventoryRepository: InventoryRepository,
+    private val inventoryUnitRepository: InventoryUnitRepository,
     private val productRepository: ProductRepository,
     private val depotRepository: DepotRepository,
     private val purchaseOrderRepository: PurchaseOrderRepository,
@@ -33,55 +35,9 @@ class InventoryServiceImpl(
         val inventory =
             Inventory(
                 productId = input.productId,
-                depotId = input.depotId,
                 quantity = input.quantity,
             )
         return inventoryRepository.save(inventory).toTO()
-    }
-
-    override fun increaseInventory(id: Long, amount: Int,) {
-        val inventory =
-            inventoryRepository
-                .findById(id)
-                .orElseThrow { NoSuchElementException("Inventory not found") }
-        inventory.increaseQuantity(amount)
-        inventoryRepository.save(inventory)
-    }
-
-    override fun decreaseInventory(id: Long, amount: Int,) {
-        val inventory =
-            inventoryRepository
-                .findById(id)
-                .orElseThrow { NoSuchElementException("Inventory not found") }
-        inventory.decreaseQuantity(amount)
-        inventoryRepository.save(inventory)
-    }
-
-    override fun reserveInventory(id: Long,amount: Int, ) {
-        val inventory =
-            inventoryRepository
-                .findById(id)
-                .orElseThrow { NoSuchElementException("Inventory not found") }
-        inventory.reserveInventory(amount)
-        inventoryRepository.save(inventory)
-    }
-
-    override fun releaseReservedInventory(id: Long, amount: Int) {
-        val inventory =
-            inventoryRepository
-                .findById(id)
-                .orElseThrow { NoSuchElementException("Inventory not found") }
-        inventory.releaseReservedInventory(amount)
-        inventoryRepository.save(inventory)
-    }
-
-    override fun assignDepot(id: Long, newDepotId: Long) {
-        val inventory =
-            inventoryRepository
-                .findById(id)
-                .orElseThrow { NoSuchElementException("Inventory not found") }
-        inventory.assignDepot(newDepotId)
-        inventoryRepository.save(inventory)
     }
 
     override fun adjustWarningLine(
@@ -105,21 +61,30 @@ class InventoryServiceImpl(
 
     override fun listInventories(): List<BasicInventoryTO> {
         val inventories = inventoryRepository.findAll()
-
+        val inventoryUnits = inventoryUnitRepository.findAll()
+        val purchaseOrderIds = inventoryUnits.mapNotNull { it.purchaseOrderId }.toSet()
+        val saleOrderIds = inventoryUnits.flatMap { it.saleOrderIds }.toSet()
         val productIds = inventories.mapNotNull { it.productId }.toSet()
-        val depotIds = inventories.mapNotNull { it.depotId }.toSet()
 
-        // 批量获取所有涉及的产品和仓库
-        val productMap = productRepository.findAllById(productIds).associateBy { it.id }
-        val depotMap = depotRepository.findAllById(depotIds).associateBy { it.id }
+        val productsById = productRepository.findAllById(productIds)
+        val purchaseOrdersById = purchaseOrderRepository.findAllById(purchaseOrderIds)
+        val saleOrdersById = saleOrderRepository.findAllById(saleOrderIds)
+
+        val productMap = productsById.associateBy { it.id }
+        val purchaseOrdersMap = purchaseOrdersById.associateBy { it.id }
+        val saleOrdersMap = saleOrdersById.associateBy { it.id }
+        val inventoryUnitMap = inventoryUnits.groupBy { it.inventory.id }
 
         return inventories.map { inventory ->
-            val incomingQuantity = purchaseOrderRepository.sumItemQuantityByProductId(inventory.productId, OrderStatus.COMPLETED) ?: 0
-            val outgoingQuantity = saleOrderRepository.sumItemQuantityByProductId(inventory.productId, OrderStatus.COMPLETED) ?: 0
+            val product = productMap.getValue(inventory.productId)
+            val units = inventoryUnitMap.getValue(inventory.id)
 
-            val productName = productMap[inventory.productId]?.name ?: "unknown"
-            val depotName = depotMap[inventory.depotId]?.name ?: "unknown"
-            inventory.toBasicTO(productName, depotName, incomingQuantity - outgoingQuantity)
+            val unitTOS = units.map {
+                val purchaseOrder = purchaseOrdersMap.getValue(it.purchaseOrderId)
+                val saleOrders = it.saleOrderIds.map { saleOrderId -> saleOrdersMap.getValue(saleOrderId) }
+                it.toBasicTO(purchaseOrder.no, saleOrders.map { it.no })
+            }
+            inventory.toBasicTO(product.name, unitTOS)
         }
     }
 

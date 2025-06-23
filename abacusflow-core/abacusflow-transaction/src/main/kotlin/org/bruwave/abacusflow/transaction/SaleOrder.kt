@@ -75,8 +75,6 @@ class SaleOrder(
         get() = items.sumOf { it.subtotal }
     val totalQuantity: Long
         get() = items.sumOf { it.quantity.toLong() }
-    val itemCount: Int
-        get() = items.distinctBy { it.productId }.size
 
     @PrePersist
     fun prePersist() {

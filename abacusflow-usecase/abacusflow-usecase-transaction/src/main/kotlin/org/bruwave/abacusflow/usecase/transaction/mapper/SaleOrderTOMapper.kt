@@ -43,9 +43,8 @@ fun SaleOrder.toBasicTO(customerName: String): BasicSaleOrderTO {
 fun SaleOrderItem.toTO() =
     SaleOrderTO.SaleOrderItemTO(
         id = id,
-        productId = productId,
         quantity = quantity,
         unitPrice = unitPrice,
         subtotal = subtotal,
-        productInstanceId = productInstanceId,
+        inventoryUnitId = inventoryUnitId,
     )

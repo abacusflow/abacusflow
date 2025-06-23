@@ -13,31 +13,27 @@ import jakarta.validation.constraints.PositiveOrZero
 @Entity
 @Table(name = "sale_order_items")
 class SaleOrderItem(
-    val productId: Long,
+    val inventoryUnitId: Long,
     // 冗余字段：产品类型（用于区分资产类或普通商品）
     @Enumerated(EnumType.STRING)
-    val productType: TransactionProductType,
+    val inventoryUnitType: TransactionInventoryUnitType,
     @field:Positive
     val quantity: Int,
     @field:PositiveOrZero
     val unitPrice: Double,
-    var productInstanceId: Long?,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
     init {
-        when (productType) {
-            TransactionProductType.MATERIAL -> {
-                // 对于普通商品，productInstanceId 应为空
-                require(productInstanceId == null) { "普通商品不可关联productInstanceId" }
+        when (inventoryUnitType) {
+            TransactionInventoryUnitType.BATCH -> {
             }
 
-            TransactionProductType.ASSET -> {
-                // 对于资产类，必须只有一个
+            TransactionInventoryUnitType.INSTANCE -> {
+                // 对于实例类库存单元，一次只能销售一个
                 require(quantity == 1) { "资产类商品数量只能为 1" }
-                requireNotNull(productInstanceId) { "资产类商品必须关联productInstanceId" }
             }
         }
     }

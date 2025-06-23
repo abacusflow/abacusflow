@@ -9,10 +9,7 @@ fun InventoryTO.toVO(): InventoryVO =
     InventoryVO(
         id = id,
         productId = productId,
-        depotId = depotId,
         quantity = quantity,
-        reservedQuantity = reservedQuantity,
-        availableQuantity = availableQuantity,
         safetyStock = safetyStock,
         maxStock = maxStock,
         createdAt = createdAt.toEpochMilli(),
@@ -23,10 +20,7 @@ fun BasicInventoryTO.toBasicVO(): BasicInventoryVO =
     BasicInventoryVO(
         id = id,
         productName = productName,
-        depotName = depotName,
         quantity = quantity,
-        availableQuantity = availableQuantity,
-        expectedQuantity = expectedQuantity,
         safetyStock = safetyStock,
         maxStock = maxStock,
     )

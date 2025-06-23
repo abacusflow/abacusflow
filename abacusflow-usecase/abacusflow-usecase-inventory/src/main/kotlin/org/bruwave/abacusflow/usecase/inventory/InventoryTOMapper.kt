@@ -1,30 +1,25 @@
 package org.bruwave.abacusflow.usecase.inventory
 
 import org.bruwave.abacusflow.inventory.Inventory
+import org.bruwave.abacusflow.inventory.InventoryUnit
 
 fun Inventory.toBasicTO(
     productName: String,
-    depotName: String,
-    expectedQuantity: Long,
+    units: List<BasicInventoryUnitTO>,
 ) = BasicInventoryTO(
     id = id,
     productName = productName,
-    depotName = depotName,
     quantity = quantity,
-    availableQuantity = availableQuantity,
     safetyStock = safetyStock,
     maxStock = maxStock,
-    expectedQuantity = expectedQuantity,
+    units = units,
 )
 
 fun Inventory.toTO() =
     InventoryTO(
         id = id,
         productId = productId,
-        depotId = depotId,
         quantity = quantity,
-        reservedQuantity = reservedQuantity,
-        availableQuantity = availableQuantity,
         safetyStock = safetyStock,
         maxStock = maxStock,
         version = version,
