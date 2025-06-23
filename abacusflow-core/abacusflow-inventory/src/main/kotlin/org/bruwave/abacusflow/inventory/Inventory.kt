@@ -32,10 +32,6 @@ class Inventory(
     val id: Long = 0
 
     @field:PositiveOrZero
-    var quantity: Long = quantity // 当前库存
-        private set
-
-    @field:PositiveOrZero
     var safetyStock: Long = 1
         // 安全库存量
         private set
@@ -73,8 +69,4 @@ class Inventory(
         this.updatedAt = Instant.now()
 
     }
-
-    val isBelowSafetyStock
-        get(): Boolean = quantity < safetyStock
-
 }

@@ -74,7 +74,7 @@ class InventoryQueryServiceImpl(
             BasicInventoryTO(
                 id = first[INVENTORIES.ID]!!,
                 productName = first[PRODUCTS.NAME] ?: "[未知产品]",
-                quantity = first[INVENTORIES.QUANTITY] ?: 0,
+                quantity = group.mapNotNull { it[INVENTORY_UNIT.QUANTITY] }.sumOf { it },
                 safetyStock = first[INVENTORIES.SAFETY_STOCK],
                 maxStock = first[INVENTORIES.MAX_STOCK],
                 units = group.mapNotNull { it.toBasicInventoryUnitTO(saleOrderMap) }

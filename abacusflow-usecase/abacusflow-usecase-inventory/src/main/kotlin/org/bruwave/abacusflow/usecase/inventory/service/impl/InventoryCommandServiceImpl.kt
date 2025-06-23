@@ -43,11 +43,6 @@ class InventoryCommandServiceImpl(
     }
 
     override fun checkSafetyStock(id: Long): Boolean {
-        val inventory =
-            inventoryRepository
-                .findById(id)
-                .orElseThrow { NoSuchElementException("Inventory not found with id: $id") }
-
-        return inventory.isBelowSafetyStock
+        TODO("Not yet implemented")
     }
 }

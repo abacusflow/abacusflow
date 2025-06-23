@@ -9,7 +9,6 @@ fun InventoryTO.toVO(): InventoryVO =
     InventoryVO(
         id = id,
         productId = productId,
-        quantity = quantity,
         safetyStock = safetyStock,
         maxStock = maxStock,
         createdAt = createdAt.toEpochMilli(),

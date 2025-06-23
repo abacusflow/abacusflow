@@ -40,9 +40,4 @@ class InventoryController(
         )
         return ResponseEntity.ok().build()
     }
-
-    override fun checkSafetyStock(id: Long): ResponseEntity<Boolean> {
-        val isSafed = inventoryCommandService.checkSafetyStock(id)
-        return ResponseEntity.ok(isSafed)
-    }
 }

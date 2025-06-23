@@ -16,6 +16,7 @@ import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.validation.constraints.PositiveOrZero
 import org.bruwave.abacusflow.inventory.Inventory
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
@@ -34,6 +35,7 @@ abstract class InventoryUnit(
     open val inventory: Inventory,
     open val purchaseOrderId: Long,
     // 冗余字段
+    @field:PositiveOrZero
     open val quantity: Long,
     // 冗余字段
     open val unitPrice: Double,

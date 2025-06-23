@@ -1815,7 +1815,6 @@ components:
       required:
         - id
         - productId
-        - quantity
         - safetyStock
         - maxStock
         - createdAt
@@ -1829,10 +1828,6 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        quantity:
-          type: integer
-          format: int64
-          description: 总库存数量
         safetyStock:
           type: integer
           format: int64
