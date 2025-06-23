@@ -879,6 +879,22 @@ paths:
               schema:
                 type: boolean
 
+  /inventory-units:
+    get:
+      operationId: listInventoryUnits
+      tags:
+        - inventory
+      summary: List all inventoryUnits
+      responses:
+        "200":
+          description: List of inventoryUnits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BasicInventoryUnit"
+
   /sale-orders:
     get:
       operationId: listSaleOrders

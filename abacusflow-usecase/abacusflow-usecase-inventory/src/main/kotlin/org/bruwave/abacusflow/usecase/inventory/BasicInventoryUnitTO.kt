@@ -6,6 +6,7 @@ import java.util.UUID
 
 data class BasicInventoryUnitTO(
     val id: Long,
+    val name: String,
     val unitType: String, // "INSTANCE" 或 "BATCH"
     val purchaseOrderNo: UUID,
     val saleOrderNos: List<UUID>,

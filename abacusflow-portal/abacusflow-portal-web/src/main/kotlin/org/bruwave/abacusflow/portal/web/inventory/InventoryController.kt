@@ -8,7 +8,7 @@ import org.bruwave.abacusflow.portal.web.model.IncreaseInventoryRequestVO
 import org.bruwave.abacusflow.portal.web.model.InventoryVO
 import org.bruwave.abacusflow.portal.web.model.ReleaseInventoryRequestVO
 import org.bruwave.abacusflow.portal.web.model.ReserveInventoryRequestVO
-import org.bruwave.abacusflow.usecase.inventory.InventoryService
+import org.bruwave.abacusflow.usecase.inventory.service.InventoryService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 

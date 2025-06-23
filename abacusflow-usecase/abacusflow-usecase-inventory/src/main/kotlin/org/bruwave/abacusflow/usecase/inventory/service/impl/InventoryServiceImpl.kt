@@ -1,4 +1,4 @@
-package org.bruwave.abacusflow.usecase.inventory.impl
+package org.bruwave.abacusflow.usecase.inventory.service.impl
 
 import org.bruwave.abacusflow.db.depot.DepotRepository
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
@@ -12,7 +12,7 @@ import org.bruwave.abacusflow.inventory.Inventory
 import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
 import org.bruwave.abacusflow.usecase.inventory.CreateInventoryInputTO
-import org.bruwave.abacusflow.usecase.inventory.InventoryService
+import org.bruwave.abacusflow.usecase.inventory.service.InventoryService
 import org.bruwave.abacusflow.usecase.inventory.InventoryTO
 import org.bruwave.abacusflow.usecase.inventory.toBasicTO
 import org.bruwave.abacusflow.usecase.inventory.toTO
