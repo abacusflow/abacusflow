@@ -29,47 +29,47 @@ import java.util.UUID
 @DiscriminatorColumn(name = "unit_type", discriminatorType = DiscriminatorType.STRING)
 abstract class InventoryUnit(
     @ManyToOne
-    val inventory: Inventory,
-    val purchaseOrderId: Long,
+    open val inventory: Inventory,
+    open val purchaseOrderId: Long,
     // 冗余字段
-    val quantity: Long,
+    open val quantity: Long,
     // 冗余字段
-    val unitPrice: Double,
+    open val unitPrice: Double,
     depotId: Long?
 ) {
     // TODO : 使用json+custom-query
     @ElementCollection
-    @CollectionTable(name = "inventory_unit_sale_orders", joinColumns = [JoinColumn(name = "inventory_unit_id")])
-    @Column(name = "sale_order_ids")
+//    @CollectionTable(name = "inventory_unit_sale_orders", joinColumns = [JoinColumn(name = "inventory_unit_id")])
+//    @Column(name = "sale_order_ids")
     private val saleOrderIdsMutable: MutableSet<Long> = mutableSetOf()
 
     val saleOrderIds: List<Long>
         get() = saleOrderIdsMutable.toList()
 
-    var depotId: Long? = depotId
-        private set
+    open var depotId: Long? = depotId
+        protected set
 
-    var remainingQuantity: Long = quantity
-        private set
+    open var remainingQuantity: Long = quantity
+        protected set
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
+    open val id: Long = 0
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var status: InventoryUnitStatus = InventoryUnitStatus.NORMAL
-        private set
+    open var status: InventoryUnitStatus = InventoryUnitStatus.NORMAL
+        protected set
 
     @CreationTimestamp
-    val receivedAt: Instant = Instant.now()
+    open val receivedAt: Instant = Instant.now()
 
     @CreationTimestamp
-    val createdAt: Instant = Instant.now()
+    open val createdAt: Instant = Instant.now()
 
     @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
-        private set
+    open var updatedAt: Instant = Instant.now()
+        protected set
 
     open fun consume(saleOrderId: Long, amount: Int) {
         require(amount > 0) { "销售数量必须为正数" }

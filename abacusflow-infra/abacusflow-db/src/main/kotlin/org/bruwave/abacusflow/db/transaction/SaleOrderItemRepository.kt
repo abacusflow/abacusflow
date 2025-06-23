@@ -8,14 +8,4 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SaleOrderItemRepository : JpaRepository<SaleOrderItem, Long> {
-    fun findByProductId(productId: Long): List<SaleOrderItem>
-
-//    @Query(
-//        """
-//        SELECT SUM(p.quantity) FROM SaleOrderItem p WHERE p.productId = :productId
-//    """,
-//    )
-//    fun findTotalQuantityByProductId(
-//        @Param("productId") productId: Long,
-//    ): Long?
 }

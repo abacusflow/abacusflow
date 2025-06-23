@@ -77,7 +77,7 @@ class InventoryServiceImpl(
 
         return inventories.map { inventory ->
             val product = productMap.getValue(inventory.productId)
-            val units = inventoryUnitMap.getValue(inventory.id)
+            val units = inventoryUnitMap[inventory.id] ?: listOf()
 
             val unitTOS = units.map {
                 val purchaseOrder = purchaseOrdersMap.getValue(it.purchaseOrderId)

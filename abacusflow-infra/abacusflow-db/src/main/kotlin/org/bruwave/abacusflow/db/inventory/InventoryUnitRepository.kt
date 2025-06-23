@@ -18,7 +18,17 @@ interface InventoryUnitRepository : JpaRepository<InventoryUnit, Long> {
 
     fun findByDepotId(depotId: Long): List<InventoryUnit>
     fun findByPurchaseOrderId(orderId: Long): List<InventoryUnit>
-    fun findBySaleOrderIdsIs(saleOrderIds: List<Long>): List<InventoryUnit>
 
-    fun findBySaleOrderIdsContaining(saleOrderId: Long): List<InventoryUnit>
+//    fun findBySaleOrderIdsContaining(saleOrderId: Long): List<InventoryUnit>
+
+//    @Query(
+//        """
+//    SELECT iu FROM InventoryUnit iu
+//    WHERE :saleOrderId IN (
+//        SELECT sid FROM iu.saleOrderIds sid
+//    )
+//"""
+//    )
+//    fun findBySaleOrderIdInElementCollection(@Param("saleOrderId") saleOrderId: Long): List<InventoryUnit>
+
 }

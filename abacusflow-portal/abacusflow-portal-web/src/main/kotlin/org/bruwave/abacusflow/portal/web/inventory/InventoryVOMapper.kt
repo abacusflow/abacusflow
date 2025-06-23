@@ -23,4 +23,5 @@ fun BasicInventoryTO.toBasicVO(): BasicInventoryVO =
         quantity = quantity,
         safetyStock = safetyStock,
         maxStock = maxStock,
+        units = units.map { it.toBasicVO() },
     )

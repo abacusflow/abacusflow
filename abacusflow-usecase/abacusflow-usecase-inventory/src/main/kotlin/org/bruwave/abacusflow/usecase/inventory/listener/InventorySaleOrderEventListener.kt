@@ -35,21 +35,21 @@ class InventorySaleOrderEventListener(
 
     @EventListener
     fun handleSaleOrderReversedEvent(event: SaleOrderReversedEvent) {
-        val order = event.order
-        println("SaleOrder Reversed orderNo: ${order.no}")
-
-        // 查询该订单产生的库存单元
-        val units = inventoryUnitRepository.findBySaleOrderIdsContaining(order.id)
-
-        if (units.isEmpty()) {
-            println("No InventoryUnits found for PurchaseOrder ${order.no}, skipping reversal")
-            return
-        }
-
-        units.forEach { unit ->
-            unit.reverse()
-        }
-
-        inventoryUnitRepository.saveAll(units)
+//        val order = event.order
+//        println("SaleOrder Reversed orderNo: ${order.no}")
+//
+//        // 查询该订单产生的库存单元
+//        val units = inventoryUnitRepository.findBySaleOrderIdInElementCollection(order.id)
+//
+//        if (units.isEmpty()) {
+//            println("No InventoryUnits found for PurchaseOrder ${order.no}, skipping reversal")
+//            return
+//        }
+//
+//        units.forEach { unit ->
+//            unit.reverse()
+//        }
+//
+//        inventoryUnitRepository.saveAll(units)
     }
 }

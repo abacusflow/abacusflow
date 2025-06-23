@@ -1842,6 +1842,7 @@ components:
         - quantity
         - safetyStock
         - maxStock
+        - units
       properties:
         id:
           type: integer
@@ -1862,6 +1863,74 @@ components:
           type: integer
           format: int64
           description: 最大库存预警线
+        units:
+          type: object
+          items:
+            $ref: "#/components/schemas/BasicInventoryUnit"
+
+    # ============= InventoryUnit schemas =============
+
+    BasicInventoryUnit:
+      type: object
+      required:
+        - id
+        - type
+        - purchaseOrderNo
+        - saleOrderNos
+        - quantity
+        - remainingQuantity
+        - unitPrice
+        - receivedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/InventoryUnitType"
+        purchaseOrderNo:
+          type: string
+          format: uuid
+        saleOrderNos:
+          type: array
+          items:
+            type: string
+            format: uuid
+        depotId:
+          type: integer
+          format: int64
+          nullable: true
+        quantity:
+          type: integer
+          format: int64
+        remainingQuantity:
+          type: integer
+          format: int64
+        unitPrice:
+          type: number
+          format: double
+        receivedAt:
+          type: integer
+          format: int64
+        batchCode:
+          type: string
+          format: uuid
+          nullable: true
+        serialNumber:
+          type: string
+          nullable: true
+
+    InventoryUnitType:
+      type: string
+      description: 单元类型
+      enum:
+        - instance
+        - batch
+      x-enum-varnames:
+        - instance
+        - batch
+      x-enum-descriptions:
+        - 资产单元
+        - 批次单元
 
     # ============= SaleOrder schemas =============
     SaleOrder:
