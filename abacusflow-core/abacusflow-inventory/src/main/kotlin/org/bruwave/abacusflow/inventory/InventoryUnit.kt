@@ -18,8 +18,10 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import org.bruwave.abacusflow.inventory.Inventory
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.type.SqlTypes
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
@@ -37,7 +39,8 @@ abstract class InventoryUnit(
     open val unitPrice: Double,
     depotId: Long?
 ) {
-    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "sale_order_ids", columnDefinition = "jsonb")
     private val saleOrderIdsMutable: MutableSet<Long> = mutableSetOf()
 
     val saleOrderIds: List<Long>
