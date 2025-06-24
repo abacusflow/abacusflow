@@ -80,8 +80,9 @@ abstract class InventoryUnit(
         require(amount > 0) { "销售数量必须为正数" }
         require(amount <= MAX_ADJUSTMENT) { "每次减少的库存数量不能超过 $MAX_ADJUSTMENT 个" }
         require(remainingQuantity >= amount) { "剩余库存不足" }
-        require(status == InventoryUnitStatus.NORMAL) { "当前是未出库状态才可出库" }
-
+        require(status in setOf(InventoryUnitStatus.NORMAL, InventoryUnitStatus.REVERSED)) {
+            "当前是未出库或已退回状态才可出库"
+        }
         remainingQuantity -= amount
         saleOrderIdsMutable.add(saleOrderId)
 
@@ -92,15 +93,23 @@ abstract class InventoryUnit(
         updatedAt = Instant.now()
     }
 
-    fun cancel(reason: String = "") {
-        require(status == InventoryUnitStatus.NORMAL) { "只能取消未出库的库存" }
+    open fun cancel(reason: String?) {
+        require(remainingQuantity == quantity) { "只能取消尚未出库的库存" }
+
         status = InventoryUnitStatus.CANCELED
         updatedAt = Instant.now()
     }
 
-    fun reverse() {
-        require(status == InventoryUnitStatus.CONSUMED) { "只能撤销已出库的库存" }
+    open fun reverse(amount: Int, saleOrderId: Long) {
+        require(amount > 0) { "回退数量必须为正" }
+        require(remainingQuantity < quantity) { "当前库存未出库，无需回退" }
+        require(remainingQuantity + amount <= quantity) { "库存无法回退，超过原始数量" }
+
+        remainingQuantity += amount
+        saleOrderIdsMutable.remove(saleOrderId)
+
         status = InventoryUnitStatus.REVERSED
+
         updatedAt = Instant.now()
     }
 
@@ -122,12 +131,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val serialNumber: String,
     ) : InventoryUnit(
-            inventory = inventory,
-            purchaseOrderId = purchaseOrderId,
-            quantity = 1,
-            depotId = depotId,
-            unitPrice = unitPrice,
-        ) {
+        inventory = inventory,
+        purchaseOrderId = purchaseOrderId,
+        quantity = 1,
+        depotId = depotId,
+        unitPrice = unitPrice,
+    ) {
         val inStock: Boolean
             get() = remainingQuantity == 1L
 
@@ -153,12 +162,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val batchCode: UUID = UUID.randomUUID(),
     ) : InventoryUnit(
-            inventory = inventory,
-            purchaseOrderId = purchaseOrderId,
-            quantity = quantity,
-            unitPrice = unitPrice,
-            depotId = depotId,
-        )
+        inventory = inventory,
+        purchaseOrderId = purchaseOrderId,
+        quantity = quantity,
+        unitPrice = unitPrice,
+        depotId = depotId,
+    )
 
     enum class UnitType {
         INSTANCE,

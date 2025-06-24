@@ -31,6 +31,14 @@
           size="small"
         >
           <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'status'">
+              <a-tooltip :title="statusTooltip(record.status)">
+                <a-tag :color="statusColor(record.status)">
+                  {{ $translateOrderStatus(record.status) }}
+                </a-tag>
+              </a-tooltip>
+            </template>
+
             <template v-if="column.key === 'autoCompleteDate'">
               <a-tag :color="getAutoCompleteColor(record.autoCompleteDate)">
                 {{
@@ -41,10 +49,6 @@
               </a-tag>
             </template>
 
-            <template v-if="column.key === 'status'">
-              {{ $translateOrderStatus(record.status) }}
-            </template>
-
             <template v-if="column.key === 'action'">
               <a-space>
                 <a-button type="link" shape="circle" @click="handleEditSaleOrder(record)"
@@ -53,29 +57,59 @@
 
                 <a-divider type="vertical" />
 
+                <!-- 完成订单按钮 -->
                 <a-popconfirm
                   title="确定完成该销售单？"
                   @confirm="handleCompleteSaleOrder(record.id)"
+                  :disabled="record.status !== OrderStatus.pending"
                 >
-                  <a-button type="link" shape="circle">完成订单</a-button>
+                  <a-button
+                    type="link"
+                    shape="circle"
+                    :disabled="record.status !== OrderStatus.pending"
+                  >
+                    完成订单
+                  </a-button>
                 </a-popconfirm>
 
                 <a-divider type="vertical" />
 
+                <!-- 取消订单按钮 -->
                 <a-popconfirm
                   title="确定取消该销售单？"
                   @confirm="handleCancelSaleOrder(record.id)"
+                  :disabled="record.status !== OrderStatus.pending"
                 >
-                  <a-button type="link" shape="circle">取消订单</a-button>
+                  <a-button
+                    type="link"
+                    shape="circle"
+                    :disabled="record.status !== OrderStatus.pending"
+                  >
+                    取消订单
+                  </a-button>
                 </a-popconfirm>
 
                 <a-divider type="vertical" />
 
+                <!-- 撤回订单按钮 -->
                 <a-popconfirm
                   title="确定撤回该销售单？"
                   @confirm="handleReverseSaleOrder(record.id)"
+                  :disabled="
+                    record.status !== OrderStatus.completed &&
+                    record.status !== OrderStatus.canceled
+                  "
                 >
-                  <a-button type="link" shape="circle">撤回订单</a-button>
+                  <a-button
+                    type="link"
+                    shape="circle"
+                    :disabled="
+                      record.status !== OrderStatus.completed &&
+                      record.status !== OrderStatus.canceled
+                    "
+                  >
+                    撤回订单
+                  </a-button>
                 </a-popconfirm>
               </a-space>
             </template>
@@ -113,7 +147,7 @@
 <script lang="ts" setup>
 import { computed, inject, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicSaleOrder, TransactionApi } from "@/core/openapi";
+import { OrderStatus, type BasicSaleOrder, type TransactionApi } from "@/core/openapi";
 import SaleOrderAddView from "./SaleOrderAddView.vue";
 import SaleOrderEditView from "./SaleOrderDetailView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
@@ -217,6 +251,38 @@ function handleReverseSaleOrder(id: number) {
   reverseSaleOrder(id);
 }
 
+// 获取状态的提示信息
+function statusTooltip(status: OrderStatus): string {
+  switch (status) {
+    case OrderStatus.pending:
+      return "订单待处理，请尽快处理"; // 提示
+    case OrderStatus.completed:
+      return "订单已完成，感谢您的处理"; // 提示
+    case OrderStatus.canceled:
+      return "订单已取消，无法处理"; // 提示
+    case OrderStatus.reversed:
+      return "订单已回退，无法继续处理"; // 提示
+    default:
+      return "未知状态"; // 提示
+  }
+}
+
+// 获取状态的标签颜色
+function statusColor(status: OrderStatus): string {
+  switch (status) {
+    case OrderStatus.pending:
+      return "yellow"; // 黄色
+    case OrderStatus.completed:
+      return "green"; // 绿色
+    case OrderStatus.canceled:
+      return "red"; // 红色
+    case OrderStatus.reversed:
+      return "orange"; // 橙色（回退状态使用橙色）
+    default:
+      return "blue"; // 默认蓝色
+  }
+}
+
 function getAutoCompleteColor(autoCompleteDate?: string): string {
   if (!autoCompleteDate) return "default";
 
@@ -232,8 +298,17 @@ const columns: StrictTableColumnsType<BasicSaleOrder> = [
   { title: "销售单号", dataIndex: "orderNo", key: "orderNo" },
   { title: "客户名称", dataIndex: "customerName", key: "customerName" },
   { title: "订单状态", dataIndex: "status", key: "status" },
-  { title: "订单总金额", dataIndex: "totalAmount", key: "totalAmount" },
-  { title: "总销售数量", dataIndex: "totalQuantity", key: "totalQuantity" },
+  {
+    title: "订单总金额",
+    dataIndex: "totalAmount",
+    key: "totalAmount",
+    customRender: ({ text }) => text.toFixed(2)
+  },
+  {
+    title: "总销售数量",
+    dataIndex: "totalQuantity",
+    key: "totalQuantity"
+  },
   { title: "商品种类数", dataIndex: "itemCount", key: "itemCount" },
   {
     title: "订单日期",

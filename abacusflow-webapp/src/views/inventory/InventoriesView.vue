@@ -5,7 +5,7 @@
         <h1>库存管理</h1>
       </a-flex>
 
-      <a-flex justify="flex-starrt" align="center" style="height: 100%">
+      <a-flex justify="flex-starrt" align="start" style="height: 100%">
         <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
         <a-flex vertical style="flex: 1; padding-left: 16px">
           <a-card :bordered="false">
