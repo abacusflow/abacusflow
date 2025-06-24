@@ -11,7 +11,7 @@ import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitQueryService
-import org.bruwave.abacusflow.usecase.inventory.toTO
+import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL

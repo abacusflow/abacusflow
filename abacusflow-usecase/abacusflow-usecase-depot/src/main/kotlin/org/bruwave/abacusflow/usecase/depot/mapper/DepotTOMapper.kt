@@ -1,6 +1,8 @@
-package org.bruwave.abacusflow.usecase.depot
+package org.bruwave.abacusflow.usecase.depot.mapper
 
 import org.bruwave.abacusflow.depot.Depot
+import org.bruwave.abacusflow.usecase.depot.BasicDepotTO
+import org.bruwave.abacusflow.usecase.depot.DepotTO
 
 fun Depot.toTO() =
     DepotTO(

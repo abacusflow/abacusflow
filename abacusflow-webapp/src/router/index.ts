@@ -16,7 +16,7 @@ const router = createRouter({
     {
       path: "/user",
       name: "user",
-      component: () => import("@/views/user/UserListView.vue"),
+      component: () => import("@/views/user/UsersView.vue"),
       meta: {
         title: "用户管理",
         icon: "user",
@@ -26,7 +26,7 @@ const router = createRouter({
     {
       path: "/inventory",
       name: "inventory",
-      component: () => import("@/views/inventory/InventoryListView.vue"),
+      component: () => import("@/views/inventory/InventoriesView.vue"),
       meta: {
         title: "库存管理",
         icon: "database",
@@ -46,7 +46,7 @@ const router = createRouter({
         {
           path: "purchase-order",
           name: "transaction-purchase-order",
-          component: () => import("@/views/transaction/purchase-order/PurchaseOrderListView.vue"),
+          component: () => import("@/views/transaction/purchase-order/PurchaseOrdersView.vue"),
           meta: {
             title: "采购单管理",
             icon: "shopping-cart",
@@ -56,7 +56,7 @@ const router = createRouter({
         {
           path: "sale-order",
           name: "transaction-sale-order",
-          component: () => import("@/views/transaction/sale-order/SaleOrderListView.vue"),
+          component: () => import("@/views/transaction/sale-order/SaleOrdersView.vue"),
           meta: {
             title: "销售单管理",
             icon: "shopping-cart",
@@ -78,7 +78,7 @@ const router = createRouter({
         {
           path: "",
           name: "product-home",
-          component: () => import("@/views/product/ProductListView.vue"),
+          component: () => import("@/views/product/ProductsView.vue"),
           meta: {
             title: "产品管理",
             icon: "appstore",
@@ -88,7 +88,7 @@ const router = createRouter({
         {
           path: "category",
           name: "product-category",
-          component: () => import("@/views/product/category/ProductCategoryListView.vue"),
+          component: () => import("@/views/product/category/ProductCategoriesView.vue"),
           meta: {
             title: "产品类别管理",
             icon: "tags",
@@ -110,7 +110,7 @@ const router = createRouter({
         {
           path: "customer",
           name: "partner-customer",
-          component: () => import("@/views/partner/customer/CustomerListView.vue"),
+          component: () => import("@/views/partner/customer/CustomersView.vue"),
           meta: {
             title: "客户管理",
             icon: "user",
@@ -121,7 +121,7 @@ const router = createRouter({
         {
           path: "supplier",
           name: "partner-supplier",
-          component: () => import("@/views/partner/supplier/SupplierListView.vue"),
+          component: () => import("@/views/partner/supplier/SuppliersView.vue"),
           meta: {
             title: "供应商管理",
             icon: "shop",
@@ -134,7 +134,7 @@ const router = createRouter({
     {
       path: "/depot",
       name: "depot",
-      component: () => import("@/views/depot/DepotListView.vue"),
+      component: () => import("@/views/depot/DepotsView.vue"),
       meta: {
         title: "储存点管理",
         icon: "home",

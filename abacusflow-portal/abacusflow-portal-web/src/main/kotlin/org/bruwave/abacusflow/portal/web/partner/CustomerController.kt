@@ -6,7 +6,7 @@ import org.bruwave.abacusflow.portal.web.model.CreateCustomerInputVO
 import org.bruwave.abacusflow.portal.web.model.CustomerVO
 import org.bruwave.abacusflow.portal.web.model.UpdateCustomerInputVO
 import org.bruwave.abacusflow.usecase.partner.CreateCustomerInputTO
-import org.bruwave.abacusflow.usecase.partner.CustomerService
+import org.bruwave.abacusflow.usecase.partner.service.CustomerService
 import org.bruwave.abacusflow.usecase.partner.UpdateCustomerInputTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController

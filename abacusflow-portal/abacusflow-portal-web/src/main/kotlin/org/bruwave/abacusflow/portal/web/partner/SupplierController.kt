@@ -6,7 +6,7 @@ import org.bruwave.abacusflow.portal.web.model.CreateSupplierInputVO
 import org.bruwave.abacusflow.portal.web.model.SupplierVO
 import org.bruwave.abacusflow.portal.web.model.UpdateSupplierInputVO
 import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
-import org.bruwave.abacusflow.usecase.partner.SupplierService
+import org.bruwave.abacusflow.usecase.partner.service.SupplierService
 import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController

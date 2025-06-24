@@ -15,7 +15,7 @@ import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryTO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
-import org.bruwave.abacusflow.usecase.inventory.toTO
+import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
 import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.Record
@@ -24,7 +24,6 @@ import org.jooq.util.postgres.PGobject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.domain.Specification.where
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant

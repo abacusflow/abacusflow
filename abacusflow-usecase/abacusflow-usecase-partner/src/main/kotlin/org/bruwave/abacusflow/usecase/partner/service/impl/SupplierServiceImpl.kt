@@ -1,10 +1,10 @@
-package org.bruwave.abacusflow.usecase.partner.impl
+package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.partner.Supplier
 import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
 import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
-import org.bruwave.abacusflow.usecase.partner.SupplierService
+import org.bruwave.abacusflow.usecase.partner.service.SupplierService
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
 import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
 import org.springframework.stereotype.Service
@@ -66,22 +66,4 @@ class SupplierServiceImpl(
 
     override fun listSuppliers(): List<BasicSupplierTO> = supplierRepository.findAll().map { it.toBasicTO() }
 
-    private fun Supplier.toTO() =
-        SupplierTO(
-            id = id,
-            name = name,
-            contactPerson = contactPerson,
-            phone = phone,
-            createdAt = createdAt,
-            updatedAt = updatedAt,
-        )
-
-    private fun Supplier.toBasicTO() =
-        BasicSupplierTO(
-            id = id,
-            name = name,
-            contactPerson = contactPerson,
-            phone = phone,
-            address = address,
-        )
 }

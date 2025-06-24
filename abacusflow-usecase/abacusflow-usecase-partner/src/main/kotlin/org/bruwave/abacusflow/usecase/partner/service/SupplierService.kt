@@ -1,4 +1,9 @@
-package org.bruwave.abacusflow.usecase.partner
+package org.bruwave.abacusflow.usecase.partner.service
+
+import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
+import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
+import org.bruwave.abacusflow.usecase.partner.SupplierTO
+import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
 
 interface SupplierService {
     fun createSupplier(supplier: CreateSupplierInputTO): SupplierTO
