@@ -9,5 +9,4 @@ data class BasicProductTO(
     val unit: String,
     val note: String?,
     val enabled: Boolean,
-    val instances: List<ProductInstanceForBasicProductTO>?,
 )

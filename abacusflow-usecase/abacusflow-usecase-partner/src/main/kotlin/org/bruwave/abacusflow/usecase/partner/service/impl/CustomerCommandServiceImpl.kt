@@ -4,7 +4,7 @@ import org.bruwave.abacusflow.db.partner.CustomerRepository
 import org.bruwave.abacusflow.partner.Customer
 import org.bruwave.abacusflow.usecase.partner.BasicCustomerTO
 import org.bruwave.abacusflow.usecase.partner.CreateCustomerInputTO
-import org.bruwave.abacusflow.usecase.partner.service.CustomerService
+import org.bruwave.abacusflow.usecase.partner.service.CustomerCommandService
 import org.bruwave.abacusflow.usecase.partner.CustomerTO
 import org.bruwave.abacusflow.usecase.partner.UpdateCustomerInputTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toBasicTO
@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class CustomerServiceImpl(
+class CustomerCommandServiceImpl(
     private val customerRepository: CustomerRepository,
-) : CustomerService {
+) : CustomerCommandService {
     override fun createCustomer(input: CreateCustomerInputTO): CustomerTO {
         val newCustomer =
             Customer(
@@ -51,18 +51,4 @@ class CustomerServiceImpl(
         customerRepository.delete(customer)
         return customer.toTO()
     }
-
-    override fun getCustomer(id: Long): CustomerTO =
-        customerRepository
-            .findById(id)
-            .orElseThrow { NoSuchElementException("Customer not found") }
-            .toTO()
-
-    override fun getCustomer(name: String): CustomerTO =
-        customerRepository
-            .findByName(name)
-            ?.toTO()
-            ?: throw NoSuchElementException("Customer not found")
-
-    override fun listCustomers(): List<BasicCustomerTO> = customerRepository.findAll().map { it.toBasicTO() }
 }

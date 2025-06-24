@@ -117,19 +117,60 @@ paths:
 
   /suppliers:
     get:
-      operationId: listSuppliers
+      operationId: listSuppliersPage
       tags:
         - partner
-      summary: List all suppliers
+      summary: List suppliers page
+      parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: contactPerson
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: phone
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: List of suppliers
+          description: List of suppliers page
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicSupplier"
+                allOf:
+                  - $ref: "#/components/schemas/PageTemplate"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BasicSupplier"
     post:
       operationId: addSupplier
       tags:
@@ -212,19 +253,55 @@ paths:
 
   /customers:
     get:
-      operationId: listCustomers
+      operationId: listCustomersPage
       tags:
         - partner
-      summary: List all customers
+      summary: List customers page
+      parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: phone
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: List of customers
+          description: List of customers page
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicCustomer"
+                allOf:
+                  - $ref: "#/components/schemas/PageTemplate"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BasicCustomer"
     post:
       operationId: addCustomer
       tags:
@@ -307,46 +384,61 @@ paths:
 
   /products:
     get:
-      operationId: listProducts
+      operationId: listProductsPage
       tags:
         - product
-      summary: List all products
+      summary: List products page
       parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProductType"
+        - name: enabled
+          in: query
+          required: false
+          schema:
+            type: boolean
         - name: categoryId
           in: query
           required: false
           schema:
             type: integer
             format: int64
-        - name: name
-          in: query
-          required: false
-          schema:
-            type: string
-        # - name: pageIndex
-        #   in: query
-        #   required: true
-        #   schema:
-        #     type: integer
-        #     format: int32
-        #     minimum: 1
-        # - name: pageSize
-        #   in: query
-        #   required: true
-        #   schema:
-        #     type: integer
-        #     format: int32
-        #     minimum: 10
-        #     maximum: 100
       responses:
         "200":
-          description: List of products
+          description: List of products page
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicProduct"
+                allOf:
+                  - $ref: "#/components/schemas/PageTemplate"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BasicProduct"
     post:
       operationId: addProduct
       tags:
@@ -522,21 +614,6 @@ paths:
         "200":
           description: Product category deleted
 
-  /product-instance:
-    get:
-      operationId: listProductInstances
-      tags:
-        - product
-      summary: List all productInstances
-      responses:
-        "200":
-          description: List of productInstances
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicProductInstance"
   /depots:
     get:
       operationId: listDepots
@@ -634,7 +711,7 @@ paths:
 
   /inventories:
     get:
-      operationId: queryPagedInventories
+      operationId: listInventoriesPage
       tags:
         - inventory
       summary: Query inventories with pagination and filters
@@ -666,6 +743,11 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: productType
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProductType"
         - name: depotId
           in: query
           required: false
@@ -678,7 +760,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PageBasicInventory"
+                allOf:
+                  - $ref: "#/components/schemas/PageTemplate"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BasicInventory"
 
   /inventories/{id}:
     get:
@@ -826,19 +915,61 @@ paths:
 
   /sale-orders:
     get:
-      operationId: listSaleOrders
+      operationId: listSaleOrdersPage
       tags:
         - transaction
-      summary: List all sale orders
+      summary: List sale orders page
+      parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: orderNo
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: customerName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: productName
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: List of sale orders
+          description: List of sale orders page
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicSaleOrder"
+                allOf:
+                  - $ref: "#/components/schemas/PageTemplate"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BasicSaleOrder"
     post:
       operationId: addSaleOrder
       tags:
@@ -932,19 +1063,61 @@ paths:
 
   /purchase-orders:
     get:
-      operationId: listPurchaseOrders
+      operationId: listPurchaseOrdersPage
       tags:
         - transaction
-      summary: List all purchase orders
+      summary: List purchase orders page
+      parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: orderNo
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: supplierName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: productName
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: List of purchase orders
+          description: List of purchase orders page
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicPurchaseOrder"
+                allOf:
+                  - $ref: "#/components/schemas/PageTemplate"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BasicPurchaseOrder"
     post:
       operationId: addPurchaseOrder
       tags:
@@ -1774,23 +1947,6 @@ components:
           format: int64
           description: 更新时间戳
 
-    PageBasicInventory:
-      type: object
-      properties:
-        content:
-          type: array
-          items:
-            $ref: "#/components/schemas/BasicInventory"
-        totalElements:
-          type: integer
-          format: int64
-        number:
-          type: integer
-          description: 当前页码，从 0 开始
-        size:
-          type: integer
-          description: 每页条数
-
     BasicInventory:
       type: object
       required:
@@ -2402,6 +2558,29 @@ components:
         - 已完成
         - 已取消
         - 已撤回
+
+    PageTemplate:
+      type: object
+      required:
+        - content
+        - totalElements
+        - number
+        - size
+      properties:
+        content:
+          type: array
+          items:
+            type: string
+        totalElements:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          description: 当前页码，从 0 开始
+        size:
+          type: integer
+          description: 每页条数
+
     Sex:
       type: string
       description: 性别

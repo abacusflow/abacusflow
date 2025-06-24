@@ -11,19 +11,55 @@
           <a-card :bordered="false">
             <a-form layout="inline" :model="searchForm">
               <a-form-item label="产品" name="productId">
-                <a-input
+                <a-select
                   v-model:value="searchForm.productId"
-                  placeholder="请选择产品"
                   allow-clear
-                />
+                  show-search
+                  placeholder="请选择产品"
+                  style="width: 200px"
+                  optionFilterProp="label"
+                >
+                  <a-select-option
+                    v-for="product in products"
+                    :key="product.id"
+                    :value="product.id"
+                    :label="product.name"
+                  >
+                    {{ product.name }}
+                  </a-select-option>
+                </a-select>
               </a-form-item>
 
               <a-form-item label="储存点" name="depotId">
-                <a-input
+                <a-select
                   v-model:value="searchForm.depotId"
-                  placeholder="请选择储存点"
                   allow-clear
-                />
+                  show-search
+                  placeholder="请选择储存点"
+                  style="width: 200px"
+                  optionFilterProp="label"
+                >
+                  <a-select-option
+                    v-for="depot in depots"
+                    :key="depot.id"
+                    :value="depot.id"
+                    :label="depot.name"
+                  >
+                    {{ depot.name }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+
+              <a-form-item label="商品类型" name="productType">
+                <a-select v-model:value="searchForm.productType" placeholder="请选择商品类型">
+                  <a-select-option
+                    v-for="value in Object.values(ProductType)"
+                    :key="value"
+                    :value="value"
+                  >
+                    {{ $translateProductType(value) }}
+                  </a-select-option>
+                </a-select>
               </a-form-item>
 
               <a-form-item>
@@ -123,9 +159,12 @@ import { useQuery } from "@tanstack/vue-query";
 import {
   type BasicInventory,
   type BasicInventoryUnit,
+  DepotApi,
   type InventoryApi,
   InventoryUnitType,
-  type QueryPagedInventoriesRequest
+  type ListInventoriesPageRequest,
+  ProductApi,
+  ProductType
 } from "@/core/openapi";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
@@ -135,9 +174,12 @@ import { type TableColumnsType, Tag } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
 import { useRoute, useRouter } from "vue-router";
 
-const inventoryApi = inject("inventoryApi") as InventoryApi;
 const router = useRouter();
 const route = useRoute();
+
+const inventoryApi = inject("inventoryApi") as InventoryApi;
+const productApi = inject("productApi") as ProductApi;
+const depotApi = inject("depotApi") as DepotApi;
 
 const pageIndex = ref(1);
 const pageSize = ref(10);
@@ -154,7 +196,8 @@ const productCategoryId = computed(() => {
 // 搜索表单
 const searchForm = reactive({
   productId: undefined,
-  depotId: undefined
+  depotId: undefined,
+  productType: undefined
 });
 
 // 搜索
@@ -192,21 +235,33 @@ const {
     productCategoryId,
     searchForm.productId,
     searchForm.depotId,
+    searchForm.productType,
     pageIndex,
     pageSize
   ],
   queryFn: () => {
-    const { productId, depotId } = searchForm;
+    const { productId, depotId, productType } = searchForm;
 
-    const params: QueryPagedInventoriesRequest = {
+    const params: ListInventoriesPageRequest = {
       productCategoryId: productCategoryId.value,
       productId: productId || undefined,
       depotId: depotId || undefined,
+      productType: productType || undefined,
       pageIndex: pageIndex.value,
       pageSize: pageSize.value
     };
-    return inventoryApi.queryPagedInventories(params);
+    return inventoryApi.listInventoriesPage(params);
   }
+});
+
+const { data: depots } = useQuery({
+  queryKey: ["depots"],
+  queryFn: () => depotApi.listDepots()
+});
+
+const { data: products } = useQuery({
+  queryKey: ["products"],
+  queryFn: () => productApi.listProducts()
 });
 
 function handleAdjustWarningLine(inventory: BasicInventory) {

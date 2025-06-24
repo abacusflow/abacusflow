@@ -17,6 +17,30 @@
                 <a-input v-model:value="searchForm.name" placeholder="请输入产品名称" allow-clear />
               </a-form-item>
 
+              <a-form-item label="类型" name="type">
+                <a-select v-model:value="searchForm.type" placeholder="请选择商品类型">
+                  <a-select-option
+                    v-for="value in Object.values(ProductType)"
+                    :key="value"
+                    :value="value"
+                  >
+                    {{ $translateProductType(value) }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+
+              <a-form-item label="启用状态">
+                <a-select
+                  v-model:value="searchForm.enabled"
+                  placeholder="请选择启用状态"
+                  allow-clear
+                  style="width: 120px"
+                >
+                  <a-select-option :value="true">启用</a-select-option>
+                  <a-select-option :value="false">禁用</a-select-option>
+                </a-select>
+              </a-form-item>
+
               <a-form-item>
                 <a-space>
                   <a-button type="primary" @click="handleSearch">搜索</a-button>
@@ -29,10 +53,11 @@
           <a-card :bordered="false">
             <a-table
               :columns="columns"
-              :data-source="data"
+              :data-source="pageData?.content || []"
               :loading="isPending"
               row-key="id"
               size="small"
+              :pagination="pagination"
             >
               <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'unit'">
@@ -97,30 +122,56 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref } from "vue";
+import { computed, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicProduct, BasicProductInstancesInner, Product, ProductApi } from "@/core/openapi";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
 import { useRoute, useRouter } from "vue-router";
+import {
+  type ProductApi,
+  type Product,
+  type ListProductsPageRequest,
+  type BasicProduct,
+  type BasicProductInstancesInner,
+  ProductType
+} from "@/core/openapi";
 
 const productApi = inject("productApi") as ProductApi;
 const queryClient = useQueryClient();
 const router = useRouter();
 const route = useRoute();
 
+const pageIndex = ref(1);
+const pageSize = ref(10);
 const showAdd = ref(false);
 const showEdit = ref(false);
 const editingProduct = ref<Product | null>(null);
-const categoryId = computed(() => route.query.categoryId);
+const categoryId = computed(() => {
+  const id = route.query.categoryId;
+  return id !== undefined ? Number(id) : undefined;
+});
 
 // 搜索表单
-const searchForm = ref({
-  name: ""
+const searchForm = reactive({
+  name: undefined,
+  type: undefined,
+  enabled: undefined
 });
+
+const pagination = computed(() => ({
+  current: pageIndex.value,
+  pageSize: pageSize.value,
+  total: pageData.value?.totalElements,
+  showTotal: (total: number) => `共 ${total} 条`,
+  onChange: (page: number, size: number) => {
+    pageIndex.value = page;
+    pageSize.value = size;
+    refetch();
+  }
+}));
 
 // 搜索
 const handleSearch = () => {
@@ -130,10 +181,10 @@ const handleSearch = () => {
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.value = {
-    name: ""
-  };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
+  searchForm.name = undefined;
+  searchForm.type = undefined;
+  searchForm.enabled = undefined;
+
   refetch();
 };
 
@@ -143,11 +194,32 @@ const handleEditProduct = (product: Product) => {
   showEdit.value = true;
 };
 
-const { data, isPending, refetch } = useQuery({
-  queryKey: ["products", categoryId],
+const {
+  data: pageData,
+  isPending,
+  refetch
+} = useQuery({
+  queryKey: [
+    "products",
+    categoryId,
+    searchForm.name,
+    searchForm.type,
+    searchForm.enabled,
+    pageIndex,
+    pageSize
+  ],
   queryFn: () => {
-    const id = Number(categoryId.value);
-    return productApi.listProducts(isNaN(id) ? undefined : { categoryId: id });
+    const { name, type, enabled } = searchForm;
+    const params: ListProductsPageRequest = {
+      pageIndex: pageIndex.value,
+      pageSize: pageSize.value,
+      name: name || undefined,
+      type: type || undefined,
+      enabled: enabled || undefined,
+      categoryId: categoryId.value || undefined
+    };
+
+    return productApi.listProductsPage(params);
   }
 });
 

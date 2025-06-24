@@ -5,7 +5,7 @@ import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 
-interface ProductService {
+interface ProductCommandService {
     fun createProduct(input: CreateProductInputTO): ProductTO
 
     fun updateProduct(
@@ -14,10 +14,4 @@ interface ProductService {
     ): ProductTO
 
     fun deleteProduct(id: Long): ProductTO
-
-    fun getProduct(id: Long): ProductTO
-
-    fun getProduct(name: String): ProductTO
-
-    fun listProducts(categoryId: Long?): List<BasicProductTO>
 }

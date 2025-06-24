@@ -30,7 +30,6 @@ fun Product.toBasicTO(instances: List<ProductInstanceForBasicProductTO>?) =
         unit = unit.name,
         note = note,
         enabled = enabled,
-        instances = instances,
     )
 
 fun mapProductUnitTOToDO(unit: String): ProductUnit =

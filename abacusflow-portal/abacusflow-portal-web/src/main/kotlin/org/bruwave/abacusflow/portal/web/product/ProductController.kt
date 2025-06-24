@@ -1,34 +1,60 @@
 package org.bruwave.abacusflow.portal.web.product
 
+import org.apache.tomcat.jni.Buffer.address
 import org.bruwave.abacusflow.portal.web.api.ProductsApi
 import org.bruwave.abacusflow.portal.web.model.BasicProductVO
 import org.bruwave.abacusflow.portal.web.model.CreateProductInputVO
+import org.bruwave.abacusflow.portal.web.model.ListProductsPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ListSuppliersPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ProductTypeVO
 import org.bruwave.abacusflow.portal.web.model.ProductVO
 import org.bruwave.abacusflow.portal.web.model.UpdateProductInputVO
+import org.bruwave.abacusflow.portal.web.partner.toBasicVO
+import org.bruwave.abacusflow.portal.web.product.mapper.toBasicVO
 import org.bruwave.abacusflow.portal.web.product.mapper.toVO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
-import org.bruwave.abacusflow.usecase.product.service.ProductService
+import org.bruwave.abacusflow.usecase.product.service.ProductCommandService
+import org.bruwave.abacusflow.usecase.product.service.ProductQueryService
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProductController(
-    private val productService: ProductService,
+    private val productCommandService: ProductCommandService,
+    private val productQueryService: ProductQueryService,
 ) : ProductsApi {
-    override fun listProducts(
-        categoryId: Long?,
+    override fun listProductsPage(
+        pageIndex: Int,
+        pageSize: Int,
         name: String?,
-    ): ResponseEntity<List<BasicProductVO>> {
-        val productVOs =
-            productService.listProducts(categoryId).map { product ->
-                product.toVO()
-            }
-        return ResponseEntity.ok(productVOs)
+        type: ProductTypeVO?,
+        enabled: Boolean?,
+        categoryId: Long?
+    ): ResponseEntity<ListProductsPage200ResponseVO> {
+        val pageable = PageRequest.of(pageIndex - 1, pageSize)
+
+        val page = productQueryService.listProductsPage(
+            pageable,
+            name = name,
+            type = type?.name?.uppercase(),
+            enabled = enabled,
+            categoryId = categoryId,
+        ).map { it.toBasicVO() }
+
+        val pageVO = ListProductsPage200ResponseVO(
+            content = page.content,
+            totalElements = page.totalElements,
+            number = page.number,
+            propertySize = page.size
+        )
+
+        return ResponseEntity.ok(pageVO)
     }
 
     override fun getProduct(id: Long): ResponseEntity<ProductVO> {
-        val product = productService.getProduct(id)
+        val product = productQueryService.getProduct(id)
         return ResponseEntity.ok(
             product.toVO(),
         )
@@ -36,7 +62,7 @@ class ProductController(
 
     override fun addProduct(createProductInputVO: CreateProductInputVO): ResponseEntity<ProductVO> {
         val product =
-            productService.createProduct(
+            productCommandService.createProduct(
                 CreateProductInputTO(
                     name = createProductInputVO.name,
                     categoryId = createProductInputVO.categoryId,
@@ -56,7 +82,7 @@ class ProductController(
         updateProductInputVO: UpdateProductInputVO,
     ): ResponseEntity<ProductVO> {
         val product =
-            productService.updateProduct(
+            productCommandService.updateProduct(
                 id,
                 UpdateProductInputTO(
                     name = updateProductInputVO.name,
@@ -73,7 +99,7 @@ class ProductController(
     }
 
     override fun deleteProduct(id: Long): ResponseEntity<Unit> {
-        productService.deleteProduct(id)
+        productCommandService.deleteProduct(id)
         return ResponseEntity.ok().build()
     }
 }

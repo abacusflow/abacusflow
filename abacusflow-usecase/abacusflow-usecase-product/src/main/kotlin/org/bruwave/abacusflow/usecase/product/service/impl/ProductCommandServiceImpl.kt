@@ -17,20 +17,20 @@ import org.bruwave.abacusflow.usecase.product.mapper.mapProductUnitTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.product.mapper.toForBasicProductTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
-import org.bruwave.abacusflow.usecase.product.service.ProductService
+import org.bruwave.abacusflow.usecase.product.service.ProductCommandService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class ProductServiceImpl(
+class ProductCommandServiceImpl(
     private val productRepository: ProductRepository,
     private val productInstanceRepository: ProductInstanceRepository,
     private val productCategoryRepository: ProductCategoryRepository,
     private val supplierRepository: SupplierRepository,
     private val purchaseOrderRepository: PurchaseOrderRepository,
     private val saleOrderRepository: SaleOrderRepository,
-) : ProductService {
+) : ProductCommandService {
     override fun createProduct(input: CreateProductInputTO): ProductTO {
         val newProductCategory =
             productCategoryRepository.findById(input.categoryId).orElseThrow {
@@ -97,54 +97,5 @@ class ProductServiceImpl(
         productRepository.delete(product)
 
         return product.toTO()
-    }
-
-    override fun getProduct(id: Long): ProductTO =
-        productRepository
-            .findById(id)
-            .orElseThrow { NoSuchElementException("Product not found with id: $id") }
-            .toTO()
-
-    override fun getProduct(name: String): ProductTO =
-        productRepository
-            .findByName(name)
-            ?.toTO()
-            ?: throw NoSuchElementException("Product not found")
-
-    override fun listProducts(categoryId: Long?): List<BasicProductTO> {
-        val products =
-            categoryId?.let {
-                val ids = getAllSonCategoryIds(categoryId)
-                productRepository.findByCategoryIdIn(ids)
-            } ?: productRepository.findAll()
-        val productInstances = productInstanceRepository.findAll()
-
-        val instancesByProductId: Map<Long, List<ProductInstanceForBasicProductTO>> =
-            productInstances
-                .map { instance ->
-                    instance.toForBasicProductTO()
-                }
-                .groupBy { it.productId }
-
-        return products.map { product ->
-            val instances = instancesByProductId[product.id] ?: emptyList()
-            product.toBasicTO(instances)
-        }
-    }
-
-    private fun getAllSonCategoryIds(categoryId: Long): List<Long> {
-        val allCategories = productCategoryRepository.findAll() // 拿到全量分类
-        val result = mutableListOf<Long>()
-
-        fun collectChildren(id: Long) {
-            result += id
-            val children = allCategories.filter { it.parent?.id == id }
-            for (child in children) {
-                collectChildren(child.id)
-            }
-        }
-
-        collectChildren(categoryId)
-        return result
     }
 }

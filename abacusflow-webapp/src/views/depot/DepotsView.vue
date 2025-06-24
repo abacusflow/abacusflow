@@ -10,8 +10,8 @@
 
       <a-card :bordered="false">
         <a-form layout="inline" :model="searchForm">
-          <a-form-item label="储存点名称">
-            <a-input v-model:value="searchForm.name" placeholder="请输入姓名" allow-clear />
+          <a-form-item label="关键字名称">
+            <a-input v-model:value="searchForm.name" placeholder="请输入关键字" allow-clear />
           </a-form-item>
 
           <a-form-item>
@@ -68,13 +68,13 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, ref} from "vue";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
-import type {BasicDepot, Depot, DepotApi} from "@/core/openapi";
+import { inject, ref } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { BasicDepot, Depot, DepotApi } from "@/core/openapi";
 import DepotAddView from "./DepotAddView.vue";
 import DepotEditView from "./DepotEditView.vue";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
-import {message} from "ant-design-vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { message } from "ant-design-vue";
 
 const depotApi = inject("depotApi") as DepotApi;
 const queryClient = useQueryClient();

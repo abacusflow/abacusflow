@@ -13,17 +13,17 @@ import org.bruwave.abacusflow.usecase.transaction.PurchaseItemInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
-import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderService
+import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderCommandService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class PurchaseOrderServiceImpl(
+class PurchaseOrderCommandServiceImpl(
     private val purchaseOrderRepository: PurchaseOrderRepository,
     private val supplierRepository: SupplierRepository,
     private val productRepository: ProductRepository,
-) : PurchaseOrderService {
+) : PurchaseOrderCommandService {
     override fun createPurchaseOrder(input: CreatePurchaseOrderInputTO): PurchaseOrderTO {
         val products =
             productRepository.findAllById(

@@ -8,15 +8,15 @@ import org.bruwave.abacusflow.usecase.product.ProductCategoryTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductCategoryInputTO
 import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
-import org.bruwave.abacusflow.usecase.product.service.ProductCategoryService
+import org.bruwave.abacusflow.usecase.product.service.ProductCategoryCommandService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class ProductCategoryServiceImpl(
+class ProductCategoryCommandServiceImpl(
     private val productCategoryRepository: ProductCategoryRepository,
-) : ProductCategoryService {
+) : ProductCategoryCommandService {
     override fun createProductCategory(input: CreateProductCategoryInputTO): ProductCategoryTO {
         val parentCategoryFromInput =
             productCategoryRepository
@@ -69,12 +69,4 @@ class ProductCategoryServiceImpl(
         productCategoryRepository.delete(category)
         return category.toTO()
     }
-
-    override fun getProductCategory(id: Long): ProductCategoryTO =
-        productCategoryRepository
-            .findById(id)
-            .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
-            .toTO()
-
-    override fun listProductCategories(): List<BasicProductCategoryTO> = productCategoryRepository.findAll().map { it.toBasicTO() }
 }

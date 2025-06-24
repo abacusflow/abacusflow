@@ -6,25 +6,27 @@ import org.bruwave.abacusflow.portal.web.model.CreateDepotInputVO
 import org.bruwave.abacusflow.portal.web.model.DepotVO
 import org.bruwave.abacusflow.portal.web.model.UpdateDepotInputVO
 import org.bruwave.abacusflow.usecase.depot.CreateDepotInputTO
-import org.bruwave.abacusflow.usecase.depot.service.DepotService
+import org.bruwave.abacusflow.usecase.depot.service.DepotCommandService
 import org.bruwave.abacusflow.usecase.depot.UpdateDepotInputTO
+import org.bruwave.abacusflow.usecase.depot.service.DepotQueryService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class DepotController(
-    private val depotService: DepotService,
+    private val depotCommandService: DepotCommandService,
+    private val depotQueryService: DepotQueryService,
 ) : DepotsApi {
     override fun listDepots(): ResponseEntity<List<BasicDepotVO>> {
         val depotVOs =
-            depotService.listDepots().map { depot ->
+            depotQueryService.listDepots().map { depot ->
                 depot.toBasicTO()
             }
         return ResponseEntity.ok(depotVOs)
     }
 
     override fun getDepot(id: Long): ResponseEntity<DepotVO> {
-        val depot = depotService.getDepot(id)
+        val depot = depotQueryService.getDepot(id)
         return ResponseEntity.ok(
             depot.toTO(),
         )
@@ -32,7 +34,7 @@ class DepotController(
 
     override fun addDepot(createDepotInputVO: CreateDepotInputVO): ResponseEntity<DepotVO> {
         val depot =
-            depotService.createDepot(
+            depotCommandService.createDepot(
                 CreateDepotInputTO(
                     createDepotInputVO.name,
                     createDepotInputVO.location,
@@ -49,7 +51,7 @@ class DepotController(
         updateDepotInputVO: UpdateDepotInputVO,
     ): ResponseEntity<DepotVO> {
         val depot =
-            depotService.updateDepot(
+            depotCommandService.updateDepot(
                 id,
                 UpdateDepotInputTO(
                     name = updateDepotInputVO.name,
@@ -63,7 +65,7 @@ class DepotController(
     }
 
     override fun deleteDepot(id: Long): ResponseEntity<Unit> {
-        depotService.deleteDepot(id)
+        depotCommandService.deleteDepot(id)
         return ResponseEntity.ok().build()
     }
 }

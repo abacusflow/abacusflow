@@ -4,7 +4,7 @@ import org.bruwave.abacusflow.db.depot.DepotRepository
 import org.bruwave.abacusflow.depot.Depot
 import org.bruwave.abacusflow.usecase.depot.BasicDepotTO
 import org.bruwave.abacusflow.usecase.depot.CreateDepotInputTO
-import org.bruwave.abacusflow.usecase.depot.service.DepotService
+import org.bruwave.abacusflow.usecase.depot.service.DepotCommandService
 import org.bruwave.abacusflow.usecase.depot.DepotTO
 import org.bruwave.abacusflow.usecase.depot.UpdateDepotInputTO
 import org.bruwave.abacusflow.usecase.depot.mapper.toBasicTO
@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class DepotServiceImpl(
+class DepotCommandServiceImpl(
     private val depotRepository: DepotRepository,
-) : DepotService {
+) : DepotCommandService {
     override fun createDepot(input: CreateDepotInputTO): DepotTO {
         val newDepot =
             Depot(
@@ -55,12 +55,4 @@ class DepotServiceImpl(
         depotRepository.delete(depot)
         return depot.toTO()
     }
-
-    override fun getDepot(id: Long): DepotTO =
-        depotRepository
-            .findById(id)
-            .orElseThrow { NoSuchElementException("Depot not found with id: $id") }
-            .toTO()
-
-    override fun listDepots(): List<BasicDepotTO> = depotRepository.findAll().map { it.toBasicTO() }
 }

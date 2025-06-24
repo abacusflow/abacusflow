@@ -5,7 +5,7 @@ import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
 import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
 
-interface SupplierService {
+interface SupplierCommandService {
     fun createSupplier(supplier: CreateSupplierInputTO): SupplierTO
 
     fun updateSupplier(
@@ -14,10 +14,4 @@ interface SupplierService {
     ): SupplierTO
 
     fun deleteSupplier(id: Long): SupplierTO
-
-    fun getSupplier(id: Long): SupplierTO
-
-    fun getSupplier(name: String): SupplierTO
-
-    fun listSuppliers(): List<BasicSupplierTO>
 }

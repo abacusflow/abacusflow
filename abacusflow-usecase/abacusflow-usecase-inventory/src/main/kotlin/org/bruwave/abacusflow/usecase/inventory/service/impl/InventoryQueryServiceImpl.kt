@@ -31,16 +31,16 @@ import java.time.Instant
 import java.util.UUID
 
 @Service
-@Transactional
 class InventoryQueryServiceImpl(
     private val inventoryRepository: InventoryRepository,
     private val dslContext: DSLContext,
     private val objectMapper: ObjectMapper,
 ) : InventoryQueryService {
-    override fun queryPagedInventories(
+    override fun listInventoriesPage(
         pageable: Pageable,
         productCategoryId: Long?,
         productId: Long?,
+        productType: String?,
         depotId: Long?
     ): Page<BasicInventoryTO> {
         val condition = buildList<Condition> {
@@ -49,6 +49,9 @@ class InventoryQueryServiceImpl(
             }
             productId?.let {
                 add(INVENTORIES.PRODUCT_ID.eq(it))
+            }
+            productType?.let {
+                add(PRODUCTS.TYPE.eq(it))
             }
             depotId?.let {
                 add(INVENTORY_UNIT.DEPOT_ID.eq(it))

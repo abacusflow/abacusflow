@@ -4,7 +4,7 @@ import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 
-interface PurchaseOrderService {
+interface PurchaseOrderCommandService {
     fun createPurchaseOrder(input: CreatePurchaseOrderInputTO): PurchaseOrderTO
 
     fun getPurchaseOrder(id: Long): PurchaseOrderTO

@@ -5,7 +5,7 @@ import org.bruwave.abacusflow.usecase.depot.CreateDepotInputTO
 import org.bruwave.abacusflow.usecase.depot.DepotTO
 import org.bruwave.abacusflow.usecase.depot.UpdateDepotInputTO
 
-interface DepotService {
+interface DepotCommandService {
     fun createDepot(input: CreateDepotInputTO): DepotTO
 
     fun updateDepot(
@@ -14,8 +14,4 @@ interface DepotService {
     ): DepotTO
 
     fun deleteDepot(id: Long): DepotTO
-
-    fun getDepot(id: Long): DepotTO
-
-    fun listDepots(): List<BasicDepotTO>
 }

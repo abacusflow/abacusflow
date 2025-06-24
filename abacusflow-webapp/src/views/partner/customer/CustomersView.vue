@@ -13,6 +13,12 @@
           <a-form-item label="客户名">
             <a-input v-model:value="searchForm.name" placeholder="客户名" allow-clear />
           </a-form-item>
+          <a-form-item label="电话">
+            <a-input v-model:value="searchForm.phone" placeholder="电话" allow-clear />
+          </a-form-item>
+          <a-form-item label="地址">
+            <a-input v-model:value="searchForm.address" placeholder="地址" allow-clear />
+          </a-form-item>
           <a-form-item>
             <a-space>
               <a-button type="primary" @click="handleSearch">搜索</a-button>
@@ -25,10 +31,11 @@
       <a-card :bordered="false">
         <a-table
           :columns="columns"
-          :data-source="filteredData"
+          :data-source="pageData?.content || []"
           :loading="isPending"
           row-key="id"
           size="small"
+          :pagination="pagination"
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'enabled'">
@@ -70,39 +77,57 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref} from "vue";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
-import type {BasicCustomer, Customer, PartnerApi} from "@/core/openapi";
+import { computed, inject, reactive, ref } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import {
+  PartnerApi,
+  type BasicCustomer,
+  type Customer,
+  type ListCustomersPageRequest
+} from "@/core/openapi";
 import CustomerAddView from "./CustomerAddView.vue";
 import CustomerEditView from "./CustomerEditView.vue";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
-import {message} from "ant-design-vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { message } from "ant-design-vue";
 
 const partnerApi = inject("partnerApi") as PartnerApi;
 const queryClient = useQueryClient();
 
+const pageIndex = ref(1);
+const pageSize = ref(10);
 const showAdd = ref(false);
 const showEdit = ref(false);
 const editingCustomer = ref<Customer | null>(null);
 // 搜索表单
-const searchForm = ref({
-  name: "",
-  categoryId: undefined
+const searchForm = reactive({
+  name: undefined,
+  phone: undefined,
+  address: undefined
 });
+
+const pagination = computed(() => ({
+  current: pageIndex.value,
+  pageSize: pageSize.value,
+  total: pageData.value?.totalElements,
+  showTotal: (total: number) => `共 ${total} 条`,
+  onChange: (page: number, size: number) => {
+    pageIndex.value = page;
+    pageSize.value = size;
+    refetch();
+  }
+}));
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.value = {
-    name: "",
-    categoryId: undefined
-  };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
+  searchForm.name = undefined;
+  searchForm.phone = undefined;
+  searchForm.address = undefined;
+
   refetch();
 };
 
@@ -112,18 +137,30 @@ const handleEditCustomer = (customer: Customer) => {
   showEdit.value = true;
 };
 
-const { data, isPending, refetch } = useQuery({
-  queryKey: ["customers"],
-  queryFn: () => partnerApi.listCustomers()
-});
-
-const filteredData = computed(() => {
-  const name = searchForm.value.name.trim().toLowerCase();
-  if (!name) return data.value;
-
-  return data.value?.filter((customer) => {
-    return customer.name.toLowerCase().includes(name);
-  });
+const {
+  data: pageData,
+  isPending,
+  refetch
+} = useQuery({
+  queryKey: [
+    "customers",
+    searchForm.name,
+    searchForm.phone,
+    searchForm.address,
+    pageIndex,
+    pageSize
+  ],
+  queryFn: () => {
+    const { name, phone, address } = searchForm;
+    const params: ListCustomersPageRequest = {
+      pageIndex: pageIndex.value,
+      pageSize: pageSize.value,
+      name: name || undefined,
+      phone: phone || undefined,
+      address: address || undefined
+    };
+    return partnerApi.listCustomersPage(params);
+  }
 });
 
 const { mutate: deleteCustomer } = useMutation({

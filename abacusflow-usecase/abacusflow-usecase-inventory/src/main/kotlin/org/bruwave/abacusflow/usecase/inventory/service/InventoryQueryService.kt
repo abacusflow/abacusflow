@@ -6,10 +6,11 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface InventoryQueryService {
-    fun queryPagedInventories(
+    fun listInventoriesPage(
         pageable: Pageable,
         productCategoryId: Long?,
         productId: Long?,
+        productType: String?,
         depotId: Long?
     ): Page<BasicInventoryTO>
 

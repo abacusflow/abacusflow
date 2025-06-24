@@ -4,7 +4,7 @@ import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
 
-interface SaleOrderService {
+interface SaleOrderCommandService {
     /**
      * 创建销售订单（包含订单项）
      */
