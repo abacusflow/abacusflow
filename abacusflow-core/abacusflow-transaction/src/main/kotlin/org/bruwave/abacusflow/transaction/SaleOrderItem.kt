@@ -9,6 +9,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.PositiveOrZero
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "sale_order_items")
@@ -20,7 +21,7 @@ class SaleOrderItem(
     @field:Positive
     val quantity: Int,
     @field:PositiveOrZero
-    val unitPrice: Double,
+    val unitPrice: BigDecimal,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +39,6 @@ class SaleOrderItem(
         }
     }
 
-    val subtotal: Double
-        get() = unitPrice * quantity
+    val subtotal: BigDecimal
+        get() = unitPrice.multiply(quantity.toBigDecimal())
 }

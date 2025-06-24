@@ -7,6 +7,8 @@ import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
 import org.bruwave.abacusflow.usecase.partner.service.SupplierService
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
 import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
+import org.bruwave.abacusflow.usecase.partner.mapper.toBasicTO
+import org.bruwave.abacusflow.usecase.partner.mapper.toTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

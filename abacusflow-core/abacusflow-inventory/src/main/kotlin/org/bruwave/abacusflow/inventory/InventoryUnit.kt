@@ -19,6 +19,7 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.UpdateTimestamp
 import org.hibernate.type.SqlTypes
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
@@ -33,7 +34,7 @@ abstract class InventoryUnit(
     @field:PositiveOrZero
     open val quantity: Long,
     // 冗余字段
-    open val unitPrice: Double,
+    open val unitPrice: BigDecimal,
     depotId: Long?,
 ) {
     @JdbcTypeCode(SqlTypes.ARRAY)
@@ -118,7 +119,7 @@ abstract class InventoryUnit(
         inventory: Inventory,
         purchaseOrderId: Long,
         depotId: Long?,
-        unitPrice: Double,
+        unitPrice: BigDecimal,
         val serialNumber: String,
     ) : InventoryUnit(
             inventory = inventory,
@@ -149,7 +150,7 @@ abstract class InventoryUnit(
         purchaseOrderId: Long,
         quantity: Long,
         depotId: Long?,
-        unitPrice: Double,
+        unitPrice: BigDecimal,
         val batchCode: UUID = UUID.randomUUID(),
     ) : InventoryUnit(
             inventory = inventory,

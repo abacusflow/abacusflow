@@ -1,5 +1,6 @@
 package org.bruwave.abacusflow.usecase.transaction
 
+import java.math.BigDecimal
 import java.time.LocalDate
 
 data class CreatePurchaseOrderInputTO(
@@ -12,6 +13,6 @@ data class CreatePurchaseOrderInputTO(
 data class PurchaseItemInputTO(
     val productId: Long,
     val quantity: Int,
-    val unitPrice: Double,
+    val unitPrice: BigDecimal,
     val serialNumber: String?,
 )

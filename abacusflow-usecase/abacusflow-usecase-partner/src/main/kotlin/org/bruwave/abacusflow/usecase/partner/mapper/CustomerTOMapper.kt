@@ -5,7 +5,7 @@ import org.bruwave.abacusflow.usecase.partner.BasicCustomerTO
 import org.bruwave.abacusflow.usecase.partner.CustomerTO
 
 
-private fun Customer.toTO() =
+fun Customer.toTO() =
     CustomerTO(
         id = id,
         name = name,
@@ -15,7 +15,7 @@ private fun Customer.toTO() =
         updatedAt = updatedAt,
     )
 
-private fun Customer.toBasicTO() =
+fun Customer.toBasicTO() =
     BasicCustomerTO(
         id = id,
         name = name,

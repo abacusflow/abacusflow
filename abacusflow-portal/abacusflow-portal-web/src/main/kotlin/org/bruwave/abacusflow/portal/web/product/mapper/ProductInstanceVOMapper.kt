@@ -10,7 +10,7 @@ fun BasicProductInstanceTO.toVO(): BasicProductInstanceVO =
         id = id,
         name = name,
         serialNumber = serialNumber,
-        unitPrice = unitPrice,
+        unitPrice = unitPrice.toDouble(),
         purchaseOrderNo = purchaseOrderNo.toString(),
         saleOrderNo = saleOrderNo?.toString(),
     )
@@ -20,5 +20,5 @@ fun ProductInstanceForBasicProductTO.toVO(): BasicProductInstancesInnerVO =
         id = id,
         name = name,
         serialNumber = serialNumber,
-        unitPrice = unitPrice,
+        unitPrice = unitPrice.toDouble(),
     )

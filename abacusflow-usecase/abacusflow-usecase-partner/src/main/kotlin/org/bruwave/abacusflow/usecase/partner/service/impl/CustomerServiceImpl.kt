@@ -7,6 +7,8 @@ import org.bruwave.abacusflow.usecase.partner.CreateCustomerInputTO
 import org.bruwave.abacusflow.usecase.partner.service.CustomerService
 import org.bruwave.abacusflow.usecase.partner.CustomerTO
 import org.bruwave.abacusflow.usecase.partner.UpdateCustomerInputTO
+import org.bruwave.abacusflow.usecase.partner.mapper.toBasicTO
+import org.bruwave.abacusflow.usecase.partner.mapper.toTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

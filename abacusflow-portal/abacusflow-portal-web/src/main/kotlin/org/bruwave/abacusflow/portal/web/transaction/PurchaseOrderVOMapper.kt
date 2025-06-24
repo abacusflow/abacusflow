@@ -8,6 +8,7 @@ import org.bruwave.abacusflow.portal.web.model.PurchaseOrderVO
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseItemInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
+import java.math.BigDecimal
 
 fun BasicPurchaseOrderTO.toBasicVO(): BasicPurchaseOrderVO =
     BasicPurchaseOrderVO(
@@ -15,7 +16,7 @@ fun BasicPurchaseOrderTO.toBasicVO(): BasicPurchaseOrderVO =
         orderNo = orderNo.toString(),
         supplierName = supplierName,
         status = mapOrderStatusTOToVO(status),
-        totalAmount = totalAmount,
+        totalAmount = totalAmount.toDouble(),
         totalQuantity = totalQuantity,
         itemCount = itemCount,
         orderDate = orderDate,
@@ -40,8 +41,8 @@ fun PurchaseOrderTO.PurchaseOrderItemTO.toVO(): PurchaseOrderItemVO =
         id = id,
         productId = productId,
         quantity = quantity,
-        unitPrice = unitPrice,
-        subtotal = subtotal,
+        unitPrice = unitPrice.toDouble(),
+        subtotal = subtotal.toDouble(),
         serialNumber = serialNumber,
     )
 
@@ -49,7 +50,7 @@ fun PurchaseOrderItemInputVO.toInputTO(): PurchaseItemInputTO =
     PurchaseItemInputTO(
         productId = productId,
         quantity = quantity,
-        unitPrice = unitPrice,
+        unitPrice = BigDecimal.valueOf(unitPrice),
         serialNumber = serialNumber,
     )
 
