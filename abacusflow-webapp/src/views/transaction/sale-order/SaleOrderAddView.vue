@@ -29,7 +29,7 @@
         <!-- 商品名称 -->
         <a-form-item
           label="库存产品"
-          :name="['orderItems', index, 'productId']"
+          :name="['orderItems', index, 'inventoryUnitId']"
           :rules="[{ required: true, message: '请选择库存产品' }]"
         >
           <a-select v-model:value="item.inventoryUnitId" placeholder="请选择库存产品">

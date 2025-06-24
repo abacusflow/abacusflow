@@ -25,7 +25,6 @@ import java.time.Instant
 class Inventory(
     @Column(name = "product_id", nullable = false)
     val productId: Long, // 通过ID关联商品
-    quantity: Long = 0,
 ) : AbstractAggregateRoot<Inventory>() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +37,6 @@ class Inventory(
 
     @field:PositiveOrZero
     var maxStock: Long = 10 // 安全库存量
-        private set
-
-    @Version
-    var version: Long = 0
         private set
 
 //    @OneToMany(mappedBy = "inventory", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
@@ -67,6 +62,5 @@ class Inventory(
         this.safetyStock = newSafetyStock
         this.maxStock = newMaxStock
         this.updatedAt = Instant.now()
-
     }
 }

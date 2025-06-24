@@ -7,7 +7,6 @@ data class InventoryTO(
     val productId: Long,
     val safetyStock: Long,
     val maxStock: Long,
-    val version: Long,
     val createdAt: Instant,
     val updatedAt: Instant,
 )

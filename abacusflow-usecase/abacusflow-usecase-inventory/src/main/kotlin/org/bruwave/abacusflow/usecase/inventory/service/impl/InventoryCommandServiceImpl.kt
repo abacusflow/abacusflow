@@ -24,7 +24,6 @@ class InventoryCommandServiceImpl(
         val inventory =
             Inventory(
                 productId = input.productId,
-                quantity = input.quantity,
             )
         return inventoryRepository.save(inventory).toTO()
     }

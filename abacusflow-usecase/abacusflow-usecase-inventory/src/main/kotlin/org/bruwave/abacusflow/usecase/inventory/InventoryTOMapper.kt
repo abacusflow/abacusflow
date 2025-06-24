@@ -21,7 +21,6 @@ fun Inventory.toTO() =
         productId = productId,
         safetyStock = safetyStock,
         maxStock = maxStock,
-        version = version,
         createdAt = createdAt,
         updatedAt = updatedAt,
     )

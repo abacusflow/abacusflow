@@ -16,6 +16,7 @@ import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.Version
 import jakarta.validation.constraints.PositiveOrZero
 import org.bruwave.abacusflow.inventory.Inventory
 import org.hibernate.annotations.CreationTimestamp
@@ -61,6 +62,10 @@ abstract class InventoryUnit(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     open var status: InventoryUnitStatus = InventoryUnitStatus.NORMAL
+        protected set
+
+    @Version
+    open var version: Long = 0
         protected set
 
     @CreationTimestamp
