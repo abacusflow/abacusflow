@@ -634,19 +634,51 @@ paths:
 
   /inventories:
     get:
-      operationId: listInventories
+      operationId: queryPagedInventories
       tags:
         - inventory
-      summary: List all inventories
+      summary: Query inventories with pagination and filters
+      parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: productCategoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: productId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: depotId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         "200":
-          description: List of inventories
+          description: Paged result of matching inventories
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicInventory"
+                $ref: "#/components/schemas/PageBasicInventory"
 
   /inventories/{id}:
     get:
@@ -1741,6 +1773,23 @@ components:
           type: integer
           format: int64
           description: 更新时间戳
+
+    PageBasicInventory:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BasicInventory"
+        totalElements:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          description: 当前页码，从 0 开始
+        size:
+          type: integer
+          description: 每页条数
 
     BasicInventory:
       type: object

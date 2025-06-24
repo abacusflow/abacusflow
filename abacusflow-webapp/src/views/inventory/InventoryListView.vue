@@ -5,70 +5,86 @@
         <h1>库存管理</h1>
       </a-flex>
 
-      <a-card :bordered="false">
-        <a-form layout="inline" :model="searchForm">
-          <a-form-item label="产品" name="productId">
-            <a-input v-model:value="searchForm.productId" placeholder="请选择产品" allow-clear />
-          </a-form-item>
+      <a-flex justify="flex-starrt" align="center" style="height: 100%">
+        <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
+        <a-flex vertical style="flex: 1; padding-left: 16px">
+          <a-card :bordered="false">
+            <a-form layout="inline" :model="searchForm">
+              <a-form-item label="产品" name="productId">
+                <a-input
+                  v-model:value="searchForm.productId"
+                  placeholder="请选择产品"
+                  allow-clear
+                />
+              </a-form-item>
 
-          <a-form-item label="储存点" name="depotId">
-            <a-input v-model:value="searchForm.depotId" placeholder="请选择储存点" allow-clear />
-          </a-form-item>
+              <a-form-item label="储存点" name="depotId">
+                <a-input
+                  v-model:value="searchForm.depotId"
+                  placeholder="请选择储存点"
+                  allow-clear
+                />
+              </a-form-item>
 
-          <a-form-item>
-            <a-space>
-              <a-button type="primary" @click="handleSearch">搜索</a-button>
-              <a-button @click="resetSearch">重置</a-button>
-            </a-space>
-          </a-form-item>
-        </a-form>
-      </a-card>
+              <a-form-item>
+                <a-space>
+                  <a-button type="primary" @click="handleSearch">搜索</a-button>
+                  <a-button @click="resetSearch">重置</a-button>
+                </a-space>
+              </a-form-item>
+            </a-form>
+          </a-card>
 
-      <a-card :bordered="false">
-        <a-table
-          :columns="columns"
-          :data-source="data"
-          :loading="isPending"
-          row-key="id"
-          size="small"
-        >
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'quantity'">
-              <a-tooltip
-                :title="stockHealthTip(record.quantity, record.safetyStock, record.maxStock)"
-              >
-                <a-tag
-                  :color="stockHealthColor(record.quantity, record.safetyStock, record.maxStock)"
-                >
-                  {{ record.quantity }}
-                </a-tag>
-              </a-tooltip>
-            </template>
-
-            <template v-if="column.key === 'action'">
-              <a-space>
-                <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
-                  >调整预警线</a-button
-                >
-              </a-space>
-            </template>
-          </template>
-
-          <template #expandedRowRender="{ record }">
-            <a-table :columns="innerColumns" :data-source="record.units" :pagination="false">
+          <a-card :bordered="false">
+            <a-table
+              :columns="columns"
+              :data-source="pageData?.content || []"
+              :loading="isPending"
+              row-key="id"
+              size="small"
+              :pagination="pagination"
+            >
               <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'quantity'">
+                  <a-tooltip
+                    :title="stockHealthTip(record.quantity, record.safetyStock, record.maxStock)"
+                  >
+                    <a-tag
+                      :color="
+                        stockHealthColor(record.quantity, record.safetyStock, record.maxStock)
+                      "
+                    >
+                      {{ record.quantity }}
+                    </a-tag>
+                  </a-tooltip>
+                </template>
+
                 <template v-if="column.key === 'action'">
                   <a-space>
-                    <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
-                      >分配储存点</a-button
+                    <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
+                      >调整预警线</a-button
                     >
                   </a-space>
                 </template>
               </template>
+
+              <template #expandedRowRender="{ record }">
+                <a-table :columns="innerColumns" :data-source="record.units" :pagination="false">
+                  <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'action'">
+                      <a-space>
+                        <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
+                          >分配储存点</a-button
+                        >
+                      </a-space>
+                    </template>
+                  </template>
+                </a-table>
+              </template>
             </a-table>
-          </template>
-        </a-table>
-      </a-card>
+          </a-card>
+        </a-flex>
+      </a-flex>
     </a-space>
 
     <a-drawer
@@ -102,52 +118,95 @@
 </template>
 
 <script lang="ts" setup>
-import {h, inject, ref} from "vue";
-import {useQuery, useQueryClient} from "@tanstack/vue-query";
+import { computed, h, inject, reactive, ref } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 import {
   type BasicInventory,
   type BasicInventoryUnit,
   type InventoryApi,
-  InventoryUnitType
+  InventoryUnitType,
+  type QueryPagedInventoriesRequest
 } from "@/core/openapi";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
-import {translateProductType} from "@/util/productUtils";
-import {type TableColumnsType, Tag} from "ant-design-vue";
+import { translateProductType } from "@/util/productUtils";
+import { type TableColumnsType, Tag } from "ant-design-vue";
+import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
+import { useRoute, useRouter } from "vue-router";
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
-const queryClient = useQueryClient();
+const router = useRouter();
+const route = useRoute();
 
+const pageIndex = ref(1);
+const pageSize = ref(10);
 const showAssignDepot = ref(false);
 const showEditWarningLine = ref(false);
 const editingInventory = ref<BasicInventory | null>(null);
 const editingInventoryUnit = ref<BasicInventoryUnit | null>(null);
+
+const productCategoryId = computed(() => {
+  const id = route.query.productCategoryId;
+  return id !== undefined ? Number(id) : undefined;
+});
+
 // 搜索表单
-const searchForm = ref({
+const searchForm = reactive({
   productId: undefined,
   depotId: undefined
 });
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.value = {
-    productId: undefined,
-    depotId: undefined
-  };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
+  searchForm.productId = undefined;
+  searchForm.depotId = undefined;
+  pageIndex.value = 1;
   refetch();
 };
 
-const { data, isPending, refetch } = useQuery({
-  queryKey: ["inventories"],
-  queryFn: () => inventoryApi.listInventories()
+const pagination = computed(() => ({
+  current: pageIndex.value,
+  pageSize: pageSize.value,
+  total: pageData.value?.totalElements,
+  showTotal: (total: number) => `共 ${total} 条`,
+  onChange: (page: number, size: number) => {
+    pageIndex.value = page;
+    pageSize.value = size;
+    refetch();
+  }
+}));
+
+const {
+  data: pageData,
+  isPending,
+  refetch
+} = useQuery({
+  queryKey: [
+    "inventories",
+    productCategoryId,
+    searchForm.productId,
+    searchForm.depotId,
+    pageIndex,
+    pageSize
+  ],
+  queryFn: () => {
+    const { productId, depotId } = searchForm;
+
+    const params: QueryPagedInventoriesRequest = {
+      productCategoryId: productCategoryId.value,
+      productId: productId || undefined,
+      depotId: depotId || undefined,
+      pageIndex: pageIndex.value,
+      pageSize: pageSize.value
+    };
+    return inventoryApi.queryPagedInventories(params);
+  }
 });
 
 function handleAdjustWarningLine(inventory: BasicInventory) {
@@ -158,6 +217,16 @@ function handleAdjustWarningLine(inventory: BasicInventory) {
 function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
   editingInventoryUnit.value = inventoryUnit;
   showAssignDepot.value = true;
+}
+
+function onCategorySelected(productCategoryId: string | number) {
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      productCategoryId
+    }
+  });
 }
 
 const stockHealthTip = (value: number = 0, min: number = 0, max: number = Infinity): string => {

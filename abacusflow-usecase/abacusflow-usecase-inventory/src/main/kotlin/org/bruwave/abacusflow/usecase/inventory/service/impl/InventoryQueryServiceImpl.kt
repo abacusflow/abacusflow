@@ -16,10 +16,15 @@ import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryTO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
 import org.bruwave.abacusflow.usecase.inventory.toTO
+import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
 import org.jooq.util.postgres.PGobject
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification.where
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -32,7 +37,24 @@ class InventoryQueryServiceImpl(
     private val dslContext: DSLContext,
     private val objectMapper: ObjectMapper,
 ) : InventoryQueryService {
-    override fun listInventories(): List<BasicInventoryTO> {
+    override fun queryPagedInventories(
+        pageable: Pageable,
+        productCategoryId: Long?,
+        productId: Long?,
+        depotId: Long?
+    ): Page<BasicInventoryTO> {
+        val condition = buildList<Condition> {
+            productCategoryId?.let {
+                add(PRODUCTS.CATEGORY_ID.eq(it))
+            }
+            productId?.let {
+                add(INVENTORIES.PRODUCT_ID.eq(it))
+            }
+            depotId?.let {
+                add(INVENTORY_UNIT.DEPOT_ID.eq(it))
+            }
+        }
+
         val records =
             dslContext
                 .select(
@@ -63,6 +85,7 @@ class InventoryQueryServiceImpl(
                     DSL.condition("{0} = ANY({1})", SALE_ORDERS.ID, INVENTORY_UNIT.SALE_ORDER_IDS),
                 )
                 .leftJoin(DEPOTS).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOTS.ID))
+                .where(condition)
                 .groupBy(
                     INVENTORIES.ID,
                     INVENTORIES.PRODUCT_ID,
@@ -82,9 +105,19 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
                 )
+                .offset(pageable.offset.toInt())
+                .limit(pageable.pageSize)
                 .fetch()
 
-        return records.groupBy { it[INVENTORIES.ID]!! }.map { (_, group) ->
+        val total = dslContext
+            .selectCount()
+            .from(INVENTORIES)
+            .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
+            .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
+            .where(condition)
+            .fetchOne(0, Int::class.java) ?: 0
+
+        val recordsGrouped = records.groupBy { it[INVENTORIES.ID]!! }.map { (_, group) ->
             val first = group.first()
 
             val productType: Product.ProductType = Product.ProductType.valueOf(first[PRODUCTS.TYPE]!!)
@@ -100,6 +133,8 @@ class InventoryQueryServiceImpl(
                 units = group.mapNotNull { it.toBasicInventoryUnitTO() },
             )
         }
+
+        return PageImpl(recordsGrouped, pageable, total.toLong())
     }
 
     override fun getInventory(id: Long): InventoryTO {
