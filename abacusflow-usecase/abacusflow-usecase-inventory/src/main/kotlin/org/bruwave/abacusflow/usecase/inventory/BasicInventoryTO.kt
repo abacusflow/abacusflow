@@ -8,5 +8,5 @@ data class BasicInventoryTO(
     val depotNames: List<String>,
     val safetyStock: Long,
     val maxStock: Long,
-    val units: List<BasicInventoryUnitTO>
+    val units: List<BasicInventoryUnitTO>,
 )

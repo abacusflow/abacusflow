@@ -1,11 +1,9 @@
 package org.bruwave.abacusflow.inventory
 
-import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorColumn
 import jakarta.persistence.DiscriminatorType
 import jakarta.persistence.DiscriminatorValue
-import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -14,17 +12,13 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
-import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Version
 import jakarta.validation.constraints.PositiveOrZero
-import org.bruwave.abacusflow.inventory.Inventory
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.annotations.Type
 import org.hibernate.annotations.UpdateTimestamp
 import org.hibernate.type.SqlTypes
-import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
@@ -40,7 +34,7 @@ abstract class InventoryUnit(
     open val quantity: Long,
     // 冗余字段
     open val unitPrice: Double,
-    depotId: Long?
+    depotId: Long?,
 ) {
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(name = "sale_order_ids", columnDefinition = "bigint[]")
@@ -78,7 +72,10 @@ abstract class InventoryUnit(
     open var updatedAt: Instant = Instant.now()
         protected set
 
-    open fun consume(saleOrderId: Long, amount: Int) {
+    open fun consume(
+        saleOrderId: Long,
+        amount: Int,
+    ) {
         require(amount > 0) { "销售数量必须为正数" }
         require(amount <= MAX_ADJUSTMENT) { "每次减少的库存数量不能超过 $MAX_ADJUSTMENT 个" }
         require(remainingQuantity >= amount) { "剩余库存不足" }
@@ -124,16 +121,19 @@ abstract class InventoryUnit(
         unitPrice: Double,
         val serialNumber: String,
     ) : InventoryUnit(
-        inventory = inventory,
-        purchaseOrderId = purchaseOrderId,
-        quantity = 1,
-        depotId = depotId,
-        unitPrice = unitPrice,
-    ) {
+            inventory = inventory,
+            purchaseOrderId = purchaseOrderId,
+            quantity = 1,
+            depotId = depotId,
+            unitPrice = unitPrice,
+        ) {
         val inStock: Boolean
             get() = remainingQuantity == 1L
 
-        override fun consume(saleOrderId: Long, amount: Int) {
+        override fun consume(
+            saleOrderId: Long,
+            amount: Int,
+        ) {
             require(amount == 1) { "资产类产品每次只能出库 1 个" }
             require(remainingQuantity == 1L) { "资产产品已出库" }
             require(saleOrderIds.isEmpty()) { "资产类产品已绑定销售单" }
@@ -152,14 +152,12 @@ abstract class InventoryUnit(
         unitPrice: Double,
         val batchCode: UUID = UUID.randomUUID(),
     ) : InventoryUnit(
-        inventory = inventory,
-        purchaseOrderId = purchaseOrderId,
-        quantity = quantity,
-        unitPrice = unitPrice,
-        depotId = depotId,
-    ) {
-
-    }
+            inventory = inventory,
+            purchaseOrderId = purchaseOrderId,
+            quantity = quantity,
+            unitPrice = unitPrice,
+            depotId = depotId,
+        )
 
     enum class UnitType {
         INSTANCE,
@@ -167,10 +165,10 @@ abstract class InventoryUnit(
     }
 
     enum class InventoryUnitStatus {
-        NORMAL,      // 初始状态，已入库未出库
-        CONSUMED,    // 已出库
-        CANCELED,    // 被人为取消
-        REVERSED     // 因采购撤销等原因回退
+        NORMAL, // 初始状态，已入库未出库
+        CONSUMED, // 已出库
+        CANCELED, // 被人为取消
+        REVERSED, // 因采购撤销等原因回退
     }
 
     companion object {

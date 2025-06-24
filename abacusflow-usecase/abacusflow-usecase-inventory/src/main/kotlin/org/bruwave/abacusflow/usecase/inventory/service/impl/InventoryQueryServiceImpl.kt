@@ -30,58 +30,59 @@ import java.util.UUID
 class InventoryQueryServiceImpl(
     private val inventoryRepository: InventoryRepository,
     private val dslContext: DSLContext,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
 ) : InventoryQueryService {
     override fun listInventories(): List<BasicInventoryTO> {
-        val records = dslContext
-            .select(
-                INVENTORIES.ID,
-                INVENTORIES.PRODUCT_ID,
-                INVENTORIES.SAFETY_STOCK,
-                INVENTORIES.MAX_STOCK,
-                PRODUCTS.NAME,
-                PRODUCTS.TYPE,
-                INVENTORY_UNIT.ID,
-                INVENTORY_UNIT.UNIT_TYPE,
-                INVENTORY_UNIT.PURCHASE_ORDER_ID,
-                PURCHASE_ORDERS.NO,
-                DEPOTS.NAME,
-                INVENTORY_UNIT.QUANTITY,
-                INVENTORY_UNIT.REMAINING_QUANTITY,
-                INVENTORY_UNIT.UNIT_PRICE,
-                INVENTORY_UNIT.RECEIVED_AT,
-                INVENTORY_UNIT.BATCH_CODE,
-                INVENTORY_UNIT.SERIAL_NUMBER,
-                DSL.arrayAgg(SALE_ORDERS.NO).`as`("sale_order_nos")
-            )
-            .from(INVENTORIES)
-            .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
-            .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
-            .leftJoin(PURCHASE_ORDERS).on(INVENTORY_UNIT.PURCHASE_ORDER_ID.eq(PURCHASE_ORDERS.ID))
-            .leftJoin(SALE_ORDERS).on(
-                DSL.condition("{0} = ANY({1})", SALE_ORDERS.ID, INVENTORY_UNIT.SALE_ORDER_IDS)
-            )
-            .leftJoin(DEPOTS).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOTS.ID))
-            .groupBy(
-                INVENTORIES.ID,
-                INVENTORIES.PRODUCT_ID,
-                INVENTORIES.SAFETY_STOCK,
-                INVENTORIES.MAX_STOCK,
-                PRODUCTS.NAME,
-                PRODUCTS.TYPE,
-                INVENTORY_UNIT.ID,
-                INVENTORY_UNIT.UNIT_TYPE,
-                INVENTORY_UNIT.PURCHASE_ORDER_ID,
-                PURCHASE_ORDERS.NO,
-                DEPOTS.NAME,
-                INVENTORY_UNIT.QUANTITY,
-                INVENTORY_UNIT.REMAINING_QUANTITY,
-                INVENTORY_UNIT.UNIT_PRICE,
-                INVENTORY_UNIT.RECEIVED_AT,
-                INVENTORY_UNIT.BATCH_CODE,
-                INVENTORY_UNIT.SERIAL_NUMBER,
-            )
-            .fetch()
+        val records =
+            dslContext
+                .select(
+                    INVENTORIES.ID,
+                    INVENTORIES.PRODUCT_ID,
+                    INVENTORIES.SAFETY_STOCK,
+                    INVENTORIES.MAX_STOCK,
+                    PRODUCTS.NAME,
+                    PRODUCTS.TYPE,
+                    INVENTORY_UNIT.ID,
+                    INVENTORY_UNIT.UNIT_TYPE,
+                    INVENTORY_UNIT.PURCHASE_ORDER_ID,
+                    PURCHASE_ORDERS.NO,
+                    DEPOTS.NAME,
+                    INVENTORY_UNIT.QUANTITY,
+                    INVENTORY_UNIT.REMAINING_QUANTITY,
+                    INVENTORY_UNIT.UNIT_PRICE,
+                    INVENTORY_UNIT.RECEIVED_AT,
+                    INVENTORY_UNIT.BATCH_CODE,
+                    INVENTORY_UNIT.SERIAL_NUMBER,
+                    DSL.arrayAgg(SALE_ORDERS.NO).`as`("sale_order_nos"),
+                )
+                .from(INVENTORIES)
+                .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
+                .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
+                .leftJoin(PURCHASE_ORDERS).on(INVENTORY_UNIT.PURCHASE_ORDER_ID.eq(PURCHASE_ORDERS.ID))
+                .leftJoin(SALE_ORDERS).on(
+                    DSL.condition("{0} = ANY({1})", SALE_ORDERS.ID, INVENTORY_UNIT.SALE_ORDER_IDS),
+                )
+                .leftJoin(DEPOTS).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOTS.ID))
+                .groupBy(
+                    INVENTORIES.ID,
+                    INVENTORIES.PRODUCT_ID,
+                    INVENTORIES.SAFETY_STOCK,
+                    INVENTORIES.MAX_STOCK,
+                    PRODUCTS.NAME,
+                    PRODUCTS.TYPE,
+                    INVENTORY_UNIT.ID,
+                    INVENTORY_UNIT.UNIT_TYPE,
+                    INVENTORY_UNIT.PURCHASE_ORDER_ID,
+                    PURCHASE_ORDERS.NO,
+                    DEPOTS.NAME,
+                    INVENTORY_UNIT.QUANTITY,
+                    INVENTORY_UNIT.REMAINING_QUANTITY,
+                    INVENTORY_UNIT.UNIT_PRICE,
+                    INVENTORY_UNIT.RECEIVED_AT,
+                    INVENTORY_UNIT.BATCH_CODE,
+                    INVENTORY_UNIT.SERIAL_NUMBER,
+                )
+                .fetch()
 
         return records.groupBy { it[INVENTORIES.ID]!! }.map { (_, group) ->
             val first = group.first()
@@ -96,11 +97,10 @@ class InventoryQueryServiceImpl(
                 depotNames = group.mapNotNull { it[DEPOTS.NAME] },
                 safetyStock = first[INVENTORIES.SAFETY_STOCK],
                 maxStock = first[INVENTORIES.MAX_STOCK],
-                units = group.mapNotNull { it.toBasicInventoryUnitTO() }
+                units = group.mapNotNull { it.toBasicInventoryUnitTO() },
             )
         }
     }
-
 
     override fun getInventory(id: Long): InventoryTO {
         return inventoryRepository
@@ -114,12 +114,14 @@ class InventoryQueryServiceImpl(
 
         val unitType: InventoryUnit.UnitType = InventoryUnit.UnitType.valueOf(this[INVENTORY_UNIT.UNIT_TYPE]!!)
 
-        val title: String = when (unitType) {
-            InventoryUnit.UnitType.BATCH -> "${this[PRODUCTS.NAME]}-批次号-${this[INVENTORY_UNIT.BATCH_CODE]}"
-            InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCTS.NAME]}-序列号-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
-        }
-        val saleOrderNos: List<UUID> = this.get("sale_order_nos", Array<UUID>::class.java)
-            ?.toList() ?: emptyList()
+        val title: String =
+            when (unitType) {
+                InventoryUnit.UnitType.BATCH -> "${this[PRODUCTS.NAME]}-批次号-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCTS.NAME]}-序列号-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+            }
+        val saleOrderNos: List<UUID> =
+            this.get("sale_order_nos", Array<UUID>::class.java)
+                ?.toList() ?: emptyList()
 
         return BasicInventoryUnitTO(
             id = id,
@@ -133,7 +135,7 @@ class InventoryQueryServiceImpl(
             unitPrice = this[INVENTORY_UNIT.UNIT_PRICE] ?: 0.0,
             receivedAt = this[INVENTORY_UNIT.RECEIVED_AT]?.toInstant() ?: Instant.EPOCH,
             batchCode = this[INVENTORY_UNIT.BATCH_CODE],
-            serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER]
+            serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER],
         )
     }
 

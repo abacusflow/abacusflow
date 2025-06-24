@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.usecase.inventory.listener
 
-import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.db.inventory.InventoryUnitRepository
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.transaction.SaleOrderCompletedEvent
@@ -22,10 +21,11 @@ class InventorySaleOrderEventListener(
         order.items.groupBy { it.inventoryUnitId }.forEach { (inventoryUnitId, inventories) ->
             val totalQuantity = inventories.sumOf { it.quantity }
 
-            val units = inventoryUnitRepository.findByIdAndStatus(
-                inventoryUnitId,
-                InventoryUnit.InventoryUnitStatus.NORMAL
-            )
+            val units =
+                inventoryUnitRepository.findByIdAndStatus(
+                    inventoryUnitId,
+                    InventoryUnit.InventoryUnitStatus.NORMAL,
+                )
 
             units.forEach { unit ->
                 unit.consume(order.id, totalQuantity)

@@ -24,10 +24,10 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import { type RouteRecordRaw, useRoute, useRouter } from "vue-router";
-import { capitalize, h, ref, type VNode, watch } from "vue";
+import {type RouteRecordRaw, useRoute, useRouter} from "vue-router";
+import {capitalize, h, ref, type VNode, watch} from "vue";
 import * as Icons from "@ant-design/icons-vue"; // 用于动态渲染图标
-import { type ItemType } from "ant-design-vue";
+import {type ItemType} from "ant-design-vue";
 
 const route = useRoute();
 const router = useRouter();

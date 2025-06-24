@@ -23,22 +23,22 @@ fun BasicInventoryUnitTO.toBasicVO(): BasicInventoryUnitVO =
         serialNumber = serialNumber,
     )
 
-
-fun InventoryUnitTO.toVO(): InventoryUnitVO = InventoryUnitVO(
-    id = id,
-    unitType = mapInventoryUnitTypeTOToVO(unitType),
-    inventoryId = inventoryId,
-    purchaseOrderId = purchaseOrderId,
-    quantity = quantity,
-    remainingQuantity = remainingQuantity,
-    unitPrice = unitPrice,
-    depotId = depotId,
-    status = mapInventoryUnitStatusTOToVO(status),
-    saleOrderIds = saleOrderIds,
-    receivedAt = receivedAt.toEpochMilli(),
-    serialNumber = serialNumber,
-    batchCode = batchCode
-)
+fun InventoryUnitTO.toVO(): InventoryUnitVO =
+    InventoryUnitVO(
+        id = id,
+        unitType = mapInventoryUnitTypeTOToVO(unitType),
+        inventoryId = inventoryId,
+        purchaseOrderId = purchaseOrderId,
+        quantity = quantity,
+        remainingQuantity = remainingQuantity,
+        unitPrice = unitPrice,
+        depotId = depotId,
+        status = mapInventoryUnitStatusTOToVO(status),
+        saleOrderIds = saleOrderIds,
+        receivedAt = receivedAt.toEpochMilli(),
+        serialNumber = serialNumber,
+        batchCode = batchCode,
+    )
 
 fun mapInventoryUnitTypeTOToVO(type: String): InventoryUnitTypeVO {
     return when (type.uppercase()) {

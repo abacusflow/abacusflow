@@ -21,8 +21,9 @@ class InventoryUnitController(
     }
 
     override fun getInventoryUnit(id: Long): ResponseEntity<InventoryUnitVO> {
-        val inventory = inventoryUnitQueryService.getInventoryUnit(id)
-            ?: throw NotFoundException("Could not find inventory unit for id $id")
+        val inventory =
+            inventoryUnitQueryService.getInventoryUnit(id)
+                ?: throw NotFoundException("Could not find inventory unit for id $id")
         return ResponseEntity.ok(
             inventory.toVO(),
         )
@@ -30,7 +31,7 @@ class InventoryUnitController(
 
     override fun assignInventoryUnitDepot(
         id: Long,
-        assignInventoryUnitDepotRequestVO: AssignInventoryUnitDepotRequestVO
+        assignInventoryUnitDepotRequestVO: AssignInventoryUnitDepotRequestVO,
     ): ResponseEntity<Unit> {
         inventoryUnitCommandService.assignDepot(id, assignInventoryUnitDepotRequestVO.depotId)
         return ResponseEntity.ok().build()

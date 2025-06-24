@@ -24,11 +24,11 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, reactive, ref, watchEffect } from "vue";
-import { type FormInstance, message } from "ant-design-vue";
-import { type InventoryApi, DepotApi } from "@/core/openapi";
-import { useMutation, useQuery } from "@tanstack/vue-query";
-import type { AssignDepotRequest } from "@/core/openapi/models/assign-depot-request";
+import {inject, reactive, ref, watchEffect} from "vue";
+import {type FormInstance, message} from "ant-design-vue";
+import {DepotApi, type InventoryApi} from "@/core/openapi";
+import {useMutation, useQuery} from "@tanstack/vue-query";
+import type {AssignDepotRequest} from "@/core/openapi/models/assign-depot-request";
 
 const formRef = ref<FormInstance>();
 

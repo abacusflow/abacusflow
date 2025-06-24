@@ -114,13 +114,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicPurchaseOrder, TransactionApi } from "@/core/openapi";
+import {computed, inject, ref} from "vue";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
+import type {BasicPurchaseOrder, TransactionApi} from "@/core/openapi";
 import PurchaseOrderAddView from "./PurchaseOrderAddView.vue";
 import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
+import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
+import {message} from "ant-design-vue";
 import dayjs from "dayjs";
 
 const transactionApi = inject("transactionApi") as TransactionApi;

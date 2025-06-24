@@ -1,7 +1,6 @@
 package org.bruwave.abacusflow.transaction
 
 enum class TransactionInventoryUnitType {
-
     /**
      * 实例类库存单元（Instance）：
      * - 通常对应“资产类”商品（如设备、仪器等）

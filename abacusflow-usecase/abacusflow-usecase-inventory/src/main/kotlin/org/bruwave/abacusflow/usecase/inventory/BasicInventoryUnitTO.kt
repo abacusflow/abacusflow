@@ -14,7 +14,6 @@ data class BasicInventoryUnitTO(
     val remainingQuantity: Long,
     val unitPrice: Double,
     val receivedAt: Instant,
-    val batchCode: UUID?,        // 如果是批次单元
-    val serialNumber: String?,   // 如果是资产单元
+    val batchCode: UUID?, // 如果是批次单元
+    val serialNumber: String?, // 如果是资产单元
 )
-

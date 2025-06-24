@@ -102,19 +102,19 @@
 </template>
 
 <script lang="ts" setup>
-import { h, inject, ref } from "vue";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import {h, inject, ref} from "vue";
+import {useQuery, useQueryClient} from "@tanstack/vue-query";
 import {
-  InventoryUnitType,
   type BasicInventory,
   type BasicInventoryUnit,
-  type InventoryApi
+  type InventoryApi,
+  InventoryUnitType
 } from "@/core/openapi";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
-import { translateProductType } from "@/util/productUtils";
-import { Tag, type TableColumnsType } from "ant-design-vue";
+import {translateProductType} from "@/util/productUtils";
+import {type TableColumnsType, Tag} from "ant-design-vue";
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
 const queryClient = useQueryClient();

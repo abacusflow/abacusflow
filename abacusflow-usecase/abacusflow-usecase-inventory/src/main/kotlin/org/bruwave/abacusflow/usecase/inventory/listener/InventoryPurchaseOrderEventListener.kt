@@ -2,11 +2,11 @@ package org.bruwave.abacusflow.usecase.inventory.listener
 
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.db.inventory.InventoryUnitRepository
-import org.bruwave.abacusflow.inventory.Inventory
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.transaction.PurchaseOrderCompletedEvent
 import org.bruwave.abacusflow.transaction.PurchaseOrderReversedEvent
-import org.bruwave.abacusflow.transaction.TransactionProductType.*
+import org.bruwave.abacusflow.transaction.TransactionProductType.ASSET
+import org.bruwave.abacusflow.transaction.TransactionProductType.MATERIAL
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -25,42 +25,44 @@ class InventoryPurchaseOrderEventListener(
         order.items.groupBy { it.productId }.forEach { (productId, products) ->
             val inventory =
                 inventoryRepository.findByProductId(productId)
-                    ?: throw NoSuchElementException("Product with id ${productId} not found")
+                    ?: throw NoSuchElementException("Product with id $productId not found")
 
-            val units = products.groupBy { it.productType }.flatMap { (type, productsByType) ->
-                val simpleProduct = productsByType.first()
-                val sumQuantity = productsByType.sumOf { it.quantity.toLong() }
+            val units =
+                products.groupBy { it.productType }.flatMap { (type, productsByType) ->
+                    val simpleProduct = productsByType.first()
+                    val sumQuantity = productsByType.sumOf { it.quantity.toLong() }
 
-                when (type) {
-                    MATERIAL -> {
-                        val unitPriceSet = productsByType.map { it.unitPrice }.toSet()
-                        require(unitPriceSet.size == 1) { "MATERIAL 产品存在多个不同单价" }
+                    when (type) {
+                        MATERIAL -> {
+                            val unitPriceSet = productsByType.map { it.unitPrice }.toSet()
+                            require(unitPriceSet.size == 1) { "MATERIAL 产品存在多个不同单价" }
 
-                        listOf(
-                            InventoryUnit.BatchInventoryUnit(
-                                inventory,
-                                purchaseOrderId = order.id,
-                                quantity = sumQuantity,
-                                unitPrice = simpleProduct.unitPrice,
-                                depotId = null,
+                            listOf(
+                                InventoryUnit.BatchInventoryUnit(
+                                    inventory,
+                                    purchaseOrderId = order.id,
+                                    quantity = sumQuantity,
+                                    unitPrice = simpleProduct.unitPrice,
+                                    depotId = null,
+                                ),
                             )
-                        )
-                    }
+                        }
 
-                    ASSET -> productsByType.map { item ->
-                        require(item.quantity == 1) { "资产类产品每项 quantity 应为 1" }
-                        val serialNumber = requireNotNull(item.serialNumber) { "资产类产品缺少 serialNumber" }
+                        ASSET ->
+                            productsByType.map { item ->
+                                require(item.quantity == 1) { "资产类产品每项 quantity 应为 1" }
+                                val serialNumber = requireNotNull(item.serialNumber) { "资产类产品缺少 serialNumber" }
 
-                        InventoryUnit.InstanceInventoryUnit(
-                            inventory,
-                            purchaseOrderId = order.id,
-                            unitPrice = item.unitPrice,
-                            serialNumber = serialNumber,
-                            depotId = null,
-                        )
+                                InventoryUnit.InstanceInventoryUnit(
+                                    inventory,
+                                    purchaseOrderId = order.id,
+                                    unitPrice = item.unitPrice,
+                                    serialNumber = serialNumber,
+                                    depotId = null,
+                                )
+                            }
                     }
                 }
-            }
 
             if (units.size > 0) {
                 inventoryUnitRepository.saveAll(units)

@@ -15,4 +15,4 @@ data class BasicPurchaseOrderTO(
     val orderDate: LocalDate,
     val createdAt: Instant,
     val autoCompleteDate: LocalDate?,
-    )
+)

@@ -1,13 +1,13 @@
-import type { App } from "vue";
+import type {App} from "vue";
 import {
   Configuration,
+  DepotApi,
   InventoryApi,
+  type Middleware,
   PartnerApi,
   ProductApi,
   TransactionApi,
-  UserApi,
-  DepotApi,
-  type Middleware
+  UserApi
 } from "../core/openapi";
 
 export default {

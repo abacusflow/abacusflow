@@ -65,7 +65,6 @@ class SaleOrder(
         registerEvent(SaleOrderCanceledEvent(this))
     }
 
-
     fun reverseOrder() {
         require(status == OrderStatus.COMPLETED) { "只有已完成订单才能撤回" }
         status = OrderStatus.REVERSED

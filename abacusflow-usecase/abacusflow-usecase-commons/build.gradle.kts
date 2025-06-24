@@ -1,5 +1,6 @@
 import java.io.FileInputStream
 import java.util.Properties
+import java.util.UUID
 
 plugins {
     id("abacusflow-base")
