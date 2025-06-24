@@ -10,44 +10,15 @@
         <a-flex vertical style="flex: 1; padding-left: 16px">
           <a-card :bordered="false">
             <a-form layout="inline" :model="searchForm">
-              <a-form-item label="产品" name="productId">
-                <a-select
-                  v-model:value="searchForm.productId"
+              <a-form-item label="产品名" name="productName">
+                <a-input
+                  v-model:value="searchForm.productName"
+                  placeholder="产品名字"
                   allow-clear
-                  show-search
-                  placeholder="请选择产品"
-                  style="width: 200px"
-                  optionFilterProp="label"
-                >
-                  <a-select-option
-                    v-for="product in products"
-                    :key="product.id"
-                    :value="product.id"
-                    :label="product.name"
-                  >
-                    {{ product.name }}
-                  </a-select-option>
-                </a-select>
+                />
               </a-form-item>
-
-              <a-form-item label="储存点" name="depotId">
-                <a-select
-                  v-model:value="searchForm.depotId"
-                  allow-clear
-                  show-search
-                  placeholder="请选择储存点"
-                  style="width: 200px"
-                  optionFilterProp="label"
-                >
-                  <a-select-option
-                    v-for="depot in depots"
-                    :key="depot.id"
-                    :value="depot.id"
-                    :label="depot.name"
-                  >
-                    {{ depot.name }}
-                  </a-select-option>
-                </a-select>
+              <a-form-item label="储存点" name="depotName">
+                <a-input v-model:value="searchForm.depotName" placeholder="储存点名" allow-clear />
               </a-form-item>
 
               <a-form-item label="商品类型" name="productType">
@@ -159,11 +130,9 @@ import { useQuery } from "@tanstack/vue-query";
 import {
   type BasicInventory,
   type BasicInventoryUnit,
-  DepotApi,
   type InventoryApi,
   InventoryUnitType,
   type ListInventoriesPageRequest,
-  ProductApi,
   ProductType
 } from "@/core/openapi";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
@@ -178,8 +147,6 @@ const router = useRouter();
 const route = useRoute();
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
-const productApi = inject("productApi") as ProductApi;
-const depotApi = inject("depotApi") as DepotApi;
 
 const pageIndex = ref(1);
 const pageSize = ref(10);
@@ -195,8 +162,8 @@ const productCategoryId = computed(() => {
 
 // 搜索表单
 const searchForm = reactive({
-  productId: undefined,
-  depotId: undefined,
+  productName: undefined,
+  depotName: undefined,
   productType: undefined
 });
 
@@ -207,8 +174,9 @@ const handleSearch = () => {
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.productId = undefined;
-  searchForm.depotId = undefined;
+  searchForm.productName = undefined;
+  searchForm.depotName = undefined;
+  searchForm.productType = undefined;
   pageIndex.value = 1;
   refetch();
 };
@@ -233,35 +201,25 @@ const {
   queryKey: [
     "inventories",
     productCategoryId,
-    searchForm.productId,
-    searchForm.depotId,
+    searchForm.productName,
+    searchForm.depotName,
     searchForm.productType,
     pageIndex,
     pageSize
   ],
   queryFn: () => {
-    const { productId, depotId, productType } = searchForm;
+    const { productName, depotName, productType } = searchForm;
 
     const params: ListInventoriesPageRequest = {
       productCategoryId: productCategoryId.value,
-      productId: productId || undefined,
-      depotId: depotId || undefined,
+      productName: productName || undefined,
+      depotName: depotName || undefined,
       productType: productType || undefined,
       pageIndex: pageIndex.value,
       pageSize: pageSize.value
     };
     return inventoryApi.listInventoriesPage(params);
   }
-});
-
-const { data: depots } = useQuery({
-  queryKey: ["depots"],
-  queryFn: () => depotApi.listDepots()
-});
-
-const { data: products } = useQuery({
-  queryKey: ["products"],
-  queryFn: () => productApi.listProducts()
 });
 
 function handleAdjustWarningLine(inventory: BasicInventory) {

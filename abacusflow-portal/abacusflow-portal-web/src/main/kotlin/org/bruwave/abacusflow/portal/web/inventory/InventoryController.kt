@@ -20,18 +20,18 @@ class InventoryController(
         pageIndex: Int,
         pageSize: Int,
         productCategoryId: Long?,
-        productId: Long?,
+        productName: String?,
         productType: ProductTypeVO?,
-        depotId: Long?
+        depotName: String?
     ): ResponseEntity<ListInventoriesPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
         val page = inventoryQueryService.listInventoriesPage(
             pageable,
             productCategoryId,
-            productId,
+            productName,
             productType?.name?.uppercase(),
-            depotId
+            depotName
         ).map { it.toBasicVO() }
 
         val pageVO = ListInventoriesPage200ResponseVO(

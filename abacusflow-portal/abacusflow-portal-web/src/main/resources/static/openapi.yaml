@@ -737,23 +737,21 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: productId
+        - name: productName
           in: query
           required: false
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: productType
           in: query
           required: false
           schema:
             $ref: "#/components/schemas/ProductType"
-        - name: depotId
+        - name: depotName
           in: query
           required: false
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         "200":
           description: Paged result of matching inventories

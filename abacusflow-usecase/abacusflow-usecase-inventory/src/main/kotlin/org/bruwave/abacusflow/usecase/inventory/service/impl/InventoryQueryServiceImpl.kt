@@ -7,6 +7,7 @@ import org.bruwave.abacusflow.generated.jooq.Tables.DEPOTS
 import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORIES
 import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORY_UNIT
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
+import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT_CATEGORIES
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDERS
 import org.bruwave.abacusflow.inventory.InventoryUnit
@@ -25,7 +26,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
@@ -33,33 +33,38 @@ import java.util.UUID
 @Service
 class InventoryQueryServiceImpl(
     private val inventoryRepository: InventoryRepository,
-    private val dslContext: DSLContext,
+    private val jooqDsl: DSLContext,
     private val objectMapper: ObjectMapper,
 ) : InventoryQueryService {
     override fun listInventoriesPage(
         pageable: Pageable,
         productCategoryId: Long?,
-        productId: Long?,
+        productName: String?,
         productType: String?,
-        depotId: Long?
+        depotName: String?
     ): Page<BasicInventoryTO> {
         val condition = buildList<Condition> {
-            productCategoryId?.let {
-                add(PRODUCTS.CATEGORY_ID.eq(it))
+            productCategoryId?.let { catId ->
+                val categoryIds = findAllChildrenCategories(catId)
+                if (categoryIds.isNotEmpty()) {
+                    add( PRODUCTS.CATEGORY_ID.`in`(categoryIds))
+                } else {
+                    add(DSL.noCondition())
+                }
             }
-            productId?.let {
-                add(INVENTORIES.PRODUCT_ID.eq(it))
+            productName?.takeIf { it.isNotBlank() }?.let {
+                add(PRODUCTS.NAME.containsIgnoreCase(it))
             }
             productType?.let {
                 add(PRODUCTS.TYPE.eq(it))
             }
-            depotId?.let {
-                add(INVENTORY_UNIT.DEPOT_ID.eq(it))
+            depotName?.takeIf { it.isNotBlank() }?.let {
+                add(DEPOTS.NAME.containsIgnoreCase(it))
             }
         }
 
         val records =
-            dslContext
+            jooqDsl
                 .select(
                     INVENTORIES.ID,
                     INVENTORIES.PRODUCT_ID,
@@ -112,7 +117,7 @@ class InventoryQueryServiceImpl(
                 .limit(pageable.pageSize)
                 .fetch()
 
-        val total = dslContext
+        val total = jooqDsl
             .selectCount()
             .from(INVENTORIES)
             .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
@@ -145,6 +150,29 @@ class InventoryQueryServiceImpl(
             .findById(id)
             .orElseThrow { NoSuchElementException("Inventory not found with id: $id") }
             .toTO()
+    }
+
+
+    private fun findAllChildrenCategories(categoryId: Long): List<Long> {
+        val result = mutableSetOf<Long>()
+        val queue = mutableListOf(categoryId)
+
+        while (queue.isNotEmpty()) {
+            val currentId = queue.removeAt(0)
+            result.add(currentId)
+
+            // 查询直接子分类
+            val children = jooqDsl
+                .select(PRODUCT_CATEGORIES.ID)
+                .from(PRODUCT_CATEGORIES)
+                .where(PRODUCT_CATEGORIES.PARENT_ID.eq(currentId))
+                .fetch()
+                .map { it.value1() }
+
+            queue.addAll(children)
+        }
+
+        return result.toList()
     }
 
     fun Record.toBasicInventoryUnitTO(): BasicInventoryUnitTO? {
