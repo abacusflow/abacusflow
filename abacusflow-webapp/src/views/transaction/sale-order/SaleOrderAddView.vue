@@ -86,6 +86,28 @@
           />
         </a-form-item>
 
+        <a-form-item
+          label="折扣率"
+          :name="['orderItems', index, 'discountFactor']"
+          :rules="[{ required: true, message: '请输入折扣率' }]"
+        >
+          <a-flex justify="flex-start" align="center" style="height: 100%">
+            <!-- 折扣率输入框 -->
+            <a-input-number
+              v-model:value="item.discountFactor"
+              addon-after="%"
+              placeholder="请输入折扣率"
+              :min="1"
+              :max="100"
+              style="width: 100%"
+            />
+
+            <span style="display: inline-block; margin-left: 10px"
+              >折扣价: {{ calculateDiscountedPrice(item.unitPrice, item.discountFactor) }}</span
+            >
+          </a-flex>
+        </a-form-item>
+
         <!-- 删除按钮 -->
         <a-button danger type="link" @click="removeOrderItem(index)"> 删除该商品 </a-button>
       </div>
@@ -178,7 +200,8 @@ function addOrderItem() {
   formState.orderItems?.push({
     inventoryUnitId: undefined,
     quantity: 1,
-    unitPrice: undefined
+    unitPrice: undefined,
+    discountFactor: 100
   });
 }
 
@@ -192,6 +215,14 @@ function isAsset(productId?: number, products?: BasicProduct[]): boolean {
 
   const product = products.find((p) => p.id === productId);
   return product?.type === ProductType.Asset;
+}
+
+function calculateDiscountedPrice(unitPrice?: number, discountFactor?: number) {
+  if (!unitPrice) return 0;
+  if (!discountFactor) return unitPrice;
+  const discountedPrice = unitPrice * (discountFactor / 100);
+
+  return parseFloat(discountedPrice.toFixed(2));
 }
 
 const handleCancel = () => {

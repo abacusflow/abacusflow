@@ -2226,6 +2226,7 @@ components:
         - inventoryUnitId
         - quantity
         - unitPrice
+        - discountedPrice
         - subtotal
       properties:
         id:
@@ -2236,10 +2237,6 @@ components:
           type: integer
           format: int64
           description: 库存单元ID
-        productInstanceId:
-          type: integer
-          format: int64
-          description: 商品实例ID
         quantity:
           type: integer
           description: 数量
@@ -2247,6 +2244,10 @@ components:
           type: number
           format: double
           description: 单价
+        discountedPrice:
+          type: number
+          format: double
+          description: 折扣价
         subtotal:
           type: number
           format: double
@@ -2272,10 +2273,12 @@ components:
           format: double
           minimum: 0
           description: 单价
-        productInstanceId:
-          type: integer
-          format: int64
-          description: 资产ID
+        discountFactor:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+          description: 折扣率
 
     PurchaseOrderItem:
       type: object
@@ -2301,10 +2304,6 @@ components:
           type: number
           format: double
           description: 单价
-        productInstanceId:
-          type: integer
-          format: int64
-          description: 商品实例ID
         serialNumber:
           type: string
         subtotal:

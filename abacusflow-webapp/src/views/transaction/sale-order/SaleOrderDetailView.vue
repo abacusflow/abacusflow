@@ -76,6 +76,21 @@
               style="width: 100%"
             />
           </a-form-item>
+
+          <!-- 折后价 -->
+          <a-form-item
+            label="折后价"
+            :name="['orderItems', index, 'discountedPrice']"
+            :rules="[{ required: true, message: '请输入折后价' }]"
+          >
+            <a-input-number
+              v-model:value="item.discountedPrice"
+              placeholder="折后价"
+              :min="0"
+              :precision="2"
+              style="width: 100%"
+            />
+          </a-form-item>
         </div>
       </a-form-item>
 

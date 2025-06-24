@@ -14,4 +14,5 @@ data class SaleItemInputTO(
     val inventoryUnitId: Long,
     val quantity: Int,
     val unitPrice: BigDecimal,
+    val discountFactor: BigDecimal?,
 )
