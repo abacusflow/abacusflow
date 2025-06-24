@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.validation.constraints.DecimalMax
+import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.PositiveOrZero
 import java.math.BigDecimal
@@ -22,6 +24,11 @@ class SaleOrderItem(
     val quantity: Int,
     @field:PositiveOrZero
     val unitPrice: BigDecimal,
+
+    // 默认为 1 表示没有折扣
+    @field:DecimalMin("0.0")
+    @field:DecimalMax("1.0")
+    val discountFactor: BigDecimal = BigDecimal.ONE
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +46,8 @@ class SaleOrderItem(
         }
     }
 
+    val discountedPrice: BigDecimal
+        get() = unitPrice.multiply(discountFactor)
     val subtotal: BigDecimal
-        get() = unitPrice.multiply(quantity.toBigDecimal())
+        get() = discountedPrice.multiply(quantity.toBigDecimal())
 }

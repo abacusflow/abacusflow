@@ -41,6 +41,7 @@ fun SaleOrderTO.SaleOrderItemTO.toVO(): SaleOrderItemVO =
         inventoryUnitId = inventoryUnitId,
         quantity = quantity,
         unitPrice = unitPrice.toDouble(),
+        discountedPrice = discountedPrice.toDouble(),
         subtotal = subtotal.toDouble(),
     )
 
@@ -49,4 +50,5 @@ fun SaleOrderItemInputVO.toInputTO(): SaleItemInputTO =
         inventoryUnitId = inventoryUnitId,
         quantity = quantity,
         unitPrice = BigDecimal.valueOf(unitPrice),
+        discountFactor = discountFactor?.let { BigDecimal.valueOf(it) },
     )
