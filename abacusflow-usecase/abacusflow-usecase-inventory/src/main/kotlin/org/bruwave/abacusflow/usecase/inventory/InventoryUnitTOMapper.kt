@@ -1,35 +1,31 @@
 package org.bruwave.abacusflow.usecase.inventory
 
 import org.bruwave.abacusflow.inventory.InventoryUnit
-import java.util.UUID
 
-fun InventoryUnit.toBasicTO(
-    productName: String,
-    purchaseOrderNo: UUID,
-    saleOrderNos: List<UUID>,
-): BasicInventoryUnitTO {
+fun InventoryUnit.toTO(
+): InventoryUnitTO {
     return when (this) {
-        is InventoryUnit.InstanceInventoryUnit -> BasicInventoryUnitTO(
+        is InventoryUnit.InstanceInventoryUnit -> InventoryUnitTO(
             id = id,
-            title = "${productName}-${serialNumber}",
             unitType = InventoryUnit.UnitType.INSTANCE.toString(),
-            purchaseOrderNo = purchaseOrderNo,
             depotId = depotId,
             quantity = quantity,
             remainingQuantity = remainingQuantity,
-            saleOrderNos = saleOrderNos,
             receivedAt = receivedAt,
             batchCode = null,
             unitPrice = unitPrice,
             serialNumber = serialNumber,
+            inventoryId = inventory.id,
+            purchaseOrderId = purchaseOrderId,
+            status = status.name,
+            saleOrderIds = saleOrderIds,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
         )
 
-        is InventoryUnit.BatchInventoryUnit -> BasicInventoryUnitTO(
+        is InventoryUnit.BatchInventoryUnit -> InventoryUnitTO(
             id = id,
-            title = "${productName}-${batchCode}",
             unitType = InventoryUnit.UnitType.BATCH.toString(),
-            purchaseOrderNo = purchaseOrderNo,
-            saleOrderNos = saleOrderNos,
             depotId = depotId,
             quantity = quantity,
             remainingQuantity = remainingQuantity,
@@ -37,6 +33,12 @@ fun InventoryUnit.toBasicTO(
             batchCode = batchCode,
             unitPrice = unitPrice,
             serialNumber = null,
+            inventoryId = inventory.id,
+            purchaseOrderId = purchaseOrderId,
+            status = status.name,
+            saleOrderIds = saleOrderIds,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
         )
 
         else -> {

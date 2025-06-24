@@ -19,8 +19,8 @@ class InventorySaleOrderEventListener(
         val order = event.order
         println("SaleOrder Completed orderNo: ${order.no}")
 
-        order.items.groupBy { it.inventoryUnitId }.forEach { (inventoryUnitId, products) ->
-            val totalQuantity = products.sumOf { it.quantity }
+        order.items.groupBy { it.inventoryUnitId }.forEach { (inventoryUnitId, inventories) ->
+            val totalQuantity = inventories.sumOf { it.quantity }
 
             val units = inventoryUnitRepository.findByIdAndStatus(
                 inventoryUnitId,

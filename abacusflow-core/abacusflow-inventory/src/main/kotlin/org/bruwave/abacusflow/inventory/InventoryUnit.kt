@@ -42,8 +42,8 @@ abstract class InventoryUnit(
     open val unitPrice: Double,
     depotId: Long?
 ) {
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "sale_order_ids", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "sale_order_ids", columnDefinition = "bigint[]")
     private val saleOrderIdsMutable: MutableSet<Long> = mutableSetOf()
 
     val saleOrderIds: List<Long>
@@ -86,7 +86,10 @@ abstract class InventoryUnit(
 
         remainingQuantity -= amount
         saleOrderIdsMutable.add(saleOrderId)
-        status = InventoryUnitStatus.CONSUMED
+
+        if (remainingQuantity == 0L) {
+            status = InventoryUnitStatus.CONSUMED
+        }
 
         updatedAt = Instant.now()
     }

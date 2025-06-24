@@ -48,8 +48,6 @@ export function translateProductType(input?: ProductType): string {
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $translateProductUnit: (input: ProductUnit) => string;
-  }
-  interface ComponentCustomProperties {
     $translateProductType: (input: ProductType) => string;
   }
 }

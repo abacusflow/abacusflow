@@ -1,16 +1,15 @@
 package org.bruwave.abacusflow.usecase.inventory
 
-import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
 data class BasicInventoryUnitTO(
     val id: Long,
-    val title: Long,
+    val title: String,
     val unitType: String, // "INSTANCE" 或 "BATCH"
     val purchaseOrderNo: UUID,
     val saleOrderNos: List<UUID>,
-    val depotId: Long?,
+    val depotName: String?,
     val quantity: Long,
     val remainingQuantity: Long,
     val unitPrice: Double,

@@ -1,9 +1,9 @@
 package org.bruwave.abacusflow.usecase.transaction.service.impl
 
+import org.bruwave.abacusflow.db.inventory.InventoryUnitRepository
 import org.bruwave.abacusflow.db.partner.CustomerRepository
-import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
-import org.bruwave.abacusflow.product.Product
+import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.transaction.SaleOrder
 import org.bruwave.abacusflow.transaction.SaleOrderItem
 import org.bruwave.abacusflow.transaction.TransactionInventoryUnitType
@@ -16,27 +16,26 @@ import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
 import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.collections.map
 
 @Service
 @Transactional
 class SaleOrderServiceImpl(
     private val saleOrderRepository: SaleOrderRepository,
     private val customerRepository: CustomerRepository,
-    private val productRepository: ProductRepository,
+    private val inventoryUnitRepository: InventoryUnitRepository,
 ) : SaleOrderService {
     override fun createSaleOrder(input: CreateSaleOrderInputTO): SaleOrderTO {
-        val products =
-            productRepository.findAllById(
+        val inventoryUnits =
+            inventoryUnitRepository.findAllById(
                 input.orderItems
                     .map { it.inventoryUnitId }
                     .distinct(),
             )
-        val productMapById = products.associateBy { it.id }
+        val inventoryUnitMapById = inventoryUnits.associateBy { it.id }
 
         val orderItems =
             input.orderItems.map { item ->
-                mapInputOrderItemToOrderItem(item, productMapById)
+                mapInputOrderItemToOrderItem(item, inventoryUnitMapById)
             }
 
         val saleOrder =
@@ -97,12 +96,12 @@ class SaleOrderServiceImpl(
 
     private fun mapInputOrderItemToOrderItem(
         item: SaleItemInputTO,
-        productMapById: Map<Long, Product>,
+        inventoryUnitMapById: Map<Long, InventoryUnit>,
     ): SaleOrderItem {
-        val product = productMapById.getValue(item.inventoryUnitId)
+        val inventoryUnit = inventoryUnitMapById.getValue(item.inventoryUnitId)
 
-        return when (product.type) {
-            Product.ProductType.MATERIAL ->
+        return when (inventoryUnit) {
+            is InventoryUnit.BatchInventoryUnit ->
                 SaleOrderItem(
                     item.inventoryUnitId,
                     TransactionInventoryUnitType.BATCH,
@@ -110,7 +109,7 @@ class SaleOrderServiceImpl(
                     item.unitPrice,
                 )
 
-            Product.ProductType.ASSET -> {
+            is InventoryUnit.InstanceInventoryUnit -> {
                 SaleOrderItem(
                     item.inventoryUnitId,
                     TransactionInventoryUnitType.INSTANCE,
@@ -118,6 +117,8 @@ class SaleOrderServiceImpl(
                     item.unitPrice,
                 )
             }
+
+            else -> throw IllegalArgumentException("Unsupported inventory unit item type ${inventoryUnit::class.java}")
         }
     }
 }

@@ -34,8 +34,12 @@
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'quantity'">
-              <a-tooltip :title="stockHealthTip(record)">
-                <a-tag :color="stockHealthColor(record)">
+              <a-tooltip
+                :title="stockHealthTip(record.quantity, record.safetyStock, record.maxStock)"
+              >
+                <a-tag
+                  :color="stockHealthColor(record.quantity, record.safetyStock, record.maxStock)"
+                >
                   {{ record.quantity }}
                 </a-tag>
               </a-tooltip>
@@ -51,11 +55,17 @@
           </template>
 
           <template #expandedRowRender="{ record }">
-            <a-table
-              :columns="innerColumns"
-              :data-source="record.units"
-              :pagination="false"
-            ></a-table>
+            <a-table :columns="innerColumns" :data-source="record.units" :pagination="false">
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'action'">
+                  <a-space>
+                    <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
+                      >分配储存点</a-button
+                    >
+                  </a-space>
+                </template>
+              </template>
+            </a-table>
           </template>
         </a-table>
       </a-card>
@@ -68,9 +78,9 @@
       @close="showAssignDepot = false"
     >
       <InventoryAssignDepotView
-        v-if="showAssignDepot && editingInventory"
+        v-if="showAssignDepot && editingInventoryUnit"
         v-model:visible="showAssignDepot"
-        :inventoryId="editingInventory.id"
+        :inventoryUnitId="editingInventoryUnit.id"
         @success="refetch"
       />
     </a-drawer>
@@ -92,12 +102,19 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from "vue";
+import { h, inject, ref } from "vue";
 import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicInventory, BasicInventoryUnit, InventoryApi } from "@/core/openapi";
+import {
+  InventoryUnitType,
+  type BasicInventory,
+  type BasicInventoryUnit,
+  type InventoryApi
+} from "@/core/openapi";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
+import { translateProductType } from "@/util/productUtils";
+import { Tag, type TableColumnsType } from "ant-design-vue";
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
 const queryClient = useQueryClient();
@@ -105,6 +122,7 @@ const queryClient = useQueryClient();
 const showAssignDepot = ref(false);
 const showEditWarningLine = ref(false);
 const editingInventory = ref<BasicInventory | null>(null);
+const editingInventoryUnit = ref<BasicInventoryUnit | null>(null);
 // 搜索表单
 const searchForm = ref({
   productId: undefined,
@@ -137,10 +155,12 @@ function handleAdjustWarningLine(inventory: BasicInventory) {
   showEditWarningLine.value = true;
 }
 
-const stockHealthTip = (record: BasicInventory): string => {
-  const value = record.quantity ?? 0;
-  const min = record.safetyStock ?? 0;
-  const max = record.maxStock ?? Infinity;
+function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
+  editingInventoryUnit.value = inventoryUnit;
+  showAssignDepot.value = true;
+}
+
+const stockHealthTip = (value: number = 0, min: number = 0, max: number = Infinity): string => {
   const range = max - min;
 
   if (value < min * 0.5) return "严重低于安全库存";
@@ -160,10 +180,7 @@ const stockHealthTip = (record: BasicInventory): string => {
   return "库存健康";
 };
 
-const stockHealthColor = (record: BasicInventory): string => {
-  const value = record.quantity ?? 0;
-  const min = record.safetyStock ?? 0;
-  const max = record.maxStock ?? Infinity;
+const stockHealthColor = (value: number = 0, min: number = 0, max: number = Infinity): string => {
   const range = max - min;
 
   if (value < min * 0.5 || value > max * 1.2) return "red";
@@ -183,23 +200,51 @@ const stockHealthColor = (record: BasicInventory): string => {
 
 const columns: StrictTableColumnsType<BasicInventory> = [
   { title: "商品名称", dataIndex: "productName", key: "productName" },
+  {
+    title: "商品类型",
+    dataIndex: "productType",
+    key: "productType",
+    customRender: ({ text }) => translateProductType(text)
+  },
   { title: "总库存数量", dataIndex: "quantity", key: "quantity" },
+  {
+    title: "存储点",
+    dataIndex: "depotNames",
+    key: "depotNames",
+    customRender: ({ text }) => (Array.isArray(text) ? text.join(", ") : "-")
+  },
   { title: "安全库存预警线", dataIndex: "safetyStock", key: "safetyStock" },
   { title: "最大库存预警线", dataIndex: "maxStock", key: "maxStock" },
   { title: "操作", key: "action" }
 ];
 
-const innerColumns: StrictTableColumnsType<BasicInventoryUnit> = [
-  { title: "采购单号", dataIndex: "purchaseOrderNo", key: "purchaseOrderNo" },
+const innerColumns: TableColumnsType<BasicInventoryUnit> = [
+  // { title: "库存单元名", dataIndex: "title", key: "title" },
   {
-    title: "销售单号",
-    dataIndex: "saleOrderNos",
-    key: "saleOrderNos",
-    customRender: ({ text }) => text?.join(", ") ?? "-"
+    title: "批次号/序列号",
+    key: "identity",
+    customRender: ({ record }) => {
+      switch (record.type) {
+        case InventoryUnitType.batch:
+          return record.batchCode ?? "-";
+        case InventoryUnitType.instance:
+          return record.serialNumber ?? "-";
+        default:
+          return "-";
+      }
+    }
   },
-  { title: "储存点", dataIndex: "depotId", key: "depotId" },
+  { title: "储存点", dataIndex: "depotName", key: "depotName" },
   { title: "数量", dataIndex: "quantity", key: "quantity" },
-  { title: "剩余数量", dataIndex: "remainingQuantity", key: "remainingQuantity" },
+  {
+    title: "剩余数量",
+    dataIndex: "remainingQuantity",
+    key: "remainingQuantity",
+    customRender: ({ text, record }) => {
+      const color = text === 0 ? "red" : text < record.remainingQuantity ? "orange" : "green";
+      return h(Tag, { color }, () => text.toString());
+    }
+  },
   {
     title: "单价",
     dataIndex: "unitPrice",
@@ -210,9 +255,15 @@ const innerColumns: StrictTableColumnsType<BasicInventoryUnit> = [
     title: "入库时间",
     dataIndex: "receivedAt",
     key: "receivedAt",
-    customRender: ({ text }) => new Date(text).toLocaleString()
+    customRender: ({ text }) => new Date(text).toLocaleString("zh-CN")
   },
-  { title: "批次号", dataIndex: "batchCode", key: "batchCode" },
-  { title: "序列号", dataIndex: "serialNumber", key: "serialNumber" }
+  { title: "采购单号", dataIndex: "purchaseOrderNo", key: "purchaseOrderNo" },
+  {
+    title: "销售单号",
+    dataIndex: "saleOrderNos",
+    key: "saleOrderNos",
+    customRender: ({ text }) => text?.join(", ") ?? "-"
+  },
+  { title: "操作", key: "action" }
 ];
 </script>

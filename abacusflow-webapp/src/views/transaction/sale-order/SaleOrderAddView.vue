@@ -38,7 +38,7 @@
               :key="inventoryUnit.id"
               :value="inventoryUnit.id"
             >
-              {{ inventoryUnit.id }}
+              {{ inventoryUnit.title }}
             </a-select-option>
           </a-select>
         </a-form-item>

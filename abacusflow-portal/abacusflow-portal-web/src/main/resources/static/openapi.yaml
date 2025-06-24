@@ -669,98 +669,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/Inventory"
 
-  /inventories/{id}/increase:
-    post:
-      operationId: increaseInventory
-      tags:
-        - inventory
-      summary: Increase inventory quantity
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-              properties:
-                amount:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 100
-      responses:
-        "200":
-          description: Inventory increased
-
-  /inventories/{id}/decrease:
-    post:
-      operationId: decreaseInventory
-      tags:
-        - inventory
-      summary: Decrease inventory quantity
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-              properties:
-                amount:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 100
-      responses:
-        "200":
-          description: Inventory decreased
-
-  /inventories/{id}/assign-depot:
-    post:
-      operationId: assignDepot
-      tags:
-        - inventory
-      summary: Assign inventory to another depot
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - depotId
-              properties:
-                depotId:
-                  type: integer
-                  format: int64
-                  description: ID of the depot to assign
-      responses:
-        "200":
-          description: Depot assigned successfully
-
   /inventories/{id}/adjust-warning-line:
     post:
       operationId: adjustWarningLine
@@ -795,68 +703,6 @@ paths:
       responses:
         "200":
           description: Warning line adjusted successfully
-
-  /inventories/{id}/reserve:
-    post:
-      operationId: reserveInventory
-      tags:
-        - inventory
-      summary: Reserve part of the inventory (冻结部分库存)
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-              properties:
-                amount:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  description: 要冻结的库存数量
-      responses:
-        "200":
-          description: Reserved inventory successfully
-
-  /inventories/{id}/release:
-    post:
-      operationId: releaseInventory
-      tags:
-        - inventory
-      summary: Release part of the inventory (释放部分库存)
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-              properties:
-                amount:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  description: 要释放的库存数量
-      responses:
-        "200":
-          description: Released inventory successfully
 
   /inventories/{id}/safety-check:
     get:
@@ -894,6 +740,57 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/BasicInventoryUnit"
+
+  /inventory-units/{id}:
+    get:
+      operationId: getInventoryUnit
+      tags:
+        - inventory
+      summary: Get inventory unit by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Inventory unit details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryUnit"
+
+  /inventory-units/{id}/assign-depot:
+    post:
+      operationId: assignInventoryUnitDepot
+      tags:
+        - inventory
+      summary: Assign inventory unit to another depot
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - depotId
+              properties:
+                depotId:
+                  type: integer
+                  format: int64
+                  description: ID of the depot to assign
+      responses:
+        "200":
+          description: Depot assigned successfully
 
   /sale-orders:
     get:
@@ -1850,7 +1747,9 @@ components:
       required:
         - id
         - productName
+        - productType
         - quantity
+        - depotNames
         - safetyStock
         - maxStock
         - units
@@ -1862,10 +1761,17 @@ components:
         productName:
           type: string
           description: 商品名称
+        productType:
+          $ref: "#/components/schemas/ProductType"
         quantity:
           type: integer
           format: int64
           description: 总库存数量
+        depotNames:
+          description: 存储点列表
+          type: array
+          items:
+            type: string
         safetyStock:
           type: integer
           format: int64
@@ -1886,6 +1792,7 @@ components:
       required:
         - id
         - type
+        - title
         - purchaseOrderNo
         - saleOrderNos
         - quantity
@@ -1898,6 +1805,8 @@ components:
           format: int64
         type:
           $ref: "#/components/schemas/InventoryUnitType"
+        title:
+          type: string
         purchaseOrderNo:
           type: string
           format: uuid
@@ -1906,10 +1815,8 @@ components:
           items:
             type: string
             format: uuid
-        depotId:
-          type: integer
-          format: int64
-          nullable: true
+        depotName:
+          type: string
         quantity:
           type: integer
           format: int64
@@ -1930,6 +1837,62 @@ components:
           type: string
           nullable: true
 
+    InventoryUnit:
+      type: object
+      required:
+        - id
+        - unitType
+        - inventoryId
+        - purchaseOrderId
+        - quantity
+        - remainingQuantity
+        - unitPrice
+        - status
+        - saleOrderIds
+        - receivedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        unitType:
+          $ref: "#/components/schemas/InventoryUnitType"
+        inventoryId:
+          type: integer
+          format: int64
+        purchaseOrderId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int64
+        remainingQuantity:
+          type: integer
+          format: int64
+        unitPrice:
+          type: number
+          format: double
+        depotId:
+          type: integer
+          format: int64
+          nullable: true
+        status:
+          $ref: "#/components/schemas/InventoryUnitStatus"
+        saleOrderIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        receivedAt:
+          type: integer
+          format: int64
+        serialNumber:
+          type: string
+          nullable: true
+        batchCode:
+          type: string
+          format: uuid
+          nullable: true
+
     InventoryUnitType:
       type: string
       description: 单元类型
@@ -1942,6 +1905,25 @@ components:
       x-enum-descriptions:
         - 资产单元
         - 批次单元
+
+    InventoryUnitStatus:
+      type: string
+      description: 单元类型
+      enum:
+        - normal
+        - consumed
+        - canceled
+        - reversed
+      x-enum-varnames:
+        - normal
+        - consumed
+        - canceled
+        - reversed
+      x-enum-descriptions:
+        - 初始状态
+        - 已出库
+        - 被人为取消
+        - 因采购撤销等原因回退
 
     # ============= SaleOrder schemas =============
     SaleOrder:
