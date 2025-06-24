@@ -13,6 +13,7 @@ import org.jooq.impl.DSL
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 
 @Service
@@ -106,6 +107,12 @@ class ProductQueryServiceImpl(
                 }
 
         return PageImpl(records, pageable, total)
+    }
+
+    override fun listProducts(): List<ProductTO> {
+        return productRepository
+            .findAll()
+            .map { it.toTO() }
     }
 
     private fun findAllChildrenCategories(categoryId: Long): List<Long> {

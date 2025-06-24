@@ -1,4 +1,4 @@
-import type {ProductType, ProductUnit} from "@/core/openapi";
+import type { ProductType, ProductUnit } from "@/core/openapi";
 
 /**
  * 将单位英文值翻译为中文

@@ -4,6 +4,7 @@ import org.bruwave.abacusflow.portal.web.api.CustomersApi
 import org.bruwave.abacusflow.portal.web.model.CreateCustomerInputVO
 import org.bruwave.abacusflow.portal.web.model.CustomerVO
 import org.bruwave.abacusflow.portal.web.model.ListCustomersPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.SelectableCustomerVO
 import org.bruwave.abacusflow.portal.web.model.UpdateCustomerInputVO
 import org.bruwave.abacusflow.usecase.partner.CreateCustomerInputTO
 import org.bruwave.abacusflow.usecase.partner.UpdateCustomerInputTO
@@ -88,5 +89,15 @@ class CustomerController(
     override fun deleteCustomer(id: Long): ResponseEntity<Unit> {
         customerCommandService.deleteCustomer(id)
         return ResponseEntity.ok().build()
+    }
+
+    override fun listSelectableCustomers(): ResponseEntity<List<SelectableCustomerVO>> {
+        val productVOs = customerQueryService.listCustomers().map {
+            SelectableCustomerVO(
+                it.id,
+                it.name,
+            )
+        }
+        return ResponseEntity.ok(productVOs)
     }
 }

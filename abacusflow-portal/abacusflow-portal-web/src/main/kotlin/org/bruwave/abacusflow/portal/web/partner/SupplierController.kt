@@ -3,6 +3,7 @@ package org.bruwave.abacusflow.portal.web.partner
 import org.bruwave.abacusflow.portal.web.api.SuppliersApi
 import org.bruwave.abacusflow.portal.web.model.CreateSupplierInputVO
 import org.bruwave.abacusflow.portal.web.model.ListSuppliersPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.SelectableSupplierVO
 import org.bruwave.abacusflow.portal.web.model.SupplierVO
 import org.bruwave.abacusflow.portal.web.model.UpdateSupplierInputVO
 import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
@@ -92,5 +93,15 @@ class SupplierController(
     override fun deleteSupplier(id: Long): ResponseEntity<Unit> {
         supplierCommandService.deleteSupplier(id)
         return ResponseEntity.ok().build()
+    }
+
+    override fun listSelectableSuppliers(): ResponseEntity<List<SelectableSupplierVO>> {
+        val productVOs = supplierQueryService.listSuppliers().map {
+            SelectableSupplierVO(
+                it.id,
+                it.name,
+            )
+        }
+        return ResponseEntity.ok(productVOs)
     }
 }

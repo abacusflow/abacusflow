@@ -84,4 +84,10 @@ class CustomerQueryServiceImpl(
 
         return PageImpl(records, pageable, total)
     }
+
+    override fun listCustomers(): List<CustomerTO> {
+        return customerRepository
+            .findAll()
+            .map { it.toTO() }
+    }
 }

@@ -17,4 +17,6 @@ interface SupplierQueryService {
         phone: String?,
         address: String?,
     ): Page<BasicSupplierTO>
+
+    fun listSuppliers( ): List<SupplierTO>
 }

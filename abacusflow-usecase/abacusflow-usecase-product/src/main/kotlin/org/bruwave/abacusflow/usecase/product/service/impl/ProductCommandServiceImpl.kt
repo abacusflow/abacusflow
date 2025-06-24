@@ -2,7 +2,6 @@ package org.bruwave.abacusflow.usecase.product.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
-import org.bruwave.abacusflow.db.product.ProductInstanceRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
@@ -21,11 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ProductCommandServiceImpl(
     private val productRepository: ProductRepository,
-    private val productInstanceRepository: ProductInstanceRepository,
     private val productCategoryRepository: ProductCategoryRepository,
-    private val supplierRepository: SupplierRepository,
-    private val purchaseOrderRepository: PurchaseOrderRepository,
-    private val saleOrderRepository: SaleOrderRepository,
 ) : ProductCommandService {
     override fun createProduct(input: CreateProductInputTO): ProductTO {
         val newProductCategory =

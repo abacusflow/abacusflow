@@ -7,8 +7,12 @@
         :rules="[{ required: true, message: '请选择供应商' }]"
       >
         <a-select v-model:value="formState.supplierId" placeholder="请选择供应商">
-          <a-select-option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
-            {{ supplier.name }}
+          <a-select-option
+            v-for="supplier in suppliers"
+            :key="supplier.value"
+            :value="supplier.value"
+          >
+            {{ supplier.label }}
           </a-select-option>
         </a-select>
       </a-form-item>
@@ -93,18 +97,18 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, reactive, ref, watchEffect} from "vue";
-import {type FormInstance} from "ant-design-vue";
+import { inject, reactive, ref, watchEffect } from "vue";
+import { type FormInstance } from "ant-design-vue";
 import {
-  type BasicProduct,
   type PartnerApi,
   type ProductApi,
   ProductType,
   type PurchaseOrder,
+  type SelectableProduct,
   type TransactionApi
 } from "@/core/openapi";
-import {useQuery} from "@tanstack/vue-query";
-import dayjs, {Dayjs} from "dayjs";
+import { useQuery } from "@tanstack/vue-query";
+import dayjs, { Dayjs } from "dayjs";
 
 const dateFormat = "YYYY/MM/DD";
 const formRef = ref<FormInstance>();
@@ -148,15 +152,15 @@ watchEffect(() => {
 
 const { data: suppliers } = useQuery({
   queryKey: ["suppliers"],
-  queryFn: () => partnerApi.listSuppliers()
+  queryFn: () => partnerApi.listSelectableSuppliers()
 });
 
 const { data: products } = useQuery({
   queryKey: ["products"],
-  queryFn: () => productApi.listProducts()
+  queryFn: () => productApi.listSelectableProducts()
 });
 
-function isAsset(productId?: number, products?: BasicProduct[]): boolean {
+function isAsset(productId?: number, products?: SelectableProduct[]): boolean {
   if (!productId) return false;
   if (!products) return false;
 

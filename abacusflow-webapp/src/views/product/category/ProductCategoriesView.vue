@@ -91,11 +91,11 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref, watch} from "vue";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
-import {message} from "ant-design-vue";
-import type {BasicProductCategory, ProductApi} from "@/core/openapi";
+import { computed, inject, ref, watch } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { message } from "ant-design-vue";
+import type { BasicProductCategory, ProductApi } from "@/core/openapi";
 import ProductCategoryAddView from "./ProductCategoryAddView.vue";
 import ProductCategoryEditView from "./ProductCategoryEditView.vue";
 

@@ -88,4 +88,10 @@ class SupplierQueryServiceImpl(
 
         return PageImpl(records, pageable, total)
     }
+
+    override fun listSuppliers(): List<SupplierTO> {
+        return supplierRepository
+            .findAll()
+            .map { it.toTO() }
+    }
 }

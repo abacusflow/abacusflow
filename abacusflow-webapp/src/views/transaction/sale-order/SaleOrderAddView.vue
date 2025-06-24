@@ -6,8 +6,12 @@
       :rules="[{ required: true, message: '请选择客户' }]"
     >
       <a-select v-model:value="formState.customerId" placeholder="请选择客户">
-        <a-select-option v-for="customer in customers" :key="customer.id" :value="customer.id">
-          {{ customer.name }}
+        <a-select-option
+          v-for="customer in customers"
+          :key="customer.value"
+          :value="customer.value"
+        >
+          {{ customer.label }}
         </a-select-option>
       </a-select>
     </a-form-item>
@@ -130,20 +134,20 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, reactive, ref} from "vue";
-import {type FormInstance, message} from "ant-design-vue";
+import { inject, reactive, ref } from "vue";
+import { type FormInstance, message } from "ant-design-vue";
 import {
-  type BasicProduct,
   type CreateSaleOrderInput,
   InventoryApi,
   type PartnerApi,
   type ProductApi,
   ProductType,
   type SaleOrderItemInput,
+  type SelectableProduct,
   type TransactionApi
 } from "@/core/openapi";
-import {useMutation, useQuery} from "@tanstack/vue-query";
-import dayjs, {Dayjs} from "dayjs";
+import { useMutation, useQuery } from "@tanstack/vue-query";
+import dayjs, { Dayjs } from "dayjs";
 
 const formRef = ref<FormInstance>();
 const dateFormat = "YYYY/MM/DD";
@@ -168,12 +172,12 @@ const emit = defineEmits(["success", "update:visible"]);
 
 const { data: customers } = useQuery({
   queryKey: ["customers"],
-  queryFn: () => partnerApi.listCustomers()
+  queryFn: () => partnerApi.listSelectableCustomers()
 });
 
 const { data: products } = useQuery({
   queryKey: ["products"],
-  queryFn: () => productApi.listProducts()
+  queryFn: () => productApi.listSelectableProducts()
 });
 
 const { data: inventoryUnits } = useQuery({
@@ -209,7 +213,7 @@ function removeOrderItem(index: number) {
   formState.orderItems?.splice(index, 1);
 }
 
-function isAsset(productId?: number, products?: BasicProduct[]): boolean {
+function isAsset(productId?: number, products?: SelectableProduct[]): boolean {
   if (!productId) return false;
   if (!products) return false;
 
