@@ -122,20 +122,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive, ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import {computed, inject, reactive, ref} from "vue";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
+import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
+import {message} from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
-import { useRoute, useRouter } from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {
-  type ProductApi,
-  type Product,
-  type ListProductsPageRequest,
   type BasicProduct,
   type BasicProductInstancesInner,
+  type ListProductsPageRequest,
+  type Product,
+  type ProductApi,
   ProductType
 } from "@/core/openapi";
 

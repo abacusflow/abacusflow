@@ -15,8 +15,8 @@ import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryTO
-import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
 import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
+import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
 import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.Record
@@ -41,27 +41,28 @@ class InventoryQueryServiceImpl(
         productCategoryId: Long?,
         productName: String?,
         productType: String?,
-        depotName: String?
+        depotName: String?,
     ): Page<BasicInventoryTO> {
-        val condition = buildList<Condition> {
-            productCategoryId?.let { catId ->
-                val categoryIds = findAllChildrenCategories(catId)
-                if (categoryIds.isNotEmpty()) {
-                    add( PRODUCTS.CATEGORY_ID.`in`(categoryIds))
-                } else {
-                    add(DSL.noCondition())
+        val condition =
+            buildList<Condition> {
+                productCategoryId?.let { catId ->
+                    val categoryIds = findAllChildrenCategories(catId)
+                    if (categoryIds.isNotEmpty()) {
+                        add(PRODUCTS.CATEGORY_ID.`in`(categoryIds))
+                    } else {
+                        add(DSL.noCondition())
+                    }
+                }
+                productName?.takeIf { it.isNotBlank() }?.let {
+                    add(PRODUCTS.NAME.containsIgnoreCase(it))
+                }
+                productType?.let {
+                    add(PRODUCTS.TYPE.eq(it))
+                }
+                depotName?.takeIf { it.isNotBlank() }?.let {
+                    add(DEPOTS.NAME.containsIgnoreCase(it))
                 }
             }
-            productName?.takeIf { it.isNotBlank() }?.let {
-                add(PRODUCTS.NAME.containsIgnoreCase(it))
-            }
-            productType?.let {
-                add(PRODUCTS.TYPE.eq(it))
-            }
-            depotName?.takeIf { it.isNotBlank() }?.let {
-                add(DEPOTS.NAME.containsIgnoreCase(it))
-            }
-        }
 
         val records =
             jooqDsl
@@ -117,30 +118,32 @@ class InventoryQueryServiceImpl(
                 .limit(pageable.pageSize)
                 .fetch()
 
-        val total = jooqDsl
-            .selectCount()
-            .from(INVENTORIES)
-            .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
-            .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
-            .where(condition)
-            .fetchOne(0, Int::class.java) ?: 0
+        val total =
+            jooqDsl
+                .selectCount()
+                .from(INVENTORIES)
+                .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
+                .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
+                .where(condition)
+                .fetchOne(0, Int::class.java) ?: 0
 
-        val recordsGrouped = records.groupBy { it[INVENTORIES.ID]!! }.map { (_, group) ->
-            val first = group.first()
+        val recordsGrouped =
+            records.groupBy { it[INVENTORIES.ID]!! }.map { (_, group) ->
+                val first = group.first()
 
-            val productType: Product.ProductType = Product.ProductType.valueOf(first[PRODUCTS.TYPE]!!)
+                val productType: Product.ProductType = Product.ProductType.valueOf(first[PRODUCTS.TYPE]!!)
 
-            BasicInventoryTO(
-                id = first[INVENTORIES.ID]!!,
-                productName = first[PRODUCTS.NAME] ?: "[未知产品]",
-                productType = productType.name,
-                quantity = group.mapNotNull { it[INVENTORY_UNIT.REMAINING_QUANTITY] }.sumOf { it },
-                depotNames = group.mapNotNull { it[DEPOTS.NAME] },
-                safetyStock = first[INVENTORIES.SAFETY_STOCK],
-                maxStock = first[INVENTORIES.MAX_STOCK],
-                units = group.mapNotNull { it.toBasicInventoryUnitTO() },
-            )
-        }
+                BasicInventoryTO(
+                    id = first[INVENTORIES.ID]!!,
+                    productName = first[PRODUCTS.NAME] ?: "[未知产品]",
+                    productType = productType.name,
+                    quantity = group.mapNotNull { it[INVENTORY_UNIT.REMAINING_QUANTITY] }.sumOf { it },
+                    depotNames = group.mapNotNull { it[DEPOTS.NAME] },
+                    safetyStock = first[INVENTORIES.SAFETY_STOCK],
+                    maxStock = first[INVENTORIES.MAX_STOCK],
+                    units = group.mapNotNull { it.toBasicInventoryUnitTO() },
+                )
+            }
 
         return PageImpl(recordsGrouped, pageable, total.toLong())
     }
@@ -152,7 +155,6 @@ class InventoryQueryServiceImpl(
             .toTO()
     }
 
-
     private fun findAllChildrenCategories(categoryId: Long): List<Long> {
         val result = mutableSetOf<Long>()
         val queue = mutableListOf(categoryId)
@@ -162,12 +164,13 @@ class InventoryQueryServiceImpl(
             result.add(currentId)
 
             // 查询直接子分类
-            val children = jooqDsl
-                .select(PRODUCT_CATEGORIES.ID)
-                .from(PRODUCT_CATEGORIES)
-                .where(PRODUCT_CATEGORIES.PARENT_ID.eq(currentId))
-                .fetch()
-                .map { it.value1() }
+            val children =
+                jooqDsl
+                    .select(PRODUCT_CATEGORIES.ID)
+                    .from(PRODUCT_CATEGORIES)
+                    .where(PRODUCT_CATEGORIES.PARENT_ID.eq(currentId))
+                    .fetch()
+                    .map { it.value1() }
 
             queue.addAll(children)
         }

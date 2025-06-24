@@ -20,13 +20,12 @@ interface InventoryUnitRepository : JpaRepository<InventoryUnit, Long> {
 
     fun findByPurchaseOrderId(orderId: Long): List<InventoryUnit>
 
-
     @Query(
         value = """
         SELECT * FROM inventory_unit 
         WHERE :saleOrderId = ANY(sale_order_ids)
     """,
-        nativeQuery = true
+        nativeQuery = true,
     )
     fun findAllBySaleOrderId(saleOrderId: Long): List<InventoryUnit>
 }

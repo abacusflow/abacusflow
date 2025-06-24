@@ -2,11 +2,9 @@ package org.bruwave.abacusflow.usecase.user.service.impl
 
 import org.bruwave.abacusflow.commons.Sex
 import org.bruwave.abacusflow.db.user.UserRepository
-import org.bruwave.abacusflow.usecase.user.BasicUserTO
 import org.bruwave.abacusflow.usecase.user.CreateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UpdateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UserTO
-import org.bruwave.abacusflow.usecase.user.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.user.mapper.toTO
 import org.bruwave.abacusflow.usecase.user.service.UserCommandService
 import org.bruwave.abacusflow.user.User

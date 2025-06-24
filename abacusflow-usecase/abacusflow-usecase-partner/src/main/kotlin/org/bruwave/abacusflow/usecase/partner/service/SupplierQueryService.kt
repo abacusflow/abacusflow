@@ -15,6 +15,6 @@ interface SupplierQueryService {
         name: String?,
         contactPerson: String?,
         phone: String?,
-        address: String?
+        address: String?,
     ): Page<BasicSupplierTO>
 }

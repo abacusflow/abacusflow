@@ -15,6 +15,6 @@ interface ProductQueryService {
         name: String?,
         type: String?,
         enabled: Boolean?,
-        categoryId: Long?
+        categoryId: Long?,
     ): Page<BasicProductTO>
 }

@@ -160,20 +160,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive, ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import {computed, inject, reactive, ref} from "vue";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
 import {
-  OrderStatus,
   type BasicSaleOrder,
   type ListSaleOrdersPageRequest,
+  OrderStatus,
   type TransactionApi
 } from "@/core/openapi";
 import SaleOrderAddView from "./SaleOrderAddView.vue";
 import SaleOrderEditView from "./SaleOrderDetailView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
+import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
+import {message} from "ant-design-vue";
 import dayjs from "dayjs";
-import { dateToFormattedString } from "@/util/timestampUtils";
+import {dateToFormattedString} from "@/util/timestampUtils";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();

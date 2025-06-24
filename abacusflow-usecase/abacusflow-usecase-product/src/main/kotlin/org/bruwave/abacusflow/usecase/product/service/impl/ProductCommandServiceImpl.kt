@@ -7,15 +7,11 @@ import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.product.Product
-import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
-import org.bruwave.abacusflow.usecase.product.ProductInstanceForBasicProductTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductTypeTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductUnitTOToDO
-import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
-import org.bruwave.abacusflow.usecase.product.mapper.toForBasicProductTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
 import org.bruwave.abacusflow.usecase.product.service.ProductCommandService
 import org.springframework.stereotype.Service

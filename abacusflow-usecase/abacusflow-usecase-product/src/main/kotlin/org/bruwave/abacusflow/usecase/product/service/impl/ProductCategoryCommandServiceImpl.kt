@@ -2,11 +2,9 @@ package org.bruwave.abacusflow.usecase.product.service.impl
 
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.product.ProductCategory
-import org.bruwave.abacusflow.usecase.product.BasicProductCategoryTO
 import org.bruwave.abacusflow.usecase.product.CreateProductCategoryInputTO
 import org.bruwave.abacusflow.usecase.product.ProductCategoryTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductCategoryInputTO
-import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
 import org.bruwave.abacusflow.usecase.product.service.ProductCategoryCommandService
 import org.springframework.stereotype.Service

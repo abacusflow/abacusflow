@@ -11,7 +11,7 @@ interface InventoryQueryService {
         productCategoryId: Long?,
         productName: String?,
         productType: String?,
-        depotName: String?
+        depotName: String?,
     ): Page<BasicInventoryTO>
 
     fun getInventory(id: Long): InventoryTO

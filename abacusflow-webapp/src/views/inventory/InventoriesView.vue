@@ -125,8 +125,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, h, inject, reactive, ref } from "vue";
-import { useQuery } from "@tanstack/vue-query";
+import {computed, h, inject, reactive, ref} from "vue";
+import {useQuery} from "@tanstack/vue-query";
 import {
   type BasicInventory,
   type BasicInventoryUnit,
@@ -135,13 +135,13 @@ import {
   type ListInventoriesPageRequest,
   ProductType
 } from "@/core/openapi";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
-import { translateProductType } from "@/util/productUtils";
-import { type TableColumnsType, Tag } from "ant-design-vue";
+import {translateProductType} from "@/util/productUtils";
+import {type TableColumnsType, Tag} from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
-import { useRoute, useRouter } from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 
 const router = useRouter();
 const route = useRoute();

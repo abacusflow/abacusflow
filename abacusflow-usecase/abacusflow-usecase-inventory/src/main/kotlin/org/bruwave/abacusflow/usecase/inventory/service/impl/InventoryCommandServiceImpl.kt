@@ -4,8 +4,8 @@ import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.inventory.Inventory
 import org.bruwave.abacusflow.usecase.inventory.CreateInventoryInputTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryTO
-import org.bruwave.abacusflow.usecase.inventory.service.InventoryCommandService
 import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
+import org.bruwave.abacusflow.usecase.inventory.service.InventoryCommandService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

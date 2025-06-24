@@ -100,7 +100,10 @@ abstract class InventoryUnit(
         updatedAt = Instant.now()
     }
 
-    open fun reverse(amount: Int, saleOrderId: Long) {
+    open fun reverse(
+        amount: Int,
+        saleOrderId: Long,
+    ) {
         require(amount > 0) { "回退数量必须为正" }
         require(remainingQuantity < quantity) { "当前库存未出库，无需回退" }
         require(remainingQuantity + amount <= quantity) { "库存无法回退，超过原始数量" }
@@ -131,12 +134,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val serialNumber: String,
     ) : InventoryUnit(
-        inventory = inventory,
-        purchaseOrderId = purchaseOrderId,
-        quantity = 1,
-        depotId = depotId,
-        unitPrice = unitPrice,
-    ) {
+            inventory = inventory,
+            purchaseOrderId = purchaseOrderId,
+            quantity = 1,
+            depotId = depotId,
+            unitPrice = unitPrice,
+        ) {
         val inStock: Boolean
             get() = remainingQuantity == 1L
 
@@ -162,12 +165,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val batchCode: UUID = UUID.randomUUID(),
     ) : InventoryUnit(
-        inventory = inventory,
-        purchaseOrderId = purchaseOrderId,
-        quantity = quantity,
-        unitPrice = unitPrice,
-        depotId = depotId,
-    )
+            inventory = inventory,
+            purchaseOrderId = purchaseOrderId,
+            quantity = quantity,
+            unitPrice = unitPrice,
+            depotId = depotId,
+        )
 
     enum class UnitType {
         INSTANCE,

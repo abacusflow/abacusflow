@@ -24,11 +24,10 @@ class SaleOrderItem(
     val quantity: Int,
     @field:PositiveOrZero
     val unitPrice: BigDecimal,
-
     // 默认为 1 表示没有折扣
     @field:DecimalMin("0.0")
     @field:DecimalMax("1.0")
-    val discountFactor: BigDecimal = BigDecimal.ONE
+    val discountFactor: BigDecimal = BigDecimal.ONE,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

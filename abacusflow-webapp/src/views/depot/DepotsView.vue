@@ -68,13 +68,13 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicDepot, Depot, DepotApi } from "@/core/openapi";
+import {inject, ref} from "vue";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
+import type {BasicDepot, Depot, DepotApi} from "@/core/openapi";
 import DepotAddView from "./DepotAddView.vue";
 import DepotEditView from "./DepotEditView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
+import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
+import {message} from "ant-design-vue";
 
 const depotApi = inject("depotApi") as DepotApi;
 const queryClient = useQueryClient();

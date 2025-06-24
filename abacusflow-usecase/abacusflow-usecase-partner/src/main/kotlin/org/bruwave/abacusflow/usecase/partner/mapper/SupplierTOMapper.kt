@@ -3,8 +3,6 @@ package org.bruwave.abacusflow.usecase.partner.mapper
 import org.bruwave.abacusflow.partner.Supplier
 import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
-import java.time.Instant
-
 
 fun Supplier.toTO() =
     SupplierTO(

@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.usecase.partner.service
 
-import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
 import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
 import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO

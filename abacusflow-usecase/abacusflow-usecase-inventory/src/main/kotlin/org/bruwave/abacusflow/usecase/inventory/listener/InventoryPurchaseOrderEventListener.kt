@@ -84,9 +84,10 @@ class InventoryPurchaseOrderEventListener(
         }
 
         // 只要有一个库存单元 saleOrderIds 不为空 或 状态不是 NORMAL，则禁止撤回
-        val hasBeenConsumed = units.any {
-            it.saleOrderIds.isNotEmpty() || it.status != InventoryUnit.InventoryUnitStatus.NORMAL
-        }
+        val hasBeenConsumed =
+            units.any {
+                it.saleOrderIds.isNotEmpty() || it.status != InventoryUnit.InventoryUnitStatus.NORMAL
+            }
 
         if (hasBeenConsumed) {
             println("Cannot reverse PurchaseOrder ${order.no}: at least one InventoryUnit has been consumed or associated with a SaleOrder")

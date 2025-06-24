@@ -1,13 +1,9 @@
 package org.bruwave.abacusflow.portal.web.transaction
 
-import org.apache.tomcat.jni.Buffer.address
 import org.bruwave.abacusflow.portal.web.api.SaleOrdersApi
-import org.bruwave.abacusflow.portal.web.model.BasicSaleOrderVO
 import org.bruwave.abacusflow.portal.web.model.CreateSaleOrderInputVO
 import org.bruwave.abacusflow.portal.web.model.ListSaleOrdersPage200ResponseVO
-import org.bruwave.abacusflow.portal.web.model.ListSuppliersPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.SaleOrderVO
-import org.bruwave.abacusflow.portal.web.partner.toBasicVO
 import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderCommandService
 import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderQueryService
@@ -27,24 +23,26 @@ class SaleOrderController(
         orderNo: UUID?,
         customerName: String?,
         status: String?,
-        productName: String?
+        productName: String?,
     ): ResponseEntity<ListSaleOrdersPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
-        val page = saleOrderQueryService.listSaleOrdersPage(
-            pageable,
-            orderNo = orderNo,
-            customerName = customerName,
-            status = status,
-            productName = productName,
-        ).map { it.toBasicVO() }
+        val page =
+            saleOrderQueryService.listSaleOrdersPage(
+                pageable,
+                orderNo = orderNo,
+                customerName = customerName,
+                status = status,
+                productName = productName,
+            ).map { it.toBasicVO() }
 
-        val pageVO = ListSaleOrdersPage200ResponseVO(
-            content = page.content,
-            totalElements = page.totalElements,
-            number = page.number,
-            propertySize = page.size
-        )
+        val pageVO =
+            ListSaleOrdersPage200ResponseVO(
+                content = page.content,
+                totalElements = page.totalElements,
+                number = page.number,
+                propertySize = page.size,
+            )
 
         return ResponseEntity.ok(pageVO)
     }
