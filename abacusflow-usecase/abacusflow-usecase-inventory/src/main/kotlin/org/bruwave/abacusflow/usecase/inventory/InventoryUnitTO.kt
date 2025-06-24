@@ -1,5 +1,6 @@
 package org.bruwave.abacusflow.usecase.inventory
 
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
@@ -10,7 +11,7 @@ data class InventoryUnitTO(
     val purchaseOrderId: Long,
     val quantity: Long,
     val remainingQuantity: Long,
-    val unitPrice: Double,
+    val unitPrice: BigDecimal,
     val depotId: Long?,
     val status: String, // NORMAL / CONSUMED / CANCELED / REVERSED
     val saleOrderIds: List<Long>,

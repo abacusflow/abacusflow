@@ -86,6 +86,28 @@
           />
         </a-form-item>
 
+        <a-form-item
+          label="折扣率"
+          :name="['orderItems', index, 'discountFactor']"
+          :rules="[{ required: true, message: '请输入折扣率' }]"
+        >
+          <a-flex justify="flex-start" align="center" style="height: 100%">
+            <!-- 折扣率输入框 -->
+            <a-input-number
+              v-model:value="item.discountFactor"
+              addon-after="%"
+              placeholder="请输入折扣率"
+              :min="1"
+              :max="100"
+              style="width: 100%"
+            />
+
+            <span style="display: inline-block; margin-left: 10px"
+              >折扣价: {{ calculateDiscountedPrice(item.unitPrice, item.discountFactor) }}</span
+            >
+          </a-flex>
+        </a-form-item>
+
         <!-- 删除按钮 -->
         <a-button danger type="link" @click="removeOrderItem(index)"> 删除该商品 </a-button>
       </div>
@@ -108,8 +130,8 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, reactive, ref} from "vue";
-import {type FormInstance, message} from "ant-design-vue";
+import { inject, reactive, ref } from "vue";
+import { type FormInstance, message } from "ant-design-vue";
 import {
   type BasicProduct,
   type CreateSaleOrderInput,
@@ -120,8 +142,8 @@ import {
   type SaleOrderItemInput,
   type TransactionApi
 } from "@/core/openapi";
-import {useMutation, useQuery} from "@tanstack/vue-query";
-import dayjs, {Dayjs} from "dayjs";
+import { useMutation, useQuery } from "@tanstack/vue-query";
+import dayjs, { Dayjs } from "dayjs";
 
 const formRef = ref<FormInstance>();
 const dateFormat = "YYYY/MM/DD";
@@ -178,7 +200,8 @@ function addOrderItem() {
   formState.orderItems?.push({
     inventoryUnitId: undefined,
     quantity: 1,
-    unitPrice: 0
+    unitPrice: undefined,
+    discountFactor: 100
   });
 }
 
@@ -192,6 +215,14 @@ function isAsset(productId?: number, products?: BasicProduct[]): boolean {
 
   const product = products.find((p) => p.id === productId);
   return product?.type === ProductType.Asset;
+}
+
+function calculateDiscountedPrice(unitPrice?: number, discountFactor?: number) {
+  if (!unitPrice) return 0;
+  if (!discountFactor) return unitPrice;
+  const discountedPrice = unitPrice * (discountFactor / 100);
+
+  return parseFloat(discountedPrice.toFixed(2));
 }
 
 const handleCancel = () => {
@@ -212,7 +243,18 @@ const handleOk = () => {
   formRef.value
     ?.validate()
     .then(() => {
-      createSaleOrder(formRef.value?.getFieldsValue() as CreateSaleOrderInput);
+      const formData = formRef.value?.getFieldsValue() as CreateSaleOrderInput;
+
+      // 创建一个新的对象并转换 discountFactor 为 0.01 - 1.00 范围
+      const transformedFormData = {
+        ...formData,
+        orderItems: formData.orderItems.map((item) => ({
+          ...item,
+          discountFactor: item.discountFactor ? item.discountFactor / 100 : 1.0
+        }))
+      };
+
+      createSaleOrder(transformedFormData);
     })
     .catch((error) => {
       console.error("表单验证失败", error);

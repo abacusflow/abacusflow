@@ -1,5 +1,6 @@
 package org.bruwave.abacusflow.usecase.transaction
 
+import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
@@ -9,7 +10,7 @@ data class BasicPurchaseOrderTO(
     val orderNo: UUID,
     val supplierName: String,
     val status: String,
-    val totalAmount: Double,
+    val totalAmount: BigDecimal,
     val totalQuantity: Long,
     val itemCount: Int,
     val orderDate: LocalDate,

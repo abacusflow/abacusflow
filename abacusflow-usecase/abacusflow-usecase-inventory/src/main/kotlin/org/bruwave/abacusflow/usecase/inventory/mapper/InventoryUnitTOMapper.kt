@@ -1,6 +1,7 @@
-package org.bruwave.abacusflow.usecase.inventory
+package org.bruwave.abacusflow.usecase.inventory.mapper
 
 import org.bruwave.abacusflow.inventory.InventoryUnit
+import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
 
 fun InventoryUnit.toTO(): InventoryUnitTO {
     return when (this) {

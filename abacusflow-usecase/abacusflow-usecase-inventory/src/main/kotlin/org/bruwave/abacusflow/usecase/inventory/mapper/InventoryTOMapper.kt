@@ -1,6 +1,8 @@
-package org.bruwave.abacusflow.usecase.inventory
+package org.bruwave.abacusflow.usecase.inventory.mapper
 
 import org.bruwave.abacusflow.inventory.Inventory
+import org.bruwave.abacusflow.usecase.inventory.InventoryTO
+
 //
 // fun Inventory.toBasicTO(
 //    productName: String,

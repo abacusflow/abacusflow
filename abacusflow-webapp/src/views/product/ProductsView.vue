@@ -8,7 +8,7 @@
         </a-button>
       </a-flex>
 
-      <a-flex justify="flex-starrt" align="center" style="height: 100%">
+      <a-flex justify="flex-start" align="start" style="height: 100%">
         <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
         <a-flex vertical style="flex: 1; padding-left: 16px">
           <a-card :bordered="false">
@@ -97,15 +97,15 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref} from "vue";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
-import type {BasicProduct, BasicProductInstancesInner, Product, ProductApi} from "@/core/openapi";
+import { computed, inject, ref } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { BasicProduct, BasicProductInstancesInner, Product, ProductApi } from "@/core/openapi";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
-import {message} from "ant-design-vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { message } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
-import {useRoute, useRouter} from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const productApi = inject("productApi") as ProductApi;
 const queryClient = useQueryClient();

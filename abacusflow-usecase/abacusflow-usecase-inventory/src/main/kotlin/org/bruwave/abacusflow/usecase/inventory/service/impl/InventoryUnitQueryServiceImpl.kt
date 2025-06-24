@@ -11,11 +11,12 @@ import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitQueryService
-import org.bruwave.abacusflow.usecase.inventory.toTO
+import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
@@ -107,7 +108,7 @@ class InventoryUnitQueryServiceImpl(
             depotName = this[DEPOTS.NAME],
             quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L,
             remainingQuantity = this[INVENTORY_UNIT.REMAINING_QUANTITY] ?: 0L,
-            unitPrice = this[INVENTORY_UNIT.UNIT_PRICE] ?: 0.0,
+            unitPrice = this[INVENTORY_UNIT.UNIT_PRICE] ?: BigDecimal.ZERO,
             receivedAt = this[INVENTORY_UNIT.RECEIVED_AT]?.toInstant() ?: Instant.EPOCH,
             batchCode = this[INVENTORY_UNIT.BATCH_CODE],
             serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER],

@@ -14,6 +14,7 @@ import jakarta.validation.constraints.PositiveOrZero
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
+import java.math.BigDecimal
 import java.time.Instant
 
 @Entity
@@ -25,7 +26,7 @@ class ProductInstance(
     // 唯一编码，如 SN 编号、序列号
     val serialNumber: String,
     @field:PositiveOrZero
-    val unitPrice: Double,
+    val unitPrice: BigDecimal,
     @ManyToOne
     val product: Product,
     val purchaseOrderId: Long,

@@ -83,6 +83,16 @@ class InventoryPurchaseOrderEventListener(
             return
         }
 
+        // 只要有一个库存单元 saleOrderIds 不为空 或 状态不是 NORMAL，则禁止撤回
+        val hasBeenConsumed = units.any {
+            it.saleOrderIds.isNotEmpty() || it.status != InventoryUnit.InventoryUnitStatus.NORMAL
+        }
+
+        if (hasBeenConsumed) {
+            println("Cannot reverse PurchaseOrder ${order.no}: at least one InventoryUnit has been consumed or associated with a SaleOrder")
+            throw IllegalStateException("该采购单下存在已出库或已销售的库存，无法撤回")
+        }
+
         inventoryUnitRepository.deleteAll(units)
     }
 }

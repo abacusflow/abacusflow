@@ -2,6 +2,7 @@ package org.bruwave.abacusflow.db.inventory
 
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -19,15 +20,13 @@ interface InventoryUnitRepository : JpaRepository<InventoryUnit, Long> {
 
     fun findByPurchaseOrderId(orderId: Long): List<InventoryUnit>
 
-//    fun findBySaleOrderIdsContaining(saleOrderId: Long): List<InventoryUnit>
 
-//    @Query(
-//        """
-//    SELECT iu FROM InventoryUnit iu
-//    WHERE :saleOrderId IN (
-//        SELECT sid FROM iu.saleOrderIds sid
-//    )
-// """
-//    )
-//    fun findBySaleOrderIdInElementCollection(@Param("saleOrderId") saleOrderId: Long): List<InventoryUnit>
+    @Query(
+        value = """
+        SELECT * FROM inventory_unit 
+        WHERE :saleOrderId = ANY(sale_order_ids)
+    """,
+        nativeQuery = true
+    )
+    fun findAllBySaleOrderId(saleOrderId: Long): List<InventoryUnit>
 }

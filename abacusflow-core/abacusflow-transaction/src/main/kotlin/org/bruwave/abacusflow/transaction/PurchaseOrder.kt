@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
+import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
@@ -73,7 +74,7 @@ class PurchaseOrder(
         registerEvent(PurchaseOrderReversedEvent(this))
     }
 
-    val totalAmount: Double
+    val totalAmount: BigDecimal
         get() = items.sumOf { it.subtotal }
     val totalQuantity: Long
         get() = items.sumOf { it.quantity.toLong() }

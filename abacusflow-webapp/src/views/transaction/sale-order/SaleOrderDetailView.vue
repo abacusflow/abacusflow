@@ -33,13 +33,17 @@
         >
           <!-- 商品名称 -->
           <a-form-item
-            label="商品名称"
-            :name="['orderItems', index, 'productId']"
-            :rules="[{ required: true, message: '请选择产品' }]"
+            label="库存产品"
+            :name="['orderItems', index, 'inventoryUnitId']"
+            :rules="[{ required: true, message: '请选择库存产品' }]"
           >
-            <a-select v-model:value="item.productId" placeholder="请选择产品">
-              <a-select-option v-for="product in products" :key="product.id" :value="product.id">
-                {{ product.name }}
+            <a-select v-model:value="item.inventoryUnitId" placeholder="请选择库存产品">
+              <a-select-option
+                v-for="inventoryUnit in inventoryUnits"
+                :key="inventoryUnit.id"
+                :value="inventoryUnit.id"
+              >
+                {{ inventoryUnit.title }}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -73,22 +77,19 @@
             />
           </a-form-item>
 
-          <!-- 资产：仅资产类产品显示 -->
+          <!-- 折后单价 -->
           <a-form-item
-            v-if="isAsset(item.productId, products!)"
-            label="资产"
-            :name="['orderItems', index, 'productInstanceId']"
-            :rules="[{ required: true, message: '资产类产品必须选资产' }]"
+            label="折后单价"
+            :name="['orderItems', index, 'discountedPrice']"
+            :rules="[{ required: true, message: '请输入折后单价' }]"
           >
-            <a-select v-model:value="item.productInstanceId" placeholder="请选择资产">
-              <a-select-option
-                v-for="productInstance in productInstances"
-                :key="productInstance.id"
-                :value="productInstance.id"
-              >
-                {{ productInstance.name }}
-              </a-select-option>
-            </a-select>
+            <a-input-number
+              v-model:value="item.discountedPrice"
+              placeholder="折后单价"
+              :min="0"
+              :precision="2"
+              style="width: 100%"
+            />
           </a-form-item>
         </div>
       </a-form-item>
@@ -101,18 +102,11 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, reactive, ref, watchEffect} from "vue";
-import {type FormInstance} from "ant-design-vue";
-import {
-  type BasicProduct,
-  type PartnerApi,
-  type ProductApi,
-  ProductType,
-  type SaleOrder,
-  type TransactionApi
-} from "@/core/openapi";
-import {useQuery} from "@tanstack/vue-query";
-import dayjs, {Dayjs} from "dayjs";
+import { inject, reactive, ref, watchEffect } from "vue";
+import { type FormInstance } from "ant-design-vue";
+import { InventoryApi, type PartnerApi, type SaleOrder, type TransactionApi } from "@/core/openapi";
+import { useQuery } from "@tanstack/vue-query";
+import dayjs, { Dayjs } from "dayjs";
 
 const formRef = ref<FormInstance>();
 const dateFormat = "YYYY/MM/DD";
@@ -123,8 +117,8 @@ type SaleOrderForm = Omit<SaleOrder, "orderDate"> & {
 const props = defineProps<{ saleOrderId: number }>();
 
 const transactionApi = inject("transactionApi") as TransactionApi;
-const productApi = inject("productApi") as ProductApi;
 const partnerApi = inject("partnerApi") as PartnerApi;
+const inventoryApi = inject("inventoryApi") as InventoryApi;
 
 const formState = reactive<Partial<SaleOrderForm>>({
   customerId: undefined,
@@ -159,19 +153,8 @@ const { data: customers } = useQuery({
   queryFn: () => partnerApi.listCustomers()
 });
 
-const { data: products } = useQuery({
-  queryKey: ["products"],
-  queryFn: () => productApi.listProducts()
+const { data: inventoryUnits } = useQuery({
+  queryKey: ["inventoryUnits"],
+  queryFn: () => inventoryApi.listInventoryUnits()
 });
-const { data: productInstances } = useQuery({
-  queryKey: ["productInstances"],
-  queryFn: () => productApi.listProductInstances()
-});
-function isAsset(productId?: number, products?: BasicProduct[]): boolean {
-  if (!productId) return false;
-  if (!products) return false;
-
-  const product = products.find((p) => p.id === productId);
-  return product?.type === ProductType.Asset;
-}
 </script>

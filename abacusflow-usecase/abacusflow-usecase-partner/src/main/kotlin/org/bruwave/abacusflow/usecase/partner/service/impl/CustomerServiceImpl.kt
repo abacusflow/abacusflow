@@ -1,12 +1,14 @@
-package org.bruwave.abacusflow.usecase.partner.impl
+package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.CustomerRepository
 import org.bruwave.abacusflow.partner.Customer
 import org.bruwave.abacusflow.usecase.partner.BasicCustomerTO
 import org.bruwave.abacusflow.usecase.partner.CreateCustomerInputTO
-import org.bruwave.abacusflow.usecase.partner.CustomerService
+import org.bruwave.abacusflow.usecase.partner.service.CustomerService
 import org.bruwave.abacusflow.usecase.partner.CustomerTO
 import org.bruwave.abacusflow.usecase.partner.UpdateCustomerInputTO
+import org.bruwave.abacusflow.usecase.partner.mapper.toBasicTO
+import org.bruwave.abacusflow.usecase.partner.mapper.toTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -63,22 +65,4 @@ class CustomerServiceImpl(
             ?: throw NoSuchElementException("Customer not found")
 
     override fun listCustomers(): List<BasicCustomerTO> = customerRepository.findAll().map { it.toBasicTO() }
-
-    private fun Customer.toTO() =
-        CustomerTO(
-            id = id,
-            name = name,
-            phone = phone,
-            address = address,
-            createdAt = createdAt,
-            updatedAt = updatedAt,
-        )
-
-    private fun Customer.toBasicTO() =
-        BasicCustomerTO(
-            id = id,
-            name = name,
-            phone = phone,
-            address = address,
-        )
 }

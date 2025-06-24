@@ -47,7 +47,7 @@
         >
           <a-tooltip v-if="isAsset(item.productId, products!)" title="该产品为资产类，数量不可修改">
             <a-input-number
-              v-model:value="item.quantity"
+              :value="1"
               :disabled="true"
               :min="1"
               placeholder="数量"
@@ -111,8 +111,8 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, reactive, ref} from "vue";
-import {type FormInstance, message} from "ant-design-vue";
+import { inject, reactive, ref } from "vue";
+import { type FormInstance, message } from "ant-design-vue";
 import {
   type BasicProduct,
   type CreatePurchaseOrderInput,
@@ -122,8 +122,8 @@ import {
   type PurchaseOrderItemInput,
   type TransactionApi
 } from "@/core/openapi";
-import {useMutation, useQuery} from "@tanstack/vue-query";
-import dayjs, {Dayjs} from "dayjs";
+import { useMutation, useQuery } from "@tanstack/vue-query";
+import dayjs, { Dayjs } from "dayjs";
 
 const formRef = ref<FormInstance>();
 const dateFormat = "YYYY/MM/DD";
@@ -174,7 +174,7 @@ function addOrderItem() {
   formState.orderItems?.push({
     productId: undefined,
     quantity: 1,
-    unitPrice: 0,
+    unitPrice: undefined,
     serialNumber: undefined
   });
 }

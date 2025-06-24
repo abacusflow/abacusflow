@@ -16,6 +16,7 @@ import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
 import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 @Transactional
@@ -107,6 +108,7 @@ class SaleOrderServiceImpl(
                     TransactionInventoryUnitType.BATCH,
                     item.quantity,
                     item.unitPrice,
+                    item.discountFactor ?: BigDecimal.ONE,
                 )
 
             is InventoryUnit.InstanceInventoryUnit -> {
@@ -115,6 +117,7 @@ class SaleOrderServiceImpl(
                     TransactionInventoryUnitType.INSTANCE,
                     1, // 资产类固定数量为1
                     item.unitPrice,
+                    item.discountFactor ?: BigDecimal.ONE
                 )
             }
 
