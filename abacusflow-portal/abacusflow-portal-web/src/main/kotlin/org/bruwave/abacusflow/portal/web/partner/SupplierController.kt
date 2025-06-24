@@ -3,12 +3,15 @@ package org.bruwave.abacusflow.portal.web.partner
 import org.bruwave.abacusflow.portal.web.api.SuppliersApi
 import org.bruwave.abacusflow.portal.web.model.BasicSupplierVO
 import org.bruwave.abacusflow.portal.web.model.CreateSupplierInputVO
+import org.bruwave.abacusflow.portal.web.model.ListCustomersPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ListSuppliersPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.SupplierVO
 import org.bruwave.abacusflow.portal.web.model.UpdateSupplierInputVO
 import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
 import org.bruwave.abacusflow.usecase.partner.service.SupplierCommandService
 import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
 import org.bruwave.abacusflow.usecase.partner.service.SupplierQueryService
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
@@ -17,13 +20,32 @@ class SupplierController(
     private val supplierCommandService: SupplierCommandService,
     private val supplierQueryService: SupplierQueryService,
 ) : SuppliersApi {
-    override fun listSuppliers(): ResponseEntity<List<BasicSupplierVO>> {
-        val suppliers = supplierQueryService.listSuppliers()
-        val supplierVOs =
-            suppliers.map { supplier ->
-                supplier.toBasicVO()
-            }
-        return ResponseEntity.ok(supplierVOs)
+    override fun listSuppliersPage(
+        pageIndex: Int,
+        pageSize: Int,
+        name: String?,
+        contactPerson: String?,
+        phone: String?,
+        address: String?
+    ): ResponseEntity<ListSuppliersPage200ResponseVO> {
+        val pageable = PageRequest.of(pageIndex - 1, pageSize)
+
+        val page = supplierQueryService.listSuppliersPage(
+            pageable,
+            name = name,
+            contactPerson = contactPerson,
+            phone = phone,
+            address = address,
+        ).map { it.toBasicVO() }
+
+        val pageVO = ListSuppliersPage200ResponseVO(
+            content = page.content,
+            totalElements = page.totalElements,
+            number = page.number,
+            propertySize = page.size
+        )
+
+        return ResponseEntity.ok(pageVO)
     }
 
     override fun getSupplier(id: Long): ResponseEntity<SupplierVO> {

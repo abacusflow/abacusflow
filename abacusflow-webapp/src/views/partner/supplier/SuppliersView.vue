@@ -13,6 +13,15 @@
           <a-form-item label="供应商名">
             <a-input v-model:value="searchForm.name" placeholder="请输入姓名" allow-clear />
           </a-form-item>
+          <a-form-item label="联系人">
+            <a-input v-model:value="searchForm.contactPerson" placeholder="联系人" allow-clear />
+          </a-form-item>
+          <a-form-item label="电话">
+            <a-input v-model:value="searchForm.phone" placeholder="电话" allow-clear />
+          </a-form-item>
+          <a-form-item label="地址">
+            <a-input v-model:value="searchForm.address" placeholder="地址" allow-clear />
+          </a-form-item>
           <a-form-item>
             <a-space>
               <a-button type="primary" @click="handleSearch">搜索</a-button>
@@ -25,10 +34,11 @@
       <a-card :bordered="false">
         <a-table
           :columns="columns"
-          :data-source="filteredData"
+          :data-source="pageData?.content || []"
           :loading="isPending"
           row-key="id"
           size="small"
+          :pagination="pagination"
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'enabled'">
@@ -70,25 +80,41 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref} from "vue";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/vue-query";
-import type {BasicSupplier, PartnerApi, Supplier} from "@/core/openapi";
+import { computed, inject, reactive, ref } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { BasicSupplier, ListSuppliersPageRequest, PartnerApi, Supplier } from "@/core/openapi";
 import SupplierAddView from "./SupplierAddView.vue";
 import SupplierEditView from "./SupplierEditView.vue";
-import type {StrictTableColumnsType} from "@/core/antdv/antdev-table";
-import {message} from "ant-design-vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { message } from "ant-design-vue";
 
 const partnerApi = inject("partnerApi") as PartnerApi;
 const queryClient = useQueryClient();
 
+const pageIndex = ref(1);
+const pageSize = ref(10);
 const showAdd = ref(false);
 const showEdit = ref(false);
 const editingSupplier = ref<Supplier | null>(null);
 // 搜索表单
-const searchForm = ref({
-  name: "",
-  categoryId: undefined
+const searchForm = reactive({
+  name: undefined,
+  phone: undefined,
+  contactPerson: undefined,
+  address: undefined
 });
+
+const pagination = computed(() => ({
+  current: pageIndex.value,
+  pageSize: pageSize.value,
+  total: pageData.value?.totalElements,
+  showTotal: (total: number) => `共 ${total} 条`,
+  onChange: (page: number, size: number) => {
+    pageIndex.value = page;
+    pageSize.value = size;
+    refetch();
+  }
+}));
 
 // 搜索
 const handleSearch = () => {
@@ -98,11 +124,11 @@ const handleSearch = () => {
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.value = {
-    name: "",
-    categoryId: undefined
-  };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
+  searchForm.name = undefined;
+  searchForm.phone = undefined;
+  searchForm.contactPerson = undefined;
+  searchForm.address = undefined;
+
   refetch();
 };
 
@@ -112,18 +138,32 @@ const handleEditSupplier = (supplier: Supplier) => {
   showEdit.value = true;
 };
 
-const { data, isPending, refetch } = useQuery({
-  queryKey: ["suppliers"],
-  queryFn: () => partnerApi.listSuppliers()
-});
-
-const filteredData = computed(() => {
-  const name = searchForm.value.name.trim().toLowerCase();
-  if (!name) return data.value;
-
-  return data.value?.filter((supplier) => {
-    return supplier.name.toLowerCase().includes(name);
-  });
+const {
+  data: pageData,
+  isPending,
+  refetch
+} = useQuery({
+  queryKey: [
+    "suppliers",
+    searchForm.name,
+    searchForm.phone,
+    searchForm.contactPerson,
+    searchForm.address,
+    pageIndex,
+    pageSize
+  ],
+  queryFn: () => {
+    const { name, phone, contactPerson, address } = searchForm;
+    const params: ListSuppliersPageRequest = {
+      pageIndex: pageIndex.value,
+      pageSize: pageSize.value,
+      name: name || undefined,
+      contactPerson: contactPerson || undefined,
+      phone: phone || undefined,
+      address: address || undefined
+    };
+    return partnerApi.listSuppliersPage(params);
+  }
 });
 
 const { mutate: deleteSupplier } = useMutation({

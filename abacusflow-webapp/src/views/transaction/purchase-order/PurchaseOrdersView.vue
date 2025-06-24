@@ -11,7 +11,21 @@
       <a-card :bordered="false">
         <a-form layout="inline" :model="searchForm">
           <a-form-item label="采购单号">
-            <a-input v-model:value="searchForm.no" placeholder="请输入采购单号" allow-clear />
+            <a-input v-model:value="searchForm.orderNo" placeholder="请输入采购单号" allow-clear />
+          </a-form-item>
+          <a-form-item label="供应商名">
+            <a-input
+              v-model:value="searchForm.supplierName"
+              placeholder="请输入供应商名"
+              allow-clear
+            />
+          </a-form-item>
+          <a-form-item label="产品名">
+            <a-input
+              v-model:value="searchForm.productName"
+              placeholder="请输入产品名"
+              allow-clear
+            />
           </a-form-item>
           <a-form-item>
             <a-space>
@@ -25,10 +39,11 @@
       <a-card :bordered="false">
         <a-table
           :columns="columns"
-          :data-source="filteredData"
+          :data-source="pageData?.content || []"
           :loading="isPending"
           row-key="id"
           size="small"
+          :pagination="pagination"
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'status'">
@@ -144,9 +159,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref } from "vue";
+import { computed, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import { OrderStatus, type BasicPurchaseOrder, type TransactionApi } from "@/core/openapi";
+import {
+  OrderStatus,
+  type BasicPurchaseOrder,
+  type ListPurchaseOrdersPageRequest,
+  type TransactionApi
+} from "@/core/openapi";
 import PurchaseOrderAddView from "./PurchaseOrderAddView.vue";
 import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
@@ -158,28 +178,43 @@ import { translateOrderStatus } from "@/util/orderUtil";
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();
 
+const pageIndex = ref(1);
+const pageSize = ref(10);
 const showAdd = ref(false);
 const showEdit = ref(false);
 const editingPurchaseOrder = ref<BasicPurchaseOrder | null>(null);
 // 搜索表单
-const searchForm = ref({
-  no: "",
-  categoryId: undefined
+const searchForm = reactive({
+  orderNo: undefined,
+  status: undefined,
+  productName: undefined,
+  supplierName: undefined
 });
+
+const pagination = computed(() => ({
+  current: pageIndex.value,
+  pageSize: pageSize.value,
+  total: pageData.value?.totalElements,
+  showTotal: (total: number) => `共 ${total} 条`,
+  onChange: (page: number, size: number) => {
+    pageIndex.value = page;
+    pageSize.value = size;
+    refetch();
+  }
+}));
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.value = {
-    no: "",
-    categoryId: undefined
-  };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
+  searchForm.orderNo = undefined;
+  searchForm.status = undefined;
+  searchForm.productName = undefined;
+  searchForm.supplierName = undefined;
+
   refetch();
 };
 
@@ -189,18 +224,32 @@ const handleEditPurchaseOrder = (purchaseOrder: BasicPurchaseOrder) => {
   showEdit.value = true;
 };
 
-const { data, isPending, refetch } = useQuery({
-  queryKey: ["purchaseOrders"],
-  queryFn: () => transactionApi.listPurchaseOrders()
-});
-
-const filteredData = computed(() => {
-  const no = searchForm.value.no.trim().toLowerCase();
-  if (!no) return data.value;
-
-  return data.value?.filter((purchaseOrder) => {
-    return purchaseOrder.orderNo.toLowerCase().includes(no);
-  });
+const {
+  data: pageData,
+  isPending,
+  refetch
+} = useQuery({
+  queryKey: [
+    "purchaseOrders",
+    searchForm.orderNo,
+    searchForm.supplierName,
+    searchForm.status,
+    searchForm.productName,
+    pageIndex,
+    pageSize
+  ],
+  queryFn: () => {
+    const { orderNo, supplierName, status, productName } = searchForm;
+    const params: ListPurchaseOrdersPageRequest = {
+      orderNo: orderNo || undefined,
+      supplierName: supplierName || undefined,
+      status: status || undefined,
+      productName: productName || undefined,
+      pageIndex: pageIndex.value,
+      pageSize: pageSize.value
+    };
+    return transactionApi.listPurchaseOrdersPage(params);
+  }
 });
 
 const { mutate: completePurchaseOrder } = useMutation({

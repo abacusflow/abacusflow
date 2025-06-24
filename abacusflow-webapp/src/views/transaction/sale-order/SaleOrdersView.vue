@@ -10,8 +10,22 @@
 
       <a-card :bordered="false">
         <a-form layout="inline" :model="searchForm">
-          <a-form-item label="销售单号">
-            <a-input v-model:value="searchForm.no" placeholder="请输入销售单号" allow-clear />
+          <a-form-item label="采购单号">
+            <a-input v-model:value="searchForm.orderNo" placeholder="请输入采购单号" allow-clear />
+          </a-form-item>
+          <a-form-item label="客户名">
+            <a-input
+              v-model:value="searchForm.customerName"
+              placeholder="请输入客户名"
+              allow-clear
+            />
+          </a-form-item>
+          <a-form-item label="产品名">
+            <a-input
+              v-model:value="searchForm.productName"
+              placeholder="请输入产品名"
+              allow-clear
+            />
           </a-form-item>
           <a-form-item>
             <a-space>
@@ -25,10 +39,11 @@
       <a-card :bordered="false">
         <a-table
           :columns="columns"
-          :data-source="filteredData"
+          :data-source="pageData?.content || []"
           :loading="isPending"
           row-key="id"
           size="small"
+          :pagination="pagination"
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'status'">
@@ -145,9 +160,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref } from "vue";
+import { computed, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import { OrderStatus, type BasicSaleOrder, type TransactionApi } from "@/core/openapi";
+import {
+  OrderStatus,
+  type BasicSaleOrder,
+  type ListSaleOrdersPageRequest,
+  type TransactionApi
+} from "@/core/openapi";
 import SaleOrderAddView from "./SaleOrderAddView.vue";
 import SaleOrderEditView from "./SaleOrderDetailView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
@@ -158,28 +178,43 @@ import { dateToFormattedString } from "@/util/timestampUtils";
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();
 
+const pageIndex = ref(1);
+const pageSize = ref(10);
 const showAdd = ref(false);
 const showEdit = ref(false);
 const editingSaleOrder = ref<BasicSaleOrder | null>(null);
 // 搜索表单
-const searchForm = ref({
-  no: "",
-  categoryId: undefined
+const searchForm = reactive({
+  orderNo: undefined,
+  status: undefined,
+  productName: undefined,
+  customerName: undefined
 });
+
+const pagination = computed(() => ({
+  current: pageIndex.value,
+  pageSize: pageSize.value,
+  total: pageData.value?.totalElements,
+  showTotal: (total: number) => `共 ${total} 条`,
+  onChange: (page: number, size: number) => {
+    pageIndex.value = page;
+    pageSize.value = size;
+    refetch();
+  }
+}));
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.value = {
-    no: "",
-    categoryId: undefined
-  };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
+  searchForm.orderNo = undefined;
+  searchForm.status = undefined;
+  searchForm.productName = undefined;
+  searchForm.customerName = undefined;
+
   refetch();
 };
 
@@ -189,18 +224,32 @@ const handleEditSaleOrder = (saleOrder: BasicSaleOrder) => {
   showEdit.value = true;
 };
 
-const { data, isPending, refetch } = useQuery({
-  queryKey: ["saleOrders"],
-  queryFn: () => transactionApi.listSaleOrders()
-});
-
-const filteredData = computed(() => {
-  const no = searchForm.value.no.trim().toLowerCase();
-  if (!no) return data.value;
-
-  return data.value?.filter((saleOrder) => {
-    return saleOrder.orderNo.toLowerCase().includes(no);
-  });
+const {
+  data: pageData,
+  isPending,
+  refetch
+} = useQuery({
+  queryKey: [
+    "saleOrders",
+    searchForm.orderNo,
+    searchForm.customerName,
+    searchForm.status,
+    searchForm.productName,
+    pageIndex,
+    pageSize
+  ],
+  queryFn: () => {
+    const { orderNo, customerName, status, productName } = searchForm;
+    const params: ListSaleOrdersPageRequest = {
+      orderNo: orderNo || undefined,
+      customerName: customerName || undefined,
+      status: status || undefined,
+      productName: productName || undefined,
+      pageIndex: pageIndex.value,
+      pageSize: pageSize.value
+    };
+    return transactionApi.listSaleOrdersPage(params);
+  }
 });
 
 const { mutate: completeSaleOrder } = useMutation({

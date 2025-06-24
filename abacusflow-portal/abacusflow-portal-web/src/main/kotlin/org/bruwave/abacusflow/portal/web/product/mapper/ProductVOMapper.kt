@@ -21,7 +21,7 @@ fun ProductTO.toVO(): ProductVO =
         createdAt = createdAt.toEpochMilli(),
     )
 
-fun BasicProductTO.toVO(): BasicProductVO =
+fun BasicProductTO.toBasicVO(): BasicProductVO =
     BasicProductVO(
         id = id,
         name = name,
@@ -31,7 +31,6 @@ fun BasicProductTO.toVO(): BasicProductVO =
         categoryName = categoryName,
         enabled = enabled,
         note = note,
-        instances = instances?.map { it.toVO() },
     )
 
 fun mapProductUnitTOToVO(unit: String): ProductUnitVO =

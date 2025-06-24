@@ -1,24 +1,52 @@
 package org.bruwave.abacusflow.portal.web.transaction
 
+import org.apache.tomcat.jni.Buffer.address
 import org.bruwave.abacusflow.portal.web.api.PurchaseOrdersApi
 import org.bruwave.abacusflow.portal.web.model.BasicPurchaseOrderVO
 import org.bruwave.abacusflow.portal.web.model.CreatePurchaseOrderInputVO
+import org.bruwave.abacusflow.portal.web.model.ListPurchaseOrdersPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ListSuppliersPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.PurchaseOrderVO
+import org.bruwave.abacusflow.portal.web.partner.toBasicVO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderCommandService
+import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderQueryService
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 class PurchaseOrderController(
     private val purchaseOrderCommandService: PurchaseOrderCommandService,
+    private val purchaseOrderQueryService: PurchaseOrderQueryService,
 ) : PurchaseOrdersApi {
-    override fun listPurchaseOrders(): ResponseEntity<List<BasicPurchaseOrderVO>> {
-        val orderVOs =
-            purchaseOrderCommandService.listPurchaseOrders().map { order ->
-                order.toBasicVO()
-            }
-        return ResponseEntity.ok(orderVOs)
+    override fun listPurchaseOrdersPage(
+        pageIndex: Int,
+        pageSize: Int,
+        orderNo: UUID?,
+        supplierName: String?,
+        status: String?,
+        productName: String?
+    ): ResponseEntity<ListPurchaseOrdersPage200ResponseVO> {
+        val pageable = PageRequest.of(pageIndex - 1, pageSize)
+
+        val page = purchaseOrderQueryService.listPurchaseOrdersPage(
+            pageable,
+            orderNo = orderNo,
+            supplierName = supplierName,
+            status = status,
+            productName = productName,
+        ).map { it.toBasicVO() }
+
+        val pageVO = ListPurchaseOrdersPage200ResponseVO(
+            content = page.content,
+            totalElements = page.totalElements,
+            number = page.number,
+            propertySize = page.size
+        )
+
+        return ResponseEntity.ok(pageVO)
     }
 
     override fun getPurchaseOrder(id: Long): ResponseEntity<PurchaseOrderVO> {
