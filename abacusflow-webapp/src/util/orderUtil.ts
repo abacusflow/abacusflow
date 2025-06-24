@@ -1,4 +1,4 @@
-import type { OrderStatus } from "@/core/openapi";
+import type {OrderStatus} from "@/core/openapi";
 
 /**
  * 将单位英文值翻译为中文

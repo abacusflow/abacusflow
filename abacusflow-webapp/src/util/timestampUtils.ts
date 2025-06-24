@@ -8,12 +8,6 @@ export const timestampToLocaleString = (timestamp?: number): string => {
   return date.toLocaleString("zh-CN");
 };
 
-declare module "@vue/runtime-core" {
-  interface ComponentCustomProperties {
-    $timestampToLocaleString: (timestamp: number) => string;
-  }
-}
-
 export const dateToFormattedString = (
   date?: Date | string | null,
   format = "YYYY-MM-DD"
@@ -25,5 +19,6 @@ export const dateToFormattedString = (
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $dateToFormattedString: (date: Date | string | null, format?: string) => string;
+    $timestampToLocaleString: (timestamp: number) => string;
   }
 }

@@ -6,7 +6,6 @@ import org.bruwave.abacusflow.transaction.SaleOrderItem
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 fun SaleOrder.toTO() =
     SaleOrderTO(
@@ -22,9 +21,12 @@ fun SaleOrder.toTO() =
     )
 
 fun SaleOrder.toBasicTO(customerName: String): BasicSaleOrderTO {
-    val autoCompleteDate: LocalDate? = if (status == OrderStatus.PENDING) {
-        orderDate.plusDays(7)
-    } else null
+    val autoCompleteDate: LocalDate? =
+        if (status == OrderStatus.PENDING) {
+            orderDate.plusDays(7)
+        } else {
+            null
+        }
 
     return BasicSaleOrderTO(
         id = id,
@@ -43,9 +45,8 @@ fun SaleOrder.toBasicTO(customerName: String): BasicSaleOrderTO {
 fun SaleOrderItem.toTO() =
     SaleOrderTO.SaleOrderItemTO(
         id = id,
-        productId = productId,
         quantity = quantity,
         unitPrice = unitPrice,
         subtotal = subtotal,
-        productInstanceId = productInstanceId,
+        inventoryUnitId = inventoryUnitId,
     )

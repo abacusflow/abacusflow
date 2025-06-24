@@ -10,8 +10,7 @@ data class CreateSaleOrderInputTO(
 )
 
 data class SaleItemInputTO(
-    val productId: Long,
+    val inventoryUnitId: Long,
     val quantity: Int,
     val unitPrice: Double,
-    val productInstanceId: Long?,
 )

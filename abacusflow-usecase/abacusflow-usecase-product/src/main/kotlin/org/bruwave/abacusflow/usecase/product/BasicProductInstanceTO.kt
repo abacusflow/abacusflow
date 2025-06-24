@@ -12,6 +12,7 @@ data class BasicProductInstanceTO(
     val purchaseOrderNo: UUID,
     val saleOrderNo: UUID?,
 )
+
 data class ProductInstanceForBasicProductTO(
     val id: Long,
     val name: String,

@@ -1,7 +1,7 @@
 package org.bruwave.abacusflow.transaction
 
 enum class OrderStatus {
-    //进行中
+    // 进行中
     PENDING,
 
     // 已完成

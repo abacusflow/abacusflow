@@ -3,6 +3,8 @@ package org.bruwave.abacusflow.transaction
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -36,6 +38,7 @@ class PurchaseOrder(
     @Column(unique = true)
     val no: UUID = UUID.randomUUID()
 
+    @Enumerated(EnumType.STRING)
     var status: OrderStatus = OrderStatus.PENDING
         private set
 

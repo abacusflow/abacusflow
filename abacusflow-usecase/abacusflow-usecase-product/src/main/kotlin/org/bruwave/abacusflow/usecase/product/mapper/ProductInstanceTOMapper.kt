@@ -20,8 +20,7 @@ fun ProductInstance.toBasicTO(
         saleOrderNo = saleOrderNo,
     )
 
-fun ProductInstance.toForBasicProductTO(
-): ProductInstanceForBasicProductTO =
+fun ProductInstance.toForBasicProductTO(): ProductInstanceForBasicProductTO =
     ProductInstanceForBasicProductTO(
         id = id,
         name = name,

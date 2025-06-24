@@ -20,7 +20,6 @@ class InventoryProductEventListener(
         inventoryRepository.save(
             Inventory(
                 productId = event.product.id,
-                depotId = null,
             ),
         )
     }

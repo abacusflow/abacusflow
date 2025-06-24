@@ -634,19 +634,51 @@ paths:
 
   /inventories:
     get:
-      operationId: listInventories
+      operationId: queryPagedInventories
       tags:
         - inventory
-      summary: List all inventories
+      summary: Query inventories with pagination and filters
+      parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: productCategoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: productId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: depotId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         "200":
-          description: List of inventories
+          description: Paged result of matching inventories
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicInventory"
+                $ref: "#/components/schemas/PageBasicInventory"
 
   /inventories/{id}:
     get:
@@ -668,98 +700,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Inventory"
-
-  /inventories/{id}/increase:
-    post:
-      operationId: increaseInventory
-      tags:
-        - inventory
-      summary: Increase inventory quantity
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-              properties:
-                amount:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 100
-      responses:
-        "200":
-          description: Inventory increased
-
-  /inventories/{id}/decrease:
-    post:
-      operationId: decreaseInventory
-      tags:
-        - inventory
-      summary: Decrease inventory quantity
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-              properties:
-                amount:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  maximum: 100
-      responses:
-        "200":
-          description: Inventory decreased
-
-  /inventories/{id}/assign-depot:
-    post:
-      operationId: assignDepot
-      tags:
-        - inventory
-      summary: Assign inventory to another depot
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - depotId
-              properties:
-                depotId:
-                  type: integer
-                  format: int64
-                  description: ID of the depot to assign
-      responses:
-        "200":
-          description: Depot assigned successfully
 
   /inventories/{id}/adjust-warning-line:
     post:
@@ -796,68 +736,6 @@ paths:
         "200":
           description: Warning line adjusted successfully
 
-  /inventories/{id}/reserve:
-    post:
-      operationId: reserveInventory
-      tags:
-        - inventory
-      summary: Reserve part of the inventory (冻结部分库存)
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-              properties:
-                amount:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  description: 要冻结的库存数量
-      responses:
-        "200":
-          description: Reserved inventory successfully
-
-  /inventories/{id}/release:
-    post:
-      operationId: releaseInventory
-      tags:
-        - inventory
-      summary: Release part of the inventory (释放部分库存)
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-              properties:
-                amount:
-                  type: integer
-                  format: int32
-                  minimum: 1
-                  description: 要释放的库存数量
-      responses:
-        "200":
-          description: Released inventory successfully
-
   /inventories/{id}/safety-check:
     get:
       operationId: checkSafetyStock
@@ -878,6 +756,73 @@ paths:
             application/json:
               schema:
                 type: boolean
+
+  /inventory-units:
+    get:
+      operationId: listInventoryUnits
+      tags:
+        - inventory
+      summary: List all inventoryUnits
+      responses:
+        "200":
+          description: List of inventoryUnits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BasicInventoryUnit"
+
+  /inventory-units/{id}:
+    get:
+      operationId: getInventoryUnit
+      tags:
+        - inventory
+      summary: Get inventory unit by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Inventory unit details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryUnit"
+
+  /inventory-units/{id}/assign-depot:
+    post:
+      operationId: assignInventoryUnitDepot
+      tags:
+        - inventory
+      summary: Assign inventory unit to another depot
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - depotId
+              properties:
+                depotId:
+                  type: integer
+                  format: int64
+                  description: ID of the depot to assign
+      responses:
+        "200":
+          description: Depot assigned successfully
 
   /sale-orders:
     get:
@@ -1799,9 +1744,6 @@ components:
       required:
         - id
         - productId
-        - quantity
-        - reservedQuantity
-        - availableQuantity
         - safetyStock
         - maxStock
         - createdAt
@@ -1815,22 +1757,6 @@ components:
           type: integer
           format: int64
           description: 商品ID
-        depotId:
-          type: integer
-          format: int64
-          description: 储存点ID
-        quantity:
-          type: integer
-          format: int64
-          description: 总库存数量
-        reservedQuantity:
-          type: integer
-          format: int64
-          description: 预留数量
-        availableQuantity:
-          type: integer
-          format: int64
-          description: 可用数量
         safetyStock:
           type: integer
           format: int64
@@ -1848,16 +1774,34 @@ components:
           format: int64
           description: 更新时间戳
 
+    PageBasicInventory:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BasicInventory"
+        totalElements:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          description: 当前页码，从 0 开始
+        size:
+          type: integer
+          description: 每页条数
+
     BasicInventory:
       type: object
       required:
         - id
         - productName
+        - productType
         - quantity
-        - availableQuantity
-        - expectedQuantity
+        - depotNames
         - safetyStock
         - maxStock
+        - units
       properties:
         id:
           type: integer
@@ -1866,21 +1810,17 @@ components:
         productName:
           type: string
           description: 商品名称
-        depotName:
-          type: string
-          description: 储存点名称
+        productType:
+          $ref: "#/components/schemas/ProductType"
         quantity:
           type: integer
           format: int64
           description: 总库存数量
-        availableQuantity:
-          type: integer
-          format: int64
-          description: 可用数量
-        expectedQuantity:
-          type: integer
-          format: int64
-          description: 期望数量
+        depotNames:
+          description: 存储点列表
+          type: array
+          items:
+            type: string
         safetyStock:
           type: integer
           format: int64
@@ -1889,6 +1829,150 @@ components:
           type: integer
           format: int64
           description: 最大库存预警线
+        units:
+          type: object
+          items:
+            $ref: "#/components/schemas/BasicInventoryUnit"
+
+    # ============= InventoryUnit schemas =============
+
+    BasicInventoryUnit:
+      type: object
+      required:
+        - id
+        - type
+        - title
+        - purchaseOrderNo
+        - saleOrderNos
+        - quantity
+        - remainingQuantity
+        - unitPrice
+        - receivedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/InventoryUnitType"
+        title:
+          type: string
+        purchaseOrderNo:
+          type: string
+          format: uuid
+        saleOrderNos:
+          type: array
+          items:
+            type: string
+            format: uuid
+        depotName:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+        remainingQuantity:
+          type: integer
+          format: int64
+        unitPrice:
+          type: number
+          format: double
+        receivedAt:
+          type: integer
+          format: int64
+        batchCode:
+          type: string
+          format: uuid
+          nullable: true
+        serialNumber:
+          type: string
+          nullable: true
+
+    InventoryUnit:
+      type: object
+      required:
+        - id
+        - unitType
+        - inventoryId
+        - purchaseOrderId
+        - quantity
+        - remainingQuantity
+        - unitPrice
+        - status
+        - saleOrderIds
+        - receivedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        unitType:
+          $ref: "#/components/schemas/InventoryUnitType"
+        inventoryId:
+          type: integer
+          format: int64
+        purchaseOrderId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int64
+        remainingQuantity:
+          type: integer
+          format: int64
+        unitPrice:
+          type: number
+          format: double
+        depotId:
+          type: integer
+          format: int64
+          nullable: true
+        status:
+          $ref: "#/components/schemas/InventoryUnitStatus"
+        saleOrderIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        receivedAt:
+          type: integer
+          format: int64
+        serialNumber:
+          type: string
+          nullable: true
+        batchCode:
+          type: string
+          format: uuid
+          nullable: true
+
+    InventoryUnitType:
+      type: string
+      description: 单元类型
+      enum:
+        - instance
+        - batch
+      x-enum-varnames:
+        - instance
+        - batch
+      x-enum-descriptions:
+        - 资产单元
+        - 批次单元
+
+    InventoryUnitStatus:
+      type: string
+      description: 单元类型
+      enum:
+        - normal
+        - consumed
+        - canceled
+        - reversed
+      x-enum-varnames:
+        - normal
+        - consumed
+        - canceled
+        - reversed
+      x-enum-descriptions:
+        - 初始状态
+        - 已出库
+        - 被人为取消
+        - 因采购撤销等原因回退
 
     # ============= SaleOrder schemas =============
     SaleOrder:
@@ -2139,7 +2223,7 @@ components:
       type: object
       required:
         - id
-        - productId
+        - inventoryUnitId
         - quantity
         - unitPrice
         - subtotal
@@ -2148,10 +2232,10 @@ components:
           type: integer
           format: int64
           description: 订单明细ID
-        productId:
+        inventoryUnitId:
           type: integer
           format: int64
-          description: 商品ID
+          description: 库存单元ID
         productInstanceId:
           type: integer
           format: int64
@@ -2171,14 +2255,14 @@ components:
     SaleOrderItemInput:
       type: object
       required:
-        - productId
+        - inventoryUnitId
         - quantity
         - unitPrice
       properties:
-        productId:
+        inventoryUnitId:
           type: integer
           format: int64
-          description: 商品ID
+          description: 库存单元ID
         quantity:
           type: integer
           minimum: 1

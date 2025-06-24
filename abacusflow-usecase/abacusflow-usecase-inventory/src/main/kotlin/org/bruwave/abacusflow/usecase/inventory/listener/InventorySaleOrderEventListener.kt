@@ -1,7 +1,7 @@
 package org.bruwave.abacusflow.usecase.inventory.listener
 
-import org.bruwave.abacusflow.db.inventory.InventoryRepository
-import org.bruwave.abacusflow.transaction.SaleOrderCanceledEvent
+import org.bruwave.abacusflow.db.inventory.InventoryUnitRepository
+import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.transaction.SaleOrderCompletedEvent
 import org.bruwave.abacusflow.transaction.SaleOrderReversedEvent
 import org.springframework.context.event.EventListener
@@ -11,36 +11,45 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 @Transactional
 class InventorySaleOrderEventListener(
-    private val inventoryRepository: InventoryRepository,
+    private val inventoryUnitRepository: InventoryUnitRepository,
 ) {
     @EventListener
     fun handleSaleOrderCompletedEvent(event: SaleOrderCompletedEvent) {
         val order = event.order
         println("SaleOrder Completed orderNo: ${order.no}")
 
-        order.items.groupBy { it.productId }.forEach {
-            val inventory =
-                inventoryRepository.findByProductId(it.key)
-                    ?: throw NoSuchElementException("Product with id ${it.key} not found")
+        order.items.groupBy { it.inventoryUnitId }.forEach { (inventoryUnitId, inventories) ->
+            val totalQuantity = inventories.sumOf { it.quantity }
 
-            val sumQuantity = it.value.sumOf { it.quantity }
-            inventory.decreaseQuantity(sumQuantity)
+            val units =
+                inventoryUnitRepository.findByIdAndStatus(
+                    inventoryUnitId,
+                    InventoryUnit.InventoryUnitStatus.NORMAL,
+                )
+
+            units.forEach { unit ->
+                unit.consume(order.id, totalQuantity)
+            }
         }
     }
 
     @EventListener
     fun handleSaleOrderReversedEvent(event: SaleOrderReversedEvent) {
-        val order = event.order
-        println("SaleOrder Reversed orderNo: ${order.no}")
-
-        order.items.groupBy { it.productId }.forEach {
-            val inventory =
-                inventoryRepository.findByProductId(it.key)
-                    ?: throw NoSuchElementException("Product with id ${it.key} not found")
-
-            val sumQuantity = it.value.sumOf { it.quantity }
-            inventory.increaseQuantity(sumQuantity)
-        }
-
+//        val order = event.order
+//        println("SaleOrder Reversed orderNo: ${order.no}")
+//
+//        // 查询该订单产生的库存单元
+//        val units = inventoryUnitRepository.findBySaleOrderIdInElementCollection(order.id)
+//
+//        if (units.isEmpty()) {
+//            println("No InventoryUnits found for PurchaseOrder ${order.no}, skipping reversal")
+//            return
+//        }
+//
+//        units.forEach { unit ->
+//            unit.reverse()
+//        }
+//
+//        inventoryUnitRepository.saveAll(units)
     }
 }

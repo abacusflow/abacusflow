@@ -3,6 +3,8 @@ package org.bruwave.abacusflow.transaction
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -36,6 +38,7 @@ class SaleOrder(
     @Column(unique = true)
     val no: UUID = UUID.randomUUID()
 
+    @Enumerated(EnumType.STRING)
     var status: OrderStatus = OrderStatus.PENDING
         private set
 
@@ -62,7 +65,6 @@ class SaleOrder(
         registerEvent(SaleOrderCanceledEvent(this))
     }
 
-
     fun reverseOrder() {
         require(status == OrderStatus.COMPLETED) { "只有已完成订单才能撤回" }
         status = OrderStatus.REVERSED
@@ -75,8 +77,6 @@ class SaleOrder(
         get() = items.sumOf { it.subtotal }
     val totalQuantity: Long
         get() = items.sumOf { it.quantity.toLong() }
-    val itemCount: Int
-        get() = items.distinctBy { it.productId }.size
 
     @PrePersist
     fun prePersist() {

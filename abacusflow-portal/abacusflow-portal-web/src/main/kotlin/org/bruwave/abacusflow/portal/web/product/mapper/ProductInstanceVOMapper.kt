@@ -14,6 +14,7 @@ fun BasicProductInstanceTO.toVO(): BasicProductInstanceVO =
         purchaseOrderNo = purchaseOrderNo.toString(),
         saleOrderNo = saleOrderNo?.toString(),
     )
+
 fun ProductInstanceForBasicProductTO.toVO(): BasicProductInstancesInnerVO =
     BasicProductInstancesInnerVO(
         id = id,

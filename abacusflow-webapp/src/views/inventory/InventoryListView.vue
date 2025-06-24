@@ -5,154 +5,86 @@
         <h1>库存管理</h1>
       </a-flex>
 
-      <a-card :bordered="false">
-        <a-form layout="inline" :model="searchForm">
-          <a-form-item label="产品" name="productId">
-            <a-input v-model:value="searchForm.productId" placeholder="请选择产品" allow-clear />
-          </a-form-item>
+      <a-flex justify="flex-starrt" align="center" style="height: 100%">
+        <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
+        <a-flex vertical style="flex: 1; padding-left: 16px">
+          <a-card :bordered="false">
+            <a-form layout="inline" :model="searchForm">
+              <a-form-item label="产品" name="productId">
+                <a-input
+                  v-model:value="searchForm.productId"
+                  placeholder="请选择产品"
+                  allow-clear
+                />
+              </a-form-item>
 
-          <a-form-item label="储存点" name="depotId">
-            <a-input v-model:value="searchForm.depotId" placeholder="请选择储存点" allow-clear />
-          </a-form-item>
+              <a-form-item label="储存点" name="depotId">
+                <a-input
+                  v-model:value="searchForm.depotId"
+                  placeholder="请选择储存点"
+                  allow-clear
+                />
+              </a-form-item>
 
-          <a-form-item>
-            <a-space>
-              <a-button type="primary" @click="handleSearch">搜索</a-button>
-              <a-button @click="resetSearch">重置</a-button>
-            </a-space>
-          </a-form-item>
-        </a-form>
-      </a-card>
+              <a-form-item>
+                <a-space>
+                  <a-button type="primary" @click="handleSearch">搜索</a-button>
+                  <a-button @click="resetSearch">重置</a-button>
+                </a-space>
+              </a-form-item>
+            </a-form>
+          </a-card>
 
-      <a-card :bordered="false">
-        <a-table
-          :columns="columns"
-          :data-source="data"
-          :loading="isPending"
-          row-key="id"
-          size="small"
-        >
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'availableQuantity'">
-              <a-tooltip :title="stockHealthTip(record)">
-                <a-tag :color="stockHealthColor(record)">
-                  {{ record.availableQuantity }}
-                </a-tag>
-              </a-tooltip>
-            </template>
+          <a-card :bordered="false">
+            <a-table
+              :columns="columns"
+              :data-source="pageData?.content || []"
+              :loading="isPending"
+              row-key="id"
+              size="small"
+              :pagination="pagination"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'quantity'">
+                  <a-tooltip
+                    :title="stockHealthTip(record.quantity, record.safetyStock, record.maxStock)"
+                  >
+                    <a-tag
+                      :color="
+                        stockHealthColor(record.quantity, record.safetyStock, record.maxStock)
+                      "
+                    >
+                      {{ record.quantity }}
+                    </a-tag>
+                  </a-tooltip>
+                </template>
 
-            <template v-if="column.key === 'expectedQuantity'">
-              <a-tooltip :title="expectedQuantityTooltip(record)">
-                <a-tag :color="expectedQuantityTagColor(record)">
-                  {{ record.expectedQuantity }}
-                </a-tag>
-              </a-tooltip>
-            </template>
+                <template v-if="column.key === 'action'">
+                  <a-space>
+                    <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
+                      >调整预警线</a-button
+                    >
+                  </a-space>
+                </template>
+              </template>
 
-            <template v-if="column.key === 'action'">
-              <a-space>
-                <a-popover title="增加库存">
-                  <template #content>
-                    <a-flex justify="space-evenly" align="center">
-                      <a-input-number
-                        id="inputNumber"
-                        v-model:value="increaseValue"
-                        :min="1"
-                        :max="100"
-                      />
-                      <a-button
-                        type="primary"
-                        size="small"
-                        @click="handleIncreaseInventory(record, increaseValue)"
-                        >确定</a-button
-                      >
-                    </a-flex>
+              <template #expandedRowRender="{ record }">
+                <a-table :columns="innerColumns" :data-source="record.units" :pagination="false">
+                  <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'action'">
+                      <a-space>
+                        <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
+                          >分配储存点</a-button
+                        >
+                      </a-space>
+                    </template>
                   </template>
-                  <a-button type="link" shape="circle">加库存</a-button>
-                </a-popover>
-
-                <a-divider type="vertical" />
-
-                <a-popover title="减少库存">
-                  <template #content>
-                    <a-flex justify="space-evenly" align="center">
-                      <a-input-number
-                        id="inputNumber"
-                        v-model:value="decreaseValue"
-                        :min="1"
-                        :max="100"
-                      />
-                      <a-button
-                        type="primary"
-                        size="small"
-                        @click="handleDecreaseInventory(record, decreaseValue)"
-                        >确定</a-button
-                      >
-                    </a-flex>
-                  </template>
-                  <a-button type="link" shape="circle">减库存</a-button>
-                </a-popover>
-
-                <a-divider type="vertical" />
-
-                <a-popover title="冻结库存">
-                  <template #content>
-                    <a-flex justify="space-evenly" align="center">
-                      <a-input-number
-                        id="inputNumber"
-                        v-model:value="reserveValue"
-                        :min="1"
-                        :max="100"
-                      />
-                      <a-button
-                        type="primary"
-                        size="small"
-                        @click="handleReserveInventory(record, reserveValue)"
-                        >确定</a-button
-                      >
-                    </a-flex>
-                  </template>
-                  <a-button type="link" shape="circle">冻结库存</a-button>
-                </a-popover>
-
-                <a-divider type="vertical" />
-
-                <a-popover title="释放库存">
-                  <template #content>
-                    <a-flex justify="space-evenly" align="center">
-                      <a-input-number
-                        id="inputNumber"
-                        v-model:value="releaseValue"
-                        :min="1"
-                        :max="100"
-                      />
-                      <a-button
-                        type="primary"
-                        size="small"
-                        @click="handleReleaseInventory(record, releaseValue)"
-                        >确定</a-button
-                      >
-                    </a-flex>
-                  </template>
-                  <a-button type="link" shape="circle">释放库存</a-button>
-                </a-popover>
-
-                <a-divider type="vertical" />
-
-                <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
-                  >调整预警线</a-button
-                >
-
-                <a-divider type="vertical" />
-
-                <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
-                  >分配储存点</a-button
-                >
-              </a-space>
-            </template>
-          </template>
-        </a-table>
-      </a-card>
+                </a-table>
+              </template>
+            </a-table>
+          </a-card>
+        </a-flex>
+      </a-flex>
     </a-space>
 
     <a-drawer
@@ -162,9 +94,9 @@
       @close="showAssignDepot = false"
     >
       <InventoryAssignDepotView
-        v-if="showAssignDepot && editingInventory"
+        v-if="showAssignDepot && editingInventoryUnit"
         v-model:visible="showAssignDepot"
-        :inventoryId="editingInventory.id"
+        :inventoryUnitId="editingInventoryUnit.id"
         @success="refetch"
       />
     </a-drawer>
@@ -186,150 +118,118 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type {
-  BasicInventory,
-  IncreaseInventoryRequest,
-  InventoryApi,
-  ReserveInventoryRequest
+import { computed, h, inject, reactive, ref } from "vue";
+import { useQuery } from "@tanstack/vue-query";
+import {
+  type BasicInventory,
+  type BasicInventoryUnit,
+  type InventoryApi,
+  InventoryUnitType,
+  type QueryPagedInventoriesRequest
 } from "@/core/openapi";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
+import { translateProductType } from "@/util/productUtils";
+import { type TableColumnsType, Tag } from "ant-design-vue";
+import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
+import { useRoute, useRouter } from "vue-router";
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
-const queryClient = useQueryClient();
+const router = useRouter();
+const route = useRoute();
 
+const pageIndex = ref(1);
+const pageSize = ref(10);
 const showAssignDepot = ref(false);
 const showEditWarningLine = ref(false);
-const increaseValue = ref<number>(1);
-const decreaseValue = ref<number>(1);
-const reserveValue = ref<number>(1);
-const releaseValue = ref<number>(1);
 const editingInventory = ref<BasicInventory | null>(null);
+const editingInventoryUnit = ref<BasicInventoryUnit | null>(null);
+
+const productCategoryId = computed(() => {
+  const id = route.query.productCategoryId;
+  return id !== undefined ? Number(id) : undefined;
+});
+
 // 搜索表单
-const searchForm = ref({
+const searchForm = reactive({
   productId: undefined,
   depotId: undefined
 });
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 
 // 重置搜索
 const resetSearch = () => {
-  searchForm.value = {
-    productId: undefined,
-    depotId: undefined
-  };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
+  searchForm.productId = undefined;
+  searchForm.depotId = undefined;
+  pageIndex.value = 1;
   refetch();
 };
 
-const { data, isPending, refetch } = useQuery({
-  queryKey: ["inventories"],
-  queryFn: () => inventoryApi.listInventories()
-});
+const pagination = computed(() => ({
+  current: pageIndex.value,
+  pageSize: pageSize.value,
+  total: pageData.value?.totalElements,
+  showTotal: (total: number) => `共 ${total} 条`,
+  onChange: (page: number, size: number) => {
+    pageIndex.value = page;
+    pageSize.value = size;
+    refetch();
+  }
+}));
 
-const { mutate: increaseInventory } = useMutation({
-  mutationFn: ({ id, amount }: { id: number } & IncreaseInventoryRequest) =>
-    inventoryApi.increaseInventory({ id, increaseInventoryRequest: { amount } }),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["inventories"] });
-    message.success("加库存成功");
-  },
-  onError: (error) => {
-    message.error("操作失败");
-    console.error(error);
+const {
+  data: pageData,
+  isPending,
+  refetch
+} = useQuery({
+  queryKey: [
+    "inventories",
+    productCategoryId,
+    searchForm.productId,
+    searchForm.depotId,
+    pageIndex,
+    pageSize
+  ],
+  queryFn: () => {
+    const { productId, depotId } = searchForm;
+
+    const params: QueryPagedInventoriesRequest = {
+      productCategoryId: productCategoryId.value,
+      productId: productId || undefined,
+      depotId: depotId || undefined,
+      pageIndex: pageIndex.value,
+      pageSize: pageSize.value
+    };
+    return inventoryApi.queryPagedInventories(params);
   }
 });
-
-const { mutate: decreaseInventory } = useMutation({
-  mutationFn: ({ id, amount }: { id: number } & IncreaseInventoryRequest) =>
-    inventoryApi.decreaseInventory({ id, increaseInventoryRequest: { amount } }),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["inventories"] });
-    message.success("减库存成功");
-  },
-  onError: (error) => {
-    message.error("操作失败");
-    console.error(error);
-  }
-});
-
-const { mutate: reserveInventory } = useMutation({
-  mutationFn: ({ id, amount }: { id: number } & ReserveInventoryRequest) =>
-    inventoryApi.reserveInventory({ id, reserveInventoryRequest: { amount } }),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["inventories"] });
-    message.success("冻结库存成功");
-  },
-  onError: (error) => {
-    message.error("操作失败");
-    console.error(error);
-  }
-});
-
-const { mutate: releaseInventory } = useMutation({
-  mutationFn: ({ id, amount }: { id: number } & ReserveInventoryRequest) =>
-    inventoryApi.releaseInventory({ id, releaseInventoryRequest: { amount } }),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["inventories"] });
-    message.success("释放库存成功");
-  },
-  onError: (error) => {
-    message.error("操作失败");
-    console.error(error);
-  }
-});
-
-function handleIncreaseInventory(inventory: BasicInventory, amount: number) {
-  increaseInventory({ id: inventory.id, amount });
-}
-
-function handleDecreaseInventory(inventory: BasicInventory, amount: number) {
-  decreaseInventory({ id: inventory.id, amount });
-}
-
-function handleReserveInventory(inventory: BasicInventory, amount: number) {
-  reserveInventory({ id: inventory.id, amount });
-}
-
-function handleReleaseInventory(inventory: BasicInventory, amount: number) {
-  releaseInventory({ id: inventory.id, amount });
-}
-
-function handleAssignDepot(inventory: BasicInventory) {
-  editingInventory.value = inventory;
-  showAssignDepot.value = true;
-}
 
 function handleAdjustWarningLine(inventory: BasicInventory) {
   editingInventory.value = inventory;
   showEditWarningLine.value = true;
 }
 
-function expectedQuantityTagColor(record: BasicInventory): string {
-  return record.expectedQuantity === record.quantity ? "green" : "red";
+function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
+  editingInventoryUnit.value = inventoryUnit;
+  showAssignDepot.value = true;
 }
 
-function expectedQuantityTooltip(record: BasicInventory): string {
-  if (record.expectedQuantity === record.quantity) {
-    return "库存正常，预期与实际一致";
-  } else {
-    return `库存异常：预期为 ${record.expectedQuantity}，实际为 ${record.quantity}`;
-  }
+function onCategorySelected(productCategoryId: string | number) {
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      productCategoryId
+    }
+  });
 }
 
-const stockHealthTip = (record: BasicInventory): string => {
-  const value = record.availableQuantity ?? 0;
-  const min = record.safetyStock ?? 0;
-  const max = record.maxStock ?? Infinity;
+const stockHealthTip = (value: number = 0, min: number = 0, max: number = Infinity): string => {
   const range = max - min;
 
   if (value < min * 0.5) return "严重低于安全库存";
@@ -349,10 +249,7 @@ const stockHealthTip = (record: BasicInventory): string => {
   return "库存健康";
 };
 
-const stockHealthColor = (record: BasicInventory): string => {
-  const value = record.availableQuantity ?? 0;
-  const min = record.safetyStock ?? 0;
-  const max = record.maxStock ?? Infinity;
+const stockHealthColor = (value: number = 0, min: number = 0, max: number = Infinity): string => {
   const range = max - min;
 
   if (value < min * 0.5 || value > max * 1.2) return "red";
@@ -372,12 +269,70 @@ const stockHealthColor = (record: BasicInventory): string => {
 
 const columns: StrictTableColumnsType<BasicInventory> = [
   { title: "商品名称", dataIndex: "productName", key: "productName" },
-  { title: "储存点名称", dataIndex: "depotName", key: "depotName" },
+  {
+    title: "商品类型",
+    dataIndex: "productType",
+    key: "productType",
+    customRender: ({ text }) => translateProductType(text)
+  },
   { title: "总库存数量", dataIndex: "quantity", key: "quantity" },
-  { title: "可用数量", dataIndex: "availableQuantity", key: "availableQuantity" },
-  { title: "期望数量", dataIndex: "expectedQuantity", key: "expectedQuantity" },
+  {
+    title: "存储点",
+    dataIndex: "depotNames",
+    key: "depotNames",
+    customRender: ({ text }) => (Array.isArray(text) ? text.join(", ") : "-")
+  },
   { title: "安全库存预警线", dataIndex: "safetyStock", key: "safetyStock" },
   { title: "最大库存预警线", dataIndex: "maxStock", key: "maxStock" },
+  { title: "操作", key: "action" }
+];
+
+const innerColumns: TableColumnsType<BasicInventoryUnit> = [
+  // { title: "库存单元名", dataIndex: "title", key: "title" },
+  {
+    title: "批次号/序列号",
+    key: "identity",
+    customRender: ({ record }) => {
+      switch (record.type) {
+        case InventoryUnitType.batch:
+          return record.batchCode ?? "-";
+        case InventoryUnitType.instance:
+          return record.serialNumber ?? "-";
+        default:
+          return "-";
+      }
+    }
+  },
+  { title: "储存点", dataIndex: "depotName", key: "depotName" },
+  { title: "数量", dataIndex: "quantity", key: "quantity" },
+  {
+    title: "剩余数量",
+    dataIndex: "remainingQuantity",
+    key: "remainingQuantity",
+    customRender: ({ text, record }) => {
+      const color = text === 0 ? "red" : text < record.remainingQuantity ? "orange" : "green";
+      return h(Tag, { color }, () => text.toString());
+    }
+  },
+  {
+    title: "单价",
+    dataIndex: "unitPrice",
+    key: "unitPrice",
+    customRender: ({ text }) => text.toFixed(2)
+  },
+  {
+    title: "入库时间",
+    dataIndex: "receivedAt",
+    key: "receivedAt",
+    customRender: ({ text }) => new Date(text).toLocaleString("zh-CN")
+  },
+  { title: "采购单号", dataIndex: "purchaseOrderNo", key: "purchaseOrderNo" },
+  {
+    title: "销售单号",
+    dataIndex: "saleOrderNos",
+    key: "saleOrderNos",
+    customRender: ({ text }) => text?.join(", ") ?? "-"
+  },
   { title: "操作", key: "action" }
 ];
 </script>

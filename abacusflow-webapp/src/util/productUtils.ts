@@ -1,4 +1,4 @@
-import type { ProductUnit, ProductType } from "@/core/openapi";
+import type {ProductType, ProductUnit} from "@/core/openapi";
 
 /**
  * 将单位英文值翻译为中文
@@ -48,8 +48,6 @@ export function translateProductType(input?: ProductType): string {
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $translateProductUnit: (input: ProductUnit) => string;
-  }
-  interface ComponentCustomProperties {
     $translateProductType: (input: ProductType) => string;
   }
 }

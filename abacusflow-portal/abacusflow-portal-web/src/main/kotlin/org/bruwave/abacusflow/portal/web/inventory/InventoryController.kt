@@ -2,89 +2,61 @@ package org.bruwave.abacusflow.portal.web.inventory
 
 import org.bruwave.abacusflow.portal.web.api.InventoriesApi
 import org.bruwave.abacusflow.portal.web.model.AdjustWarningLineRequestVO
-import org.bruwave.abacusflow.portal.web.model.AssignDepotRequestVO
-import org.bruwave.abacusflow.portal.web.model.BasicInventoryVO
-import org.bruwave.abacusflow.portal.web.model.IncreaseInventoryRequestVO
 import org.bruwave.abacusflow.portal.web.model.InventoryVO
-import org.bruwave.abacusflow.portal.web.model.ReleaseInventoryRequestVO
-import org.bruwave.abacusflow.portal.web.model.ReserveInventoryRequestVO
-import org.bruwave.abacusflow.usecase.inventory.InventoryService
+import org.bruwave.abacusflow.portal.web.model.PageBasicInventoryVO
+import org.bruwave.abacusflow.usecase.inventory.service.InventoryCommandService
+import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class InventoryController(
-    private val inventoryService: InventoryService,
+    private val inventoryCommandService: InventoryCommandService,
+    private val inventoryQueryService: InventoryQueryService,
 ) : InventoriesApi {
-    override fun listInventories(): ResponseEntity<List<BasicInventoryVO>> {
-        val inventoryVOs =
-            inventoryService.listInventories().map { inventory ->
-                inventory.toBasicVO()
-            }
-        return ResponseEntity.ok(inventoryVOs)
+    override fun queryPagedInventories(
+        pageIndex: Int,
+        pageSize: Int,
+        productCategoryId: Long?,
+        productId: Long?,
+        depotId: Long?
+    ): ResponseEntity<PageBasicInventoryVO> {
+        val pageable = PageRequest.of(pageIndex - 1, pageSize)
+
+        val page = inventoryQueryService.queryPagedInventories(
+            pageable,
+            productCategoryId,
+            productId,
+            depotId
+        ).map { it.toBasicVO() }
+
+        val pageVO = PageBasicInventoryVO(
+            content = page.content,
+            totalElements = page.totalElements,
+            number = page.number,
+            propertySize = page.size
+        )
+
+        return ResponseEntity.ok(pageVO)
     }
 
     override fun getInventory(id: Long): ResponseEntity<InventoryVO> {
-        val inventory = inventoryService.getInventory(id)
+        val inventory = inventoryQueryService.getInventory(id)
         return ResponseEntity.ok(
             inventory.toVO(),
         )
-    }
-
-    override fun increaseInventory(
-        id: Long,
-        increaseInventoryRequestVO: IncreaseInventoryRequestVO,
-    ): ResponseEntity<Unit> {
-        inventoryService.increaseInventory(id, increaseInventoryRequestVO.amount)
-        return ResponseEntity.ok().build()
-    }
-
-    override fun decreaseInventory(
-        id: Long,
-        increaseInventoryRequestVO: IncreaseInventoryRequestVO,
-    ): ResponseEntity<Unit> {
-        inventoryService.decreaseInventory(id, increaseInventoryRequestVO.amount)
-        return ResponseEntity.ok().build()
-    }
-
-    override fun reserveInventory(
-        id: Long,
-        reserveInventoryRequestVO: ReserveInventoryRequestVO,
-    ): ResponseEntity<Unit> {
-        inventoryService.reserveInventory(id, reserveInventoryRequestVO.amount)
-        return ResponseEntity.ok().build()
-    }
-
-    override fun releaseInventory(
-        id: Long,
-        releaseInventoryRequestVO: ReleaseInventoryRequestVO
-    ): ResponseEntity<Unit> {
-        inventoryService.releaseReservedInventory(id, releaseInventoryRequestVO.amount)
-        return ResponseEntity.ok().build()
-    }
-
-    override fun assignDepot(
-        id: Long,
-        assignDepotRequestVO: AssignDepotRequestVO,
-    ): ResponseEntity<Unit> {
-        inventoryService.assignDepot(id, assignDepotRequestVO.depotId)
-        return ResponseEntity.ok().build()
     }
 
     override fun adjustWarningLine(
         id: Long,
         adjustWarningLineRequestVO: AdjustWarningLineRequestVO,
     ): ResponseEntity<Unit> {
-        inventoryService.adjustWarningLine(
+        inventoryCommandService.adjustWarningLine(
             id,
             adjustWarningLineRequestVO.safetyStock,
             adjustWarningLineRequestVO.maxStock,
         )
         return ResponseEntity.ok().build()
-    }
-
-    override fun checkSafetyStock(id: Long): ResponseEntity<Boolean> {
-        val isSafed = inventoryService.checkSafetyStock(id)
-        return ResponseEntity.ok(isSafed)
     }
 }

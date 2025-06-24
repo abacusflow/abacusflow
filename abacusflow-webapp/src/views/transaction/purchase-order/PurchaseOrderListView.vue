@@ -31,10 +31,6 @@
           size="small"
         >
           <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'orderDate'">
-              {{ $dateToFormattedString(record.orderDate, "YYYY-MM-DD") }}
-            </template>
-
             <template v-if="column.key === 'autoCompleteDate'">
               <a-tag :color="getAutoCompleteColor(record.autoCompleteDate)">
                 {{
@@ -122,6 +118,7 @@ import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
 import dayjs from "dayjs";
+import { dateToFormattedString } from "@/util/timestampUtils";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();
@@ -237,7 +234,12 @@ const columns: StrictTableColumnsType<BasicPurchaseOrder> = [
   { title: "订单总金额", dataIndex: "totalAmount", key: "totalAmount" },
   { title: "总采购数量", dataIndex: "totalQuantity", key: "totalQuantity" },
   { title: "商品种类数", dataIndex: "itemCount", key: "itemCount" },
-  { title: "订单日期", dataIndex: "orderDate", key: "orderDate" },
+  {
+    title: "订单日期",
+    dataIndex: "orderDate",
+    key: "orderDate",
+    customRender: ({ record }) => dateToFormattedString(record.orderDate, "YYYY-MM-DD")
+  },
   { title: "自动完成天数", dataIndex: "autoCompleteDate", key: "autoCompleteDate" },
   { title: "操作", key: "action" }
 ];

@@ -21,9 +21,12 @@ fun PurchaseOrder.toTO() =
     )
 
 fun PurchaseOrder.toBasicTO(supplierName: String): BasicPurchaseOrderTO {
-    val autoCompleteDate: LocalDate? = if (status == OrderStatus.PENDING) {
-        orderDate.plusDays(7)
-    } else null
+    val autoCompleteDate: LocalDate? =
+        if (status == OrderStatus.PENDING) {
+            orderDate.plusDays(7)
+        } else {
+            null
+        }
 
     return BasicPurchaseOrderTO(
         id = id,
@@ -35,7 +38,7 @@ fun PurchaseOrder.toBasicTO(supplierName: String): BasicPurchaseOrderTO {
         totalAmount = totalAmount,
         totalQuantity = totalQuantity,
         orderDate = orderDate,
-        autoCompleteDate = autoCompleteDate
+        autoCompleteDate = autoCompleteDate,
     )
 }
 

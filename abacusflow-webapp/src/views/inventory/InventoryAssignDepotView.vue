@@ -24,14 +24,15 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, reactive, ref, watchEffect } from "vue";
-import { type FormInstance, message } from "ant-design-vue";
-import { type AssignDepotRequest, type InventoryApi, DepotApi } from "@/core/openapi";
-import { useMutation, useQuery } from "@tanstack/vue-query";
+import {inject, reactive, ref, watchEffect} from "vue";
+import {type FormInstance, message} from "ant-design-vue";
+import {DepotApi, type InventoryApi} from "@/core/openapi";
+import {useMutation, useQuery} from "@tanstack/vue-query";
+import type {AssignDepotRequest} from "@/core/openapi/models/assign-depot-request";
 
 const formRef = ref<FormInstance>();
 
-const props = defineProps<{ inventoryId: number }>();
+const props = defineProps<{ inventoryUnitId: number }>();
 
 const inventoryApi = inject("inventoryApi") as InventoryApi;
 const depotApi = inject("depotApi") as DepotApi;
@@ -42,21 +43,21 @@ const formState = reactive<Partial<AssignDepotRequest>>({
   depotId: undefined
 });
 
-// TODO: 当 props.inventoryId 变化时，没有重新获取库存数据，现在是在外层销毁重建了
+// TODO: 当 props.inventoryUnitId 变化时，没有重新获取库存数据，现在是在外层销毁重建了
 const {
-  data: fetchedInventory,
+  data: fetchedInventoryUnit,
   isPending,
   isSuccess
 } = useQuery({
-  queryKey: ["inventory", props.inventoryId],
-  queryFn: () => inventoryApi.getInventory({ id: props.inventoryId })
+  queryKey: ["inventoryUnit", props.inventoryUnitId],
+  queryFn: () => inventoryApi.getInventoryUnit({ id: props.inventoryUnitId })
 });
 
 // 当查询成功且有数据时，优先使用 API 数据
 watchEffect(() => {
-  if (isSuccess.value && fetchedInventory.value) {
-    const { depotId } = fetchedInventory.value;
-    formState.depotId = depotId;
+  if (isSuccess.value && fetchedInventoryUnit.value) {
+    const { depotId } = fetchedInventoryUnit.value;
+    formState.depotId = depotId ?? undefined;
   }
 });
 
@@ -67,9 +68,9 @@ const { data: depots } = useQuery({
 
 const { mutate: assignDepot } = useMutation({
   mutationFn: ({ depotId }: AssignDepotRequest) =>
-    inventoryApi.assignDepot({
-      id: props.inventoryId,
-      assignDepotRequest: { depotId }
+    inventoryApi.assignInventoryUnitDepot({
+      id: props.inventoryUnitId,
+      assignInventoryUnitDepotRequest: { depotId }
     }),
   onSuccess: () => {
     message.success("修改成功");

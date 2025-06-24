@@ -9,12 +9,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
-// @SpringBootConfiguration
-// @EnableMethodSecurity(securedEnabled = true)
-// @PropertySources(
-//    PropertySource("classpath:application.yaml", encoding = "utf-8"),
-//    PropertySource("file:application.yaml", ignoreResourceNotFound = true, encoding = "utf-8")
-// )
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan(

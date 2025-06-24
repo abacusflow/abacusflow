@@ -28,13 +28,17 @@
       >
         <!-- 商品名称 -->
         <a-form-item
-          label="商品名称"
-          :name="['orderItems', index, 'productId']"
-          :rules="[{ required: true, message: '请选择产品' }]"
+          label="库存产品"
+          :name="['orderItems', index, 'inventoryUnitId']"
+          :rules="[{ required: true, message: '请选择库存产品' }]"
         >
-          <a-select v-model:value="item.productId" placeholder="请选择产品">
-            <a-select-option v-for="product in products" :key="product.id" :value="product.id">
-              {{ product.name }}
+          <a-select v-model:value="item.inventoryUnitId" placeholder="请选择库存产品">
+            <a-select-option
+              v-for="inventoryUnit in inventoryUnits"
+              :key="inventoryUnit.id"
+              :value="inventoryUnit.id"
+            >
+              {{ inventoryUnit.title }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -45,7 +49,10 @@
           :name="['orderItems', index, 'quantity']"
           :rules="[{ required: true, message: '请输入数量' }]"
         >
-          <a-tooltip v-if="isAsset(item.productId, products!)" title="该产品为资产类，数量不可修改">
+          <a-tooltip
+            v-if="isAsset(item.inventoryUnitId, products!)"
+            title="该产品为资产类，数量不可修改"
+          >
             <a-input-number
               v-model:value="item.quantity"
               :disabled="true"
@@ -79,24 +86,6 @@
           />
         </a-form-item>
 
-        <!-- 资产：仅资产类产品显示 -->
-        <a-form-item
-          v-if="isAsset(item.productId, products!)"
-          label="资产"
-          :name="['orderItems', index, 'productInstanceId']"
-          :rules="[{ required: true, message: '资产类产品必须选资产' }]"
-        >
-          <a-select v-model:value="item.productInstanceId" placeholder="请选择资产">
-            <a-select-option
-              v-for="productInstance in productInstances"
-              :key="productInstance.id"
-              :value="productInstance.id"
-            >
-              {{ productInstance.name }}
-            </a-select-option>
-          </a-select>
-        </a-form-item>
-
         <!-- 删除按钮 -->
         <a-button danger type="link" @click="removeOrderItem(index)"> 删除该商品 </a-button>
       </div>
@@ -119,19 +108,20 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, reactive, ref } from "vue";
-import { type FormInstance, message } from "ant-design-vue";
+import {inject, reactive, ref} from "vue";
+import {type FormInstance, message} from "ant-design-vue";
 import {
-  ProductType,
   type BasicProduct,
   type CreateSaleOrderInput,
+  InventoryApi,
   type PartnerApi,
   type ProductApi,
+  ProductType,
   type SaleOrderItemInput,
   type TransactionApi
 } from "@/core/openapi";
-import { useMutation, useQuery } from "@tanstack/vue-query";
-import dayjs, { Dayjs } from "dayjs";
+import {useMutation, useQuery} from "@tanstack/vue-query";
+import dayjs, {Dayjs} from "dayjs";
 
 const formRef = ref<FormInstance>();
 const dateFormat = "YYYY/MM/DD";
@@ -150,6 +140,7 @@ const formState = reactive<Partial<CreateSaleOrderInputForm>>({
 const transactionApi = inject("transactionApi") as TransactionApi;
 const partnerApi = inject("partnerApi") as PartnerApi;
 const productApi = inject("productApi") as ProductApi;
+const inventoryApi = inject("inventoryApi") as InventoryApi;
 
 const emit = defineEmits(["success", "update:visible"]);
 
@@ -162,9 +153,10 @@ const { data: products } = useQuery({
   queryKey: ["products"],
   queryFn: () => productApi.listProducts()
 });
-const { data: productInstances } = useQuery({
-  queryKey: ["productInstances"],
-  queryFn: () => productApi.listProductInstances()
+
+const { data: inventoryUnits } = useQuery({
+  queryKey: ["inventoryUnits"],
+  queryFn: () => inventoryApi.listInventoryUnits()
 });
 
 const { mutate: createSaleOrder } = useMutation({
@@ -184,7 +176,7 @@ const { mutate: createSaleOrder } = useMutation({
 
 function addOrderItem() {
   formState.orderItems?.push({
-    productId: undefined,
+    inventoryUnitId: undefined,
     quantity: 1,
     unitPrice: 0
   });
