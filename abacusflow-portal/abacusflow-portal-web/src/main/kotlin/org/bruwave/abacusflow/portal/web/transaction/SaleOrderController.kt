@@ -5,16 +5,16 @@ import org.bruwave.abacusflow.portal.web.model.BasicSaleOrderVO
 import org.bruwave.abacusflow.portal.web.model.CreateSaleOrderInputVO
 import org.bruwave.abacusflow.portal.web.model.SaleOrderVO
 import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
-import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderService
+import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderCommandService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SaleOrderController(
-    private val saleOrderService: SaleOrderService,
+    private val saleOrderCommandService: SaleOrderCommandService,
 ) : SaleOrdersApi {
     override fun listSaleOrders(): ResponseEntity<List<BasicSaleOrderVO>> {
-        val orders = saleOrderService.listSaleOrders()
+        val orders = saleOrderCommandService.listSaleOrders()
         val orderVOs =
             orders.map { order ->
                 order.toBasicVO()
@@ -23,7 +23,7 @@ class SaleOrderController(
     }
 
     override fun getSaleOrder(id: Long): ResponseEntity<SaleOrderVO> {
-        val order = saleOrderService.getSaleOrder(id)
+        val order = saleOrderCommandService.getSaleOrder(id)
         return ResponseEntity.ok(
             order.toVO(),
         )
@@ -31,7 +31,7 @@ class SaleOrderController(
 
     override fun addSaleOrder(createSaleOrderInputVO: CreateSaleOrderInputVO): ResponseEntity<SaleOrderVO> {
         val order =
-            saleOrderService.createSaleOrder(
+            saleOrderCommandService.createSaleOrder(
                 CreateSaleOrderInputTO(
                     createSaleOrderInputVO.customerId,
                     createSaleOrderInputVO.orderDate,
@@ -45,17 +45,17 @@ class SaleOrderController(
     }
 
     override fun completeSaleOrder(id: Long): ResponseEntity<Unit> {
-        saleOrderService.completeOrder(id)
+        saleOrderCommandService.completeOrder(id)
         return ResponseEntity.ok().build()
     }
 
     override fun cancelSaleOrder(id: Long): ResponseEntity<Unit> {
-        saleOrderService.cancelOrder(id)
+        saleOrderCommandService.cancelOrder(id)
         return ResponseEntity.ok().build()
     }
 
     override fun reverseSaleOrder(id: Long): ResponseEntity<Unit> {
-        saleOrderService.reverseOrder(id)
+        saleOrderCommandService.reverseOrder(id)
         return ResponseEntity.ok().build()
     }
 }

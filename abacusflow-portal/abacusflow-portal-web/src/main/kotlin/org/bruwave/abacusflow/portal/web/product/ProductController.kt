@@ -8,27 +8,29 @@ import org.bruwave.abacusflow.portal.web.model.UpdateProductInputVO
 import org.bruwave.abacusflow.portal.web.product.mapper.toVO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
-import org.bruwave.abacusflow.usecase.product.service.ProductService
+import org.bruwave.abacusflow.usecase.product.service.ProductCommandService
+import org.bruwave.abacusflow.usecase.product.service.ProductQueryService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProductController(
-    private val productService: ProductService,
+    private val productCommandService: ProductCommandService,
+    private val productQueryService: ProductQueryService,
 ) : ProductsApi {
     override fun listProducts(
         categoryId: Long?,
         name: String?,
     ): ResponseEntity<List<BasicProductVO>> {
         val productVOs =
-            productService.listProducts(categoryId).map { product ->
+            productQueryService.listProducts(categoryId).map { product ->
                 product.toVO()
             }
         return ResponseEntity.ok(productVOs)
     }
 
     override fun getProduct(id: Long): ResponseEntity<ProductVO> {
-        val product = productService.getProduct(id)
+        val product = productQueryService.getProduct(id)
         return ResponseEntity.ok(
             product.toVO(),
         )
@@ -36,7 +38,7 @@ class ProductController(
 
     override fun addProduct(createProductInputVO: CreateProductInputVO): ResponseEntity<ProductVO> {
         val product =
-            productService.createProduct(
+            productCommandService.createProduct(
                 CreateProductInputTO(
                     name = createProductInputVO.name,
                     categoryId = createProductInputVO.categoryId,
@@ -56,7 +58,7 @@ class ProductController(
         updateProductInputVO: UpdateProductInputVO,
     ): ResponseEntity<ProductVO> {
         val product =
-            productService.updateProduct(
+            productCommandService.updateProduct(
                 id,
                 UpdateProductInputTO(
                     name = updateProductInputVO.name,
@@ -73,7 +75,7 @@ class ProductController(
     }
 
     override fun deleteProduct(id: Long): ResponseEntity<Unit> {
-        productService.deleteProduct(id)
+        productCommandService.deleteProduct(id)
         return ResponseEntity.ok().build()
     }
 }

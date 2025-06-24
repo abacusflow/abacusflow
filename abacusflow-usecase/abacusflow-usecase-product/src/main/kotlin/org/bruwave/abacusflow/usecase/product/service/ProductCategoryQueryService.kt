@@ -5,16 +5,7 @@ import org.bruwave.abacusflow.usecase.product.CreateProductCategoryInputTO
 import org.bruwave.abacusflow.usecase.product.ProductCategoryTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductCategoryInputTO
 
-interface ProductCategoryService {
-    fun createProductCategory(input: CreateProductCategoryInputTO): ProductCategoryTO
-
-    fun updateProductCategory(
-        id: Long,
-        input: UpdateProductCategoryInputTO,
-    ): ProductCategoryTO
-
-    fun deleteProductCategory(id: Long): ProductCategoryTO
-
+interface ProductCategoryQueryService {
     fun getProductCategory(id: Long): ProductCategoryTO
 
     fun listProductCategories(): List<BasicProductCategoryTO>

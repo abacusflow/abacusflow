@@ -1,0 +1,14 @@
+package org.bruwave.abacusflow.usecase.partner.service
+
+import org.bruwave.abacusflow.usecase.partner.BasicCustomerTO
+import org.bruwave.abacusflow.usecase.partner.CreateCustomerInputTO
+import org.bruwave.abacusflow.usecase.partner.CustomerTO
+import org.bruwave.abacusflow.usecase.partner.UpdateCustomerInputTO
+
+interface CustomerQueryService {
+    fun getCustomer(id: Long): CustomerTO
+
+    fun getCustomer(name: String): CustomerTO
+
+    fun listCustomers(): List<BasicCustomerTO>
+}

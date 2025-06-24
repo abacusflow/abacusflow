@@ -13,18 +13,18 @@ import org.bruwave.abacusflow.usecase.transaction.SaleItemInputTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
-import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderService
+import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderCommandService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
 @Transactional
-class SaleOrderServiceImpl(
+class SaleOrderCommandServiceImpl(
     private val saleOrderRepository: SaleOrderRepository,
     private val customerRepository: CustomerRepository,
     private val inventoryUnitRepository: InventoryUnitRepository,
-) : SaleOrderService {
+) : SaleOrderCommandService {
     override fun createSaleOrder(input: CreateSaleOrderInputTO): SaleOrderTO {
         val inventoryUnits =
             inventoryUnitRepository.findAllById(

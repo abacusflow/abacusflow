@@ -8,24 +8,26 @@ import org.bruwave.abacusflow.portal.web.model.UpdateUserInputVO
 import org.bruwave.abacusflow.portal.web.model.UserVO
 import org.bruwave.abacusflow.usecase.user.CreateUserInputTO
 import org.bruwave.abacusflow.usecase.user.UpdateUserInputTO
-import org.bruwave.abacusflow.usecase.user.service.UserService
+import org.bruwave.abacusflow.usecase.user.service.UserCommandService
+import org.bruwave.abacusflow.usecase.user.service.UserQueryService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UserController(
-    private val userService: UserService,
+    private val userCommandService: UserCommandService,
+    private val userQueryService: UserQueryService,
 ) : UsersApi {
     override fun listUsers(): ResponseEntity<List<BasicUserVO>> {
         val userVOS =
-            userService.listUsers().map { user ->
+            userQueryService.listUsers().map { user ->
                 user.toBasicVO()
             }
         return ResponseEntity.ok(userVOS)
     }
 
     override fun getUser(id: Long): ResponseEntity<UserVO> {
-        val user = userService.getUser(id) ?: throw NotFoundException("User with id $id not found")
+        val user = userQueryService.getUser(id) ?: throw NotFoundException("User with id $id not found")
         return ResponseEntity.ok(
             user.toVO(),
         )
@@ -33,7 +35,7 @@ class UserController(
 
     override fun addUser(createUserInputVO: CreateUserInputVO): ResponseEntity<UserVO> {
         val user =
-            userService.createUser(
+            userCommandService.createUser(
                 CreateUserInputTO(
                     createUserInputVO.name,
                     createUserInputVO.nick,
@@ -51,7 +53,7 @@ class UserController(
         updateUserInputVO: UpdateUserInputVO,
     ): ResponseEntity<UserVO> {
         val user =
-            userService.updateUser(
+            userCommandService.updateUser(
                 id,
                 UpdateUserInputTO(
                     nick = updateUserInputVO.nick,
@@ -65,7 +67,7 @@ class UserController(
     }
 
     override fun deleteUser(id: Long): ResponseEntity<Unit> {
-        userService.deleteUser(id)
+        userCommandService.deleteUser(id)
         return ResponseEntity.ok().build()
     }
 }
