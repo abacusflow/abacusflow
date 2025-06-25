@@ -134,15 +134,15 @@ class InventoryUnitQueryServiceImpl(
 
         val inventoryUnits =
             dslContext
-                .select(
+                .selectDistinct(
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
                     INVENTORY_UNIT.STATUS,
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
                     PRODUCTS.NAME,
+                    INVENTORY_UNIT.CREATED_AT
                 )
-                .distinctOn(INVENTORY_UNIT.ID) // PostgreSQL 特有语法
                 .from(INVENTORY_UNIT)
                 .leftJoin(INVENTORIES).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID)) // 关联 INVENTORY 表
                 .leftJoin(PRODUCTS).on(PRODUCTS.ID.eq(INVENTORIES.PRODUCT_ID)) // 关联 Product 表
