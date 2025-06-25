@@ -79,6 +79,7 @@ class SaleOrderQueryServiceImpl(
                     itemCountField,
                 )
                 .from(joinedTables)
+                .where(conditions)
                 .groupBy(
                     SALE_ORDERS.ID,
                     SALE_ORDERS.NO,
