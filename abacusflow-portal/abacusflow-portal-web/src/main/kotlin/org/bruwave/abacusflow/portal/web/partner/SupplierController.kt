@@ -96,12 +96,13 @@ class SupplierController(
     }
 
     override fun listSelectableSuppliers(): ResponseEntity<List<SelectableSupplierVO>> {
-        val productVOs = supplierQueryService.listSuppliers().map {
-            SelectableSupplierVO(
-                it.id,
-                it.name,
-            )
-        }
+        val productVOs =
+            supplierQueryService.listSuppliers().map {
+                SelectableSupplierVO(
+                    it.id,
+                    it.name,
+                )
+            }
         return ResponseEntity.ok(productVOs)
     }
 }

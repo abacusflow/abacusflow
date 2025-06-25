@@ -1,10 +1,7 @@
 package org.bruwave.abacusflow.usecase.product.service.impl
 
-import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
-import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
-import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
 import org.bruwave.abacusflow.usecase.product.ProductTO

@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.usecase.inventory.service.impl
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.DEPOTS
@@ -19,17 +18,15 @@ import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
 import org.jooq.Condition
 import org.jooq.DSLContext
-import org.jooq.FilePattern
 import org.jooq.Record
 import org.jooq.impl.DSL
-import org.jooq.util.postgres.PGobject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 @Service
 class InventoryQueryServiceImpl(
@@ -62,11 +59,12 @@ class InventoryQueryServiceImpl(
                     add(PRODUCTS.TYPE.eq(it))
                 }
                 inventoryUnitCode?.takeIf { it.isNotBlank() }?.let {
-                    val uuidCode = try {
-                        UUID.fromString(it) // 尝试将字符串转换为 UUID
-                    } catch (e: IllegalArgumentException) {
-                        null // 如果转换失败，返回 null
-                    }
+                    val uuidCode =
+                        try {
+                            UUID.fromString(it) // 尝试将字符串转换为 UUID
+                        } catch (e: IllegalArgumentException) {
+                            null // 如果转换失败，返回 null
+                        }
 
                     uuidCode?.let { uuid ->
                         add(INVENTORY_UNIT.SERIAL_NUMBER.eq(it).or(INVENTORY_UNIT.BATCH_CODE.eq(uuid)))
@@ -79,7 +77,6 @@ class InventoryQueryServiceImpl(
                 }
             }
 
-
         val total =
             jooqDsl
                 .selectCount()
@@ -88,6 +85,7 @@ class InventoryQueryServiceImpl(
                 .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
                 .where(condition)
                 .fetchOne(0, Int::class.java) ?: 0
+
         val records =
             jooqDsl
                 .select(
@@ -138,9 +136,14 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
-                    INVENTORY_UNIT.STATUS
+                    INVENTORY_UNIT.STATUS,
                 )
-                .orderBy(INVENTORIES.CREATED_AT.desc())
+                .orderBy(
+                    // 排序将数量计数为 0 的记录推送到末尾
+                    DSL.`when`(DSL.count(INVENTORY_UNIT.QUANTITY).eq(0), 1).otherwise(0)
+                        .asc(),
+                    INVENTORIES.CREATED_AT.desc()
+                )
                 .offset(pageable.offset.toInt())
                 .limit(pageable.pageSize)
                 .fetch()

@@ -1,9 +1,5 @@
 package org.bruwave.abacusflow.portal.web.inventory
 
-import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
-import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORY_UNIT
-import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
-import org.bruwave.abacusflow.generated.jooq.tables.InventoryUnit
 import org.bruwave.abacusflow.portal.web.api.InventoryUnitsApi
 import org.bruwave.abacusflow.portal.web.api.NotFoundException
 import org.bruwave.abacusflow.portal.web.model.AssignInventoryUnitDepotRequestVO
@@ -27,19 +23,20 @@ class InventoryUnitController(
     }
 
     override fun listSelectableInventoryUnits(): ResponseEntity<List<SelectableInventoryUnitVO>> {
-        val unitVOS = inventoryUnitQueryService.listInventoryUnitsWithTitle(
-            listOf(
-                InventoryUnitStatusVO.normal.name,
-                InventoryUnitStatusVO.reversed.name
-            )
-        ).map { unit ->
-            SelectableInventoryUnitVO(
-                id = unit.id,
-                type = mapInventoryUnitTypeTOToVO(unit.type),
-                title = unit.title,
-                status = mapInventoryUnitStatusTOToVO(unit.status)
-            )
-        }
+        val unitVOS =
+            inventoryUnitQueryService.listInventoryUnitsWithTitle(
+                listOf(
+                    InventoryUnitStatusVO.normal.name,
+                    InventoryUnitStatusVO.reversed.name,
+                ),
+            ).map { unit ->
+                SelectableInventoryUnitVO(
+                    id = unit.id,
+                    type = mapInventoryUnitTypeTOToVO(unit.type),
+                    title = unit.title,
+                    status = mapInventoryUnitStatusTOToVO(unit.status),
+                )
+            }
         return ResponseEntity.ok(unitVOS)
     }
 

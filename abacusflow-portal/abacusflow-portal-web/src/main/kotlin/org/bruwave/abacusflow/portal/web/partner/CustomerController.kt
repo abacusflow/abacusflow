@@ -92,12 +92,13 @@ class CustomerController(
     }
 
     override fun listSelectableCustomers(): ResponseEntity<List<SelectableCustomerVO>> {
-        val productVOs = customerQueryService.listCustomers().map {
-            SelectableCustomerVO(
-                it.id,
-                it.name,
-            )
-        }
+        val productVOs =
+            customerQueryService.listCustomers().map {
+                SelectableCustomerVO(
+                    it.id,
+                    it.name,
+                )
+            }
         return ResponseEntity.ok(productVOs)
     }
 }

@@ -95,27 +95,28 @@ class InventoryUnitQueryServiceImpl(
     }
 
     override fun listInventoryUnits(): List<InventoryUnitTO> {
-        val inventoryUnits = dslContext
-            .select(
-                INVENTORY_UNIT.ID,
-                INVENTORY_UNIT.UNIT_TYPE,
-                INVENTORY_UNIT.INVENTORY_ID,
-                INVENTORY_UNIT.PURCHASE_ORDER_ID,
-                INVENTORY_UNIT.QUANTITY,
-                INVENTORY_UNIT.REMAINING_QUANTITY,
-                INVENTORY_UNIT.UNIT_PRICE,
-                INVENTORY_UNIT.DEPOT_ID,
-                INVENTORY_UNIT.STATUS,
-                INVENTORY_UNIT.SALE_ORDER_IDS,
-                INVENTORY_UNIT.RECEIVED_AT,
-                INVENTORY_UNIT.CREATED_AT,
-                INVENTORY_UNIT.UPDATED_AT,
-                INVENTORY_UNIT.SERIAL_NUMBER,
-                INVENTORY_UNIT.BATCH_CODE
-            )
-            .from(INVENTORY_UNIT)
-            .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
-            .fetch()
+        val inventoryUnits =
+            dslContext
+                .select(
+                    INVENTORY_UNIT.ID,
+                    INVENTORY_UNIT.UNIT_TYPE,
+                    INVENTORY_UNIT.INVENTORY_ID,
+                    INVENTORY_UNIT.PURCHASE_ORDER_ID,
+                    INVENTORY_UNIT.QUANTITY,
+                    INVENTORY_UNIT.REMAINING_QUANTITY,
+                    INVENTORY_UNIT.UNIT_PRICE,
+                    INVENTORY_UNIT.DEPOT_ID,
+                    INVENTORY_UNIT.STATUS,
+                    INVENTORY_UNIT.SALE_ORDER_IDS,
+                    INVENTORY_UNIT.RECEIVED_AT,
+                    INVENTORY_UNIT.CREATED_AT,
+                    INVENTORY_UNIT.UPDATED_AT,
+                    INVENTORY_UNIT.SERIAL_NUMBER,
+                    INVENTORY_UNIT.BATCH_CODE,
+                )
+                .from(INVENTORY_UNIT)
+                .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
+                .fetch()
 
         return inventoryUnits.map { record ->
             record.toInventoryUnitTO()
@@ -131,22 +132,23 @@ class InventoryUnitQueryServiceImpl(
                 }
             }
 
-        val inventoryUnits = dslContext
-            .select(
-                INVENTORY_UNIT.ID,
-                INVENTORY_UNIT.UNIT_TYPE,
-                INVENTORY_UNIT.STATUS,
-                INVENTORY_UNIT.BATCH_CODE,
-                INVENTORY_UNIT.SERIAL_NUMBER,
-                PRODUCTS.NAME
-            )
-            .distinctOn(INVENTORY_UNIT.ID)  // PostgreSQL 特有语法
-            .from(INVENTORY_UNIT)
-            .leftJoin(INVENTORIES).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID)) // 关联 INVENTORY 表
-            .leftJoin(PRODUCTS).on(PRODUCTS.ID.eq(INVENTORIES.PRODUCT_ID)) // 关联 Product 表
-            .where(condition)
-            .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
-            .fetch()
+        val inventoryUnits =
+            dslContext
+                .select(
+                    INVENTORY_UNIT.ID,
+                    INVENTORY_UNIT.UNIT_TYPE,
+                    INVENTORY_UNIT.STATUS,
+                    INVENTORY_UNIT.BATCH_CODE,
+                    INVENTORY_UNIT.SERIAL_NUMBER,
+                    PRODUCTS.NAME,
+                )
+                .distinctOn(INVENTORY_UNIT.ID) // PostgreSQL 特有语法
+                .from(INVENTORY_UNIT)
+                .leftJoin(INVENTORIES).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID)) // 关联 INVENTORY 表
+                .leftJoin(PRODUCTS).on(PRODUCTS.ID.eq(INVENTORIES.PRODUCT_ID)) // 关联 Product 表
+                .where(condition)
+                .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
+                .fetch()
 
         return inventoryUnits.map { record ->
             record.toInventoryUnitWithTitleTO()
@@ -196,8 +198,9 @@ class InventoryUnitQueryServiceImpl(
             id = this[INVENTORY_UNIT.ID] ?: throw NoSuchElementException("InventoryUnit ID is missing"),
             type = unitType.name,
             inventoryId = this[INVENTORY_UNIT.INVENTORY_ID] ?: throw NoSuchElementException("Inventory ID is missing"),
-            purchaseOrderId = this[INVENTORY_UNIT.PURCHASE_ORDER_ID]
-                ?: throw NoSuchElementException("Purchase Order ID is missing"),
+            purchaseOrderId =
+                this[INVENTORY_UNIT.PURCHASE_ORDER_ID]
+                    ?: throw NoSuchElementException("Purchase Order ID is missing"),
             quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L,
             remainingQuantity = this[INVENTORY_UNIT.REMAINING_QUANTITY] ?: 0L,
             unitPrice = this[INVENTORY_UNIT.UNIT_PRICE] ?: BigDecimal.ZERO,
@@ -208,7 +211,7 @@ class InventoryUnitQueryServiceImpl(
             createdAt = this[INVENTORY_UNIT.CREATED_AT]?.toInstant() ?: Instant.EPOCH,
             updatedAt = this[INVENTORY_UNIT.UPDATED_AT]?.toInstant() ?: Instant.EPOCH,
             serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER],
-            batchCode = this[INVENTORY_UNIT.BATCH_CODE]
+            batchCode = this[INVENTORY_UNIT.BATCH_CODE],
         )
     }
 

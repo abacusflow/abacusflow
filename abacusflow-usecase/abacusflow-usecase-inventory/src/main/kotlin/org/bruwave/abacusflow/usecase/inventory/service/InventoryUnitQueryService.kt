@@ -5,7 +5,7 @@ import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryUnitWithTitleTO
 
 interface InventoryUnitQueryService {
-    fun listBasicInventoryUnits(statusList: List<String>? =null): List<BasicInventoryUnitTO>
+    fun listBasicInventoryUnits(statusList: List<String>? = null): List<BasicInventoryUnitTO>
 
     fun listInventoryUnits(): List<InventoryUnitTO>
 

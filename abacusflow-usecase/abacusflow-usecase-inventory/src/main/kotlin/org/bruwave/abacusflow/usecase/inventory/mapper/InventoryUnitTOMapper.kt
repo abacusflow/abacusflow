@@ -5,7 +5,6 @@ import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
 
 fun InventoryUnit.toTO(): InventoryUnitTO {
     return when (this) {
-
         is InventoryUnit.InstanceInventoryUnit ->
             InventoryUnitTO(
                 id = id,

@@ -19,5 +19,4 @@ interface ProductQueryService {
     fun getProduct(id: Long): ProductTO
 
     fun getProduct(name: String): ProductTO
-
 }

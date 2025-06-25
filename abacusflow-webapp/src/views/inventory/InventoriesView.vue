@@ -268,12 +268,12 @@ function onCategorySelected(productCategoryId: string | number) {
 watch(
   () => pageData.value?.content,
   (newContent) => {
-    // 只展开类型为 Asset 的行
+    // 只展开类型为 Asset 且有剩余库存的行
     expandedRowKeys.value =
       newContent
-        ?.filter((item) => item.productType === ProductType.Asset)
-        ?.filter((item) => item.units.length > 0)
-        ?.map((item) => item.id) || [];
+        ?.filter((item) => item.productType === ProductType.Asset) // 过滤出类型为 Asset 的行
+        ?.filter((item) => item.units.reduce((sum, unit) => sum + unit.remainingQuantity, 0) > 0) // 过滤出剩余库存总和大于 0 的行
+        ?.map((item) => item.id) || []; // 提取 id // 如果 newContent 为 null 或 undefined，则返回空数组
   },
   { immediate: true } // 在页面加载时立即执行一次
 );
