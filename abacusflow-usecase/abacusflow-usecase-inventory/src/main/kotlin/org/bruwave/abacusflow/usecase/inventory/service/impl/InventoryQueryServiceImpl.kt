@@ -26,7 +26,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Service
 class InventoryQueryServiceImpl(
@@ -142,7 +142,7 @@ class InventoryQueryServiceImpl(
                     // 排序将数量计数为 0 的记录推送到末尾
                     DSL.`when`(DSL.count(INVENTORY_UNIT.QUANTITY).eq(0), 1).otherwise(0)
                         .asc(),
-                    INVENTORIES.CREATED_AT.desc()
+                    INVENTORIES.CREATED_AT.desc(),
                 )
                 .offset(pageable.offset.toInt())
                 .limit(pageable.pageSize)
