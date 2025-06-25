@@ -121,7 +121,6 @@ const searchForm = ref({
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 
@@ -131,7 +130,6 @@ const resetSearch = () => {
     keyword: "",
     categoryId: undefined
   };
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 

@@ -89,7 +89,6 @@ const searchForm = ref({
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["depots"] });
   refetch();
 };
 
@@ -98,7 +97,6 @@ const resetSearch = () => {
   searchForm.value = {
     name: ""
   };
-  queryClient.invalidateQueries({ queryKey: ["depots"] });
   refetch();
 };
 

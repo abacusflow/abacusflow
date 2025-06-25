@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: abacusflow api
   version: 0.0.1
-  description: 进销存系统服务接口文档
+  description: 小算盘服务接口文档
 servers:
   - url: http://localhost:8080
 tags:
@@ -1681,31 +1681,6 @@ components:
           description: 分类名称
         unit:
           $ref: "#/components/schemas/ProductUnit"
-        instances:
-          type: array
-          items:
-            type: object
-            required:
-              - id
-              - name
-              - serialNumber
-              - unitPrice
-            properties:
-              id:
-                type: integer
-                format: int64
-                description: 商品实例ID
-              name:
-                type: string
-                description: 名字
-              serialNumber:
-                type: string
-                description: 序列号
-              unitPrice:
-                type: number
-                format: double
-                minimum: 0
-                description: 单价
         enabled:
           type: boolean
           description: 是否启用
