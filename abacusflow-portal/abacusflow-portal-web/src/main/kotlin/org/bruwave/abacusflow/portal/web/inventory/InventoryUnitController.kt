@@ -1,10 +1,16 @@
 package org.bruwave.abacusflow.portal.web.inventory
 
+import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
+import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORY_UNIT
+import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
+import org.bruwave.abacusflow.generated.jooq.tables.InventoryUnit
 import org.bruwave.abacusflow.portal.web.api.InventoryUnitsApi
 import org.bruwave.abacusflow.portal.web.api.NotFoundException
 import org.bruwave.abacusflow.portal.web.model.AssignInventoryUnitDepotRequestVO
 import org.bruwave.abacusflow.portal.web.model.BasicInventoryUnitVO
+import org.bruwave.abacusflow.portal.web.model.InventoryUnitStatusVO
 import org.bruwave.abacusflow.portal.web.model.InventoryUnitVO
+import org.bruwave.abacusflow.portal.web.model.SelectableInventoryUnitVO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitCommandService
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitQueryService
 import org.springframework.http.ResponseEntity
@@ -16,7 +22,24 @@ class InventoryUnitController(
     private val inventoryUnitCommandService: InventoryUnitCommandService,
 ) : InventoryUnitsApi {
     override fun listInventoryUnits(): ResponseEntity<List<BasicInventoryUnitVO>> {
-        val unitVOS = inventoryUnitQueryService.listInventoryUnits().map { unit -> unit.toBasicVO() }
+        val unitVOS = inventoryUnitQueryService.listBasicInventoryUnits().map { unit -> unit.toBasicVO() }
+        return ResponseEntity.ok(unitVOS)
+    }
+
+    override fun listSelectableInventoryUnits(): ResponseEntity<List<SelectableInventoryUnitVO>> {
+        val unitVOS = inventoryUnitQueryService.listInventoryUnitsWithTitle(
+            listOf(
+                InventoryUnitStatusVO.normal.name,
+                InventoryUnitStatusVO.reversed.name
+            )
+        ).map { unit ->
+            SelectableInventoryUnitVO(
+                id = unit.id,
+                type = mapInventoryUnitTypeTOToVO(unit.type),
+                title = unit.title,
+                status = mapInventoryUnitStatusTOToVO(unit.status)
+            )
+        }
         return ResponseEntity.ok(unitVOS)
     }
 

@@ -84,6 +84,7 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
+                    INVENTORY_UNIT.STATUS,
                     DSL.arrayAgg(SALE_ORDERS.NO).`as`("sale_order_nos"),
                 )
                 .from(INVENTORIES)
@@ -113,6 +114,7 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
+                    INVENTORY_UNIT.STATUS
                 )
                 .offset(pageable.offset.toInt())
                 .limit(pageable.pageSize)
@@ -195,7 +197,7 @@ class InventoryQueryServiceImpl(
         return BasicInventoryUnitTO(
             id = id,
             title = title,
-            unitType = unitType.name, // 通常是枚举/字符串，如 "INSTANCE" 或 "BATCH"
+            type = unitType.name, // 通常是枚举/字符串，如 "INSTANCE" 或 "BATCH"
             purchaseOrderNo = this[PURCHASE_ORDERS.NO]!!,
             saleOrderNos = saleOrderNos,
             depotName = this[DEPOTS.NAME],
@@ -205,20 +207,7 @@ class InventoryQueryServiceImpl(
             receivedAt = this[INVENTORY_UNIT.RECEIVED_AT]?.toInstant() ?: Instant.EPOCH,
             batchCode = this[INVENTORY_UNIT.BATCH_CODE],
             serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER],
+            status = this[INVENTORY_UNIT.STATUS],
         )
-    }
-
-    fun parseSaleOrderIdList(field: Any?): List<Long> {
-        return when (field) {
-            is PGobject -> {
-                objectMapper.readValue(field.value, object : TypeReference<List<Long>>() {})
-            }
-
-            is String -> {
-                objectMapper.readValue(field, object : TypeReference<List<Long>>() {})
-            }
-
-            else -> emptyList()
-        }
     }
 }

@@ -38,7 +38,7 @@
         >
           <a-select v-model:value="item.inventoryUnitId" placeholder="请选择库存产品">
             <a-select-option
-              v-for="inventoryUnit in inventoryUnits"
+              v-for="inventoryUnit in selectableInventoryUnits"
               :key="inventoryUnit.id"
               :value="inventoryUnit.id"
             >
@@ -54,11 +54,11 @@
           :rules="[{ required: true, message: '请输入数量' }]"
         >
           <a-tooltip
-            v-if="isAsset(item.inventoryUnitId, products!)"
-            title="该产品为资产类，数量不可修改"
+            v-if="isInstance(item.inventoryUnitId, selectableInventoryUnits!)"
+            title="该库存单元属于实例，数量不可修改"
           >
             <a-input-number
-              v-model:value="item.quantity"
+              :value="1"
               :disabled="true"
               :min="1"
               placeholder="数量"
@@ -139,11 +139,10 @@ import { type FormInstance, message } from "ant-design-vue";
 import {
   type CreateSaleOrderInput,
   InventoryApi,
+  InventoryUnitType,
   type PartnerApi,
-  type ProductApi,
-  ProductType,
   type SaleOrderItemInput,
-  type SelectableProduct,
+  type SelectableInventoryUnit,
   type TransactionApi
 } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
@@ -165,7 +164,6 @@ const formState = reactive<Partial<CreateSaleOrderInputForm>>({
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const partnerApi = inject("partnerApi") as PartnerApi;
-const productApi = inject("productApi") as ProductApi;
 const inventoryApi = inject("inventoryApi") as InventoryApi;
 
 const emit = defineEmits(["success", "update:visible"]);
@@ -175,14 +173,9 @@ const { data: customers } = useQuery({
   queryFn: () => partnerApi.listSelectableCustomers()
 });
 
-const { data: products } = useQuery({
-  queryKey: ["products"],
-  queryFn: () => productApi.listSelectableProducts()
-});
-
-const { data: inventoryUnits } = useQuery({
-  queryKey: ["inventoryUnits"],
-  queryFn: () => inventoryApi.listInventoryUnits()
+const { data: selectableInventoryUnits } = useQuery({
+  queryKey: ["selectableInventoryUnits"],
+  queryFn: () => inventoryApi.listSelectableInventoryUnits()
 });
 
 const { mutate: createSaleOrder } = useMutation({
@@ -213,12 +206,12 @@ function removeOrderItem(index: number) {
   formState.orderItems?.splice(index, 1);
 }
 
-function isAsset(productId?: number, products?: SelectableProduct[]): boolean {
-  if (!productId) return false;
-  if (!products) return false;
+function isInstance(inventoryUnitId?: number, inventoryUnits?: SelectableInventoryUnit[]): boolean {
+  if (!inventoryUnitId) return false;
+  if (!inventoryUnits) return false;
 
-  const product = products.find((p) => p.id === productId);
-  return product?.type === ProductType.Asset;
+  const inventoryUnit = inventoryUnits.find((p) => p.id === inventoryUnitId);
+  return inventoryUnit?.type === InventoryUnitType.instance;
 }
 
 function calculateDiscountedPrice(unitPrice?: number, discountFactor?: number) {

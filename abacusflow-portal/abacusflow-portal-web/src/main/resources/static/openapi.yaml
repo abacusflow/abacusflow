@@ -959,6 +959,22 @@ paths:
         "200":
           description: Depot assigned successfully
 
+  /inventory-units/selectable:
+    get:
+      operationId: listSelectableInventoryUnits
+      tags:
+        - inventory
+      summary: List all inventoryUnits for selection
+      responses:
+        "200":
+          description: List of inventoryUnits for selection
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SelectableInventoryUnit"
+
   /sale-orders:
     get:
       operationId: listSaleOrdersPage
@@ -2062,6 +2078,7 @@ components:
       required:
         - id
         - type
+        - status
         - title
         - purchaseOrderNo
         - saleOrderNos
@@ -2075,6 +2092,8 @@ components:
           format: int64
         type:
           $ref: "#/components/schemas/InventoryUnitType"
+        status:
+          $ref: "#/components/schemas/InventoryUnitStatus"
         title:
           type: string
         purchaseOrderNo:
@@ -2162,6 +2181,24 @@ components:
           type: string
           format: uuid
           nullable: true
+
+    SelectableInventoryUnit:
+      type: object
+      required:
+        - id
+        - type
+        - title
+        - status
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          $ref: "#/components/schemas/InventoryUnitType"
+        title:
+          type: string
+        status:
+          $ref: "#/components/schemas/InventoryUnitStatus"
 
     InventoryUnitType:
       type: string

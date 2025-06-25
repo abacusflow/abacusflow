@@ -5,42 +5,43 @@ import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
 
 fun InventoryUnit.toTO(): InventoryUnitTO {
     return when (this) {
+
         is InventoryUnit.InstanceInventoryUnit ->
             InventoryUnitTO(
                 id = id,
-                unitType = InventoryUnit.UnitType.INSTANCE.toString(),
-                depotId = depotId,
-                quantity = quantity,
-                remainingQuantity = remainingQuantity,
-                receivedAt = receivedAt,
-                batchCode = null,
-                unitPrice = unitPrice,
-                serialNumber = serialNumber,
+                type = InventoryUnit.UnitType.INSTANCE.name,
                 inventoryId = inventory.id,
                 purchaseOrderId = purchaseOrderId,
+                quantity = quantity,
+                remainingQuantity = remainingQuantity,
+                unitPrice = unitPrice,
+                depotId = depotId,
                 status = status.name,
                 saleOrderIds = saleOrderIds,
+                receivedAt = receivedAt,
                 createdAt = createdAt,
                 updatedAt = updatedAt,
+                serialNumber = serialNumber,
+                batchCode = null,
             )
 
         is InventoryUnit.BatchInventoryUnit ->
             InventoryUnitTO(
                 id = id,
-                unitType = InventoryUnit.UnitType.BATCH.toString(),
-                depotId = depotId,
-                quantity = quantity,
-                remainingQuantity = remainingQuantity,
-                receivedAt = receivedAt,
-                batchCode = batchCode,
-                unitPrice = unitPrice,
-                serialNumber = null,
+                type = InventoryUnit.UnitType.BATCH.name,
                 inventoryId = inventory.id,
                 purchaseOrderId = purchaseOrderId,
+                quantity = quantity,
+                remainingQuantity = remainingQuantity,
+                unitPrice = unitPrice,
+                depotId = depotId,
                 status = status.name,
                 saleOrderIds = saleOrderIds,
+                receivedAt = receivedAt,
                 createdAt = createdAt,
                 updatedAt = updatedAt,
+                serialNumber = null,
+                batchCode = batchCode,
             )
 
         else -> {
