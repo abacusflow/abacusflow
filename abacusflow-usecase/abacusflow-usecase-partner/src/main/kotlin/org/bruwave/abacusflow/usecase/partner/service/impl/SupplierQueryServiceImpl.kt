@@ -72,7 +72,7 @@ class SupplierQueryServiceImpl(
                 )
                 .from(SUPPLIERS)
                 .where(conditions)
-                .orderBy(SUPPLIERS.ID.desc()) // 可按实际需要排序
+                .orderBy(SUPPLIERS.CREATED_AT.desc())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize)
                 .fetch()

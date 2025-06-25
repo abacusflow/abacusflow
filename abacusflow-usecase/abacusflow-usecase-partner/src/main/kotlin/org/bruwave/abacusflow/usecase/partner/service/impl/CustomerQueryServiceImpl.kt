@@ -69,7 +69,7 @@ class CustomerQueryServiceImpl(
                 )
                 .from(CUSTOMERS)
                 .where(conditions)
-                .orderBy(CUSTOMERS.ID.desc()) // 或 pageable.sort 转换
+                .orderBy(CUSTOMERS.CREATED_AT.desc()) // 或 pageable.sort 转换
                 .offset(pageable.offset)
                 .limit(pageable.pageSize)
                 .fetch()

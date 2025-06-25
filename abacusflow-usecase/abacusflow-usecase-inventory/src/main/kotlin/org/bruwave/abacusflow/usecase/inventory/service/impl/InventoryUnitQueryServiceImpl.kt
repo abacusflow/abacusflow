@@ -85,6 +85,7 @@ class InventoryUnitQueryServiceImpl(
                     PRODUCTS.NAME,
                     PURCHASE_ORDERS.NO,
                 )
+                .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
                 .fetch()
 
         // 转换查询结果为 BasicInventoryUnitTO
@@ -113,6 +114,7 @@ class InventoryUnitQueryServiceImpl(
                 INVENTORY_UNIT.BATCH_CODE
             )
             .from(INVENTORY_UNIT)
+            .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
             .fetch()
 
         return inventoryUnits.map { record ->
@@ -143,6 +145,7 @@ class InventoryUnitQueryServiceImpl(
             .leftJoin(INVENTORIES).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID)) // 关联 INVENTORY 表
             .leftJoin(PRODUCTS).on(PRODUCTS.ID.eq(INVENTORIES.PRODUCT_ID)) // 关联 Product 表
             .where(condition)
+            .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
             .fetch()
 
         return inventoryUnits.map { record ->

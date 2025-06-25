@@ -19,6 +19,7 @@ import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
 import org.jooq.Condition
 import org.jooq.DSLContext
+import org.jooq.FilePattern
 import org.jooq.Record
 import org.jooq.impl.DSL
 import org.jooq.util.postgres.PGobject
@@ -64,6 +65,15 @@ class InventoryQueryServiceImpl(
                 }
             }
 
+
+        val total =
+            jooqDsl
+                .selectCount()
+                .from(INVENTORIES)
+                .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
+                .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
+                .where(condition)
+                .fetchOne(0, Int::class.java) ?: 0
         val records =
             jooqDsl
                 .select(
@@ -116,18 +126,10 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.SERIAL_NUMBER,
                     INVENTORY_UNIT.STATUS
                 )
+                .orderBy(INVENTORIES.CREATED_AT.desc())
                 .offset(pageable.offset.toInt())
                 .limit(pageable.pageSize)
                 .fetch()
-
-        val total =
-            jooqDsl
-                .selectCount()
-                .from(INVENTORIES)
-                .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
-                .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
-                .where(condition)
-                .fetchOne(0, Int::class.java) ?: 0
 
         val recordsGrouped =
             records.groupBy { it[INVENTORIES.ID]!! }.map { (_, group) ->
