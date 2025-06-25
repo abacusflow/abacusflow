@@ -42,6 +42,7 @@ class InventoryQueryServiceImpl(
         productCategoryId: Long?,
         productName: String?,
         productType: String?,
+        inventoryUnitCode: String?,
         depotName: String?,
     ): Page<BasicInventoryTO> {
         val condition =
@@ -59,6 +60,19 @@ class InventoryQueryServiceImpl(
                 }
                 productType?.let {
                     add(PRODUCTS.TYPE.eq(it))
+                }
+                inventoryUnitCode?.takeIf { it.isNotBlank() }?.let {
+                    val uuidCode = try {
+                        UUID.fromString(it) // 尝试将字符串转换为 UUID
+                    } catch (e: IllegalArgumentException) {
+                        null // 如果转换失败，返回 null
+                    }
+
+                    uuidCode?.let { uuid ->
+                        add(INVENTORY_UNIT.SERIAL_NUMBER.eq(it).or(INVENTORY_UNIT.BATCH_CODE.eq(uuid)))
+                    } ?: run {
+                        add(INVENTORY_UNIT.SERIAL_NUMBER.eq(it))
+                    }
                 }
                 depotName?.takeIf { it.isNotBlank() }?.let {
                     add(DEPOTS.NAME.containsIgnoreCase(it))

@@ -795,6 +795,11 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/ProductType"
+        - name: inventoryUnitCode
+          in: query
+          required: false
+          schema:
+            type: string
         - name: depotName
           in: query
           required: false
