@@ -1,10 +1,8 @@
 package org.bruwave.abacusflow.usecase.transaction.service.impl
 
-import org.bruwave.abacusflow.db.partner.CustomerRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMERS
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEMS
 import org.bruwave.abacusflow.transaction.OrderStatus
@@ -25,7 +23,6 @@ import java.util.UUID
 @Service
 class SaleOrderQueryServiceImpl(
     private val saleOrderRepository: SaleOrderRepository,
-    private val customerRepository: CustomerRepository,
     private val jooqDsl: DSLContext,
 ) : SaleOrderQueryService {
     override fun listSaleOrdersPage(
@@ -38,7 +35,7 @@ class SaleOrderQueryServiceImpl(
         val conditions = mutableListOf<Condition>()
 
         orderNo?.let {
-            conditions += PURCHASE_ORDERS.NO.eq(it)
+            conditions += SALE_ORDERS.NO.eq(it)
         }
 
         customerName?.takeIf { it.isNotBlank() }?.let {
@@ -46,7 +43,7 @@ class SaleOrderQueryServiceImpl(
         }
 
         status?.takeIf { it.isNotBlank() }?.let {
-            conditions += PURCHASE_ORDERS.STATUS.eq(it)
+            conditions += SALE_ORDERS.STATUS.eq(it)
         }
 
         productName?.takeIf { it.isNotBlank() }?.let {
@@ -82,6 +79,7 @@ class SaleOrderQueryServiceImpl(
                     itemCountField,
                 )
                 .from(joinedTables)
+                .where(conditions)
                 .groupBy(
                     SALE_ORDERS.ID,
                     SALE_ORDERS.NO,
