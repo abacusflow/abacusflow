@@ -117,7 +117,7 @@ class SaleOrderCommandServiceImpl(
                     TransactionInventoryUnitType.INSTANCE,
                     1, // 资产类固定数量为1
                     item.unitPrice,
-                    item.discountFactor ?: BigDecimal.ONE
+                    item.discountFactor ?: BigDecimal.ONE,
                 )
             }
 

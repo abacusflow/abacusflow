@@ -1,19 +1,19 @@
 import "./assets/main.css";
 
-import {createApp} from "vue";
-import {createPinia} from "pinia";
+import { createApp } from "vue";
+import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import router from "./router";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
-import {VueQueryPlugin} from "@tanstack/vue-query";
+import { VueQueryPlugin } from "@tanstack/vue-query";
 import injectGlobalProperties from "./plugin/injectGlobalProperties";
 import FetchApi from "./plugin/fetch";
-import {dateToFormattedString, timestampToLocaleString} from "./util/timestampUtils";
-import {formatNumber} from "./util/numberUtils";
-import {translateOrderStatus} from "./util/orderUtil";
-import {translateProductType, translateProductUnit} from "./util/productUtils";
+import { dateToFormattedString, timestampToLocaleString } from "./util/timestampUtils";
+import { formatNumber } from "./util/numberUtils";
+import { translateOrderStatus } from "./util/orderUtil";
+import { translateProductType, translateProductUnit } from "./util/productUtils";
 
 const app = createApp(App);
 

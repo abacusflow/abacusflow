@@ -118,7 +118,6 @@ const pagination = computed(() => ({
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 

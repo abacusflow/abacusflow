@@ -1,15 +1,13 @@
 package org.bruwave.abacusflow.portal.web.product
 
-import org.apache.tomcat.jni.Buffer.address
 import org.bruwave.abacusflow.portal.web.api.ProductsApi
-import org.bruwave.abacusflow.portal.web.model.BasicProductVO
 import org.bruwave.abacusflow.portal.web.model.CreateProductInputVO
 import org.bruwave.abacusflow.portal.web.model.ListProductsPage200ResponseVO
-import org.bruwave.abacusflow.portal.web.model.ListSuppliersPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.ProductTypeVO
 import org.bruwave.abacusflow.portal.web.model.ProductVO
+import org.bruwave.abacusflow.portal.web.model.SelectableProductVO
 import org.bruwave.abacusflow.portal.web.model.UpdateProductInputVO
-import org.bruwave.abacusflow.portal.web.partner.toBasicVO
+import org.bruwave.abacusflow.portal.web.product.mapper.mapProductTypeTOToVO
 import org.bruwave.abacusflow.portal.web.product.mapper.toBasicVO
 import org.bruwave.abacusflow.portal.web.product.mapper.toVO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
@@ -17,6 +15,7 @@ import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 import org.bruwave.abacusflow.usecase.product.service.ProductCommandService
 import org.bruwave.abacusflow.usecase.product.service.ProductQueryService
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
@@ -31,24 +30,26 @@ class ProductController(
         name: String?,
         type: ProductTypeVO?,
         enabled: Boolean?,
-        categoryId: Long?
+        categoryId: Long?,
     ): ResponseEntity<ListProductsPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
-        val page = productQueryService.listProductsPage(
-            pageable,
-            name = name,
-            type = type?.name?.uppercase(),
-            enabled = enabled,
-            categoryId = categoryId,
-        ).map { it.toBasicVO() }
+        val page =
+            productQueryService.listProductsPage(
+                pageable,
+                name = name,
+                type = type?.name?.uppercase(),
+                enabled = enabled,
+                categoryId = categoryId,
+            ).map { it.toBasicVO() }
 
-        val pageVO = ListProductsPage200ResponseVO(
-            content = page.content,
-            totalElements = page.totalElements,
-            number = page.number,
-            propertySize = page.size
-        )
+        val pageVO =
+            ListProductsPage200ResponseVO(
+                content = page.content,
+                totalElements = page.totalElements,
+                number = page.number,
+                propertySize = page.size,
+            )
 
         return ResponseEntity.ok(pageVO)
     }
@@ -101,5 +102,16 @@ class ProductController(
     override fun deleteProduct(id: Long): ResponseEntity<Unit> {
         productCommandService.deleteProduct(id)
         return ResponseEntity.ok().build()
+    }
+
+    override fun listSelectableProducts(): ResponseEntity<List<SelectableProductVO>> {
+        val productVOs = productQueryService.listProducts().map {
+            SelectableProductVO(
+                it.id,
+                it.name,
+                type = mapProductTypeTOToVO(it.type),
+            )
+        }
+        return ResponseEntity.ok(productVOs)
     }
 }

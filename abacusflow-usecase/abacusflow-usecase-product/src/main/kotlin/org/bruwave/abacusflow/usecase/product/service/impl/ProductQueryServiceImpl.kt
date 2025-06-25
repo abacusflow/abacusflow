@@ -13,6 +13,7 @@ import org.jooq.impl.DSL
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 
 @Service
@@ -37,7 +38,7 @@ class ProductQueryServiceImpl(
         name: String?,
         type: String?,
         enabled: Boolean?,
-        categoryId: Long?
+        categoryId: Long?,
     ): Page<BasicProductTO> {
         val conditions = mutableListOf<Condition>()
 
@@ -63,49 +64,56 @@ class ProductQueryServiceImpl(
         }
 
         // 1. 查询总数
-        val total = jooqDsl
-            .selectCount()
-            .from(PRODUCTS)
-            .where(conditions)
-            .fetchOne(0, Long::class.java) ?: 0L
+        val total =
+            jooqDsl
+                .selectCount()
+                .from(PRODUCTS)
+                .where(conditions)
+                .fetchOne(0, Long::class.java) ?: 0L
 
         // 2. 查询分页数据（只查需要字段）
-        val records = jooqDsl
-            .select(
-                PRODUCTS.ID,
-                PRODUCTS.NAME,
-                PRODUCTS.TYPE,
-                PRODUCTS.ENABLED,
-                PRODUCTS.SPECIFICATION,
-                PRODUCTS.UNIT,
-                PRODUCTS.NOTE,
-                PRODUCTS.CATEGORY_ID,
-                PRODUCT_CATEGORIES.NAME
-            )
-            .from(PRODUCTS)
-            .leftJoin(PRODUCT_CATEGORIES)
-            .on(PRODUCTS.CATEGORY_ID.eq(PRODUCT_CATEGORIES.ID))
-            .where(conditions)
-            .orderBy(PRODUCTS.CREATED_AT.desc())
-            .offset(pageable.offset)
-            .limit(pageable.pageSize)
-            .fetch()
-            .map {
-                BasicProductTO(
-                    id = it[PRODUCTS.ID]!!,
-                    name = it[PRODUCTS.NAME]!!,
-                    type = it[PRODUCTS.TYPE],
-                    enabled = it[PRODUCTS.ENABLED]!!,
-                    specification = it[PRODUCTS.SPECIFICATION],
-                    unit = it[PRODUCTS.UNIT],
-                    note = it[PRODUCTS.NOTE],
-                    categoryName = it[PRODUCT_CATEGORIES.NAME],
+        val records =
+            jooqDsl
+                .select(
+                    PRODUCTS.ID,
+                    PRODUCTS.NAME,
+                    PRODUCTS.TYPE,
+                    PRODUCTS.ENABLED,
+                    PRODUCTS.SPECIFICATION,
+                    PRODUCTS.UNIT,
+                    PRODUCTS.NOTE,
+                    PRODUCTS.CATEGORY_ID,
+                    PRODUCT_CATEGORIES.NAME,
                 )
-            }
+                .from(PRODUCTS)
+                .leftJoin(PRODUCT_CATEGORIES)
+                .on(PRODUCTS.CATEGORY_ID.eq(PRODUCT_CATEGORIES.ID))
+                .where(conditions)
+                .orderBy(PRODUCTS.CREATED_AT.desc())
+                .offset(pageable.offset)
+                .limit(pageable.pageSize)
+                .fetch()
+                .map {
+                    BasicProductTO(
+                        id = it[PRODUCTS.ID]!!,
+                        name = it[PRODUCTS.NAME]!!,
+                        type = it[PRODUCTS.TYPE],
+                        enabled = it[PRODUCTS.ENABLED]!!,
+                        specification = it[PRODUCTS.SPECIFICATION],
+                        unit = it[PRODUCTS.UNIT],
+                        note = it[PRODUCTS.NOTE],
+                        categoryName = it[PRODUCT_CATEGORIES.NAME],
+                    )
+                }
 
         return PageImpl(records, pageable, total)
     }
 
+    override fun listProducts(): List<ProductTO> {
+        return productRepository
+            .findAll()
+            .map { it.toTO() }
+    }
 
     private fun findAllChildrenCategories(categoryId: Long): List<Long> {
         val result = mutableSetOf<Long>()
@@ -116,12 +124,13 @@ class ProductQueryServiceImpl(
             result.add(currentId)
 
             // 查询直接子分类
-            val children = jooqDsl
-                .select(PRODUCT_CATEGORIES.ID)
-                .from(PRODUCT_CATEGORIES)
-                .where(PRODUCT_CATEGORIES.PARENT_ID.eq(currentId))
-                .fetch()
-                .map { it.value1() }
+            val children =
+                jooqDsl
+                    .select(PRODUCT_CATEGORIES.ID)
+                    .from(PRODUCT_CATEGORIES)
+                    .where(PRODUCT_CATEGORIES.PARENT_ID.eq(currentId))
+                    .fetch()
+                    .map { it.value1() }
 
             queue.addAll(children)
         }

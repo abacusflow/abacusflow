@@ -2,13 +2,11 @@ package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.partner.Supplier
-import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
 import org.bruwave.abacusflow.usecase.partner.CreateSupplierInputTO
-import org.bruwave.abacusflow.usecase.partner.service.SupplierCommandService
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
 import org.bruwave.abacusflow.usecase.partner.UpdateSupplierInputTO
-import org.bruwave.abacusflow.usecase.partner.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toTO
+import org.bruwave.abacusflow.usecase.partner.service.SupplierCommandService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -53,5 +51,4 @@ class SupplierCommandServiceImpl(
         supplierRepository.delete(supplier)
         return supplier.toTO()
     }
-
 }

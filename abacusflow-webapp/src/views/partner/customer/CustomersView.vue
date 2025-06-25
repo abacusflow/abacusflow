@@ -80,10 +80,10 @@
 import { computed, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import {
-  PartnerApi,
   type BasicCustomer,
   type Customer,
-  type ListCustomersPageRequest
+  type ListCustomersPageRequest,
+  PartnerApi
 } from "@/core/openapi";
 import CustomerAddView from "./CustomerAddView.vue";
 import CustomerEditView from "./CustomerEditView.vue";

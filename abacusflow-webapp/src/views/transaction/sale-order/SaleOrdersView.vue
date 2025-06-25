@@ -163,9 +163,9 @@
 import { computed, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import {
-  OrderStatus,
   type BasicSaleOrder,
   type ListSaleOrdersPageRequest,
+  OrderStatus,
   type TransactionApi
 } from "@/core/openapi";
 import SaleOrderAddView from "./SaleOrderAddView.vue";

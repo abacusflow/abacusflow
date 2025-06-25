@@ -83,14 +83,25 @@ class InventoryPurchaseOrderEventListener(
             return
         }
 
-        // 只要有一个库存单元 saleOrderIds 不为空 或 状态不是 NORMAL，则禁止撤回
-        val hasBeenConsumed = units.any {
-            it.saleOrderIds.isNotEmpty() || it.status != InventoryUnit.InventoryUnitStatus.NORMAL
-        }
+        // 检查库存是否可以撤回
+        units.forEach { unit ->
+            require(unit.saleOrderIds.isEmpty()) { "库存单元 ${unit.id} 已被销售订单占用，无法撤回" }
 
-        if (hasBeenConsumed) {
-            println("Cannot reverse PurchaseOrder ${order.no}: at least one InventoryUnit has been consumed or associated with a SaleOrder")
-            throw IllegalStateException("该采购单下存在已出库或已销售的库存，无法撤回")
+            when (unit.status) {
+                InventoryUnit.InventoryUnitStatus.NORMAL -> {
+                    require(unit.quantity == unit.remainingQuantity) { "库存单元 ${unit.id} 已部分出库，无法撤回" }
+                }
+
+                InventoryUnit.InventoryUnitStatus.CONSUMED ->
+                    throw RuntimeException("库存单元 ${unit.id} 已完全出库，无法撤回")
+
+                InventoryUnit.InventoryUnitStatus.CANCELED ->
+                    throw RuntimeException("库存单元 ${unit.id} 已取消，无法撤回")
+
+                InventoryUnit.InventoryUnitStatus.REVERSED -> {
+                    require(unit.quantity == unit.remainingQuantity) { "库存单元 ${unit.id} 已部分出库，无法撤回" }
+                }
+            }
         }
 
         inventoryUnitRepository.deleteAll(units)

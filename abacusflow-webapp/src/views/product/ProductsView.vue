@@ -92,15 +92,6 @@
                   </a-space>
                 </template>
               </template>
-
-              <template #expandedRowRender="{ record }">
-                <a-table
-                  :columns="innerColumns"
-                  :data-source="record.instances"
-                  :pagination="false"
-                >
-                </a-table>
-              </template>
             </a-table>
           </a-card>
         </a-flex>
@@ -131,11 +122,10 @@ import { message } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
 import { useRoute, useRouter } from "vue-router";
 import {
-  type ProductApi,
-  type Product,
-  type ListProductsPageRequest,
   type BasicProduct,
-  type BasicProductInstancesInner,
+  type ListProductsPageRequest,
+  type Product,
+  type ProductApi,
   ProductType
 } from "@/core/openapi";
 
@@ -175,7 +165,6 @@ const pagination = computed(() => ({
 
 // 搜索
 const handleSearch = () => {
-  queryClient.invalidateQueries({ queryKey: ["products"] });
   refetch();
 };
 
@@ -256,13 +245,6 @@ const columns: StrictTableColumnsType<BasicProduct> = [
   { title: "单位", dataIndex: "unit", key: "unit" },
   { title: "启用状态", dataIndex: "enabled", key: "enabled" },
   { title: "备注", dataIndex: "note", key: "note" },
-  { title: "操作", key: "action" }
-];
-
-const innerColumns: StrictTableColumnsType<BasicProductInstancesInner> = [
-  { title: "资产名称", dataIndex: "name", key: "name" },
-  { title: "序列号", dataIndex: "serialNumber", key: "serialNumber" },
-  { title: "单价", dataIndex: "unitPrice", key: "unitPrice" },
   { title: "操作", key: "action" }
 ];
 </script>

@@ -26,10 +26,10 @@
 </template>
 
 <script lang="ts" setup>
-import {inject, reactive, ref} from "vue";
-import {type FormInstance, message} from "ant-design-vue";
-import type {CreateCustomerInput, PartnerApi} from "@/core/openapi";
-import {useMutation} from "@tanstack/vue-query";
+import { inject, reactive, ref } from "vue";
+import { type FormInstance, message } from "ant-design-vue";
+import type { CreateCustomerInput, PartnerApi } from "@/core/openapi";
+import { useMutation } from "@tanstack/vue-query";
 
 const formRef = ref<FormInstance>();
 

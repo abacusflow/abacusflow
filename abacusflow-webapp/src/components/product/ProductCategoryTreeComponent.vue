@@ -24,9 +24,9 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref, watch} from "vue";
-import {useQuery} from "@tanstack/vue-query";
-import type {ProductApi} from "@/core/openapi";
+import { computed, inject, ref, watch } from "vue";
+import { useQuery } from "@tanstack/vue-query";
+import type { ProductApi } from "@/core/openapi";
 
 const productApi = inject("productApi") as ProductApi;
 

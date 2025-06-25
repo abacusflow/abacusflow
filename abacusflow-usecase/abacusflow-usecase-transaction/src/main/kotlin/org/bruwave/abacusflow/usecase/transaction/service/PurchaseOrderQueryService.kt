@@ -12,7 +12,7 @@ interface PurchaseOrderQueryService {
         orderNo: UUID?,
         supplierName: String?,
         status: String?,
-        productName: String?
+        productName: String?,
     ): Page<BasicPurchaseOrderTO>
 
     fun getPurchaseOrder(id: Long): PurchaseOrderTO

@@ -9,9 +9,9 @@ interface InventoryQueryService {
     fun listInventoriesPage(
         pageable: Pageable,
         productCategoryId: Long?,
-        productId: Long?,
+        productName: String?,
         productType: String?,
-        depotId: Long?
+        depotName: String?,
     ): Page<BasicInventoryTO>
 
     fun getInventory(id: Long): InventoryTO

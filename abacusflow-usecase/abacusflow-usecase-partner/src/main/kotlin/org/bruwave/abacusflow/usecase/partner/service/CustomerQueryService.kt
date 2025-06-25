@@ -16,4 +16,6 @@ interface CustomerQueryService {
         phone: String?,
         address: String?,
     ): Page<BasicCustomerTO>
+
+    fun listCustomers(): List<CustomerTO>
 }

@@ -4,7 +4,6 @@ import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIERS
 import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
-import org.bruwave.abacusflow.usecase.partner.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toTO
 import org.bruwave.abacusflow.usecase.partner.service.SupplierQueryService
 import org.jooq.Condition
@@ -36,7 +35,7 @@ class SupplierQueryServiceImpl(
         name: String?,
         contactPerson: String?,
         phone: String?,
-        address: String?
+        address: String?,
     ): Page<BasicSupplierTO> {
         val conditions = mutableListOf<Condition>()
 
@@ -53,39 +52,46 @@ class SupplierQueryServiceImpl(
             conditions += SUPPLIERS.ADDRESS.containsIgnoreCase(it)
         }
 
-
         // 1. 查询总记录数
-        val total = jooqDsl
-            .selectCount()
-            .from(SUPPLIERS)
-            .where(conditions)
-            .fetchOne(0, Long::class.java) ?: 0L
+        val total =
+            jooqDsl
+                .selectCount()
+                .from(SUPPLIERS)
+                .where(conditions)
+                .fetchOne(0, Long::class.java) ?: 0L
 
         // 2. 查询分页数据（明确字段）
-        val records = jooqDsl
-            .select(
-                SUPPLIERS.ID,
-                SUPPLIERS.NAME,
-                SUPPLIERS.CONTACT_PERSON,
-                SUPPLIERS.PHONE,
-                SUPPLIERS.ADDRESS
-            )
-            .from(SUPPLIERS)
-            .where(conditions)
-            .orderBy(SUPPLIERS.ID.desc()) // 可按实际需要排序
-            .offset(pageable.offset)
-            .limit(pageable.pageSize)
-            .fetch()
-            .map {
-                BasicSupplierTO(
-                    id = it[SUPPLIERS.ID]!!,
-                    name = it[SUPPLIERS.NAME]!!,
-                    contactPerson = it[SUPPLIERS.CONTACT_PERSON],
-                    phone = it[SUPPLIERS.PHONE],
-                    address = it[SUPPLIERS.ADDRESS]
+        val records =
+            jooqDsl
+                .select(
+                    SUPPLIERS.ID,
+                    SUPPLIERS.NAME,
+                    SUPPLIERS.CONTACT_PERSON,
+                    SUPPLIERS.PHONE,
+                    SUPPLIERS.ADDRESS,
                 )
-            }
+                .from(SUPPLIERS)
+                .where(conditions)
+                .orderBy(SUPPLIERS.ID.desc()) // 可按实际需要排序
+                .offset(pageable.offset)
+                .limit(pageable.pageSize)
+                .fetch()
+                .map {
+                    BasicSupplierTO(
+                        id = it[SUPPLIERS.ID]!!,
+                        name = it[SUPPLIERS.NAME]!!,
+                        contactPerson = it[SUPPLIERS.CONTACT_PERSON],
+                        phone = it[SUPPLIERS.PHONE],
+                        address = it[SUPPLIERS.ADDRESS],
+                    )
+                }
 
         return PageImpl(records, pageable, total)
+    }
+
+    override fun listSuppliers(): List<SupplierTO> {
+        return supplierRepository
+            .findAll()
+            .map { it.toTO() }
     }
 }

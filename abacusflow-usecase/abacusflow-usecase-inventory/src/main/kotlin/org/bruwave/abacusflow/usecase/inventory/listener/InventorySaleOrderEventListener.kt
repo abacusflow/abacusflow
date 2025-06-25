@@ -46,9 +46,10 @@ class InventorySaleOrderEventListener(
             return
         }
 
-        val sumItemQuantityByUnitId: Map<Long, Int> = order.items
-            .groupBy { it.inventoryUnitId }
-            .mapValues { (_, items) -> items.sumOf { it.quantity } }
+        val sumItemQuantityByUnitId: Map<Long, Int> =
+            order.items
+                .groupBy { it.inventoryUnitId }
+                .mapValues { (_, items) -> items.sumOf { it.quantity } }
 
         units.forEach { unit ->
             val quantityForReverse = sumItemQuantityByUnitId.getValue(unit.id)

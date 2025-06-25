@@ -2,20 +2,15 @@ package org.bruwave.abacusflow.usecase.product.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
-import org.bruwave.abacusflow.db.product.ProductInstanceRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.product.Product
-import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
-import org.bruwave.abacusflow.usecase.product.ProductInstanceForBasicProductTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductTypeTOToDO
 import org.bruwave.abacusflow.usecase.product.mapper.mapProductUnitTOToDO
-import org.bruwave.abacusflow.usecase.product.mapper.toBasicTO
-import org.bruwave.abacusflow.usecase.product.mapper.toForBasicProductTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
 import org.bruwave.abacusflow.usecase.product.service.ProductCommandService
 import org.springframework.stereotype.Service
@@ -25,11 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ProductCommandServiceImpl(
     private val productRepository: ProductRepository,
-    private val productInstanceRepository: ProductInstanceRepository,
     private val productCategoryRepository: ProductCategoryRepository,
-    private val supplierRepository: SupplierRepository,
-    private val purchaseOrderRepository: PurchaseOrderRepository,
-    private val saleOrderRepository: SaleOrderRepository,
 ) : ProductCommandService {
     override fun createProduct(input: CreateProductInputTO): ProductTO {
         val newProductCategory =

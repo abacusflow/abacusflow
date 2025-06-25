@@ -6,8 +6,12 @@
       :rules="[{ required: true, message: '请选择供应商' }]"
     >
       <a-select v-model:value="formState.supplierId" placeholder="请选择供应商">
-        <a-select-option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
-          {{ supplier.name }}
+        <a-select-option
+          v-for="supplier in suppliers"
+          :key="supplier.value"
+          :value="supplier.value"
+        >
+          {{ supplier.label }}
         </a-select-option>
       </a-select>
     </a-form-item>
@@ -114,12 +118,12 @@
 import { inject, reactive, ref } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
 import {
-  type BasicProduct,
   type CreatePurchaseOrderInput,
   type PartnerApi,
   type ProductApi,
   ProductType,
   type PurchaseOrderItemInput,
+  type SelectableProduct,
   type TransactionApi
 } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
@@ -147,12 +151,12 @@ const emit = defineEmits(["success", "update:visible"]);
 
 const { data: suppliers } = useQuery({
   queryKey: ["suppliers"],
-  queryFn: () => partnerApi.listSuppliers()
+  queryFn: () => partnerApi.listSelectableSuppliers()
 });
 
 const { data: products } = useQuery({
   queryKey: ["products"],
-  queryFn: () => productApi.listProducts()
+  queryFn: () => productApi.listSelectableProducts()
 });
 
 const { mutate: createPurchaseOrder } = useMutation({
@@ -183,11 +187,11 @@ function removeOrderItem(index: number) {
   formState.orderItems?.splice(index, 1);
 }
 
-function isAsset(productId?: number, products?: BasicProduct[]): boolean {
+function isAsset(productId?: number, products?: SelectableProduct[]): boolean {
   if (!productId) return false;
   if (!products) return false;
 
-  const product = products.find((p) => p.id === productId);
+  const product = products?.find((p) => p.id === productId);
   return product?.type === ProductType.Asset;
 }
 
