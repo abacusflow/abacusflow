@@ -24,7 +24,7 @@
           :columns="columns"
           :data-source="categoryTree"
           :loading="isPending"
-          row-key="key"
+          row-key="id"
           v-model:expandedRowKeys="expandedRowKeys"
           size="small"
         >
@@ -62,7 +62,9 @@
                   @confirm="handleDeleteProductCategory(record.id)"
                   :disabled="record.name == '根节点'"
                 >
-                  <a-button shape="circle" type="link" :disabled="record.id === 1">删除</a-button>
+                  <a-button shape="circle" type="link" :disabled="record.name == '根节点'"
+                    >删除</a-button
+                  >
                 </a-popconfirm>
               </a-space>
             </template>
@@ -74,7 +76,7 @@
       <ProductCategoryAddView
         v-if="showAdd && editingProductCategory"
         v-model:visible="showAdd"
-        :parentCategoryId="editingProductCategory.key"
+        :parentCategoryId="editingProductCategory.id"
         @success="refetch"
       />
     </a-drawer>
@@ -83,7 +85,7 @@
       <ProductCategoryEditView
         v-if="showEdit && editingProductCategory"
         v-model:visible="showEdit"
-        :productCategoryId="editingProductCategory.key"
+        :productCategoryId="editingProductCategory.id"
         @success="refetch"
       />
     </a-drawer>
@@ -100,7 +102,7 @@ import ProductCategoryAddView from "./ProductCategoryAddView.vue";
 import ProductCategoryEditView from "./ProductCategoryEditView.vue";
 
 interface TreeCategory {
-  key: number;
+  id: number;
   name: string;
   children?: TreeCategory[];
 }
@@ -174,7 +176,7 @@ const categoryTree = computed<TreeCategory[]>(() => {
     const parent = category.parentName ?? "__root__";
     if (!map.has(parent)) map.set(parent, []);
     map.get(parent)!.push({
-      key: category.id,
+      id: category.id,
       name: category.name
     });
   }
@@ -207,10 +209,10 @@ function getExpandedRowKeysFromTree(tree: TreeCategory[]): (string | number)[] {
   const keys: (string | number)[] = [];
 
   for (const root of tree) {
-    keys.push(root.key); // ✅ 加入根节点
+    keys.push(root.id); // ✅ 加入根节点
     if (root.children?.length) {
       for (const child of root.children) {
-        keys.push(child.key);
+        keys.push(child.id);
       }
     }
   }

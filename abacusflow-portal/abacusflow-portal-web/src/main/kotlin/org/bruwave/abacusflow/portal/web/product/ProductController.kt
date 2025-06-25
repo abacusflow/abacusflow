@@ -105,13 +105,14 @@ class ProductController(
     }
 
     override fun listSelectableProducts(): ResponseEntity<List<SelectableProductVO>> {
-        val productVOs = productQueryService.listProducts().map {
-            SelectableProductVO(
-                it.id,
-                it.name,
-                type = mapProductTypeTOToVO(it.type),
-            )
-        }
+        val productVOs =
+            productQueryService.listProducts().map {
+                SelectableProductVO(
+                    it.id,
+                    it.name,
+                    type = mapProductTypeTOToVO(it.type),
+                )
+            }
         return ResponseEntity.ok(productVOs)
     }
 }

@@ -6,7 +6,7 @@ import java.util.UUID
 
 data class InventoryUnitTO(
     val id: Long,
-    val unitType: String, // INSTANCE 或 BATCH
+    val type: String, // INSTANCE 或 BATCH
     val inventoryId: Long,
     val purchaseOrderId: Long,
     val quantity: Long,
@@ -21,4 +21,11 @@ data class InventoryUnitTO(
     // 特有字段，视类型动态赋值
     val serialNumber: String?,
     val batchCode: UUID?,
+)
+
+data class InventoryUnitWithTitleTO(
+    val id: Long,
+    val type: String, // INSTANCE 或 BATCH
+    val title: String,
+    val status: String, // NORMAL / CONSUMED / CANCELED / REVERSED
 )

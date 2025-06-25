@@ -11,7 +11,8 @@ fun BasicInventoryUnitTO.toBasicVO(): BasicInventoryUnitVO =
     BasicInventoryUnitVO(
         id = id,
         title = title,
-        type = mapInventoryUnitTypeTOToVO(unitType),
+        type = mapInventoryUnitTypeTOToVO(type),
+        status = mapInventoryUnitStatusTOToVO(status),
         purchaseOrderNo = purchaseOrderNo,
         saleOrderNos = saleOrderNos,
         depotName = depotName,
@@ -26,7 +27,7 @@ fun BasicInventoryUnitTO.toBasicVO(): BasicInventoryUnitVO =
 fun InventoryUnitTO.toVO(): InventoryUnitVO =
     InventoryUnitVO(
         id = id,
-        unitType = mapInventoryUnitTypeTOToVO(unitType),
+        unitType = mapInventoryUnitTypeTOToVO(type),
         inventoryId = inventoryId,
         purchaseOrderId = purchaseOrderId,
         quantity = quantity,
@@ -48,12 +49,12 @@ fun mapInventoryUnitTypeTOToVO(type: String): InventoryUnitTypeVO {
     }
 }
 
-fun mapInventoryUnitStatusTOToVO(type: String): InventoryUnitStatusVO {
-    return when (type.uppercase()) {
+fun mapInventoryUnitStatusTOToVO(input: String): InventoryUnitStatusVO {
+    return when (input.uppercase()) {
         "NORMAL" -> InventoryUnitStatusVO.normal
         "CONSUMED" -> InventoryUnitStatusVO.consumed
         "CANCELED" -> InventoryUnitStatusVO.canceled
         "REVERSED" -> InventoryUnitStatusVO.reversed
-        else -> throw IllegalArgumentException("Unsupported inventory unit type $type")
+        else -> throw IllegalArgumentException("Unsupported inventory unit type $input")
     }
 }

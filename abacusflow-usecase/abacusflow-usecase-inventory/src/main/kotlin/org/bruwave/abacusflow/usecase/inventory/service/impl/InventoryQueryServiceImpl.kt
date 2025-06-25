@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.usecase.inventory.service.impl
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.DEPOTS
@@ -21,7 +20,6 @@ import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
-import org.jooq.util.postgres.PGobject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -41,6 +39,7 @@ class InventoryQueryServiceImpl(
         productCategoryId: Long?,
         productName: String?,
         productType: String?,
+        inventoryUnitCode: String?,
         depotName: String?,
     ): Page<BasicInventoryTO> {
         val condition =
@@ -59,10 +58,33 @@ class InventoryQueryServiceImpl(
                 productType?.let {
                     add(PRODUCTS.TYPE.eq(it))
                 }
+                inventoryUnitCode?.takeIf { it.isNotBlank() }?.let {
+                    val uuidCode =
+                        try {
+                            UUID.fromString(it) // 尝试将字符串转换为 UUID
+                        } catch (e: IllegalArgumentException) {
+                            null // 如果转换失败，返回 null
+                        }
+
+                    uuidCode?.let { uuid ->
+                        add(INVENTORY_UNIT.SERIAL_NUMBER.eq(it).or(INVENTORY_UNIT.BATCH_CODE.eq(uuid)))
+                    } ?: run {
+                        add(INVENTORY_UNIT.SERIAL_NUMBER.eq(it))
+                    }
+                }
                 depotName?.takeIf { it.isNotBlank() }?.let {
                     add(DEPOTS.NAME.containsIgnoreCase(it))
                 }
             }
+
+        val total =
+            jooqDsl
+                .selectCount()
+                .from(INVENTORIES)
+                .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
+                .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
+                .where(condition)
+                .fetchOne(0, Int::class.java) ?: 0
 
         val records =
             jooqDsl
@@ -84,6 +106,7 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
+                    INVENTORY_UNIT.STATUS,
                     DSL.arrayAgg(SALE_ORDERS.NO).`as`("sale_order_nos"),
                 )
                 .from(INVENTORIES)
@@ -113,19 +136,17 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
+                    INVENTORY_UNIT.STATUS,
+                )
+                .orderBy(
+                    // 排序将数量计数为 0 的记录推送到末尾
+                    DSL.`when`(DSL.count(INVENTORY_UNIT.QUANTITY).eq(0), 1).otherwise(0)
+                        .asc(),
+                    INVENTORIES.CREATED_AT.desc(),
                 )
                 .offset(pageable.offset.toInt())
                 .limit(pageable.pageSize)
                 .fetch()
-
-        val total =
-            jooqDsl
-                .selectCount()
-                .from(INVENTORIES)
-                .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
-                .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
-                .where(condition)
-                .fetchOne(0, Int::class.java) ?: 0
 
         val recordsGrouped =
             records.groupBy { it[INVENTORIES.ID]!! }.map { (_, group) ->
@@ -195,7 +216,7 @@ class InventoryQueryServiceImpl(
         return BasicInventoryUnitTO(
             id = id,
             title = title,
-            unitType = unitType.name, // 通常是枚举/字符串，如 "INSTANCE" 或 "BATCH"
+            type = unitType.name, // 通常是枚举/字符串，如 "INSTANCE" 或 "BATCH"
             purchaseOrderNo = this[PURCHASE_ORDERS.NO]!!,
             saleOrderNos = saleOrderNos,
             depotName = this[DEPOTS.NAME],
@@ -205,20 +226,7 @@ class InventoryQueryServiceImpl(
             receivedAt = this[INVENTORY_UNIT.RECEIVED_AT]?.toInstant() ?: Instant.EPOCH,
             batchCode = this[INVENTORY_UNIT.BATCH_CODE],
             serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER],
+            status = this[INVENTORY_UNIT.STATUS],
         )
-    }
-
-    fun parseSaleOrderIdList(field: Any?): List<Long> {
-        return when (field) {
-            is PGobject -> {
-                objectMapper.readValue(field.value, object : TypeReference<List<Long>>() {})
-            }
-
-            is String -> {
-                objectMapper.readValue(field, object : TypeReference<List<Long>>() {})
-            }
-
-            else -> emptyList()
-        }
     }
 }

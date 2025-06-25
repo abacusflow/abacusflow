@@ -36,8 +36,18 @@
           :name="['orderItems', index, 'productId']"
           :rules="[{ required: true, message: '请选择产品' }]"
         >
-          <a-select v-model:value="item.productId" placeholder="请选择产品">
-            <a-select-option v-for="product in products" :key="product.id" :value="product.id">
+          <a-select
+            v-model:value="item.productId"
+            show-search
+            placeholder="请选择产品"
+            optionFilterProp="label"
+          >
+            <a-select-option
+              v-for="product in products"
+              :key="product.id"
+              :value="product.id"
+              :label="product.name"
+            >
               {{ product.name }}
             </a-select-option>
           </a-select>

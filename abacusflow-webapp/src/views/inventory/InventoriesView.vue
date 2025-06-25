@@ -13,12 +13,25 @@
               <a-form-item label="产品名" name="productName">
                 <a-input
                   v-model:value="searchForm.productName"
-                  placeholder="产品名字"
+                  placeholder="请输入产品名字"
                   allow-clear
                 />
               </a-form-item>
+
+              <a-form-item label="序列号/批次号" name="inventoryUnitCode">
+                <a-input
+                  v-model:value="searchForm.inventoryUnitCode"
+                  placeholder="请输入序列号/批次号"
+                  allow-clear
+                />
+              </a-form-item>
+
               <a-form-item label="储存点" name="depotName">
-                <a-input v-model:value="searchForm.depotName" placeholder="储存点名" allow-clear />
+                <a-input
+                  v-model:value="searchForm.depotName"
+                  placeholder="请输入储存点名"
+                  allow-clear
+                />
               </a-form-item>
 
               <a-form-item label="商品类型" name="productType">
@@ -50,6 +63,7 @@
               row-key="id"
               size="small"
               :pagination="pagination"
+              v-model:expandedRowKeys="expandedRowKeys"
             >
               <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'quantity'">
@@ -77,6 +91,10 @@
 
               <template #expandedRowRender="{ record }">
                 <a-table :columns="innerColumns" :data-source="record.units" :pagination="false">
+                  <template #emptyText>
+                    <p>暂无数据</p>
+                  </template>
+
                   <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'action'">
                       <a-space>
@@ -125,7 +143,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, h, inject, reactive, ref } from "vue";
+import { computed, h, inject, reactive, ref, watch } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import {
   type BasicInventory,
@@ -154,6 +172,7 @@ const showAssignDepot = ref(false);
 const showEditWarningLine = ref(false);
 const editingInventory = ref<BasicInventory | null>(null);
 const editingInventoryUnit = ref<BasicInventoryUnit | null>(null);
+const expandedRowKeys = ref<number[]>([]);
 
 const productCategoryId = computed(() => {
   const id = route.query.productCategoryId;
@@ -164,6 +183,7 @@ const productCategoryId = computed(() => {
 const searchForm = reactive({
   productName: undefined,
   depotName: undefined,
+  inventoryUnitCode: undefined,
   productType: undefined
 });
 
@@ -176,6 +196,7 @@ const handleSearch = () => {
 const resetSearch = () => {
   searchForm.productName = undefined;
   searchForm.depotName = undefined;
+  searchForm.inventoryUnitCode = undefined;
   searchForm.productType = undefined;
   pageIndex.value = 1;
   refetch();
@@ -204,15 +225,17 @@ const {
     searchForm.productName,
     searchForm.depotName,
     searchForm.productType,
+    searchForm.inventoryUnitCode,
     pageIndex,
     pageSize
   ],
   queryFn: () => {
-    const { productName, depotName, productType } = searchForm;
+    const { productName, depotName, productType, inventoryUnitCode } = searchForm;
 
     const params: ListInventoriesPageRequest = {
       productCategoryId: productCategoryId.value,
       productName: productName || undefined,
+      inventoryUnitCode: inventoryUnitCode || undefined,
       depotName: depotName || undefined,
       productType: productType || undefined,
       pageIndex: pageIndex.value,
@@ -241,6 +264,19 @@ function onCategorySelected(productCategoryId: string | number) {
     }
   });
 }
+
+watch(
+  () => pageData.value?.content,
+  (newContent) => {
+    // 只展开类型为 Asset 且有剩余库存的行
+    expandedRowKeys.value =
+      newContent
+        ?.filter((item) => item.productType === ProductType.Asset) // 过滤出类型为 Asset 的行
+        ?.filter((item) => item.units.reduce((sum, unit) => sum + unit.remainingQuantity, 0) > 0) // 过滤出剩余库存总和大于 0 的行
+        ?.map((item) => item.id) || []; // 提取 id // 如果 newContent 为 null 或 undefined，则返回空数组
+  },
+  { immediate: true } // 在页面加载时立即执行一次
+);
 
 const stockHealthTip = (value: number = 0, min: number = 0, max: number = Infinity): string => {
   const range = max - min;
@@ -303,7 +339,7 @@ const columns: StrictTableColumnsType<BasicInventory> = [
 const innerColumns: TableColumnsType<BasicInventoryUnit> = [
   // { title: "库存单元名", dataIndex: "title", key: "title" },
   {
-    title: "批次号/序列号",
+    title: "序列号/批次号",
     key: "identity",
     customRender: ({ record }) => {
       switch (record.type) {

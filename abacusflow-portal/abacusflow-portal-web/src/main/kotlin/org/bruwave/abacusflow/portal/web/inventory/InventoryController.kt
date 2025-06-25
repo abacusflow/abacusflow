@@ -22,6 +22,7 @@ class InventoryController(
         productCategoryId: Long?,
         productName: String?,
         productType: ProductTypeVO?,
+        inventoryUnitCode: String?,
         depotName: String?,
     ): ResponseEntity<ListInventoriesPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
@@ -32,6 +33,7 @@ class InventoryController(
                 productCategoryId,
                 productName,
                 productType?.name?.uppercase(),
+                inventoryUnitCode,
                 depotName,
             ).map { it.toBasicVO() }
 

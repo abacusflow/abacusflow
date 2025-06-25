@@ -11,6 +11,7 @@ interface InventoryQueryService {
         productCategoryId: Long?,
         productName: String?,
         productType: String?,
+        inventoryUnitCode: String?,
         depotName: String?,
     ): Page<BasicInventoryTO>
 
