@@ -47,8 +47,9 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY_UNIT.PURCHASE_ORDER_ID,
                     INVENTORY_UNIT.SALE_ORDER_IDS,
                     DEPOTS.NAME,
+                    INVENTORY_UNIT.INITIAL_QUANTITY,
                     INVENTORY_UNIT.QUANTITY,
-                    INVENTORY_UNIT.REMAINING_QUANTITY,
+                    INVENTORY_UNIT.FROZEN_QUANTITY,
                     INVENTORY_UNIT.UNIT_PRICE,
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORIES.PRODUCT_ID,
@@ -76,8 +77,9 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY_UNIT.PURCHASE_ORDER_ID,
                     INVENTORY_UNIT.SALE_ORDER_IDS,
                     DEPOTS.NAME,
+                    INVENTORY_UNIT.INITIAL_QUANTITY,
                     INVENTORY_UNIT.QUANTITY,
-                    INVENTORY_UNIT.REMAINING_QUANTITY,
+                    INVENTORY_UNIT.FROZEN_QUANTITY,
                     INVENTORY_UNIT.UNIT_PRICE,
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORY_UNIT.STATUS,
@@ -102,8 +104,9 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY_UNIT.UNIT_TYPE,
                     INVENTORY_UNIT.INVENTORY_ID,
                     INVENTORY_UNIT.PURCHASE_ORDER_ID,
+                    INVENTORY_UNIT.INITIAL_QUANTITY,
                     INVENTORY_UNIT.QUANTITY,
-                    INVENTORY_UNIT.REMAINING_QUANTITY,
+                    INVENTORY_UNIT.FROZEN_QUANTITY,
                     INVENTORY_UNIT.UNIT_PRICE,
                     INVENTORY_UNIT.DEPOT_ID,
                     INVENTORY_UNIT.STATUS,
@@ -175,6 +178,9 @@ class InventoryUnitQueryServiceImpl(
             this.get("sale_order_nos", Array<UUID>::class.java)
                 ?.toList() ?: emptyList()
 
+        val quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L
+        val frozenQuantity = this[INVENTORY_UNIT.FROZEN_QUANTITY] ?: 0L
+
         return BasicInventoryUnitTO(
             id = id,
             title = title,
@@ -182,8 +188,9 @@ class InventoryUnitQueryServiceImpl(
             purchaseOrderNo = this[PURCHASE_ORDERS.NO]!!,
             saleOrderNos = saleOrderNos,
             depotName = this[DEPOTS.NAME],
-            quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L,
-            remainingQuantity = this[INVENTORY_UNIT.REMAINING_QUANTITY] ?: 0L,
+            initialQuantity = this[INVENTORY_UNIT.INITIAL_QUANTITY] ?: 0L,
+            quantity = quantity,
+            remainingQuantity = quantity - frozenQuantity,
             unitPrice = this[INVENTORY_UNIT.UNIT_PRICE] ?: BigDecimal.ZERO,
             receivedAt = this[INVENTORY_UNIT.RECEIVED_AT]?.toInstant() ?: Instant.EPOCH,
             batchCode = this[INVENTORY_UNIT.BATCH_CODE],
@@ -194,6 +201,10 @@ class InventoryUnitQueryServiceImpl(
 
     fun Record.toInventoryUnitTO(): InventoryUnitTO {
         val unitType: InventoryUnit.UnitType = InventoryUnit.UnitType.valueOf(this[INVENTORY_UNIT.UNIT_TYPE]!!)
+
+        val quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L
+        val frozenQuantity = this[INVENTORY_UNIT.FROZEN_QUANTITY] ?: 0L
+
         return InventoryUnitTO(
             id = this[INVENTORY_UNIT.ID] ?: throw NoSuchElementException("InventoryUnit ID is missing"),
             type = unitType.name,
@@ -201,8 +212,9 @@ class InventoryUnitQueryServiceImpl(
             purchaseOrderId =
                 this[INVENTORY_UNIT.PURCHASE_ORDER_ID]
                     ?: throw NoSuchElementException("Purchase Order ID is missing"),
-            quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L,
-            remainingQuantity = this[INVENTORY_UNIT.REMAINING_QUANTITY] ?: 0L,
+            initialQuantity = this[INVENTORY_UNIT.INITIAL_QUANTITY] ?: 0L,
+            quantity = quantity,
+            remainingQuantity = quantity - frozenQuantity,
             unitPrice = this[INVENTORY_UNIT.UNIT_PRICE] ?: BigDecimal.ZERO,
             depotId = this[INVENTORY_UNIT.DEPOT_ID],
             status = this[INVENTORY_UNIT.STATUS] ?: "UNKNOWN",

@@ -100,8 +100,9 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.PURCHASE_ORDER_ID,
                     PURCHASE_ORDERS.NO,
                     DEPOTS.NAME,
+                    INVENTORY_UNIT.INITIAL_QUANTITY,
                     INVENTORY_UNIT.QUANTITY,
-                    INVENTORY_UNIT.REMAINING_QUANTITY,
+                    INVENTORY_UNIT.FROZEN_QUANTITY,
                     INVENTORY_UNIT.UNIT_PRICE,
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORY_UNIT.BATCH_CODE,
@@ -130,8 +131,9 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.PURCHASE_ORDER_ID,
                     PURCHASE_ORDERS.NO,
                     DEPOTS.NAME,
+                    INVENTORY_UNIT.INITIAL_QUANTITY,
                     INVENTORY_UNIT.QUANTITY,
-                    INVENTORY_UNIT.REMAINING_QUANTITY,
+                    INVENTORY_UNIT.FROZEN_QUANTITY,
                     INVENTORY_UNIT.UNIT_PRICE,
                     INVENTORY_UNIT.RECEIVED_AT,
                     INVENTORY_UNIT.BATCH_CODE,
@@ -154,11 +156,16 @@ class InventoryQueryServiceImpl(
 
                 val productType: Product.ProductType = Product.ProductType.valueOf(first[PRODUCTS.TYPE]!!)
 
+                val quantity = group.mapNotNull { it[INVENTORY_UNIT.QUANTITY] }.sumOf { it }
+                val frozenQuantity = group.mapNotNull { it[INVENTORY_UNIT.FROZEN_QUANTITY] }.sumOf { it }
+
                 BasicInventoryTO(
                     id = first[INVENTORIES.ID]!!,
                     productName = first[PRODUCTS.NAME] ?: "[未知产品]",
                     productType = productType.name,
-                    quantity = group.mapNotNull { it[INVENTORY_UNIT.REMAINING_QUANTITY] }.sumOf { it },
+                    quantity = group.mapNotNull { it[INVENTORY_UNIT.QUANTITY] }.sumOf { it },
+                    initialQuantity = group.mapNotNull { it[INVENTORY_UNIT.INITIAL_QUANTITY] }.sumOf { it },
+                    remainingQuantity = quantity - frozenQuantity,
                     depotNames = group.mapNotNull { it[DEPOTS.NAME] },
                     safetyStock = first[INVENTORIES.SAFETY_STOCK],
                     maxStock = first[INVENTORIES.MAX_STOCK],
@@ -213,6 +220,9 @@ class InventoryQueryServiceImpl(
             this.get("sale_order_nos", Array<UUID>::class.java)
                 ?.toList() ?: emptyList()
 
+        val quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L
+        val frozenQuantity = this[INVENTORY_UNIT.FROZEN_QUANTITY] ?: 0L
+
         return BasicInventoryUnitTO(
             id = id,
             title = title,
@@ -220,8 +230,9 @@ class InventoryQueryServiceImpl(
             purchaseOrderNo = this[PURCHASE_ORDERS.NO]!!,
             saleOrderNos = saleOrderNos,
             depotName = this[DEPOTS.NAME],
-            quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L,
-            remainingQuantity = this[INVENTORY_UNIT.REMAINING_QUANTITY] ?: 0L,
+            initialQuantity = this[INVENTORY_UNIT.INITIAL_QUANTITY] ?: 0L,
+            quantity = quantity,
+            remainingQuantity = quantity - frozenQuantity,
             unitPrice = this[INVENTORY_UNIT.UNIT_PRICE] ?: BigDecimal.ZERO,
             receivedAt = this[INVENTORY_UNIT.RECEIVED_AT]?.toInstant() ?: Instant.EPOCH,
             batchCode = this[INVENTORY_UNIT.BATCH_CODE],

@@ -324,15 +324,22 @@ const columns: StrictTableColumnsType<BasicInventory> = [
     key: "productType",
     customRender: ({ text }) => translateProductType(text)
   },
+  {
+    title: "可用总库存数量",
+    dataIndex: "remainingQuantity",
+    key: "remainingQuantity",
+    customRender: ({ text }) => {
+      return h(Tag, () => text.toString());
+    }
+  },
   { title: "总库存数量", dataIndex: "quantity", key: "quantity" },
+  { title: "初始总库存数量", dataIndex: "initialQuantity", key: "initialQuantity" },
   {
     title: "存储点",
     dataIndex: "depotNames",
     key: "depotNames",
     customRender: ({ text }) => (Array.isArray(text) ? text.join(", ") : "-")
   },
-  { title: "安全库存预警线", dataIndex: "safetyStock", key: "safetyStock" },
-  { title: "最大库存预警线", dataIndex: "maxStock", key: "maxStock" },
   { title: "操作", key: "action" }
 ];
 
@@ -353,16 +360,24 @@ const innerColumns: TableColumnsType<BasicInventoryUnit> = [
     }
   },
   { title: "储存点", dataIndex: "depotName", key: "depotName" },
-  { title: "数量", dataIndex: "quantity", key: "quantity" },
   {
-    title: "剩余数量",
+    title: "可用库存数量",
     dataIndex: "remainingQuantity",
     key: "remainingQuantity",
+    customRender: ({ text }) => {
+      return h(Tag, () => text.toString());
+    }
+  },
+  {
+    title: "库存数量",
+    dataIndex: "quantity",
+    key: "quantity",
     customRender: ({ text, record }) => {
       const color = text === 0 ? "red" : text < record.remainingQuantity ? "orange" : "green";
       return h(Tag, { color }, () => text.toString());
     }
   },
+  { title: "初始库存数量", dataIndex: "initialQuantity", key: "initialQuantity" },
   {
     title: "单价",
     dataIndex: "unitPrice",

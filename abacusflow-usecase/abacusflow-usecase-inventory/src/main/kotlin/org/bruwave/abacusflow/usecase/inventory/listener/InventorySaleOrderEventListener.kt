@@ -2,7 +2,9 @@ package org.bruwave.abacusflow.usecase.inventory.listener
 
 import org.bruwave.abacusflow.db.inventory.InventoryUnitRepository
 import org.bruwave.abacusflow.inventory.InventoryUnit
+import org.bruwave.abacusflow.transaction.SaleOrderCanceledEvent
 import org.bruwave.abacusflow.transaction.SaleOrderCompletedEvent
+import org.bruwave.abacusflow.transaction.SaleOrderCreatedEvent
 import org.bruwave.abacusflow.transaction.SaleOrderReversedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -14,6 +16,52 @@ class InventorySaleOrderEventListener(
     private val inventoryUnitRepository: InventoryUnitRepository,
 ) {
     @EventListener
+    fun handleSaleOrderCreatedEvent(event: SaleOrderCreatedEvent) {
+        val order = event.order
+        println("SaleOrder CreatedEvent orderNo: ${order.no}")
+
+        order.items.groupBy { it.inventoryUnitId }.forEach { (inventoryUnitId, inventories) ->
+            val totalQuantity = inventories.sumOf { it.quantity }
+
+            val units =
+                inventoryUnitRepository.findByIdAndStatusIn(
+                    inventoryUnitId,
+                    listOf(
+                        InventoryUnit.InventoryUnitStatus.NORMAL,
+                        InventoryUnit.InventoryUnitStatus.REVERSED
+                    )
+                )
+
+            units.forEach { unit ->
+                unit.reserve(totalQuantity)
+            }
+        }
+    }
+
+    @EventListener
+    fun handleSaleOrderCanceledEvent(event: SaleOrderCanceledEvent) {
+        val order = event.order
+        println("SaleOrder CanceledEvent orderNo: ${order.no}")
+
+        order.items.groupBy { it.inventoryUnitId }.forEach { (inventoryUnitId, inventories) ->
+            val totalQuantity = inventories.sumOf { it.quantity }
+
+            val units =
+                inventoryUnitRepository.findByIdAndStatusIn(
+                    inventoryUnitId,
+                    listOf(
+                        InventoryUnit.InventoryUnitStatus.NORMAL,
+                        InventoryUnit.InventoryUnitStatus.REVERSED
+                    )
+                )
+
+            units.forEach { unit ->
+                unit.release(totalQuantity)
+            }
+        }
+    }
+
+    @EventListener
     fun handleSaleOrderCompletedEvent(event: SaleOrderCompletedEvent) {
         val order = event.order
         println("SaleOrder Completed orderNo: ${order.no}")
@@ -22,9 +70,12 @@ class InventorySaleOrderEventListener(
             val totalQuantity = inventories.sumOf { it.quantity }
 
             val units =
-                inventoryUnitRepository.findByIdAndStatus(
+                inventoryUnitRepository.findByIdAndStatusIn(
                     inventoryUnitId,
-                    InventoryUnit.InventoryUnitStatus.NORMAL,
+                    listOf(
+                        InventoryUnit.InventoryUnitStatus.NORMAL,
+                        InventoryUnit.InventoryUnitStatus.REVERSED
+                    )
                 )
 
             units.forEach { unit ->

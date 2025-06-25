@@ -9,6 +9,7 @@ data class InventoryUnitTO(
     val type: String, // INSTANCE 或 BATCH
     val inventoryId: Long,
     val purchaseOrderId: Long,
+    val initialQuantity: Long,
     val quantity: Long,
     val remainingQuantity: Long,
     val unitPrice: BigDecimal,
