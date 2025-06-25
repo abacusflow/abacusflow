@@ -56,7 +56,6 @@ class Product(
     var category: ProductCategory = category
         private set
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     @field:Size(max = 10000)
     var note: String? = note
