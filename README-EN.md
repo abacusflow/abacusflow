@@ -1,50 +1,51 @@
 # AbacusFlow
 
-**AbacusFlow** 是一个采用领域驱动设计（DDD）的进销存管理平台，聚焦于模块化、高可维护性、可扩展性。
+**AbacusFlow** is a domain-driven design (DDD) based Purchase, Sales, and Inventory (PSI) management platform.
 
 ---
 
-## 📘 平台简介
+## 📘 Platform Overview
 
-AbacusFlow 采用了\*\*领域驱动设计（DDD）\*\*的思想，将业务模型划分为商品、库存、交易、合作伙伴、储存点五大核心领域，便于开发者按业务边界开发与维护。
+AbacusFlow applies domain-driven design principles and divides the system into five core domains: Product, Inventory, Transaction, Partner, and Storage.
 
 ---
 
-## 🗺️ 领域关系示意图
+## 🗺️ Domain Relationship Diagram
 
 ```
-[商品领域] ← 包含 → [库存领域]
-     ↑                    ↑
-     |                    |
-[合作伙伴领域] → 供应/购买 → [交易领域]
-                             ↓
-                      [储存点领域]
+[Product Domain] ← contains → [Inventory Domain]
+       ↑                      ↑
+       |                      |
+[Partner Domain] → supplies/purchases → [Transaction Domain]
+                                 ↓
+                          [Storage Domain]
 ```
 
 ---
 
-## ✅ 设计原则
+## ✅ Design Principles
 
-* **高内聚**（High Cohesion）：每个领域专注单一职责，封装自身的数据和逻辑。
-* **低耦合**（Low Coupling）：各领域仅通过明确定义的接口进行交互，尽可能减少相互依赖。
-* **可扩展**（Extensibility）：可以通过扩展相关领域来添加新功能，而无需修改其他领域。
-* **易维护**（Maintainability）：问题能够被局限在某一领域内，更容易定位和修复，不会对其他领域造成影响。
+* **High Cohesion**: Each domain focuses on a single responsibility, encapsulating its own data and logic.
+* **Low Coupling**: Domains interact only through well-defined interfaces, minimizing interdependencies.
+* **Extensibility**: New features can be added by extending the relevant domain without modifying others.
+* **Maintainability**: Issues can be isolated within a domain, making them easier to locate and fix without side effects.
 
 ---
 
-## 🧩 内置功能模块
+## 🧩 Built-in Features
 
-AbacusFlow 内置模块涵盖典型的进销存场景：
+AbacusFlow provides a range of built-in modules covering common PSI scenarios:
 
-* **仪表盘（Dashboard）**：提供关键业务指标和系统状态的概览。
-* **用户管理（User Management）**：管理系统用户账户和角色，以控制访问权限。
-* **库存管理（Inventory Management）**：管理商品库存数量，支持库存调整和库存预警（支持多仓库）。
-* **交易管理（Transaction Management）**：处理采购与销售业务流程（采购单和销售单的创建、执行与完成）。
-* **产品中心（Product Center）**：管理产品基本信息，包括产品目录、分类和规格。
-* **合作伙伴管理（Partner Management）**：管理业务合作伙伴信息，包括客户和供应商，并关联相关交易记录。
-* **储存点管理（Storage Point Management）**：管理库存存储地点（仓库/储存点），包括库位分配和容量规划。
+* **Dashboard**: Provides an at-a-glance overview of key business metrics and system status.
+* **User Management**: Manage system user accounts and roles to control access.
+* **Inventory Management**: Track product stock levels, adjustments, and alerts across warehouses.
+* **Transaction Management**: Handle purchase and sales processes (purchase orders and sales orders) from creation to completion.
+* **Product Center**: Manage product information, including product catalog, categories, and specifications.
+* **Partner Management**: Manage business partner information, including customers and suppliers, and link them to transaction records.
+* **Storage Point Management**: Manage storage locations (warehouses/depots), including location allocation and capacity planning.
 
-## 演示图
+
+## demo image
 <table>
     <tr>
         <td><img src="https://private-user-images.githubusercontent.com/198292660/458647189-98272286-b03e-45e3-b957-6adbd8c7ead1.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTA4MTcxMDMsIm5iZiI6MTc1MDgxNjgwMywicGF0aCI6Ii8xOTgyOTI2NjAvNDU4NjQ3MTg5LTk4MjcyMjg2LWIwM2UtNDVlMy1iOTU3LTZhZGJkOGM3ZWFkMS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwNjI1JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDYyNVQwMjAwMDNaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT05ZmUyZmJkZTdmMWUzN2U4ZmViNTMzZDRjNjRmZmZiYjkxYWYzM2YxYTcwYmNhN2YwZWY0Y2U4MjBjNTVhOTZmJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.tKTDMLBBvvXU-Bft1YAqiK-0xuayNFnCJ9l_UOYaTdk"/></td>
