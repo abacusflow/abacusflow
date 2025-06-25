@@ -136,7 +136,7 @@ class InventoryUnitQueryServiceImpl(
                 INVENTORY_UNIT.STATUS,
                 INVENTORY_UNIT.BATCH_CODE,
                 INVENTORY_UNIT.SERIAL_NUMBER,
-                PRODUCTS.NAME // 使用 DSL.max() 方法
+                PRODUCTS.NAME
             )
             .distinctOn(INVENTORY_UNIT.ID)  // PostgreSQL 特有语法
             .from(INVENTORY_UNIT)

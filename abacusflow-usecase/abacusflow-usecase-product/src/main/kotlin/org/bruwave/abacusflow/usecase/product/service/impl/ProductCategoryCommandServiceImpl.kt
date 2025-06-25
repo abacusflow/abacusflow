@@ -1,6 +1,7 @@
 package org.bruwave.abacusflow.usecase.product.service.impl
 
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
+import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.ProductCategory
 import org.bruwave.abacusflow.usecase.product.CreateProductCategoryInputTO
 import org.bruwave.abacusflow.usecase.product.ProductCategoryTO
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ProductCategoryCommandServiceImpl(
     private val productCategoryRepository: ProductCategoryRepository,
+    private val productRepository: ProductRepository,
 ) : ProductCategoryCommandService {
     override fun createProductCategory(input: CreateProductCategoryInputTO): ProductCategoryTO {
         val parentCategoryFromInput =
@@ -63,6 +65,9 @@ class ProductCategoryCommandServiceImpl(
             productCategoryRepository
                 .findById(id)
                 .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
+
+        val productCount = productRepository.countProductByCategoryId(id)
+        require(productCount == 0) { "Cannot delete category: $productCount products are still associated" }
 
         productCategoryRepository.delete(category)
         return category.toTO()
