@@ -3,6 +3,9 @@
     <a-space direction="vertical" style="width: 100%">
       <a-flex justify="space-between" align="center">
         <h1>库存管理</h1>
+        <a-button type="primary" @click="handlePrintInventories" style="margin-bottom: 16px">
+          打印库存
+        </a-button>
       </a-flex>
 
       <a-flex justify="flex-start" align="start" style="height: 100%">
@@ -56,57 +59,59 @@
           </a-card>
 
           <a-card :bordered="false">
-            <a-table
-              :columns="columns"
-              :data-source="pageData?.content || []"
-              :loading="isPending"
-              row-key="id"
-              size="small"
-              :pagination="pagination"
-              v-model:expandedRowKeys="expandedRowKeys"
-            >
-              <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'quantity'">
-                  <a-tooltip
-                    :title="stockHealthTip(record.quantity, record.safetyStock, record.maxStock)"
-                  >
-                    <a-tag
-                      :color="
-                        stockHealthColor(record.quantity, record.safetyStock, record.maxStock)
-                      "
+            <div ref="printAreaRef" class="print-area">
+              <a-table
+                :columns="columns"
+                :data-source="pageData?.content || []"
+                :loading="isPending"
+                row-key="id"
+                size="small"
+                :pagination="pagination"
+                v-model:expandedRowKeys="expandedRowKeys"
+              >
+                <template #bodyCell="{ column, record }">
+                  <template v-if="column.key === 'quantity'">
+                    <a-tooltip
+                      :title="stockHealthTip(record.quantity, record.safetyStock, record.maxStock)"
                     >
-                      {{ record.quantity }}
-                    </a-tag>
-                  </a-tooltip>
-                </template>
-
-                <template v-if="column.key === 'action'">
-                  <a-space>
-                    <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
-                      >调整预警线</a-button
-                    >
-                  </a-space>
-                </template>
-              </template>
-
-              <template #expandedRowRender="{ record }">
-                <a-table :columns="innerColumns" :data-source="record.units" :pagination="false">
-                  <template #emptyText>
-                    <p>暂无数据</p>
+                      <a-tag
+                        :color="
+                          stockHealthColor(record.quantity, record.safetyStock, record.maxStock)
+                        "
+                      >
+                        {{ record.quantity }}
+                      </a-tag>
+                    </a-tooltip>
                   </template>
 
-                  <template #bodyCell="{ column, record }">
-                    <template v-if="column.key === 'action'">
-                      <a-space>
-                        <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
-                          >分配储存点</a-button
-                        >
-                      </a-space>
+                  <template v-if="column.key === 'action'">
+                    <a-space>
+                      <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
+                        >调整预警线</a-button
+                      >
+                    </a-space>
+                  </template>
+                </template>
+
+                <template #expandedRowRender="{ record }">
+                  <a-table :columns="innerColumns" :data-source="record.units" :pagination="false">
+                    <template #emptyText>
+                      <p>暂无数据</p>
                     </template>
-                  </template>
-                </a-table>
-              </template>
-            </a-table>
+
+                    <template #bodyCell="{ column, record }">
+                      <template v-if="column.key === 'action'">
+                        <a-space>
+                          <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
+                            >分配储存点</a-button
+                          >
+                        </a-space>
+                      </template>
+                    </template>
+                  </a-table>
+                </template>
+              </a-table>
+            </div>
           </a-card>
         </a-flex>
       </a-flex>
@@ -143,7 +148,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, h, inject, reactive, ref, watch } from "vue";
+import { computed, h, inject, nextTick, reactive, ref, watch } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import {
   type BasicInventory,
@@ -173,6 +178,7 @@ const showEditWarningLine = ref(false);
 const editingInventory = ref<BasicInventory | null>(null);
 const editingInventoryUnit = ref<BasicInventoryUnit | null>(null);
 const expandedRowKeys = ref<number[]>([]);
+const printAreaRef = ref<HTMLElement | null>(null);
 
 const productCategoryId = computed(() => {
   const id = route.query.productCategoryId;
@@ -252,8 +258,19 @@ function handleAdjustWarningLine(inventory: BasicInventory) {
 
 function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
   editingInventoryUnit.value = inventoryUnit;
+
   showAssignDepot.value = true;
 }
+const handlePrintInventories = async () => {
+  await nextTick();
+  const original = document.body.innerHTML;
+  const printContent = printAreaRef.value?.innerHTML ?? "";
+
+  document.body.innerHTML = printContent;
+  window.print();
+  document.body.innerHTML = original;
+  location.reload(); // 恢复原页面（否则会丢失 Vue 控制）
+};
 
 function onCategorySelected(productCategoryId: string | number) {
   router.push({
