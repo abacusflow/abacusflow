@@ -30,9 +30,9 @@ abstract class InventoryUnit(
     @ManyToOne
     open val inventory: Inventory,
     open val purchaseOrderId: Long,
-    // 冗余字段
+    // 初始库存
     @field:PositiveOrZero
-    open val quantity: Long,
+    open val initialQuantity: Long,
     // 冗余字段
     open val unitPrice: BigDecimal,
     depotId: Long?,
@@ -47,8 +47,19 @@ abstract class InventoryUnit(
     open var depotId: Long? = depotId
         protected set
 
-    open var remainingQuantity: Long = quantity
+    // 当前库存
+    @field:PositiveOrZero
+    open var quantity: Long = initialQuantity
         protected set
+
+    // 冻结库存
+    @field:PositiveOrZero
+    open var frozenQuantity: Long = 0
+        protected set
+
+    // 可用库存
+    val remainingQuantity
+        get() = quantity - frozenQuantity
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,7 +94,7 @@ abstract class InventoryUnit(
         require(status in setOf(InventoryUnitStatus.NORMAL, InventoryUnitStatus.REVERSED)) {
             "当前是未出库或已退回状态才可出库"
         }
-        remainingQuantity -= amount
+        quantity -= amount
         saleOrderIdsMutable.add(saleOrderId)
 
         if (remainingQuantity == 0L) {
@@ -108,10 +119,30 @@ abstract class InventoryUnit(
         require(remainingQuantity < quantity) { "当前库存未出库，无需回退" }
         require(remainingQuantity + amount <= quantity) { "库存无法回退，超过原始数量" }
 
-        remainingQuantity += amount
+        quantity += amount
         saleOrderIdsMutable.remove(saleOrderId)
 
         status = InventoryUnitStatus.REVERSED
+
+        updatedAt = Instant.now()
+    }
+
+    // 冻结库存
+    open fun reserve(amount: Int) {
+        require(amount > 0) { "冻结数量必须为正数" }
+        require(amount <= remainingQuantity) { "冻结数量不能超过可用库存" }
+
+        frozenQuantity += amount // 增加冻结库存
+
+        updatedAt = Instant.now()
+    }
+
+    // 解冻库存
+    open fun release(amount: Int) {
+        require(amount > 0) { "解冻数量必须为正数" }
+        require(amount <= frozenQuantity) { "解冻数量不能超过冻结库存" }
+
+        frozenQuantity -= amount // 减少冻结库存
 
         updatedAt = Instant.now()
     }
@@ -134,12 +165,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val serialNumber: String,
     ) : InventoryUnit(
-            inventory = inventory,
-            purchaseOrderId = purchaseOrderId,
-            quantity = 1,
-            depotId = depotId,
-            unitPrice = unitPrice,
-        ) {
+        inventory = inventory,
+        purchaseOrderId = purchaseOrderId,
+        initialQuantity = 1,
+        depotId = depotId,
+        unitPrice = unitPrice,
+    ) {
         val inStock: Boolean
             get() = remainingQuantity == 1L
 
@@ -160,17 +191,18 @@ abstract class InventoryUnit(
     class BatchInventoryUnit(
         inventory: Inventory,
         purchaseOrderId: Long,
-        quantity: Long,
+        initialQuantity: Long,
         depotId: Long?,
         unitPrice: BigDecimal,
         val batchCode: UUID = UUID.randomUUID(),
     ) : InventoryUnit(
-            inventory = inventory,
-            purchaseOrderId = purchaseOrderId,
-            quantity = quantity,
-            unitPrice = unitPrice,
-            depotId = depotId,
-        )
+        inventory = inventory,
+        purchaseOrderId = purchaseOrderId,
+        initialQuantity = initialQuantity,
+        unitPrice = unitPrice,
+        depotId = depotId,
+    )
+
 
     enum class UnitType {
         INSTANCE,

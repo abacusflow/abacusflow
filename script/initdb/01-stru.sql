@@ -52,7 +52,9 @@ create table inventory_unit
     created_at         timestamp(6) with time zone,
     depot_id           bigint,
     purchase_order_id  bigint       not null,
-    quantity           bigint       not null,
+    initial_quantity   bigint not null,  -- 初始库存
+    quantity           bigint not null,  -- 当前库存
+    frozen_quantity    bigint not null,  -- 冻结库存
     received_at        timestamp(6) with time zone,
     remaining_quantity bigint       not null,
     sale_order_ids     bigint[],

@@ -2039,7 +2039,9 @@ components:
         - id
         - productName
         - productType
+        - initialQuantity
         - quantity
+        - remainingQuantity
         - depotNames
         - safetyStock
         - maxStock
@@ -2054,10 +2056,18 @@ components:
           description: 商品名称
         productType:
           $ref: "#/components/schemas/ProductType"
+        initialQuantity:
+          type: integer
+          format: int64
+          description: 初始总库存数量
         quantity:
           type: integer
           format: int64
-          description: 总库存数量
+          description: 现有总库存数量
+        remainingQuantity:
+          type: integer
+          format: int64
+          description: 可用总库存数量
         depotNames:
           description: 存储点列表
           type: array
@@ -2087,6 +2097,7 @@ components:
         - title
         - purchaseOrderNo
         - saleOrderNos
+        - initialQuantity
         - quantity
         - remainingQuantity
         - unitPrice
@@ -2111,12 +2122,18 @@ components:
             format: uuid
         depotName:
           type: string
+        initialQuantity:
+          type: integer
+          format: int64
+          description: 初始库存数量
         quantity:
           type: integer
           format: int64
+          description: 现有库存数量
         remainingQuantity:
           type: integer
           format: int64
+          description: 可用库存数量
         unitPrice:
           type: number
           format: double
@@ -2138,6 +2155,7 @@ components:
         - unitType
         - inventoryId
         - purchaseOrderId
+        - initialQuantity
         - quantity
         - remainingQuantity
         - unitPrice
@@ -2156,12 +2174,18 @@ components:
         purchaseOrderId:
           type: integer
           format: int64
+        initialQuantity:
+          type: integer
+          format: int64
+          description: 初始库存数量
         quantity:
           type: integer
           format: int64
+          description: 现有库存数量
         remainingQuantity:
           type: integer
           format: int64
+          description: 可用库存数量
         unitPrice:
           type: number
           format: double

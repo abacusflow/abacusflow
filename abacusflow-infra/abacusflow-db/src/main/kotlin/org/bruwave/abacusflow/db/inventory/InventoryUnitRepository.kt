@@ -11,9 +11,9 @@ interface InventoryUnitRepository : JpaRepository<InventoryUnit, Long> {
 
     fun findByInventoryProductId(productId: Long): List<InventoryUnit>
 
-    fun findByIdAndStatus(
+    fun findByIdAndStatusIn(
         id: Long,
-        status: InventoryUnit.InventoryUnitStatus,
+        statuses: List<InventoryUnit.InventoryUnitStatus>
     ): List<InventoryUnit>
 
     fun findByDepotId(depotId: Long): List<InventoryUnit>

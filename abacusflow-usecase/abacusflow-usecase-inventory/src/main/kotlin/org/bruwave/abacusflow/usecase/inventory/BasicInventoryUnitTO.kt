@@ -12,6 +12,7 @@ data class BasicInventoryUnitTO(
     val purchaseOrderNo: UUID,
     val saleOrderNos: List<UUID>,
     val depotName: String?,
+    val initialQuantity: Long,
     val quantity: Long,
     val remainingQuantity: Long,
     val unitPrice: BigDecimal,

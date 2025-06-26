@@ -41,7 +41,7 @@ class InventoryPurchaseOrderEventListener(
                                 InventoryUnit.BatchInventoryUnit(
                                     inventory,
                                     purchaseOrderId = order.id,
-                                    quantity = sumQuantity,
+                                    initialQuantity = sumQuantity,
                                     unitPrice = simpleProduct.unitPrice,
                                     depotId = null,
                                 ),
@@ -89,7 +89,7 @@ class InventoryPurchaseOrderEventListener(
 
             when (unit.status) {
                 InventoryUnit.InventoryUnitStatus.NORMAL -> {
-                    require(unit.quantity == unit.remainingQuantity) { "库存单元 ${unit.id} 已部分出库，无法撤回" }
+                    require(unit.initialQuantity == unit.remainingQuantity) { "库存单元 ${unit.id} 已部分出库，无法撤回" }
                 }
 
                 InventoryUnit.InventoryUnitStatus.CONSUMED ->
@@ -99,7 +99,7 @@ class InventoryPurchaseOrderEventListener(
                     throw RuntimeException("库存单元 ${unit.id} 已取消，无法撤回")
 
                 InventoryUnit.InventoryUnitStatus.REVERSED -> {
-                    require(unit.quantity == unit.remainingQuantity) { "库存单元 ${unit.id} 已部分出库，无法撤回" }
+                    require(unit.initialQuantity == unit.remainingQuantity) { "库存单元 ${unit.id} 已部分出库，无法撤回" }
                 }
             }
         }
