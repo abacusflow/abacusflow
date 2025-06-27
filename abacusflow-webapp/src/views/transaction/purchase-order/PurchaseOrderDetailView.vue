@@ -35,9 +35,9 @@
           :key="index"
           style="margin-bottom: 12px; border: 1px dashed #ccc; padding: 12px; border-radius: 6px"
         >
-          <!-- 商品名称 -->
+          <!-- 产品名称 -->
           <a-form-item
-            label="商品名称"
+            label="产品名称"
             :name="['orderItems', index, 'productId']"
             :rules="[{ required: true, message: '请选择产品' }]"
           >

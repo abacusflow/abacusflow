@@ -37,8 +37,8 @@
                 />
               </a-form-item>
 
-              <a-form-item label="商品类型" name="productType">
-                <a-select v-model:value="searchForm.productType" placeholder="请选择商品类型">
+              <a-form-item label="产品类型" name="productType">
+                <a-select v-model:value="searchForm.productType" placeholder="请选择产品类型">
                   <a-select-option
                     v-for="value in Object.values(ProductType)"
                     :key="value"
@@ -162,7 +162,7 @@ import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
 import { translateProductType } from "@/util/productUtils";
-import { type TableColumnsType, Tag } from "ant-design-vue";
+import { Row, type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -334,12 +334,23 @@ const stockHealthColor = (value: number = 0, min: number = 0, max: number = Infi
 };
 
 const columns: StrictTableColumnsType<BasicInventory> = [
-  { title: "商品名称", dataIndex: "productName", key: "productName" },
+  { title: "产品名称", dataIndex: "productName", key: "productName" },
+  { title: "产品规格", dataIndex: "productSpecification", key: "productSpecification" },
   {
-    title: "商品类型",
+    title: "产品类型",
     dataIndex: "productType",
     key: "productType",
     customRender: ({ text }) => translateProductType(text)
+  },
+  {
+    title: "产品备注",
+    dataIndex: "productNote",
+    key: "productNote",
+    width: 120,
+    ellipsis: true,
+    customRender: ({ text }) => {
+      return h(Tooltip, { title: text, placement: "topLeft" }, () => text);
+    }
   },
   {
     title: "可用总库存数量",
@@ -407,12 +418,26 @@ const innerColumns: TableColumnsType<BasicInventoryUnit> = [
     key: "receivedAt",
     customRender: ({ text }) => new Date(text).toLocaleString("zh-CN")
   },
-  { title: "采购单号", dataIndex: "purchaseOrderNo", key: "purchaseOrderNo" },
+  {
+    title: "采购单号",
+    dataIndex: "purchaseOrderNo",
+    key: "purchaseOrderNo",
+    width: 120,
+    ellipsis: true,
+    customRender: ({ text }) => {
+      return h(Tooltip, { title: text, placement: "topLeft" }, () => text);
+    }
+  },
   {
     title: "销售单号",
     dataIndex: "saleOrderNos",
     key: "saleOrderNos",
-    customRender: ({ text }) => text?.join(", ") ?? "-"
+    width: 120,
+    ellipsis: true,
+    customRender: ({ text }) => {
+      const content = text?.join(", ") ?? "-";
+      return h(Tooltip, { title: content, placement: "topLeft" }, () => content);
+    }
   },
   { title: "操作", key: "action" }
 ];

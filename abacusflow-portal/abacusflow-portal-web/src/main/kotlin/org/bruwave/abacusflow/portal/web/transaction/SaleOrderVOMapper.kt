@@ -19,6 +19,7 @@ fun BasicSaleOrderTO.toBasicVO(): BasicSaleOrderVO =
         totalQuantity = totalQuantity,
         itemCount = itemCount,
         orderDate = orderDate,
+        createdAt = createdAt.toEpochMilli(),
         autoCompleteDate = autoCompleteDate,
     )
 

@@ -17,6 +17,7 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.math.BigDecimal
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
@@ -60,6 +61,10 @@ class PurchaseOrder(
 
     fun cancelOrder() {
         require(status == OrderStatus.PENDING) { "只有待处理订单才能取消" }
+        require(createdAt.plus(Duration.ofDays(7)).isAfter(Instant.now())) {
+            "订单创建超过 7 天，无法进行任何操作"
+        }
+
         status = OrderStatus.CANCELED
         updatedAt = Instant.now()
 
@@ -68,6 +73,10 @@ class PurchaseOrder(
 
     fun reverseOrder() {
         require(status == OrderStatus.COMPLETED) { "只有已完成订单才能撤回" }
+        require(createdAt.plus(Duration.ofDays(7)).isAfter(Instant.now())) {
+            "订单创建超过 7 天，无法进行任何操作"
+        }
+
         status = OrderStatus.REVERSED
         updatedAt = Instant.now()
 

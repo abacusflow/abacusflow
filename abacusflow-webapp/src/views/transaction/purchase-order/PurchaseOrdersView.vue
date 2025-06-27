@@ -110,16 +110,14 @@
                   title="确定撤回该采购单？"
                   @confirm="handleReversePurchaseOrder(record.id)"
                   :disabled="
-                    record.status !== OrderStatus.completed &&
-                    record.status !== OrderStatus.canceled
+                    record.status !== OrderStatus.completed || !isWithinDays(record.createdAt, 7)
                   "
                 >
                   <a-button
                     type="link"
                     shape="circle"
                     :disabled="
-                      record.status !== OrderStatus.completed &&
-                      record.status !== OrderStatus.canceled
+                      record.status !== OrderStatus.completed || !isWithinDays(record.createdAt, 7)
                     "
                   >
                     撤回订单
@@ -133,7 +131,7 @@
     </a-space>
     <a-drawer
       title="新增采购单"
-      width="500"
+      width="550"
       :open="showAdd"
       :closable="false"
       @close="showAdd = false"
@@ -143,7 +141,7 @@
 
     <a-drawer
       title="查看采购单详情"
-      width="500"
+      width="550"
       :open="showEdit"
       :closable="false"
       @close="showEdit = false"
@@ -172,7 +170,7 @@ import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
 import dayjs from "dayjs";
-import { dateToFormattedString } from "@/util/timestampUtils";
+import { dateToFormattedString, isWithinDays } from "@/util/timestampUtils";
 import { translateOrderStatus } from "@/util/orderUtil";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
@@ -363,12 +361,18 @@ const columns: StrictTableColumnsType<BasicPurchaseOrder> = [
     dataIndex: "totalQuantity",
     key: "totalQuantity"
   },
-  { title: "商品种类数", dataIndex: "itemCount", key: "itemCount" },
+  { title: "产品种类数", dataIndex: "itemCount", key: "itemCount" },
   {
     title: "订单日期",
     dataIndex: "orderDate",
     key: "orderDate",
     customRender: ({ record }) => dateToFormattedString(record.orderDate, "YYYY-MM-DD")
+  },
+  {
+    title: "订单创建时间",
+    dataIndex: "createdAt",
+    key: "createdAt",
+    customRender: ({ record }) => new Date(record.createdAt).toLocaleString("zh-CN")
   },
   { title: "自动完成天数", dataIndex: "autoCompleteDate", key: "autoCompleteDate" },
   { title: "操作", key: "action" }

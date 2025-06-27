@@ -94,6 +94,8 @@ class InventoryQueryServiceImpl(
                     INVENTORIES.SAFETY_STOCK,
                     INVENTORIES.MAX_STOCK,
                     PRODUCTS.NAME,
+                    PRODUCTS.SPECIFICATION,
+                    PRODUCTS.NOTE,
                     PRODUCTS.TYPE,
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
@@ -125,6 +127,8 @@ class InventoryQueryServiceImpl(
                     INVENTORIES.SAFETY_STOCK,
                     INVENTORIES.MAX_STOCK,
                     PRODUCTS.NAME,
+                    PRODUCTS.SPECIFICATION,
+                    PRODUCTS.NOTE,
                     PRODUCTS.TYPE,
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
@@ -161,7 +165,9 @@ class InventoryQueryServiceImpl(
 
                 BasicInventoryTO(
                     id = first[INVENTORIES.ID]!!,
-                    productName = first[PRODUCTS.NAME] ?: "[未知产品]",
+                    productName = first[PRODUCTS.NAME]!!,
+                    productSpecification = first[PRODUCTS.SPECIFICATION],
+                    productNote = first[PRODUCTS.NOTE],
                     productType = productType.name,
                     quantity = group.mapNotNull { it[INVENTORY_UNIT.QUANTITY] }.sumOf { it },
                     initialQuantity = group.mapNotNull { it[INVENTORY_UNIT.INITIAL_QUANTITY] }.sumOf { it },

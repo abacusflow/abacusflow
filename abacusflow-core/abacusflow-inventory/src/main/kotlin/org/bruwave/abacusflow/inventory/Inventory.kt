@@ -20,7 +20,7 @@ import java.time.Instant
 )
 class Inventory(
     @Column(name = "product_id", nullable = false)
-    val productId: Long, // 通过ID关联商品
+    val productId: Long, // 通过ID关联产品
 ) : AbstractAggregateRoot<Inventory>() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +34,6 @@ class Inventory(
     @field:PositiveOrZero
     var maxStock: Long = 10 // 安全库存量
         private set
-
-//    @OneToMany(mappedBy = "inventory", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-//    val unitsMutable: MutableList<InventoryUnit> = mutableListOf()
-//
-//    val units: List<InventoryUnit>
-//        get() = unitsMutable.toList()
 
     @CreationTimestamp
     val createdAt: Instant = Instant.now()

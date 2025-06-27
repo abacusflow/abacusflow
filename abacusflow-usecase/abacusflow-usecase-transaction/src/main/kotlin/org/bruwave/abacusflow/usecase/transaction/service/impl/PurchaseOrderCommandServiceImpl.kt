@@ -7,11 +7,9 @@ import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.transaction.PurchaseOrder
 import org.bruwave.abacusflow.transaction.PurchaseOrderItem
 import org.bruwave.abacusflow.transaction.TransactionProductType
-import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseItemInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
-import org.bruwave.abacusflow.usecase.transaction.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
 import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderCommandService
 import org.springframework.stereotype.Service
@@ -47,24 +45,6 @@ class PurchaseOrderCommandServiceImpl(
             )
 
         return purchaseOrderRepository.save(purchaseOrder).toTO()
-    }
-
-    override fun getPurchaseOrder(id: Long): PurchaseOrderTO =
-        purchaseOrderRepository
-            .findById(id)
-            .orElseThrow { NoSuchElementException("PurchaseOrder not found") }
-            .toTO()
-
-    override fun listPurchaseOrders(): List<BasicPurchaseOrderTO> {
-        val orders = purchaseOrderRepository.findAll()
-        val supplierIds = orders.mapNotNull { it.supplierId }.toSet()
-        val supplierMap = supplierRepository.findAllById(supplierIds).associateBy { it.id }
-
-        return orders.map { order ->
-            val supplierName = supplierMap[order.supplierId]?.name ?: "unknown"
-
-            order.toBasicTO(supplierName)
-        }
     }
 
     override fun completeOrder(id: Long): PurchaseOrderTO {

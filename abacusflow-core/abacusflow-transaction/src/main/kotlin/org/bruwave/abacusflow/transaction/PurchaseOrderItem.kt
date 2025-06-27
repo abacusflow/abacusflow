@@ -15,7 +15,7 @@ import java.math.BigDecimal
 @Table(name = "purchase_order_items")
 class PurchaseOrderItem(
     val productId: Long,
-    // 冗余字段：产品类型（用于区分资产类或普通商品）
+    // 冗余字段：产品类型（用于区分资产类或普通产品）
     @Enumerated(EnumType.STRING)
     val productType: TransactionProductType,
     @field:Positive
@@ -31,13 +31,13 @@ class PurchaseOrderItem(
     init {
         when (productType) {
             TransactionProductType.MATERIAL -> {
-                // 对于普通商品，productInstanceId 应为空
+                // 对于普通产品，productInstanceId 应为空
             }
 
             TransactionProductType.ASSET -> {
                 // 对于资产类，必须只有一个
-                require(quantity == 1) { "资产类商品数量只能为 1" }
-                requireNotNull(serialNumber) { "资产类商品必须指定 sn" }
+                require(quantity == 1) { "资产类产品数量只能为 1" }
+                requireNotNull(serialNumber) { "资产类产品必须指定 sn" }
             }
         }
     }

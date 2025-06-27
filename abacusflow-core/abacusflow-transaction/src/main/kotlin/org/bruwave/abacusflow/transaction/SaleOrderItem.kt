@@ -17,7 +17,7 @@ import java.math.BigDecimal
 @Table(name = "sale_order_items")
 class SaleOrderItem(
     val inventoryUnitId: Long,
-    // 冗余字段：产品类型（用于区分资产类或普通商品）
+    // 冗余字段：产品类型（用于区分资产类或普通产品）
     @Enumerated(EnumType.STRING)
     val inventoryUnitType: TransactionInventoryUnitType,
     @field:Positive
@@ -40,7 +40,7 @@ class SaleOrderItem(
 
             TransactionInventoryUnitType.INSTANCE -> {
                 // 对于实例类库存单元，一次只能销售一个
-                require(quantity == 1) { "资产类商品数量只能为 1" }
+                require(quantity == 1) { "资产类产品数量只能为 1" }
             }
         }
     }

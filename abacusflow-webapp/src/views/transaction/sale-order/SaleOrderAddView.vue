@@ -30,7 +30,7 @@
         :key="index"
         style="margin-bottom: 12px; border: 1px dashed #ccc; padding: 12px; border-radius: 6px"
       >
-        <!-- 商品名称 -->
+        <!-- 产品名称 -->
         <a-form-item
           label="库存产品"
           :name="['orderItems', index, 'inventoryUnitId']"
@@ -113,11 +113,11 @@
         </a-form-item>
 
         <!-- 删除按钮 -->
-        <a-button danger type="link" @click="removeOrderItem(index)"> 删除该商品 </a-button>
+        <a-button danger type="link" @click="removeOrderItem(index)"> 删除该产品 </a-button>
       </div>
 
       <!-- 添加一项 -->
-      <a-button type="dashed" block @click="addOrderItem"> 添加商品明细 </a-button>
+      <a-button type="dashed" block @click="addOrderItem"> 添加产品明细 </a-button>
     </a-form-item>
 
     <a-form-item label="备注" name="note">

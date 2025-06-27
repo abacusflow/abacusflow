@@ -20,6 +20,8 @@ fun BasicInventoryTO.toBasicVO(): BasicInventoryVO =
     BasicInventoryVO(
         id = id,
         productName = productName,
+        productSpecification = productSpecification,
+        productNote = productNote,
         productType = mapProductTypeTOtoVO(productType),
         initialQuantity = initialQuantity,
         quantity = quantity,

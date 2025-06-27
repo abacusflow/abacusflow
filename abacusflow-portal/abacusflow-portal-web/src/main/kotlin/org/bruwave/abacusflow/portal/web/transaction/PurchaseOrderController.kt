@@ -48,7 +48,7 @@ class PurchaseOrderController(
     }
 
     override fun getPurchaseOrder(id: Long): ResponseEntity<PurchaseOrderVO> {
-        val order = purchaseOrderCommandService.getPurchaseOrder(id)
+        val order = purchaseOrderQueryService.getPurchaseOrder(id)
         return ResponseEntity.ok(
             order.toVO(),
         )

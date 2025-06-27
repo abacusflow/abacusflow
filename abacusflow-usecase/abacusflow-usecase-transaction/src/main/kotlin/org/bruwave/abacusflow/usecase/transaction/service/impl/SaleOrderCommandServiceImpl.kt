@@ -7,11 +7,9 @@ import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.transaction.SaleOrder
 import org.bruwave.abacusflow.transaction.SaleOrderItem
 import org.bruwave.abacusflow.transaction.TransactionInventoryUnitType
-import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreateSaleOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.SaleItemInputTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
-import org.bruwave.abacusflow.usecase.transaction.mapper.toBasicTO
 import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
 import org.bruwave.abacusflow.usecase.transaction.service.SaleOrderCommandService
 import org.springframework.stereotype.Service
@@ -48,24 +46,6 @@ class SaleOrderCommandServiceImpl(
             )
 
         return saleOrderRepository.save(saleOrder).toTO()
-    }
-
-    override fun getSaleOrder(id: Long): SaleOrderTO =
-        saleOrderRepository
-            .findById(id)
-            .orElseThrow { NoSuchElementException("SaleOrder not found") }
-            .toTO()
-
-    override fun listSaleOrders(): List<BasicSaleOrderTO> {
-        val oreders = saleOrderRepository.findAll()
-        val customerIds = oreders.mapNotNull { it.customerId }.toSet()
-        val customerMap = customerRepository.findAllById(customerIds).associateBy { it.id }
-
-        return oreders.map { order ->
-            val supplierName = customerMap[order.customerId]?.name ?: "unknown"
-
-            order.toBasicTO(supplierName)
-        }
     }
 
     override fun completeOrder(id: Long): SaleOrderTO {

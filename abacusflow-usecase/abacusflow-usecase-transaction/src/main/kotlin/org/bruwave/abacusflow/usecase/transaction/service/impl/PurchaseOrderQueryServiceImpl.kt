@@ -4,6 +4,7 @@ import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEMS
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIERS
 import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.util.UUID
 
 @Service
@@ -97,8 +99,13 @@ class PurchaseOrderQueryServiceImpl(
                 .fetch()
                 .map {
                     val status = it[PURCHASE_ORDERS.STATUS]!!
-                    val orderDate = it[PURCHASE_ORDERS.ORDER_DATE]!!
-                    val autoCompleteDate = if (status == OrderStatus.PENDING.name) orderDate.plusDays(7) else null
+                    val createdAt = it[PURCHASE_ORDERS.CREATED_AT]!!
+                    val autoCompleteDate: LocalDate? =
+                        if (status == OrderStatus.PENDING.name) {
+                            createdAt.plusDays(7).toLocalDate()
+                        } else {
+                            null
+                        }
 
                     BasicPurchaseOrderTO(
                         id = it[PURCHASE_ORDERS.ID]!!,
