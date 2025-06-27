@@ -22,28 +22,6 @@ fun SaleOrder.toTO() =
         note = note,
     )
 
-fun SaleOrder.toBasicTO(customerName: String): BasicSaleOrderTO {
-    val autoCompleteDate: LocalDate? =
-        if (status == OrderStatus.PENDING) {
-            createdAt.plus(7, ChronoUnit.DAYS).atZone(ZoneId.systemDefault()).toLocalDate()
-        } else {
-            null
-        }
-
-    return BasicSaleOrderTO(
-        id = id,
-        status = status.name,
-        itemCount = items.count(),
-        orderNo = no,
-        customerName = customerName,
-        totalAmount = totalAmount,
-        totalQuantity = totalQuantity,
-        orderDate = orderDate,
-        createdAt = createdAt,
-        autoCompleteDate = autoCompleteDate,
-    )
-}
-
 fun SaleOrderItem.toTO() =
     SaleOrderTO.SaleOrderItemTO(
         id = id,

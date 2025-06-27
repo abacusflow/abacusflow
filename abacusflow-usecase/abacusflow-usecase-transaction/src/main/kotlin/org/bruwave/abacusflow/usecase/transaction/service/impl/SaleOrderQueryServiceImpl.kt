@@ -18,6 +18,9 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @Service
@@ -94,15 +97,21 @@ class SaleOrderQueryServiceImpl(
                 .fetch()
                 .map {
                     val status = it[SALE_ORDERS.STATUS]!!
-                    val orderDate = it[SALE_ORDERS.ORDER_DATE]!!
-                    val autoCompleteDate = if (status == OrderStatus.PENDING.name) orderDate.plusDays(7) else null
+                    val createdAt = it[SALE_ORDERS.CREATED_AT]!!
+
+                    val autoCompleteDate: LocalDate? =
+                        if (status == OrderStatus.PENDING.name) {
+                            createdAt.plusDays(7).toLocalDate()
+                        } else {
+                            null
+                        }
 
                     BasicSaleOrderTO(
                         id = it[SALE_ORDERS.ID]!!,
                         orderNo = it[SALE_ORDERS.NO]!!,
                         customerName = it[CUSTOMERS.NAME] ?: "unknown",
                         status = status,
-                        orderDate = orderDate,
+                        orderDate = it[SALE_ORDERS.ORDER_DATE]!!,
                         createdAt = it[SALE_ORDERS.CREATED_AT]!!.toInstant(),
                         totalAmount = it.get("total_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
                         totalQuantity = it.get("total_quantity", Long::class.java) ?: 0L,

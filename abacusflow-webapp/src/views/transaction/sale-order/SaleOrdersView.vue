@@ -111,16 +111,14 @@
                   title="确定撤回该销售单？"
                   @confirm="handleReverseSaleOrder(record.id)"
                   :disabled="
-                    record.status !== OrderStatus.completed &&
-                    record.status !== OrderStatus.canceled
+                    record.status !== OrderStatus.completed || !isWithinDays(record.createdAt, 7)
                   "
                 >
                   <a-button
                     type="link"
                     shape="circle"
                     :disabled="
-                      record.status !== OrderStatus.completed &&
-                      record.status !== OrderStatus.canceled
+                      record.status !== OrderStatus.completed || !isWithinDays(record.createdAt, 7)
                     "
                   >
                     撤回订单
@@ -173,7 +171,7 @@ import SaleOrderEditView from "./SaleOrderDetailView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import { message } from "ant-design-vue";
 import dayjs from "dayjs";
-import { dateToFormattedString } from "@/util/timestampUtils";
+import { dateToFormattedString, isWithinDays } from "@/util/timestampUtils";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();

@@ -48,7 +48,7 @@ class SaleOrderController(
     }
 
     override fun getSaleOrder(id: Long): ResponseEntity<SaleOrderVO> {
-        val order = saleOrderCommandService.getSaleOrder(id)
+        val order = saleOrderQueryService.getSaleOrder(id)
         return ResponseEntity.ok(
             order.toVO(),
         )
