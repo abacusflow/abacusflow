@@ -38,7 +38,7 @@ export function translateProductType(input?: ProductType): string {
     return "";
   }
   const typeMap: Record<ProductType, string> = {
-    material: "普通商品",
+    material: "普通产品",
     asset: "资产"
   };
 

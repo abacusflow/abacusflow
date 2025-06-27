@@ -18,7 +18,7 @@
               </a-form-item>
 
               <a-form-item label="类型" name="type">
-                <a-select v-model:value="searchForm.type" placeholder="请选择商品类型">
+                <a-select v-model:value="searchForm.type" placeholder="请选择产品类型">
                   <a-select-option
                     v-for="value in Object.values(ProductType)"
                     :key="value"
@@ -60,20 +60,6 @@
               :pagination="pagination"
             >
               <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'unit'">
-                  {{ $translateProductUnit(record.unit) }}
-                </template>
-                <template v-if="column.key === 'type'">
-                  {{ $translateProductType(record.type) }}
-                </template>
-                <template v-if="column.key === 'enabled'">
-                  <a-switch v-model:checked="record.enabled" disabled />
-                </template>
-                <template v-if="column.key === 'note'">
-                  <a-tooltip :title="record.note">
-                    {{ record?.note?.length > 15 ? record?.note.slice(0, 15) + "…" : record?.note }}
-                  </a-tooltip>
-                </template>
                 <template v-if="column.key === 'action'">
                   <a-space>
                     <a-button type="link" shape="circle" @click="handleEditProduct(record)"
@@ -113,12 +99,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive, ref } from "vue";
+import { computed, h, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
+import { message, Tooltip } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
 import { useRoute, useRouter } from "vue-router";
 import {
@@ -128,6 +114,7 @@ import {
   type ProductApi,
   ProductType
 } from "@/core/openapi";
+import { translateProductType, translateProductUnit } from "@/util/productUtils";
 
 const productApi = inject("productApi") as ProductApi;
 const queryClient = useQueryClient();
@@ -240,11 +227,34 @@ function handleDeleteProduct(id: number) {
 const columns: StrictTableColumnsType<BasicProduct> = [
   { title: "产品名称", dataIndex: "name", key: "name" },
   { title: "产品规格", dataIndex: "specification", key: "specification" },
-  { title: "产品类型", dataIndex: "type", key: "type" },
+  {
+    title: "产品类型",
+    dataIndex: "type",
+    key: "type",
+    customRender: ({ record }) => translateProductType(record.type)
+  },
   { title: "产品类别", dataIndex: "categoryName", key: "categoryName" },
-  { title: "单位", dataIndex: "unit", key: "unit" },
-  { title: "启用状态", dataIndex: "enabled", key: "enabled" },
-  { title: "备注", dataIndex: "note", key: "note" },
+  {
+    title: "单位",
+    dataIndex: "unit",
+    key: "unit",
+    customRender: ({ record }) => translateProductUnit(record.unit)
+  },
+  {
+    title: "启用状态",
+    dataIndex: "enabled",
+    key: "enabled",
+    customRender: ({ record }) => h("a-switch", { checked: record.enabled, disabled: true })
+  },
+  {
+    title: "备注",
+    dataIndex: "note",
+    key: "note",
+    customRender: ({ record }) =>
+      h(Tooltip, { title: record.note }, () =>
+        record?.note && record.note.length > 15 ? record.note.slice(0, 15) + "…" : record.note
+      )
+  },
   { title: "操作", key: "action" }
 ];
 </script>

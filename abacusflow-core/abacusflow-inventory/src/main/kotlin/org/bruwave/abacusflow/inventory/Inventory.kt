@@ -20,7 +20,7 @@ import java.time.Instant
 )
 class Inventory(
     @Column(name = "product_id", nullable = false)
-    val productId: Long, // 通过ID关联商品
+    val productId: Long, // 通过ID关联产品
 ) : AbstractAggregateRoot<Inventory>() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

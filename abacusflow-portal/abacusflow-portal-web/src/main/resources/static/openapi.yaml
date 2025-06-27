@@ -7,11 +7,11 @@ servers:
   - url: http://localhost:8080
 tags:
   - name: inventory
-    description: 管理商品库存状态和库存操作，包括库存数量、多储存点支持、库存调整与预警机制。
+    description: 管理产品库存状态和库存操作，包括库存数量、多储存点支持、库存调整与预警机制。
   - name: partner
     description: 管理客户和供应商等外部合作伙伴的信息，并与交易历史进行关联管理。
   - name: product
-    description: 管理商品的基础信息，包括分类、规格及商品本身的增删改查操作。
+    description: 管理产品的基础信息，包括分类、规格及产品本身的增删改查操作。
   - name: transaction
     description: 处理采购和销售订单的全流程，涵盖订单创建、状态跟踪及订单明细处理。
   - name: user
@@ -1641,10 +1641,10 @@ components:
         id:
           type: integer
           format: int64
-          description: 商品唯一标识
+          description: 产品唯一标识
         name:
           type: string
-          description: 商品名称
+          description: 产品名称
         type:
           $ref: "#/components/schemas/ProductType"
         specification:
@@ -1688,15 +1688,15 @@ components:
         id:
           type: integer
           format: int64
-          description: 商品ID
+          description: 产品ID
         name:
           type: string
-          description: 商品名称
+          description: 产品名称
         type:
           $ref: "#/components/schemas/ProductType"
         specification:
           type: string
-          description: 商品规格
+          description: 产品规格
         categoryName:
           type: string
           description: 分类名称
@@ -1720,12 +1720,12 @@ components:
         name:
           type: string
           minLength: 1
-          description: 商品名称
+          description: 产品名称
         type:
           $ref: "#/components/schemas/ProductType"
         specification:
           type: string
-          description: 商品规格
+          description: 产品规格
         categoryId:
           type: integer
           format: int64
@@ -1743,12 +1743,12 @@ components:
         name:
           type: string
           minLength: 1
-          description: 商品名称
+          description: 产品名称
         type:
           $ref: "#/components/schemas/ProductType"
         specification:
           type: string
-          description: 商品规格
+          description: 产品规格
         categoryId:
           type: integer
           format: int64
@@ -1770,10 +1770,10 @@ components:
         id:
           type: integer
           format: int64
-          description: 商品ID
+          description: 产品ID
         name:
           type: string
-          description: 商品名称
+          description: 产品名称
         type:
           $ref: "#/components/schemas/ProductType"
 
@@ -1878,7 +1878,7 @@ components:
         id:
           type: integer
           format: int64
-          description: 商品实例ID
+          description: 产品实例ID
         name:
           type: string
           description: 名字
@@ -2015,7 +2015,7 @@ components:
         productId:
           type: integer
           format: int64
-          description: 商品ID
+          description: 产品ID
         safetyStock:
           type: integer
           format: int64
@@ -2053,9 +2053,15 @@ components:
           description: 库存ID
         productName:
           type: string
-          description: 商品名称
+          description: 产品名称
         productType:
           $ref: "#/components/schemas/ProductType"
+        productSpecification:
+          type: string
+          description: 产品规格
+        productNote:
+          type: string
+          description: 产品备注
         initialQuantity:
           type: integer
           format: int64
@@ -2341,10 +2347,10 @@ components:
         totalQuantity:
           type: integer
           format: int64
-          description: 所有商品购买数量总和
+          description: 所有产品购买数量总和
         itemCount:
           type: integer
-          description: 不同商品的种类数
+          description: 不同产品的种类数
         orderDate:
           type: string
           format: date
@@ -2463,10 +2469,10 @@ components:
         totalQuantity:
           type: integer
           format: int64
-          description: 所有商品购买数量总和
+          description: 所有产品购买数量总和
         itemCount:
           type: integer
-          description: 不同商品的种类数
+          description: 不同产品的种类数
         orderDate:
           type: string
           format: date
@@ -2583,7 +2589,7 @@ components:
         productId:
           type: integer
           format: int64
-          description: 商品ID
+          description: 产品ID
         quantity:
           type: integer
           description: 数量
@@ -2608,7 +2614,7 @@ components:
         productId:
           type: integer
           format: int64
-          description: 商品ID
+          description: 产品ID
         quantity:
           type: integer
           minimum: 1
@@ -2623,7 +2629,7 @@ components:
 
     ProductUnit:
       type: string
-      description: 商品单位枚举
+      description: 产品单位枚举
       enum:
         - item # 件
         - piece # 件
@@ -2663,12 +2669,12 @@ components:
 
     ProductType:
       type: string
-      description: 商品类型
+      description: 产品类型
       enum:
         - material
         - asset
       x-enum-descriptions:
-        - 普通商品
+        - 普通产品
         - 资产
 
     OrderStatus:

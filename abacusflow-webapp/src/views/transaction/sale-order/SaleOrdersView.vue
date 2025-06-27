@@ -358,7 +358,7 @@ const columns: StrictTableColumnsType<BasicSaleOrder> = [
     dataIndex: "totalQuantity",
     key: "totalQuantity"
   },
-  { title: "商品种类数", dataIndex: "itemCount", key: "itemCount" },
+  { title: "产品种类数", dataIndex: "itemCount", key: "itemCount" },
   {
     title: "订单日期",
     dataIndex: "orderDate",

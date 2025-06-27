@@ -37,8 +37,8 @@
                 />
               </a-form-item>
 
-              <a-form-item label="商品类型" name="productType">
-                <a-select v-model:value="searchForm.productType" placeholder="请选择商品类型">
+              <a-form-item label="产品类型" name="productType">
+                <a-select v-model:value="searchForm.productType" placeholder="请选择产品类型">
                   <a-select-option
                     v-for="value in Object.values(ProductType)"
                     :key="value"
@@ -162,7 +162,7 @@ import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
 import { translateProductType } from "@/util/productUtils";
-import { type TableColumnsType, Tag } from "ant-design-vue";
+import { type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -334,9 +334,21 @@ const stockHealthColor = (value: number = 0, min: number = 0, max: number = Infi
 };
 
 const columns: StrictTableColumnsType<BasicInventory> = [
-  { title: "商品名称", dataIndex: "productName", key: "productName" },
+  { title: "产品名称", dataIndex: "productName", key: "productName" },
+  { title: "产品规格", dataIndex: "productSpecification", key: "productSpecification" },
   {
-    title: "商品类型",
+    title: "产品备注",
+    dataIndex: "productNote",
+    key: "productNote",
+    customRender: ({ record }) =>
+      h(Tooltip, { title: record.productNote }, () =>
+        record?.productNote && record.productNote.length > 15
+          ? record.productNote.slice(0, 15) + "…"
+          : record.productNote
+      )
+  },
+  {
+    title: "产品类型",
     dataIndex: "productType",
     key: "productType",
     customRender: ({ text }) => translateProductType(text)
