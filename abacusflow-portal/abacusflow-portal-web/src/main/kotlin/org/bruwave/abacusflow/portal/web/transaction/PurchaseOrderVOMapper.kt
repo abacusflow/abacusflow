@@ -21,6 +21,7 @@ fun BasicPurchaseOrderTO.toBasicVO(): BasicPurchaseOrderVO =
         itemCount = itemCount,
         orderDate = orderDate,
         autoCompleteDate = autoCompleteDate,
+        createdAt = createdAt.toEpochMilli(),
     )
 
 fun PurchaseOrderTO.toVO(): PurchaseOrderVO =

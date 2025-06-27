@@ -2327,6 +2327,7 @@ components:
         - totalQuantity
         - itemCount
         - orderDate
+        - createdAt
       properties:
         id:
           type: integer
@@ -2356,6 +2357,10 @@ components:
           format: date
           example: "1970-01-01"
           description: 订单日期
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
         autoCompleteDate:
           type: string
           format: date
@@ -2449,6 +2454,7 @@ components:
         - totalQuantity
         - itemCount
         - orderDate
+        - createdAt
       properties:
         id:
           type: integer
@@ -2478,6 +2484,10 @@ components:
           format: date
           example: "1970-01-01"
           description: 订单日期
+        createdAt:
+          type: integer
+          format: int64
+          description: 创建时间戳
         autoCompleteDate:
           type: string
           format: date

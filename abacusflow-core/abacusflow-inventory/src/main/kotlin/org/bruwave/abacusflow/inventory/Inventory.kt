@@ -35,12 +35,6 @@ class Inventory(
     var maxStock: Long = 10 // 安全库存量
         private set
 
-//    @OneToMany(mappedBy = "inventory", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-//    val unitsMutable: MutableList<InventoryUnit> = mutableListOf()
-//
-//    val units: List<InventoryUnit>
-//        get() = unitsMutable.toList()
-
     @CreationTimestamp
     val createdAt: Instant = Instant.now()
 

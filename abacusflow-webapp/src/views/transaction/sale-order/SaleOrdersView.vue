@@ -365,6 +365,12 @@ const columns: StrictTableColumnsType<BasicSaleOrder> = [
     key: "orderDate",
     customRender: ({ record }) => dateToFormattedString(record.orderDate, "YYYY-MM-DD")
   },
+  {
+    title: "订单创建时间",
+    dataIndex: "createdAt",
+    key: "createdAt",
+    customRender: ({ record }) => new Date(record.createdAt).toLocaleString("zh-CN")
+  },
   { title: "自动完成天数", dataIndex: "autoCompleteDate", key: "autoCompleteDate" },
   { title: "操作", key: "action" }
 ];
