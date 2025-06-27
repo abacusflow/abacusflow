@@ -104,7 +104,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import ProductAddView from "./ProductAddView.vue";
 import ProductEditView from "./ProductEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message, Tooltip } from "ant-design-vue";
+import { message, Switch, Tooltip } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
 import { useRoute, useRouter } from "vue-router";
 import {
@@ -244,16 +244,17 @@ const columns: StrictTableColumnsType<BasicProduct> = [
     title: "启用状态",
     dataIndex: "enabled",
     key: "enabled",
-    customRender: ({ record }) => h("a-switch", { checked: record.enabled, disabled: true })
+    customRender: ({ record }) => h(Switch, { checked: record.enabled, disabled: true })
   },
   {
     title: "备注",
     dataIndex: "note",
     key: "note",
-    customRender: ({ record }) =>
-      h(Tooltip, { title: record.note }, () =>
-        record?.note && record.note.length > 15 ? record.note.slice(0, 15) + "…" : record.note
-      )
+    width: 120,
+    ellipsis: true,
+    customRender: ({ text }) => {
+      return h(Tooltip, { title: text, placement: "topLeft" }, () => h("span", text));
+    }
   },
   { title: "操作", key: "action" }
 ];

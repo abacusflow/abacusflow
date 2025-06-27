@@ -10,8 +10,8 @@
 
       <a-card :bordered="false">
         <a-form layout="inline" :model="searchForm">
-          <a-form-item label="采购单号">
-            <a-input v-model:value="searchForm.orderNo" placeholder="请输入采购单号" allow-clear />
+          <a-form-item label="销售单号">
+            <a-input v-model:value="searchForm.orderNo" placeholder="请输入销售单号" allow-clear />
           </a-form-item>
           <a-form-item label="客户名">
             <a-input
