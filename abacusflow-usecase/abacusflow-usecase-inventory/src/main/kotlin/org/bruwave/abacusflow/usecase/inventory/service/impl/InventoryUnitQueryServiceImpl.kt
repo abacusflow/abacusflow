@@ -231,8 +231,8 @@ class InventoryUnitQueryServiceImpl(
         val unitType: InventoryUnit.UnitType = InventoryUnit.UnitType.valueOf(this[INVENTORY_UNIT.UNIT_TYPE]!!)
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCTS.NAME]}-批次号:-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCTS.NAME]}-序列号:-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH -> "${this[PRODUCTS.NAME]}-批次号-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCTS.NAME]}-序列号-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         return InventoryUnitWithTitleTO(
             id = this[INVENTORY_UNIT.ID] ?: throw NoSuchElementException("InventoryUnit ID is missing"),

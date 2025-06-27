@@ -134,7 +134,7 @@
     </a-space>
     <a-drawer
       title="新增销售单"
-      width="500"
+      size="large"
       :open="showAdd"
       :closable="false"
       @close="showAdd = false"
@@ -144,7 +144,7 @@
 
     <a-drawer
       title="查看销售单详情"
-      width="500"
+      size="large"
       :open="showEdit"
       :closable="false"
       @close="showEdit = false"

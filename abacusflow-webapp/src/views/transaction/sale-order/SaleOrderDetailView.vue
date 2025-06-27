@@ -43,7 +43,7 @@
           >
             <a-select v-model:value="item.inventoryUnitId" placeholder="请选择库存产品">
               <a-select-option
-                v-for="inventoryUnit in inventoryUnits"
+                v-for="inventoryUnit in selectableInventoryUnits"
                 :key="inventoryUnit.id"
                 :value="inventoryUnit.id"
               >
@@ -157,8 +157,8 @@ const { data: customers } = useQuery({
   queryFn: () => partnerApi.listSelectableCustomers()
 });
 
-const { data: inventoryUnits } = useQuery({
-  queryKey: ["inventoryUnits"],
-  queryFn: () => inventoryApi.listInventoryUnits()
+const { data: selectableInventoryUnits } = useQuery({
+  queryKey: ["selectableInventoryUnits"],
+  queryFn: () => inventoryApi.listSelectableInventoryUnits()
 });
 </script>
