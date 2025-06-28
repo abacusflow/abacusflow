@@ -136,6 +136,7 @@ import {
   type CreateSaleOrderInput,
   InventoryApi,
   InventoryUnitType,
+  type ListSelectableInventoryUnitsRequest,
   type PartnerApi,
   type SaleOrderItemInput,
   type SelectableInventoryUnit,
@@ -171,7 +172,12 @@ const { data: customers } = useQuery({
 
 const { data: selectableInventoryUnits } = useQuery({
   queryKey: ["selectableInventoryUnits"],
-  queryFn: () => inventoryApi.listSelectableInventoryUnits()
+  queryFn: () => {
+    const params: ListSelectableInventoryUnitsRequest = {
+      statuses: ["normal", "reversed"]
+    };
+    return inventoryApi.listSelectableInventoryUnits(params);
+  }
 });
 
 const { mutate: createSaleOrder } = useMutation({

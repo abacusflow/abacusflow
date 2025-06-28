@@ -79,6 +79,7 @@ class InventorySaleOrderEventListener(
                 )
 
             units.forEach { unit ->
+                unit.release(totalQuantity)
                 unit.consume(order.id, totalQuantity)
             }
         }
