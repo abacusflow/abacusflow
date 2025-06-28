@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 class DepotQueryServiceImpl(
     private val depotRepository: DepotRepository,
 ) : DepotQueryService {
-    override fun listDepots(): List<BasicDepotTO> = depotRepository.findAll().map { it.toBasicTO() }
+    override fun listBasicDepots(): List<BasicDepotTO> = depotRepository.findAll().map { it.toBasicTO() }
 
     override fun getDepot(id: Long): DepotTO =
         depotRepository

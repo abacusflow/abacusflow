@@ -72,16 +72,12 @@ class Product(
 
     fun updateBasicInfo(
         newName: String?,
-        newCategory: ProductCategory?,
         newSpecification: String?,
         newNote: String?,
         newUnit: ProductUnit?,
     ) {
         newName?.let {
             name = newName
-        }
-        newCategory?.let {
-            category = newCategory
         }
         newSpecification?.let {
             specification = newSpecification
@@ -122,12 +118,6 @@ class Product(
     fun prePersist() {
         registerEvent(ProductCreatedEvent(this))
     }
-
-//    // update最佳实践是在每个单独方法,或者说不应该使用ProductUpdatedEvent这么宽泛的事件
-//    @PreUpdate
-//    fun preUpdate() {
-//        registerEvent(ProductUpdatedEvent(this))
-//    }
 
     @PreRemove
     fun preRemove() {

@@ -34,7 +34,7 @@ class InventoryQueryServiceImpl(
     private val jooqDsl: DSLContext,
     private val objectMapper: ObjectMapper,
 ) : InventoryQueryService {
-    override fun listInventoriesPage(
+    override fun listBasicInventoriesPage(
         pageable: Pageable,
         productCategoryId: Long?,
         productName: String?,

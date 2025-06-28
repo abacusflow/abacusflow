@@ -10,7 +10,7 @@ interface SupplierQueryService {
 
     fun getSupplier(name: String): SupplierTO
 
-    fun listSuppliersPage(
+    fun listBasicSuppliersPage(
         pageable: Pageable,
         name: String?,
         contactPerson: String?,

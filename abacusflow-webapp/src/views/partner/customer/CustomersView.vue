@@ -82,7 +82,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import {
   type BasicCustomer,
   type Customer,
-  type ListCustomersPageRequest,
+  type ListBasicCustomersPageRequest,
   PartnerApi
 } from "@/core/openapi";
 import CustomerAddView from "./CustomerAddView.vue";
@@ -152,14 +152,14 @@ const {
   ],
   queryFn: () => {
     const { name, phone, address } = searchForm;
-    const params: ListCustomersPageRequest = {
+    const params: ListBasicCustomersPageRequest = {
       pageIndex: pageIndex.value,
       pageSize: pageSize.value,
       name: name || undefined,
       phone: phone || undefined,
       address: address || undefined
     };
-    return partnerApi.listCustomersPage(params);
+    return partnerApi.listBasicCustomersPage(params);
   }
 });
 

@@ -8,5 +8,5 @@ interface UserQueryService {
 
     fun getUser(name: String): UserTO?
 
-    fun listUsers(): List<BasicUserTO>
+    fun listBasicUsers(): List<BasicUserTO>
 }

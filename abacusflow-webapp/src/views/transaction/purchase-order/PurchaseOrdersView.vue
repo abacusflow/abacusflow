@@ -161,7 +161,7 @@ import { computed, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import {
   type BasicPurchaseOrder,
-  type ListPurchaseOrdersPageRequest,
+  type ListBasicPurchaseOrdersPageRequest,
   OrderStatus,
   type TransactionApi
 } from "@/core/openapi";
@@ -238,7 +238,7 @@ const {
   ],
   queryFn: () => {
     const { orderNo, supplierName, status, productName } = searchForm;
-    const params: ListPurchaseOrdersPageRequest = {
+    const params: ListBasicPurchaseOrdersPageRequest = {
       orderNo: orderNo || undefined,
       supplierName: supplierName || undefined,
       status: status || undefined,
@@ -246,7 +246,7 @@ const {
       pageIndex: pageIndex.value,
       pageSize: pageSize.value
     };
-    return transactionApi.listPurchaseOrdersPage(params);
+    return transactionApi.listBasicPurchaseOrdersPage(params);
   }
 });
 

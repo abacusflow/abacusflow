@@ -27,7 +27,7 @@ class PurchaseOrderQueryServiceImpl(
     private val purchaseOrderRepository: PurchaseOrderRepository,
     private val jooqDsl: DSLContext,
 ) : PurchaseOrderQueryService {
-    override fun listPurchaseOrdersPage(
+    override fun listBasicPurchaseOrdersPage(
         pageable: Pageable,
         orderNo: UUID?,
         supplierName: String?,

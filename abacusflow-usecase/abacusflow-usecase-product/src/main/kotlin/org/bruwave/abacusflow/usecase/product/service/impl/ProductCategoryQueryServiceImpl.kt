@@ -18,5 +18,5 @@ class ProductCategoryQueryServiceImpl(
             .orElseThrow { NoSuchElementException("Product category not found with id: $id") }
             .toTO()
 
-    override fun listProductCategories(): List<BasicProductCategoryTO> = productCategoryRepository.findAll().map { it.toBasicTO() }
+    override fun listBasicProductCategories(): List<BasicProductCategoryTO> = productCategoryRepository.findAll().map { it.toBasicTO() }
 }

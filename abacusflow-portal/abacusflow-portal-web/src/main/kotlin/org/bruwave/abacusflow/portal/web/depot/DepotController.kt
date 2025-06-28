@@ -17,9 +17,9 @@ class DepotController(
     private val depotCommandService: DepotCommandService,
     private val depotQueryService: DepotQueryService,
 ) : DepotsApi {
-    override fun listDepots(): ResponseEntity<List<BasicDepotVO>> {
+    override fun listBasicDepots(): ResponseEntity<List<BasicDepotVO>> {
         val depotVOs =
-            depotQueryService.listDepots().map { depot ->
+            depotQueryService.listBasicDepots().map { depot ->
                 depot.toBasicTO()
             }
         return ResponseEntity.ok(depotVOs)

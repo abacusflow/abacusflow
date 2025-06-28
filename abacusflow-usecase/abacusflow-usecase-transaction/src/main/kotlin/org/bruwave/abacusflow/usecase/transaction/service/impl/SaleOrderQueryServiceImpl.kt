@@ -28,7 +28,7 @@ class SaleOrderQueryServiceImpl(
     private val saleOrderRepository: SaleOrderRepository,
     private val jooqDsl: DSLContext,
 ) : SaleOrderQueryService {
-    override fun listSaleOrdersPage(
+    override fun listBasicSaleOrdersPage(
         pageable: Pageable,
         orderNo: UUID?,
         customerName: String?,

@@ -17,11 +17,6 @@ class InventoryUnitController(
     private val inventoryUnitQueryService: InventoryUnitQueryService,
     private val inventoryUnitCommandService: InventoryUnitCommandService,
 ) : InventoryUnitsApi {
-    override fun listInventoryUnits(): ResponseEntity<List<BasicInventoryUnitVO>> {
-        val unitVOS = inventoryUnitQueryService.listBasicInventoryUnits().map { unit -> unit.toBasicVO() }
-        return ResponseEntity.ok(unitVOS)
-    }
-
     override fun listSelectableInventoryUnits(): ResponseEntity<List<SelectableInventoryUnitVO>> {
         val unitVOS =
             inventoryUnitQueryService.listInventoryUnitsWithTitle(

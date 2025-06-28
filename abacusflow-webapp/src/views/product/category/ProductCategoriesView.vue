@@ -147,7 +147,7 @@ const handleEditProductCategory = (productCategory: TreeCategory) => {
 
 const { data, isPending, refetch } = useQuery({
   queryKey: ["productCategories"],
-  queryFn: () => productApi.listProductCategories()
+  queryFn: () => productApi.listBasicProductCategories()
 });
 
 const { mutate: deleteProductCategory } = useMutation({

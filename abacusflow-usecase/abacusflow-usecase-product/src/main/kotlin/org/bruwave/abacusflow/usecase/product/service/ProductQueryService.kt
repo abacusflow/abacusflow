@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface ProductQueryService {
-    fun listProductsPage(
+    fun listBasicProductsPage(
         pageable: Pageable,
         name: String?,
         type: String?,

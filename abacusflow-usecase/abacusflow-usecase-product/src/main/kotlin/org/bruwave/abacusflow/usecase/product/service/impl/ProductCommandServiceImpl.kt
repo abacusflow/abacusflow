@@ -46,19 +46,12 @@ class ProductCommandServiceImpl(
             productRepository.findById(id)
                 .orElseThrow { NoSuchElementException("Product not found with id: $id") }
 
-        val newProductCategory =
-            input.categoryId?.let {
-                productCategoryRepository.findById(it)
-                    .orElseThrow { NoSuchElementException("ProductCategory not found with id: $id") }
-            }
-
         product.apply {
             updateBasicInfo(
                 newName = input.name,
                 newNote = input.note,
                 newUnit = input.unit?.let { mapProductUnitTOToDO(it) },
                 newSpecification = input.specification,
-                newCategory = newProductCategory,
             )
 
             input.categoryId?.let { categoryId ->

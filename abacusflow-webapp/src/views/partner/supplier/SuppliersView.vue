@@ -82,7 +82,12 @@
 <script lang="ts" setup>
 import { computed, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { BasicSupplier, ListSuppliersPageRequest, PartnerApi, Supplier } from "@/core/openapi";
+import type {
+  BasicSupplier,
+  type ListBasicSuppliersPageRequest,
+  PartnerApi,
+  Supplier
+} from "@/core/openapi";
 import SupplierAddView from "./SupplierAddView.vue";
 import SupplierEditView from "./SupplierEditView.vue";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
@@ -153,7 +158,7 @@ const {
   ],
   queryFn: () => {
     const { name, phone, contactPerson, address } = searchForm;
-    const params: ListSuppliersPageRequest = {
+    const params: ListBasicSuppliersPageRequest = {
       pageIndex: pageIndex.value,
       pageSize: pageSize.value,
       name: name || undefined,
@@ -161,7 +166,7 @@ const {
       phone: phone || undefined,
       address: address || undefined
     };
-    return partnerApi.listSuppliersPage(params);
+    return partnerApi.listBasicSuppliersPage(params);
   }
 });
 

@@ -18,8 +18,8 @@ class ProductCategoryController(
     private val productCategoryCommandService: ProductCategoryCommandService,
     private val productCategoryQueryService: ProductCategoryQueryService,
 ) : ProductCategoriesApi {
-    override fun listProductCategories(): ResponseEntity<List<BasicProductCategoryVO>> {
-        val categories = productCategoryQueryService.listProductCategories()
+    override fun listBasicProductCategories(): ResponseEntity<List<BasicProductCategoryVO>> {
+        val categories = productCategoryQueryService.listBasicProductCategories()
         val categoryVOs =
             categories.map { category ->
                 category.toVO()

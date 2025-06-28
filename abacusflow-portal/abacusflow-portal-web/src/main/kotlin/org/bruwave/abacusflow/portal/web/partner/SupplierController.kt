@@ -2,7 +2,7 @@ package org.bruwave.abacusflow.portal.web.partner
 
 import org.bruwave.abacusflow.portal.web.api.SuppliersApi
 import org.bruwave.abacusflow.portal.web.model.CreateSupplierInputVO
-import org.bruwave.abacusflow.portal.web.model.ListSuppliersPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ListBasicSuppliersPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.SelectableSupplierVO
 import org.bruwave.abacusflow.portal.web.model.SupplierVO
 import org.bruwave.abacusflow.portal.web.model.UpdateSupplierInputVO
@@ -19,18 +19,18 @@ class SupplierController(
     private val supplierCommandService: SupplierCommandService,
     private val supplierQueryService: SupplierQueryService,
 ) : SuppliersApi {
-    override fun listSuppliersPage(
+    override fun listBasicSuppliersPage(
         pageIndex: Int,
         pageSize: Int,
         name: String?,
         contactPerson: String?,
         phone: String?,
         address: String?,
-    ): ResponseEntity<ListSuppliersPage200ResponseVO> {
+    ): ResponseEntity<ListBasicSuppliersPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
         val page =
-            supplierQueryService.listSuppliersPage(
+            supplierQueryService.listBasicSuppliersPage(
                 pageable,
                 name = name,
                 contactPerson = contactPerson,
@@ -39,7 +39,7 @@ class SupplierController(
             ).map { it.toBasicVO() }
 
         val pageVO =
-            ListSuppliersPage200ResponseVO(
+            ListBasicSuppliersPage200ResponseVO(
                 content = page.content,
                 totalElements = page.totalElements,
                 number = page.number,

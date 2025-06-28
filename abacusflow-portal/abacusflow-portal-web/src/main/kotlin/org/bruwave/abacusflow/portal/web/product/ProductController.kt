@@ -2,7 +2,7 @@ package org.bruwave.abacusflow.portal.web.product
 
 import org.bruwave.abacusflow.portal.web.api.ProductsApi
 import org.bruwave.abacusflow.portal.web.model.CreateProductInputVO
-import org.bruwave.abacusflow.portal.web.model.ListProductsPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ListBasicProductsPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.ProductTypeVO
 import org.bruwave.abacusflow.portal.web.model.ProductVO
 import org.bruwave.abacusflow.portal.web.model.SelectableProductVO
@@ -15,7 +15,6 @@ import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
 import org.bruwave.abacusflow.usecase.product.service.ProductCommandService
 import org.bruwave.abacusflow.usecase.product.service.ProductQueryService
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 
@@ -24,18 +23,18 @@ class ProductController(
     private val productCommandService: ProductCommandService,
     private val productQueryService: ProductQueryService,
 ) : ProductsApi {
-    override fun listProductsPage(
+    override fun listBasicProductsPage(
         pageIndex: Int,
         pageSize: Int,
         name: String?,
         type: ProductTypeVO?,
         enabled: Boolean?,
         categoryId: Long?,
-    ): ResponseEntity<ListProductsPage200ResponseVO> {
+    ): ResponseEntity<ListBasicProductsPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
         val page =
-            productQueryService.listProductsPage(
+            productQueryService.listBasicProductsPage(
                 pageable,
                 name = name,
                 type = type?.name?.uppercase(),
@@ -44,7 +43,7 @@ class ProductController(
             ).map { it.toBasicVO() }
 
         val pageVO =
-            ListProductsPage200ResponseVO(
+            ListBasicProductsPage200ResponseVO(
                 content = page.content,
                 totalElements = page.totalElements,
                 number = page.number,

@@ -3,7 +3,7 @@ package org.bruwave.abacusflow.portal.web.partner
 import org.bruwave.abacusflow.portal.web.api.CustomersApi
 import org.bruwave.abacusflow.portal.web.model.CreateCustomerInputVO
 import org.bruwave.abacusflow.portal.web.model.CustomerVO
-import org.bruwave.abacusflow.portal.web.model.ListCustomersPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ListBasicCustomersPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.SelectableCustomerVO
 import org.bruwave.abacusflow.portal.web.model.UpdateCustomerInputVO
 import org.bruwave.abacusflow.usecase.partner.CreateCustomerInputTO
@@ -19,17 +19,17 @@ class CustomerController(
     private val customerCommandService: CustomerCommandService,
     private val customerQueryService: CustomerQueryService,
 ) : CustomersApi {
-    override fun listCustomersPage(
+    override fun listBasicCustomersPage(
         pageIndex: Int,
         pageSize: Int,
         name: String?,
         phone: String?,
         address: String?,
-    ): ResponseEntity<ListCustomersPage200ResponseVO> {
+    ): ResponseEntity<ListBasicCustomersPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
         val page =
-            customerQueryService.listCustomersPage(
+            customerQueryService.listBasicCustomersPage(
                 pageable,
                 name = name,
                 phone = phone,
@@ -37,7 +37,7 @@ class CustomerController(
             ).map { it.toBasicVO() }
 
         val pageVO =
-            ListCustomersPage200ResponseVO(
+            ListBasicCustomersPage200ResponseVO(
                 content = page.content,
                 totalElements = page.totalElements,
                 number = page.number,
