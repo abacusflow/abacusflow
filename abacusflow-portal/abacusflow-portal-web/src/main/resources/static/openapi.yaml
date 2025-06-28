@@ -22,7 +22,7 @@ tags:
 paths:
   /users:
     get:
-      operationId: listUsers
+      operationId: listBasicUsers
       tags:
         - user
       summary: List all users
@@ -117,7 +117,7 @@ paths:
 
   /suppliers:
     get:
-      operationId: listSuppliersPage
+      operationId: listBasicSuppliersPage
       tags:
         - partner
       summary: List suppliers page
@@ -269,7 +269,7 @@ paths:
 
   /customers:
     get:
-      operationId: listCustomersPage
+      operationId: listBasicCustomersPage
       tags:
         - partner
       summary: List customers page
@@ -416,7 +416,7 @@ paths:
 
   /products:
     get:
-      operationId: listProductsPage
+      operationId: listBasicProductsPage
       tags:
         - product
       summary: List products page
@@ -569,7 +569,7 @@ paths:
 
   /product-categories:
     get:
-      operationId: listProductCategories
+      operationId: listBasicProductCategories
       tags:
         - product
       summary: List all product categories
@@ -662,9 +662,25 @@ paths:
         "200":
           description: Product category deleted
 
+  /product-categories-selectable:
+    get:
+      operationId: listSelectableProductCategories
+      tags:
+        - product
+      summary: List all product categories for selection
+      responses:
+        "200":
+          description: List of product categories for selectable
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SelectableProductCategory"
+
   /depots:
     get:
-      operationId: listDepots
+      operationId: listBasicDepots
       tags:
         - depot
       summary: List all depots
@@ -759,7 +775,7 @@ paths:
 
   /inventories:
     get:
-      operationId: listInventoriesPage
+      operationId: listBasicInventoriesPage
       tags:
         - inventory
       summary: Query inventories with pagination and filters
@@ -897,22 +913,6 @@ paths:
               schema:
                 type: boolean
 
-  /inventory-units:
-    get:
-      operationId: listInventoryUnits
-      tags:
-        - inventory
-      summary: List all inventoryUnits
-      responses:
-        "200":
-          description: List of inventoryUnits
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/BasicInventoryUnit"
-
   /inventory-units/{id}:
     get:
       operationId: getInventoryUnit
@@ -982,7 +982,7 @@ paths:
 
   /sale-orders:
     get:
-      operationId: listSaleOrdersPage
+      operationId: listBasicSaleOrdersPage
       tags:
         - transaction
       summary: List sale orders page
@@ -1130,7 +1130,7 @@ paths:
 
   /purchase-orders:
     get:
-      operationId: listPurchaseOrdersPage
+      operationId: listBasicPurchaseOrdersPage
       tags:
         - transaction
       summary: List purchase orders page
@@ -1510,16 +1510,16 @@ components:
     SelectableSupplier:
       type: object
       required:
-        - value
-        - label
+        - id
+        - name
       properties:
-        value:
+        id:
           type: integer
           format: int64
-          description: Supplier ID
-        label:
+          description: 供应商ID
+        name:
           type: string
-          description: Supplier display name
+          description: 供应商名称
     # ============= Customer schemas =============
     Customer:
       type: object
@@ -1612,16 +1612,16 @@ components:
     SelectableCustomer:
       type: object
       required:
-        - value
-        - label
+        - id
+        - name
       properties:
-        value:
+        id:
           type: integer
           format: int64
-          description: Customer ID
-        label:
+          description: 客户ID
+        name:
           type: string
-          description: Customer display name
+          description: 客户名称
 
     # ============= Product schemas =============
     Product:
@@ -1864,6 +1864,25 @@ components:
           format: int64
           nullable: true
           description: 父分类ID
+
+    SelectableProductCategory:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 分类ID
+        name:
+          type: string
+          description: 分类名称
+        parentName:
+          type: string
+          nullable: true
+          description: 父分类名称
+
     # ============= ProductInstance schemas =============
     BasicProductInstance:
       type: object

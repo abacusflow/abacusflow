@@ -28,5 +28,5 @@ class UserQueryServiceImpl(
             ?.toTO()
             ?: throw NoSuchElementException("User not found")
 
-    override fun listUsers(): List<BasicUserTO> = userRepository.findAll().map { it.toBasicTO() }
+    override fun listBasicUsers(): List<BasicUserTO> = userRepository.findAll().map { it.toBasicTO() }
 }

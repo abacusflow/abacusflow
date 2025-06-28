@@ -108,7 +108,7 @@ const handleEditDepot = (depot: Depot) => {
 
 const { data, isPending, refetch } = useQuery({
   queryKey: ["depots"],
-  queryFn: () => depotApi.listDepots()
+  queryFn: () => depotApi.listBasicDepots()
 });
 
 const { mutate: deleteDepot } = useMutation({

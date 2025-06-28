@@ -54,7 +54,7 @@ const emit = defineEmits(["success", "update:visible"]);
 
 const { data: categories } = useQuery({
   queryKey: ["categories"],
-  queryFn: () => productApi.listProductCategories()
+  queryFn: () => productApi.listSelectableProductCategories()
 });
 
 const { mutate: createProductCategory } = useMutation({

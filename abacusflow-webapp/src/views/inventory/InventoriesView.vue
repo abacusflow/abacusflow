@@ -155,14 +155,14 @@ import {
   type BasicInventoryUnit,
   type InventoryApi,
   InventoryUnitType,
-  type ListInventoriesPageRequest,
+  type ListBasicInventoriesPageRequest,
   ProductType
 } from "@/core/openapi";
 import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
 import { translateProductType } from "@/util/productUtils";
-import { Row, type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
+import { type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
 import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -238,7 +238,7 @@ const {
   queryFn: () => {
     const { productName, depotName, productType, inventoryUnitCode } = searchForm;
 
-    const params: ListInventoriesPageRequest = {
+    const params: ListBasicInventoriesPageRequest = {
       productCategoryId: productCategoryId.value,
       productName: productName || undefined,
       inventoryUnitCode: inventoryUnitCode || undefined,
@@ -247,7 +247,7 @@ const {
       pageIndex: pageIndex.value,
       pageSize: pageSize.value
     };
-    return inventoryApi.listInventoriesPage(params);
+    return inventoryApi.listBasicInventoriesPage(params);
   }
 });
 

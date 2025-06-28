@@ -6,12 +6,8 @@
       :rules="[{ required: true, message: '请选择客户' }]"
     >
       <a-select v-model:value="formState.customerId" placeholder="请选择客户">
-        <a-select-option
-          v-for="customer in customers"
-          :key="customer.value"
-          :value="customer.value"
-        >
-          {{ customer.label }}
+        <a-select-option v-for="customer in customers" :key="customer.id" :value="customer.id">
+          {{ customer.name }}
         </a-select-option>
       </a-select>
     </a-form-item>

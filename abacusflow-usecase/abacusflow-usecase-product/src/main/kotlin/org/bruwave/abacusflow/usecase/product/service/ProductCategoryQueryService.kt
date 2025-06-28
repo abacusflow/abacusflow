@@ -6,5 +6,5 @@ import org.bruwave.abacusflow.usecase.product.ProductCategoryTO
 interface ProductCategoryQueryService {
     fun getProductCategory(id: Long): ProductCategoryTO
 
-    fun listProductCategories(): List<BasicProductCategoryTO>
+    fun listBasicProductCategories(): List<BasicProductCategoryTO>
 }

@@ -1,8 +1,8 @@
 package org.bruwave.abacusflow.portal.web
 
-import org.bruwave.abacusflow.portal.web.authentication.MyAuthenticationEntryPointHandler
-import org.bruwave.abacusflow.portal.web.authentication.MyAuthenticationFailureHandler
-import org.bruwave.abacusflow.portal.web.authentication.MyAuthenticationSuccessHandler
+import org.bruwave.abacusflow.portal.web.authentication.AbacusFlowAuthenticationEntryPointHandler
+import org.bruwave.abacusflow.portal.web.authentication.AbacusFlowAuthenticationFailureHandler
+import org.bruwave.abacusflow.portal.web.authentication.AbacusFlowAuthenticationSuccessHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -13,9 +13,9 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 class SecurityConfiguration(
-    private val myAuthenticationEntryPointHandler: MyAuthenticationEntryPointHandler,
-    private val myAuthenticationSuccessHandler: MyAuthenticationSuccessHandler,
-    private val myAuthenticationFailureHandler: MyAuthenticationFailureHandler,
+    private val abacusFlowAuthenticationEntryPointHandler: AbacusFlowAuthenticationEntryPointHandler,
+    private val abacusFlowAuthenticationSuccessHandler: AbacusFlowAuthenticationSuccessHandler,
+    private val abacusFlowAuthenticationFailureHandler: AbacusFlowAuthenticationFailureHandler,
 ) {
     private val staticResources = listOf("css", "js", "images", "fonts", "scss", "vendor")
 
@@ -25,7 +25,7 @@ class SecurityConfiguration(
             csrf { disable() }
 
             exceptionHandling {
-                authenticationEntryPoint = myAuthenticationEntryPointHandler
+                authenticationEntryPoint = abacusFlowAuthenticationEntryPointHandler
             }
 
             authorizeHttpRequests {
@@ -41,8 +41,8 @@ class SecurityConfiguration(
 
             formLogin {
                 loginPage = "/login"
-                authenticationSuccessHandler = myAuthenticationSuccessHandler
-                authenticationFailureHandler = myAuthenticationFailureHandler
+                authenticationSuccessHandler = abacusFlowAuthenticationSuccessHandler
+                authenticationFailureHandler = abacusFlowAuthenticationFailureHandler
                 permitAll()
             }
 

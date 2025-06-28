@@ -33,7 +33,7 @@ class ProductQueryServiceImpl(
             ?.toTO()
             ?: throw NoSuchElementException("Product not found")
 
-    override fun listProductsPage(
+    override fun listBasicProductsPage(
         pageable: Pageable,
         name: String?,
         type: String?,

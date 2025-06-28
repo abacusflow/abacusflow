@@ -17,6 +17,7 @@ import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
+import org.jooq.impl.DSL.condition
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.Instant
@@ -27,16 +28,8 @@ class InventoryUnitQueryServiceImpl(
     private val inventoryUnitRepository: InventoryUnitRepository,
     private val dslContext: DSLContext,
 ) : InventoryUnitQueryService {
-    override fun listBasicInventoryUnits(statusList: List<String>?): List<BasicInventoryUnitTO> {
-        val condition =
-            buildList<Condition> {
-                statusList?.let {
-                    val upperCaseStatuses = statusList.map { it.uppercase() }
-                    add(INVENTORY_UNIT.STATUS.`in`(upperCaseStatuses))
-                }
-            }
-
-        // 使用 JOOQ 执行联接查询
+    override fun listBasicInventoryUnits(): List<BasicInventoryUnitTO> {
+       // 使用 JOOQ 执行联接查询
         val inventoryUnits =
             dslContext
                 .select(
@@ -68,7 +61,6 @@ class InventoryUnitQueryServiceImpl(
                     DSL.condition("{0} = ANY({1})", SALE_ORDERS.ID, INVENTORY_UNIT.SALE_ORDER_IDS),
                 )
                 .leftJoin(DEPOTS).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOTS.ID))
-                .where(condition)
                 .groupBy(
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,

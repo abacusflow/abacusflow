@@ -7,12 +7,8 @@
         :rules="[{ required: true, message: '请选择供应商' }]"
       >
         <a-select v-model:value="formState.supplierId" placeholder="请选择供应商">
-          <a-select-option
-            v-for="supplier in suppliers"
-            :key="supplier.value"
-            :value="supplier.value"
-          >
-            {{ supplier.label }}
+          <a-select-option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+            {{ supplier.name }}
           </a-select-option>
         </a-select>
       </a-form-item>

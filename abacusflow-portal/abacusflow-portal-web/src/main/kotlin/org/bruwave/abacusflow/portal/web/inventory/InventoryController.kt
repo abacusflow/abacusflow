@@ -3,7 +3,7 @@ package org.bruwave.abacusflow.portal.web.inventory
 import org.bruwave.abacusflow.portal.web.api.InventoriesApi
 import org.bruwave.abacusflow.portal.web.model.AdjustWarningLineRequestVO
 import org.bruwave.abacusflow.portal.web.model.InventoryVO
-import org.bruwave.abacusflow.portal.web.model.ListInventoriesPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ListBasicInventoriesPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.ProductTypeVO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryCommandService
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
@@ -16,7 +16,7 @@ class InventoryController(
     private val inventoryCommandService: InventoryCommandService,
     private val inventoryQueryService: InventoryQueryService,
 ) : InventoriesApi {
-    override fun listInventoriesPage(
+    override fun listBasicInventoriesPage(
         pageIndex: Int,
         pageSize: Int,
         productCategoryId: Long?,
@@ -24,11 +24,11 @@ class InventoryController(
         productType: ProductTypeVO?,
         inventoryUnitCode: String?,
         depotName: String?,
-    ): ResponseEntity<ListInventoriesPage200ResponseVO> {
+    ): ResponseEntity<ListBasicInventoriesPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
         val page =
-            inventoryQueryService.listInventoriesPage(
+            inventoryQueryService.listBasicInventoriesPage(
                 pageable,
                 productCategoryId,
                 productName,
@@ -38,7 +38,7 @@ class InventoryController(
             ).map { it.toBasicVO() }
 
         val pageVO =
-            ListInventoriesPage200ResponseVO(
+            ListBasicInventoriesPage200ResponseVO(
                 content = page.content,
                 totalElements = page.totalElements,
                 number = page.number,

@@ -30,7 +30,7 @@ class SupplierQueryServiceImpl(
             ?.toTO()
             ?: throw NoSuchElementException("Supplier not found")
 
-    override fun listSuppliersPage(
+    override fun listBasicSuppliersPage(
         pageable: Pageable,
         name: String?,
         contactPerson: String?,

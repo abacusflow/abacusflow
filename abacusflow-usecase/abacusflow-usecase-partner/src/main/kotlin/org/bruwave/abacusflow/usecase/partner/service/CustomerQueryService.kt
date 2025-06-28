@@ -10,7 +10,7 @@ interface CustomerQueryService {
 
     fun getCustomer(name: String): CustomerTO
 
-    fun listCustomersPage(
+    fun listBasicCustomersPage(
         pageable: Pageable,
         name: String?,
         phone: String?,

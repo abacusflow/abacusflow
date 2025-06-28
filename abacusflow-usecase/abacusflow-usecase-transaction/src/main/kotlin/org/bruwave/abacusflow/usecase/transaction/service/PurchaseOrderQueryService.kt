@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable
 import java.util.UUID
 
 interface PurchaseOrderQueryService {
-    fun listPurchaseOrdersPage(
+    fun listBasicPurchaseOrdersPage(
         pageable: Pageable,
         orderNo: UUID?,
         supplierName: String?,

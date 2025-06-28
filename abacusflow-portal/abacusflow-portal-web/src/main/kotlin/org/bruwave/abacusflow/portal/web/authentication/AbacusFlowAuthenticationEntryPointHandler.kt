@@ -12,7 +12,7 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 @Component
-class MyAuthenticationEntryPointHandler(
+class AbacusFlowAuthenticationEntryPointHandler(
     private val objectMapper: ObjectMapper,
 ) : AuthenticationEntryPoint {
     @Throws(IOException::class)

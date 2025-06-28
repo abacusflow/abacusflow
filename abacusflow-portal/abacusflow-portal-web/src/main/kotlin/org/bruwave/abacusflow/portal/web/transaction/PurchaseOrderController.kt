@@ -2,7 +2,7 @@ package org.bruwave.abacusflow.portal.web.transaction
 
 import org.bruwave.abacusflow.portal.web.api.PurchaseOrdersApi
 import org.bruwave.abacusflow.portal.web.model.CreatePurchaseOrderInputVO
-import org.bruwave.abacusflow.portal.web.model.ListPurchaseOrdersPage200ResponseVO
+import org.bruwave.abacusflow.portal.web.model.ListBasicPurchaseOrdersPage200ResponseVO
 import org.bruwave.abacusflow.portal.web.model.PurchaseOrderVO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderCommandService
@@ -17,18 +17,18 @@ class PurchaseOrderController(
     private val purchaseOrderCommandService: PurchaseOrderCommandService,
     private val purchaseOrderQueryService: PurchaseOrderQueryService,
 ) : PurchaseOrdersApi {
-    override fun listPurchaseOrdersPage(
+    override fun listBasicPurchaseOrdersPage(
         pageIndex: Int,
         pageSize: Int,
         orderNo: UUID?,
         supplierName: String?,
         status: String?,
         productName: String?,
-    ): ResponseEntity<ListPurchaseOrdersPage200ResponseVO> {
+    ): ResponseEntity<ListBasicPurchaseOrdersPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
         val page =
-            purchaseOrderQueryService.listPurchaseOrdersPage(
+            purchaseOrderQueryService.listBasicPurchaseOrdersPage(
                 pageable,
                 orderNo = orderNo,
                 supplierName = supplierName,
@@ -37,7 +37,7 @@ class PurchaseOrderController(
             ).map { it.toBasicVO() }
 
         val pageVO =
-            ListPurchaseOrdersPage200ResponseVO(
+            ListBasicPurchaseOrdersPage200ResponseVO(
                 content = page.content,
                 totalElements = page.totalElements,
                 number = page.number,

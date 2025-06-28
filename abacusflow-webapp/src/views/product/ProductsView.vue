@@ -109,7 +109,7 @@ import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTr
 import { useRoute, useRouter } from "vue-router";
 import {
   type BasicProduct,
-  type ListProductsPageRequest,
+  type ListBasicProductsPageRequest,
   type Product,
   type ProductApi,
   ProductType
@@ -186,7 +186,7 @@ const {
   ],
   queryFn: () => {
     const { name, type, enabled } = searchForm;
-    const params: ListProductsPageRequest = {
+    const params: ListBasicProductsPageRequest = {
       pageIndex: pageIndex.value,
       pageSize: pageSize.value,
       name: name || undefined,
@@ -195,7 +195,7 @@ const {
       categoryId: categoryId.value || undefined
     };
 
-    return productApi.listProductsPage(params);
+    return productApi.listBasicProductsPage(params);
   }
 });
 

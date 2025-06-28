@@ -12,7 +12,7 @@ import java.net.URI
 import java.net.URISyntaxException
 
 @Component
-class MyAuthenticationSuccessHandler(
+class AbacusFlowAuthenticationSuccessHandler(
     private val userAuthenticationService: UserAuthenticationService,
 ) : AuthenticationSuccessHandler {
     @Throws(IOException::class, ServletException::class)

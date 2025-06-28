@@ -30,7 +30,7 @@ class CustomerQueryServiceImpl(
             ?.toTO()
             ?: throw NoSuchElementException("Customer not found")
 
-    override fun listCustomersPage(
+    override fun listBasicCustomersPage(
         pageable: Pageable,
         name: String?,
         phone: String?,

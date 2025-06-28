@@ -18,9 +18,9 @@ class UserController(
     private val userCommandService: UserCommandService,
     private val userQueryService: UserQueryService,
 ) : UsersApi {
-    override fun listUsers(): ResponseEntity<List<BasicUserVO>> {
+    override fun listBasicUsers(): ResponseEntity<List<BasicUserVO>> {
         val userVOS =
-            userQueryService.listUsers().map { user ->
+            userQueryService.listBasicUsers().map { user ->
                 user.toBasicVO()
             }
         return ResponseEntity.ok(userVOS)

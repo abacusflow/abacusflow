@@ -116,7 +116,7 @@ const handleEditUser = (user: User) => {
 
 const { data, isPending, refetch } = useQuery({
   queryKey: ["users"],
-  queryFn: () => userApi.listUsers()
+  queryFn: () => userApi.listBasicUsers()
 });
 
 const filteredData = computed(() => {

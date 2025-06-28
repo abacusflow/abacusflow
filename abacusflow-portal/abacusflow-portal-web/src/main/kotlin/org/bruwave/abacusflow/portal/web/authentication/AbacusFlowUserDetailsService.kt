@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 import org.springframework.security.core.userdetails.User as SecurityUser
 
 @Component
-class MyUserDetailsService(
+class AbacusFlowUserDetailsService(
     private val userAuthenticationService: UserAuthenticationService,
 ) : UserDetailsService {
     override fun loadUserByUsername(username: String?): UserDetails? {
@@ -22,10 +22,6 @@ class MyUserDetailsService(
             .accountLocked(user.locked)
             .disabled(!user.enabled)
             .roles(*user.roleNames.toTypedArray())
-//            .disabled(false)
-//            .accountExpired(false)
-//            .credentialsExpired(false)
-//            .accountLocked(false)
             .build()
     }
 }
