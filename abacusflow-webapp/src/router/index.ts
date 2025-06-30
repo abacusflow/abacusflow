@@ -49,7 +49,7 @@ const router = createRouter({
           component: () => import("@/views/transaction/purchase-order/PurchaseOrdersView.vue"),
           meta: {
             title: "采购单管理",
-            icon: "shopping-cart",
+            icon: "shop",
             permission: ["transaction:purchase-order"]
           }
         },
@@ -59,7 +59,7 @@ const router = createRouter({
           component: () => import("@/views/transaction/sale-order/SaleOrdersView.vue"),
           meta: {
             title: "销售单管理",
-            icon: "shopping-cart",
+            icon: "shopping",
             permission: ["transaction:sale-order"]
           }
         }
@@ -81,7 +81,7 @@ const router = createRouter({
           component: () => import("@/views/product/ProductsView.vue"),
           meta: {
             title: "产品管理",
-            icon: "appstore",
+            icon: "inbox",
             permission: ["product:list"]
           }
         },
