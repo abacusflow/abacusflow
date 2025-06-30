@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository
 interface PurchaseOrderItemRepository : JpaRepository<PurchaseOrderItem, Long> {
     fun findByProductId(productId: Long): List<PurchaseOrderItem>
 
+    fun countPurchaseOrderItemByProductId(productId: Long): Long
     // TODO 应该是在PurchaseOrder作为切入点统计呢？还是在PurchaseOrderItem加上orderId 在这统计呢？
 //    @Query(
 //        """
