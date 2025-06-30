@@ -84,7 +84,7 @@ import { computed, inject, reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type {
   BasicSupplier,
-  type ListBasicSuppliersPageRequest,
+  ListBasicSuppliersPageRequest,
   PartnerApi,
   Supplier
 } from "@/core/openapi";

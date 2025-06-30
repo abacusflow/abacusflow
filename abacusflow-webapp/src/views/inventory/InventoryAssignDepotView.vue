@@ -63,7 +63,7 @@ watchEffect(() => {
 
 const { data: depots } = useQuery({
   queryKey: ["depots"],
-  queryFn: () => depotApi.listDepots()
+  queryFn: () => depotApi.listBasicDepots()
 });
 
 const { mutate: assignDepot } = useMutation({

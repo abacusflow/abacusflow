@@ -81,7 +81,7 @@ const {
 
 const { data: categories } = useQuery({
   queryKey: ["categories"],
-  queryFn: () => productApi.listProductCategories()
+  queryFn: () => productApi.listSelectableProductCategories()
 });
 
 // 当查询成功且有数据时，优先使用 API 数据

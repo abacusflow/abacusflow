@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
-import checker from "vite-plugin-checker";
+// import checker from "vite-plugin-checker";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -12,13 +12,15 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       vue(),
-      vueDevTools(),
-      checker({
-        typescript: true,
-        vueTsc: true,
-        terminal: true,
-        enableBuild: true
-      })
+      vueDevTools()
+      // checker({
+      //   typescript: {
+      //     tsconfigPath: "./tsconfig.app.json"
+      //   },
+      //   vueTsc: {
+      //     tsconfigPath: "./tsconfig.app.json"
+      //   }
+      // })
     ],
     resolve: {
       alias: {

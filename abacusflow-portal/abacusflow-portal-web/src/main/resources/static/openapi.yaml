@@ -662,7 +662,7 @@ paths:
         "200":
           description: Product category deleted
 
-  /product-categories-selectable:
+  /product-categories/selectable:
     get:
       operationId: listSelectableProductCategories
       tags:
@@ -1887,6 +1887,11 @@ components:
         name:
           type: string
           description: 分类名称
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+          description: 父分类ID
         parentName:
           type: string
           nullable: true
