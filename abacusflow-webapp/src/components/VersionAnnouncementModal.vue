@@ -6,24 +6,35 @@
       </a-button>
     </template>
 
-    <div style="max-height: 300px; overflow-y: auto">
-      <p>
-        🎉 欢迎使用 <strong>v{{ CURRENT_VERSION }}</strong
-        >，本次更新内容如下：
-      </p>
-      <ul>
-        <li>✅ 客户支持查看最近订单时间</li>
-        <li>✅ 客户页面聚合订单金额、热销商品</li>
-        <li>⚠️ 修复部分状态错误问题</li>
-      </ul>
-    </div>
+    <template #default>
+      <div v-for="item in ANNOUNCEMENTS" :key="item.version">
+        <h3>📌 v{{ item.version }}（{{ item.date }}）</h3>
+        <ul>
+          <li v-for="line in item.content" :key="line" v-html="line"></li>
+        </ul>
+      </div>
+    </template>
   </a-modal>
 </template>
 
 <script setup lang="ts">
-import { CURRENT_VERSION } from "@/constants/version";
+import { VersionAnnouncement } from "@/constants/version";
 import { markAnnouncementAsRead, shouldShowAnnouncement } from "@/util/version";
 import { onMounted, ref } from "vue";
+
+const ANNOUNCEMENTS: VersionAnnouncement[] = [
+  {
+    version: "0.0.1",
+    date: "2025-06-30",
+    content: [
+      "🛡️ 产品删除前必须确保<strong>无关联订单</strong>，避免误删已交易商品",
+      "🧾 新增销售单时支持<strong>当场添加客户</strong>，操作更便捷",
+      "📊 客户 / 供应商列表页添加<strong>历史订单总结信息</strong>，助力销售判断",
+      "📅 销售 / 采购订单支持按<strong>订单日期筛选</strong>，查找更灵活",
+      "🔍 客户 / 供应商 / 产品 / 库存<strong>选择器</strong>现支持模糊搜索，查找更高效"
+    ]
+  }
+];
 
 const visible = ref(false);
 const countdown = ref(10);
