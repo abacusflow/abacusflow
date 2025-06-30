@@ -29,7 +29,9 @@
 
             <!-- 自定义新增项 -->
             <a-flex justify="center" align="center">
-              <a-button type="link" :icon="h(PlusOutlined)" block @click="showAddCustomer = true">添加客户</a-button>
+              <a-button type="link" :icon="h(PlusOutlined)" block @click="showAddCustomer = true"
+                >添加客户</a-button
+              >
             </a-flex>
           </div>
         </template>
@@ -158,8 +160,17 @@
     </a-form-item>
   </a-form>
 
-  <a-drawer title="新增客户" :open="showAddCustomer" :closable="false" @close="showAddCustomer = false">
-    <CustomerAddView v-if="showAddCustomer" v-model:visible="showAddCustomer" @success="refetchCustomers" />
+  <a-drawer
+    title="新增客户"
+    :open="showAddCustomer"
+    :closable="false"
+    @close="showAddCustomer = false"
+  >
+    <CustomerAddView
+      v-if="showAddCustomer"
+      v-model:visible="showAddCustomer"
+      @success="refetchCustomers"
+    />
   </a-drawer>
 </template>
 
@@ -203,7 +214,7 @@ const inventoryApi = inject("inventoryApi") as InventoryApi;
 
 const emit = defineEmits(["success", "update:visible"]);
 
-const { data: customers,refetch:refetchCustomers } = useQuery({
+const { data: customers, refetch: refetchCustomers } = useQuery({
   queryKey: ["customers"],
   queryFn: () => partnerApi.listSelectableCustomers()
 });
