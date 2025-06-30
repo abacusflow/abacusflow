@@ -13,11 +13,3 @@ fun Customer.toTO() =
         createdAt = createdAt,
         updatedAt = updatedAt,
     )
-
-fun Customer.toBasicTO() =
-    BasicCustomerTO(
-        id = id,
-        name = name,
-        phone = phone,
-        address = address,
-    )

@@ -80,18 +80,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive, ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import type {
   BasicSupplier,
   ListBasicSuppliersPageRequest,
   PartnerApi,
   Supplier
 } from "@/core/openapi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { message, Tag } from "ant-design-vue";
+import { computed, h, inject, reactive, ref } from "vue";
 import SupplierAddView from "./SupplierAddView.vue";
 import SupplierEditView from "./SupplierEditView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
-import { message } from "ant-design-vue";
 
 const partnerApi = inject("partnerApi") as PartnerApi;
 const queryClient = useQueryClient();
@@ -191,6 +191,28 @@ const columns: StrictTableColumnsType<BasicSupplier> = [
   { title: "联系人", dataIndex: "contactPerson", key: "contactPerson" },
   { title: "联系电话", dataIndex: "phone", key: "phone" },
   { title: "联系地址", dataIndex: "address", key: "address" },
+  {
+    title: "历史订单总数",
+    dataIndex: "totalOrderCount",
+    key: "totalOrderCount",
+    customRender: ({ text }) => {
+      return h(Tag, { color: "blue" }, () => text);
+    }
+  },
+  {
+    title: "历史订单总金额",
+    dataIndex: "totalOrderAmount",
+    key: "totalOrderAmount",
+    customRender: ({ text }) => {
+      return h(Tag, { color: "blue" }, () => text.toFixed(2));
+    }
+  },
+  {
+    title: "最近一次交易时间",
+    dataIndex: "lastOrderTime",
+    key: "lastOrderTime",
+    customRender: ({ text }) => (text ? new Date(text).toLocaleString("zh-CN") : "")
+  },
   { title: "操作", key: "action" }
 ];
 </script>
