@@ -17,13 +17,10 @@ class InventoryUnitController(
     private val inventoryUnitQueryService: InventoryUnitQueryService,
     private val inventoryUnitCommandService: InventoryUnitCommandService,
 ) : InventoryUnitsApi {
-    override fun listSelectableInventoryUnits(): ResponseEntity<List<SelectableInventoryUnitVO>> {
+    override fun listSelectableInventoryUnits(statuses: List<InventoryUnitStatusVO>?): ResponseEntity<List<SelectableInventoryUnitVO>> {
         val unitVOS =
             inventoryUnitQueryService.listInventoryUnitsWithTitle(
-                listOf(
-                    InventoryUnitStatusVO.normal.name,
-                    InventoryUnitStatusVO.reversed.name,
-                ),
+                statuses?.map { it.name },
             ).map { unit ->
                 SelectableInventoryUnitVO(
                     id = unit.id,

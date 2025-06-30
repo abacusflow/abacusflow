@@ -970,6 +970,15 @@ paths:
       tags:
         - inventory
       summary: List all inventoryUnits for selection
+      parameters:
+        - name: statuses
+          in: query
+          required: false
+          description: 筛选的库存单元状态列表
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/InventoryUnitStatus"
       responses:
         "200":
           description: List of inventoryUnits for selection
