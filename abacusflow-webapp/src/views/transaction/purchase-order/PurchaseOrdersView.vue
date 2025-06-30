@@ -13,6 +13,15 @@
           <a-form-item label="采购单号">
             <a-input v-model:value="searchForm.orderNo" placeholder="请输入采购单号" allow-clear />
           </a-form-item>
+
+          <a-form-item label="订单日期" name="orderDate">
+            <a-date-picker
+              v-model:value="searchForm.orderDate"
+              format="YYYY/MM/DD"
+              style="width: 100%"
+            />
+          </a-form-item>
+
           <a-form-item label="供应商名">
             <a-input
               v-model:value="searchForm.supplierName"
@@ -20,6 +29,7 @@
               allow-clear
             />
           </a-form-item>
+
           <a-form-item label="产品名">
             <a-input
               v-model:value="searchForm.productName"
@@ -27,6 +37,7 @@
               allow-clear
             />
           </a-form-item>
+
           <a-form-item>
             <a-space>
               <a-button type="primary" @click="handleSearch">搜索</a-button>
@@ -157,21 +168,21 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive, ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import {
   type BasicPurchaseOrder,
   type ListBasicPurchaseOrdersPageRequest,
   OrderStatus,
   type TransactionApi
 } from "@/core/openapi";
-import PurchaseOrderAddView from "./PurchaseOrderAddView.vue";
-import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { translateOrderStatus } from "@/util/orderUtil";
+import { dateToFormattedString, isWithinDays } from "@/util/timestampUtils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { message } from "ant-design-vue";
 import dayjs from "dayjs";
-import { dateToFormattedString, isWithinDays } from "@/util/timestampUtils";
-import { translateOrderStatus } from "@/util/orderUtil";
+import { computed, inject, reactive, ref } from "vue";
+import PurchaseOrderAddView from "./PurchaseOrderAddView.vue";
+import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();
@@ -186,7 +197,8 @@ const searchForm = reactive({
   orderNo: undefined,
   status: undefined,
   productName: undefined,
-  supplierName: undefined
+  supplierName: undefined,
+  orderDate: undefined
 });
 
 const pagination = computed(() => ({
@@ -212,6 +224,7 @@ const resetSearch = () => {
   searchForm.status = undefined;
   searchForm.productName = undefined;
   searchForm.supplierName = undefined;
+  searchForm.orderDate = undefined;
 
   refetch();
 };
@@ -233,16 +246,18 @@ const {
     searchForm.supplierName,
     searchForm.status,
     searchForm.productName,
+    searchForm.orderDate,
     pageIndex,
     pageSize
   ],
   queryFn: () => {
-    const { orderNo, supplierName, status, productName } = searchForm;
+    const { orderNo, supplierName, status, productName, orderDate } = searchForm;
     const params: ListBasicPurchaseOrdersPageRequest = {
       orderNo: orderNo || undefined,
       supplierName: supplierName || undefined,
       status: status || undefined,
       productName: productName || undefined,
+      orderDate: orderDate || undefined,
       pageIndex: pageIndex.value,
       pageSize: pageSize.value
     };

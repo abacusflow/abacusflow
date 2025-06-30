@@ -4,6 +4,7 @@ import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import java.time.LocalDate
 import java.util.UUID
 
 interface PurchaseOrderQueryService {
@@ -13,6 +14,7 @@ interface PurchaseOrderQueryService {
         supplierName: String?,
         status: String?,
         productName: String?,
+        orderDate: LocalDate?,
     ): Page<BasicPurchaseOrderTO>
 
     fun getPurchaseOrder(id: Long): PurchaseOrderTO

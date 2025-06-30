@@ -1032,6 +1032,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: orderDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: List of sale orders page
@@ -1180,6 +1186,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: orderDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: List of purchase orders page

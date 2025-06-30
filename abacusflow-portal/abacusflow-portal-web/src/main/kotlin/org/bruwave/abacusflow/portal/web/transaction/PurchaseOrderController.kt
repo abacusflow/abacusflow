@@ -10,6 +10,7 @@ import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderQueryServ
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 import java.util.UUID
 
 @RestController
@@ -24,6 +25,7 @@ class PurchaseOrderController(
         supplierName: String?,
         status: String?,
         productName: String?,
+        orderDate: LocalDate?
     ): ResponseEntity<ListBasicPurchaseOrdersPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 
@@ -34,6 +36,7 @@ class PurchaseOrderController(
                 supplierName = supplierName,
                 status = status,
                 productName = productName,
+                orderDate = orderDate
             ).map { it.toBasicVO() }
 
         val pageVO =

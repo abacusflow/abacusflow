@@ -3,8 +3,10 @@ package org.bruwave.abacusflow.usecase.transaction.service.impl
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMERS
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEMS
+import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIERS
 import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
@@ -19,8 +21,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @Service
@@ -34,23 +34,28 @@ class SaleOrderQueryServiceImpl(
         customerName: String?,
         status: String?,
         productName: String?,
+        orderDate: LocalDate?,
     ): Page<BasicSaleOrderTO> {
-        val conditions = mutableListOf<Condition>()
+        val conditions = mutableListOf<Condition>().apply {
+            orderNo?.let {
+                add(SALE_ORDERS.NO.eq(it))
+            }
 
-        orderNo?.let {
-            conditions += SALE_ORDERS.NO.eq(it)
-        }
+            orderDate?.let {
+                add(SALE_ORDERS.ORDER_DATE.eq(it))
+            }
 
-        customerName?.takeIf { it.isNotBlank() }?.let {
-            conditions += CUSTOMERS.NAME.containsIgnoreCase(it)
-        }
+            customerName?.takeIf { it.isNotBlank() }?.let {
+                add(CUSTOMERS.NAME.containsIgnoreCase(it))
+            }
 
-        status?.takeIf { it.isNotBlank() }?.let {
-            conditions += SALE_ORDERS.STATUS.eq(it)
-        }
+            status?.takeIf { it.isNotBlank() }?.let {
+                add(SALE_ORDERS.STATUS.eq(it))
+            }
 
-        productName?.takeIf { it.isNotBlank() }?.let {
-            conditions += PRODUCTS.NAME.containsIgnoreCase(it)
+            productName?.takeIf { it.isNotBlank() }?.let {
+                add(PRODUCTS.NAME.containsIgnoreCase(it))
+            }
         }
 
         val joinedTables =
