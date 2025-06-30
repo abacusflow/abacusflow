@@ -5,8 +5,18 @@
       name="customerId"
       :rules="[{ required: true, message: '请选择客户' }]"
     >
-      <a-select v-model:value="formState.customerId" placeholder="请选择客户">
-        <a-select-option v-for="customer in customers" :key="customer.id" :value="customer.id">
+      <a-select
+        v-model:value="formState.customerId"
+        show-search
+        placeholder="请选择客户"
+        optionFilterProp="label"
+      >
+        <a-select-option
+          v-for="customer in customers"
+          :key="customer.id"
+          :value="customer.id"
+          :label="customer.name"
+        >
           {{ customer.name }}
         </a-select-option>
       </a-select>
@@ -32,11 +42,17 @@
           :name="['orderItems', index, 'inventoryUnitId']"
           :rules="[{ required: true, message: '请选择库存产品' }]"
         >
-          <a-select v-model:value="item.inventoryUnitId" placeholder="请选择库存产品">
+          <a-select
+            v-model:value="item.inventoryUnitId"
+            show-search
+            placeholder="请选择库存产品"
+            optionFilterProp="label"
+          >
             <a-select-option
               v-for="inventoryUnit in selectableInventoryUnits"
               :key="inventoryUnit.id"
               :value="inventoryUnit.id"
+              :label="inventoryUnit.title"
             >
               {{ inventoryUnit.title }}
             </a-select-option>
