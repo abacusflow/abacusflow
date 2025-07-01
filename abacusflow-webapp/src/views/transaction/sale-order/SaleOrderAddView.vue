@@ -54,6 +54,7 @@
       >
         <!-- 产品名称 -->
         <a-form-item
+          class="compact-form-item"
           label="库存产品"
           :name="['orderItems', index, 'inventoryUnitId']"
           :rules="[{ required: true, message: '请选择库存产品' }]"
@@ -77,6 +78,7 @@
 
         <!-- 数量 -->
         <a-form-item
+          class="compact-form-item"
           label="数量"
           :name="['orderItems', index, 'quantity']"
           :rules="[{ required: true, message: '请输入数量' }]"
@@ -105,6 +107,7 @@
 
         <!-- 单价 -->
         <a-form-item
+          class="compact-form-item"
           label="单价"
           :name="['orderItems', index, 'unitPrice']"
           :rules="[{ required: true, message: '请输入单价' }]"
@@ -119,6 +122,7 @@
         </a-form-item>
 
         <a-form-item
+          class="compact-form-item"
           label="折扣率"
           :name="['orderItems', index, 'discountFactor']"
           :rules="[{ required: true, message: '请输入折扣率' }]"
@@ -309,3 +313,9 @@ const handleOk = () => {
     });
 };
 </script>
+
+<style scoped>
+.compact-form-item {
+  margin-bottom: 6px !important;
+}
+</style>
