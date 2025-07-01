@@ -4,7 +4,6 @@ import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEMS
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
 import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIERS
 import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
@@ -33,24 +32,30 @@ class PurchaseOrderQueryServiceImpl(
         supplierName: String?,
         status: String?,
         productName: String?,
+        orderDate: LocalDate?,
     ): Page<BasicPurchaseOrderTO> {
-        val conditions = mutableListOf<Condition>()
+        val conditions = mutableListOf<Condition>().apply {
+            orderNo?.let {
+                add(PURCHASE_ORDERS.NO.eq(it))
+            }
 
-        orderNo?.let {
-            conditions += PURCHASE_ORDERS.NO.eq(it)
+            orderDate?.let {
+                add(PURCHASE_ORDERS.ORDER_DATE.eq(it))
+            }
+
+            supplierName?.takeIf { it.isNotBlank() }?.let {
+                add(SUPPLIERS.NAME.containsIgnoreCase(it))
+            }
+
+            status?.takeIf { it.isNotBlank() }?.let {
+                add(PURCHASE_ORDERS.STATUS.eq(it))
+            }
+
+            productName?.takeIf { it.isNotBlank() }?.let {
+                add(PRODUCTS.NAME.containsIgnoreCase(it))
+            }
         }
 
-        supplierName?.takeIf { it.isNotBlank() }?.let {
-            conditions += SUPPLIERS.NAME.containsIgnoreCase(it)
-        }
-
-        status?.takeIf { it.isNotBlank() }?.let {
-            conditions += PURCHASE_ORDERS.STATUS.eq(it)
-        }
-
-        productName?.takeIf { it.isNotBlank() }?.let {
-            conditions += PRODUCTS.NAME.containsIgnoreCase(it)
-        }
 
         val joinedTables =
             PURCHASE_ORDERS

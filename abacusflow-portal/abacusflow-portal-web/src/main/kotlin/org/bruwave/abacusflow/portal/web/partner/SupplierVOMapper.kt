@@ -12,6 +12,9 @@ fun BasicSupplierTO.toBasicVO(): BasicSupplierVO =
         contactPerson = contactPerson,
         phone = phone,
         address = address,
+        totalOrderCount = totalOrderCount,
+        totalOrderAmount = totalOrderAmount.toDouble(),
+        lastOrderTime = lastOrderTime?.toEpochMilli(),
     )
 
 fun SupplierTO.toVO(): SupplierVO =

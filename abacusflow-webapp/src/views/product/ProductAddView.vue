@@ -21,8 +21,18 @@
       name="categoryId"
       :rules="[{ required: true, message: '请选择分类' }]"
     >
-      <a-select v-model:value="formState.categoryId" placeholder="请选择分类">
-        <a-select-option v-for="category in categories" :key="category.id" :value="category.id">
+      <a-select
+        v-model:value="formState.categoryId"
+        show-search
+        placeholder="请选择分类"
+        optionFilterProp="label"
+      >
+        <a-select-option
+          v-for="category in categories"
+          :key="category.id"
+          :value="category.id"
+          :label="category.name"
+        >
           {{ category.name }}
         </a-select-option>
       </a-select>
@@ -72,7 +82,7 @@ const emit = defineEmits(["success", "update:visible"]);
 
 const { data: categories } = useQuery({
   queryKey: ["categories"],
-  queryFn: () => productApi.listProductCategories()
+  queryFn: () => productApi.listSelectableProductCategories()
 });
 
 const { mutate: createProduct } = useMutation({

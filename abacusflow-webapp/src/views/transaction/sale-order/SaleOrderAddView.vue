@@ -5,10 +5,36 @@
       name="customerId"
       :rules="[{ required: true, message: '请选择客户' }]"
     >
-      <a-select v-model:value="formState.customerId" placeholder="请选择客户">
-        <a-select-option v-for="customer in customers" :key="customer.id" :value="customer.id">
+      <a-select
+        v-model:value="formState.customerId"
+        show-search
+        placeholder="请选择客户"
+        optionFilterProp="label"
+      >
+        <a-select-option
+          v-for="customer in customers"
+          :key="customer.id"
+          :value="customer.id"
+          :label="customer.name"
+        >
           {{ customer.name }}
         </a-select-option>
+
+        <template #dropdownRender="{ menuNode }">
+          <div>
+            <!-- 默认菜单 -->
+            <component :is="menuNode" />
+
+            <a-divider style="margin: 4px 0" />
+
+            <!-- 自定义新增项 -->
+            <a-flex justify="center" align="center">
+              <a-button type="link" :icon="h(PlusOutlined)" block @click="showAddCustomer = true"
+                >添加客户</a-button
+              >
+            </a-flex>
+          </div>
+        </template>
       </a-select>
     </a-form-item>
 
@@ -32,11 +58,17 @@
           :name="['orderItems', index, 'inventoryUnitId']"
           :rules="[{ required: true, message: '请选择库存产品' }]"
         >
-          <a-select v-model:value="item.inventoryUnitId" placeholder="请选择库存产品">
+          <a-select
+            v-model:value="item.inventoryUnitId"
+            show-search
+            placeholder="请选择库存产品"
+            optionFilterProp="label"
+          >
             <a-select-option
               v-for="inventoryUnit in selectableInventoryUnits"
               :key="inventoryUnit.id"
               :value="inventoryUnit.id"
+              :label="inventoryUnit.title"
             >
               {{ inventoryUnit.title }}
             </a-select-option>
@@ -127,11 +159,25 @@
       </a-space>
     </a-form-item>
   </a-form>
+
+  <a-drawer
+    title="新增客户"
+    :open="showAddCustomer"
+    :closable="false"
+    @close="showAddCustomer = false"
+  >
+    <CustomerAddView
+      v-if="showAddCustomer"
+      v-model:visible="showAddCustomer"
+      @success="refetchCustomers"
+    />
+  </a-drawer>
 </template>
 
 <script lang="ts" setup>
-import { inject, reactive, ref } from "vue";
+import { inject, reactive, ref, h } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
+import { PlusOutlined } from "@ant-design/icons-vue";
 import {
   type CreateSaleOrderInput,
   InventoryApi,
@@ -144,8 +190,11 @@ import {
 } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import dayjs, { Dayjs } from "dayjs";
+import CustomerAddView from "@/views/partner/customer/CustomerAddView.vue";
 
 const formRef = ref<FormInstance>();
+const showAddCustomer = ref(false);
+
 const dateFormat = "YYYY/MM/DD";
 type CreateSaleOrderInputForm = Omit<CreateSaleOrderInput, "orderDate" | "orderItems"> & {
   orderDate: Dayjs;
@@ -165,7 +214,7 @@ const inventoryApi = inject("inventoryApi") as InventoryApi;
 
 const emit = defineEmits(["success", "update:visible"]);
 
-const { data: customers } = useQuery({
+const { data: customers, refetch: refetchCustomers } = useQuery({
   queryKey: ["customers"],
   queryFn: () => partnerApi.listSelectableCustomers()
 });

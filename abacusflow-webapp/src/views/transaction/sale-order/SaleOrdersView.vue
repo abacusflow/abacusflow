@@ -13,6 +13,15 @@
           <a-form-item label="销售单号">
             <a-input v-model:value="searchForm.orderNo" placeholder="请输入销售单号" allow-clear />
           </a-form-item>
+
+          <a-form-item label="订单日期" name="orderDate">
+            <a-date-picker
+              v-model:value="searchForm.orderDate"
+              format="YYYY/MM/DD"
+              style="width: 100%"
+            />
+          </a-form-item>
+
           <a-form-item label="客户名">
             <a-input
               v-model:value="searchForm.customerName"
@@ -20,6 +29,7 @@
               allow-clear
             />
           </a-form-item>
+
           <a-form-item label="产品名">
             <a-input
               v-model:value="searchForm.productName"
@@ -27,6 +37,7 @@
               allow-clear
             />
           </a-form-item>
+
           <a-form-item>
             <a-space>
               <a-button type="primary" @click="handleSearch">搜索</a-button>
@@ -158,20 +169,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive, ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import {
   type BasicSaleOrder,
   type ListBasicSaleOrdersPageRequest,
   OrderStatus,
   type TransactionApi
 } from "@/core/openapi";
-import SaleOrderAddView from "./SaleOrderAddView.vue";
-import SaleOrderEditView from "./SaleOrderDetailView.vue";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { dateToFormattedString, isWithinDays } from "@/util/timestampUtils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { message } from "ant-design-vue";
 import dayjs from "dayjs";
-import { dateToFormattedString, isWithinDays } from "@/util/timestampUtils";
+import { computed, inject, reactive, ref } from "vue";
+import SaleOrderAddView from "./SaleOrderAddView.vue";
+import SaleOrderEditView from "./SaleOrderDetailView.vue";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();
@@ -186,7 +197,8 @@ const searchForm = reactive({
   orderNo: undefined,
   status: undefined,
   productName: undefined,
-  customerName: undefined
+  customerName: undefined,
+  orderDate: undefined
 });
 
 const pagination = computed(() => ({
@@ -212,6 +224,7 @@ const resetSearch = () => {
   searchForm.status = undefined;
   searchForm.productName = undefined;
   searchForm.customerName = undefined;
+  searchForm.orderDate = undefined;
 
   refetch();
 };
@@ -233,16 +246,18 @@ const {
     searchForm.customerName,
     searchForm.status,
     searchForm.productName,
+    searchForm.orderDate,
     pageIndex,
     pageSize
   ],
   queryFn: () => {
-    const { orderNo, customerName, status, productName } = searchForm;
+    const { orderNo, customerName, status, productName, orderDate } = searchForm;
     const params: ListBasicSaleOrdersPageRequest = {
       orderNo: orderNo || undefined,
       customerName: customerName || undefined,
       status: status || undefined,
       productName: productName || undefined,
+      orderDate: orderDate || undefined,
       pageIndex: pageIndex.value,
       pageSize: pageSize.value
     };

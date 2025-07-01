@@ -3,6 +3,7 @@ package org.bruwave.abacusflow.usecase.product.service.impl
 import org.bruwave.abacusflow.db.product.ProductCategoryRepository
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.product.Product
+import org.bruwave.abacusflow.product.service.ProductDeletionChecker
 import org.bruwave.abacusflow.usecase.product.CreateProductInputTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.UpdateProductInputTO
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 class ProductCommandServiceImpl(
     private val productRepository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
+    private val productDeletionChecker: ProductDeletionChecker,
 ) : ProductCommandService {
     override fun createProduct(input: CreateProductInputTO): ProductTO {
         val newProductCategory =
@@ -74,6 +76,10 @@ class ProductCommandServiceImpl(
             productRepository
                 .findById(id)
                 .orElseThrow { NoSuchElementException("Product not found with id: $id") }
+
+        require(productDeletionChecker.canDelete(product)) {
+            "该产品尚有关联库存、采购单或销售单，无法删除"
+        }
 
         productRepository.delete(product)
 

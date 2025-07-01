@@ -51,7 +51,7 @@ const selectedKeys = ref<(string | number)[]>([]);
 // ✅ 查询数据
 const { data, isPending } = useQuery({
   queryKey: ["productCategories"],
-  queryFn: () => productApi.listProductCategories()
+  queryFn: () => productApi.listSelectableProductCategories()
 });
 
 const treeData = computed<TreeCategory[]>(() => {

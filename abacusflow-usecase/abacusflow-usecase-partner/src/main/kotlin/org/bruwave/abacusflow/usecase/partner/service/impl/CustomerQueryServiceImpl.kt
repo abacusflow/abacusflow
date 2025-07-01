@@ -2,16 +2,22 @@ package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.CustomerRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMERS
+import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDERS
+import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEMS
 import org.bruwave.abacusflow.usecase.partner.BasicCustomerTO
 import org.bruwave.abacusflow.usecase.partner.CustomerTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toTO
 import org.bruwave.abacusflow.usecase.partner.service.CustomerQueryService
 import org.jooq.Condition
 import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.time.OffsetDateTime
+import kotlin.jvm.java
 
 @Service
 class CustomerQueryServiceImpl(
@@ -36,18 +42,18 @@ class CustomerQueryServiceImpl(
         phone: String?,
         address: String?,
     ): Page<BasicCustomerTO> {
-        val conditions = mutableListOf<Condition>()
+        val conditions = mutableListOf<Condition>().apply {
+            name?.takeIf { it.isNotBlank() }?.let {
+                add(CUSTOMERS.NAME.containsIgnoreCase(it))
+            }
 
-        name?.takeIf { it.isNotBlank() }?.let {
-            conditions += CUSTOMERS.NAME.containsIgnoreCase(it)
-        }
+            phone?.takeIf { it.isNotBlank() }?.let {
+                add(CUSTOMERS.PHONE.containsIgnoreCase(it))
+            }
 
-        phone?.takeIf { it.isNotBlank() }?.let {
-            conditions += CUSTOMERS.PHONE.containsIgnoreCase(it)
-        }
-
-        address?.takeIf { it.isNotBlank() }?.let {
-            conditions += CUSTOMERS.ADDRESS.containsIgnoreCase(it)
+            address?.takeIf { it.isNotBlank() }?.let {
+                add(CUSTOMERS.ADDRESS.containsIgnoreCase(it))
+            }
         }
 
         // 1. 查询总数
@@ -66,9 +72,25 @@ class CustomerQueryServiceImpl(
                     CUSTOMERS.NAME,
                     CUSTOMERS.PHONE,
                     CUSTOMERS.ADDRESS,
+                    // 聚合字段
+                    DSL.countDistinct(SALE_ORDERS.ID).`as`("total_order_count"),
+                    DSL.sum(
+                        SALE_ORDER_ITEMS.UNIT_PRICE
+                            .mul(SALE_ORDER_ITEMS.QUANTITY)
+                            .mul(SALE_ORDER_ITEMS.DISCOUNT_FACTOR)
+                    ).`as`("total_order_amount"),
+                    DSL.max(SALE_ORDERS.CREATED_AT).`as`("last_order_time")
                 )
                 .from(CUSTOMERS)
+                .leftJoin(SALE_ORDERS).on(SALE_ORDERS.CUSTOMER_ID.eq(CUSTOMERS.ID))
+                .leftJoin(SALE_ORDER_ITEMS).on(SALE_ORDER_ITEMS.ORDER_ID.eq(SALE_ORDERS.ID))
                 .where(conditions)
+                .groupBy(
+                    CUSTOMERS.ID,
+                    CUSTOMERS.NAME,
+                    CUSTOMERS.PHONE,
+                    CUSTOMERS.ADDRESS
+                )
                 .orderBy(CUSTOMERS.CREATED_AT.desc()) // 或 pageable.sort 转换
                 .offset(pageable.offset)
                 .limit(pageable.pageSize)
@@ -79,6 +101,9 @@ class CustomerQueryServiceImpl(
                         name = it[CUSTOMERS.NAME]!!,
                         phone = it[CUSTOMERS.PHONE],
                         address = it[CUSTOMERS.ADDRESS],
+                        totalOrderCount = it.get("total_order_count", Int::class.java) ?: 0,
+                        totalOrderAmount = it.get("total_order_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
+                        lastOrderTime = it.get("last_order_time", OffsetDateTime::class.java)?.toInstant(),
                     )
                 }
 

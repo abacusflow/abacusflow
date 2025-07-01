@@ -4,6 +4,7 @@ import org.bruwave.abacusflow.portal.web.api.ProductCategoriesApi
 import org.bruwave.abacusflow.portal.web.model.BasicProductCategoryVO
 import org.bruwave.abacusflow.portal.web.model.CreateProductCategoryInputVO
 import org.bruwave.abacusflow.portal.web.model.ProductCategoryVO
+import org.bruwave.abacusflow.portal.web.model.SelectableProductCategoryVO
 import org.bruwave.abacusflow.portal.web.model.UpdateProductCategoryInputVO
 import org.bruwave.abacusflow.portal.web.product.mapper.toVO
 import org.bruwave.abacusflow.usecase.product.CreateProductCategoryInputTO
@@ -25,6 +26,19 @@ class ProductCategoryController(
                 category.toVO()
             }
         return ResponseEntity.ok(categoryVOs)
+    }
+
+    override fun listSelectableProductCategories(): ResponseEntity<List<SelectableProductCategoryVO>> {
+        val productCategoryVOs =
+            productCategoryQueryService.listProductCategories().map {
+                SelectableProductCategoryVO(
+                    it.id,
+                    it.name,
+                    it.parentId,
+                    it.parentName,
+                )
+            }
+        return ResponseEntity.ok(productCategoryVOs)
     }
 
     override fun getProductCategory(id: Long): ResponseEntity<ProductCategoryVO> {

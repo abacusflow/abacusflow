@@ -29,14 +29,6 @@
                 />
               </a-form-item>
 
-              <a-form-item label="储存点" name="depotName">
-                <a-input
-                  v-model:value="searchForm.depotName"
-                  placeholder="请输入储存点名"
-                  allow-clear
-                />
-              </a-form-item>
-
               <a-form-item label="产品类型" name="productType">
                 <a-select v-model:value="searchForm.productType" placeholder="请选择产品类型">
                   <a-select-option
@@ -47,6 +39,14 @@
                     {{ $translateProductType(value) }}
                   </a-select-option>
                 </a-select>
+              </a-form-item>
+
+              <a-form-item label="储存点" name="depotName">
+                <a-input
+                  v-model:value="searchForm.depotName"
+                  placeholder="请输入储存点名"
+                  allow-clear
+                />
               </a-form-item>
 
               <a-form-item>
@@ -148,8 +148,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, h, inject, nextTick, reactive, ref, watch } from "vue";
-import { useQuery } from "@tanstack/vue-query";
+import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
+import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import {
   type BasicInventory,
   type BasicInventoryUnit,
@@ -158,13 +158,13 @@ import {
   type ListBasicInventoriesPageRequest,
   ProductType
 } from "@/core/openapi";
-import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
+import { translateProductType } from "@/util/productUtils";
+import { useQuery } from "@tanstack/vue-query";
+import { type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
+import { computed, h, inject, nextTick, reactive, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
-import { translateProductType } from "@/util/productUtils";
-import { type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
-import ProductCategoryTreeComponent from "@/components/product/ProductCategoryTreeComponent.vue";
-import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();

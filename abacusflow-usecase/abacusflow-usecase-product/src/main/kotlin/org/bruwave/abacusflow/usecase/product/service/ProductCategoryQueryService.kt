@@ -7,4 +7,6 @@ interface ProductCategoryQueryService {
     fun getProductCategory(id: Long): ProductCategoryTO
 
     fun listBasicProductCategories(): List<BasicProductCategoryTO>
+
+    fun listProductCategories(): List<ProductCategoryTO>
 }

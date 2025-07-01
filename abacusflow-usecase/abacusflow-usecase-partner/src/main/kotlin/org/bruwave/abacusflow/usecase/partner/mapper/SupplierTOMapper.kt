@@ -13,12 +13,3 @@ fun Supplier.toTO() =
         createdAt = createdAt,
         updatedAt = updatedAt,
     )
-
-fun Supplier.toBasicTO() =
-    BasicSupplierTO(
-        id = id,
-        name = name,
-        contactPerson = contactPerson,
-        phone = phone,
-        address = address,
-    )

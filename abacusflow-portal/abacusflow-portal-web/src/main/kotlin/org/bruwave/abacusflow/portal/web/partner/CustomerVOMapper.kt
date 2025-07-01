@@ -7,10 +7,13 @@ import org.bruwave.abacusflow.usecase.partner.CustomerTO
 
 fun BasicCustomerTO.toBasicVO(): BasicCustomerVO =
     BasicCustomerVO(
-        id,
-        name,
-        phone,
-        address,
+        id = id,
+        name = name,
+        phone = phone,
+        address = address,
+        totalOrderCount = totalOrderCount,
+        totalOrderAmount = totalOrderAmount.toDouble(),
+        lastOrderTime = lastOrderTime?.toEpochMilli(),
     )
 
 fun CustomerTO.toVO(): CustomerVO =

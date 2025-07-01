@@ -662,7 +662,7 @@ paths:
         "200":
           description: Product category deleted
 
-  /product-categories-selectable:
+  /product-categories/selectable:
     get:
       operationId: listSelectableProductCategories
       tags:
@@ -1032,6 +1032,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: orderDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: List of sale orders page
@@ -1180,6 +1186,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: orderDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: List of purchase orders page
@@ -1443,6 +1455,8 @@ components:
       required:
         - id
         - name
+        - totalOrderCount
+        - totalOrderAmount
       properties:
         id:
           type: integer
@@ -1463,6 +1477,25 @@ components:
           type: string
           nullable: true
           description: 地址
+        totalOrderCount:
+          type: integer
+          format: int32
+          description: 历史订单总数
+        totalOrderAmount:
+          type: number
+          format: double
+          description: 历史订单总金额
+        lastOrderTime:
+          type: long
+          format: format
+          nullable: true
+          description: 最近一次交易时间
+        # topProductsSummary:
+        #   type: array
+        #   items:
+        #     type: string
+        #   maxItems: 10
+        #   description: 购买频率或金额排名前10的商品名称列表
 
     CreateSupplierInput:
       type: object
@@ -1567,6 +1600,8 @@ components:
       required:
         - id
         - name
+        - totalOrderCount
+        - totalOrderAmount
       properties:
         id:
           type: integer
@@ -1583,6 +1618,25 @@ components:
           type: string
           nullable: true
           description: 地址
+        totalOrderCount:
+          type: integer
+          format: int32
+          description: 历史订单总数
+        totalOrderAmount:
+          type: number
+          format: double
+          description: 历史订单总金额
+        lastOrderTime:
+          type: long
+          format: format
+          nullable: true
+          description: 最近一次交易时间
+        # topProductsSummary:
+        #   type: array
+        #   items:
+        #     type: string
+        #   maxItems: 10
+        #   description: 购买频率或金额排名前10的商品名称列表
 
     CreateCustomerInput:
       type: object
@@ -1887,6 +1941,11 @@ components:
         name:
           type: string
           description: 分类名称
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+          description: 父分类ID
         parentName:
           type: string
           nullable: true

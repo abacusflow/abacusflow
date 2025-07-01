@@ -1,6 +1,8 @@
 package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEMS
 import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIERS
 import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
@@ -8,10 +10,13 @@ import org.bruwave.abacusflow.usecase.partner.mapper.toTO
 import org.bruwave.abacusflow.usecase.partner.service.SupplierQueryService
 import org.jooq.Condition
 import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.time.OffsetDateTime
 
 @Service
 class SupplierQueryServiceImpl(
@@ -69,9 +74,25 @@ class SupplierQueryServiceImpl(
                     SUPPLIERS.CONTACT_PERSON,
                     SUPPLIERS.PHONE,
                     SUPPLIERS.ADDRESS,
+                    // 聚合字段
+                    DSL.countDistinct(PURCHASE_ORDERS.ID).`as`("total_order_count"),
+                    DSL.sum(
+                        PURCHASE_ORDER_ITEMS.UNIT_PRICE
+                            .mul(PURCHASE_ORDER_ITEMS.QUANTITY)
+                    ).`as`("total_order_amount"),
+                    DSL.max(PURCHASE_ORDERS.CREATED_AT).`as`("last_order_time")
                 )
                 .from(SUPPLIERS)
+                .leftJoin(PURCHASE_ORDERS).on(PURCHASE_ORDERS.SUPPLIER_ID.eq(SUPPLIERS.ID))
+                .leftJoin(PURCHASE_ORDER_ITEMS).on(PURCHASE_ORDER_ITEMS.ORDER_ID.eq(PURCHASE_ORDERS.ID))
                 .where(conditions)
+                .groupBy(
+                    SUPPLIERS.ID,
+                    SUPPLIERS.NAME,
+                    SUPPLIERS.CONTACT_PERSON,
+                    SUPPLIERS.PHONE,
+                    SUPPLIERS.ADDRESS,
+                )
                 .orderBy(SUPPLIERS.CREATED_AT.desc())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize)
@@ -83,6 +104,9 @@ class SupplierQueryServiceImpl(
                         contactPerson = it[SUPPLIERS.CONTACT_PERSON],
                         phone = it[SUPPLIERS.PHONE],
                         address = it[SUPPLIERS.ADDRESS],
+                        totalOrderCount = it.get("total_order_count", Int::class.java) ?: 0,
+                        totalOrderAmount = it.get("total_order_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
+                        lastOrderTime = it.get("last_order_time", OffsetDateTime::class.java)?.toInstant(),
                     )
                 }
 
