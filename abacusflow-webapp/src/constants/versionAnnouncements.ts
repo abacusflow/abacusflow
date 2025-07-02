@@ -6,6 +6,14 @@ export interface VersionAnnouncement {
 
 export const ANNOUNCEMENTS: VersionAnnouncement[] = [
   {
+    version: "0.0.2",
+    date: "2025-07-02",
+    content: [
+      "🧾 <strong>库存打印</strong>支持列表式打印",
+      "📊 <strong>销售 / 采购订单-详情</strong>订单明细列表展示"
+    ]
+  },
+  {
     version: "0.0.1",
     date: "2025-06-30",
     content: [

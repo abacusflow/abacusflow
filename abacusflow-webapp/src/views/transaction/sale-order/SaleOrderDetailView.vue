@@ -26,72 +26,30 @@
       </a-form-item>
 
       <a-form-item label="订单明细" required>
-        <div
-          v-for="(item, index) in formState.orderItems"
-          :key="index"
-          style="margin-bottom: 12px; border: 1px dashed #ccc; padding: 12px; border-radius: 6px"
-        >
-          <!-- 产品名称 -->
-          <a-form-item
-            label="库存产品"
-            :name="['orderItems', index, 'inventoryUnitId']"
-            :rules="[{ required: true, message: '请选择库存产品' }]"
-          >
-            <a-select v-model:value="item.inventoryUnitId" placeholder="请选择库存产品">
-              <a-select-option
-                v-for="inventoryUnit in selectableInventoryUnits"
-                :key="inventoryUnit.id"
-                :value="inventoryUnit.id"
-              >
-                {{ inventoryUnit.title }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-
-          <!-- 数量 -->
-          <a-form-item
-            label="数量"
-            :name="['orderItems', index, 'quantity']"
-            :rules="[{ required: true, message: '请输入数量' }]"
-          >
-            <a-input-number
-              v-model:value="item.quantity"
-              :min="1"
-              placeholder="数量"
-              style="width: 100%"
-            />
-          </a-form-item>
-
-          <!-- 单价 -->
-          <a-form-item
-            label="单价"
-            :name="['orderItems', index, 'unitPrice']"
-            :rules="[{ required: true, message: '请输入单价' }]"
-          >
-            <a-input-number
-              v-model:value="item.unitPrice"
-              placeholder="单价"
-              :min="0"
-              :precision="2"
-              style="width: 100%"
-            />
-          </a-form-item>
-
-          <!-- 折后单价 -->
-          <a-form-item
-            label="折后单价"
-            :name="['orderItems', index, 'discountedPrice']"
-            :rules="[{ required: true, message: '请输入折后单价' }]"
-          >
-            <a-input-number
-              v-model:value="item.discountedPrice"
-              placeholder="折后单价"
-              :min="0"
-              :precision="2"
-              style="width: 100%"
-            />
-          </a-form-item>
-        </div>
+        <a-list :data-source="formState.orderItems" bordered size="small">
+          <template #renderItem="{ item }">
+            <a-list-item style="padding: 0">
+              <a-card size="small" :bordered="false" style="width: 100%">
+                <a-row>
+                  <strong>库存产品：</strong>
+                  <span>{{ findInventoryTitle(item.inventoryUnitId) }} </span>
+                </a-row>
+                <a-row>
+                  <strong>数量：</strong>
+                  <span>{{ item.quantity }}</span>
+                </a-row>
+                <a-row>
+                  <strong>单价：</strong>
+                  <span>¥{{ item.unitPrice?.toFixed(2) }}</span>
+                </a-row>
+                <a-row>
+                  <strong>折后单价：</strong>
+                  <span>¥{{ item.discountedPrice?.toFixed(2) }}</span>
+                </a-row>
+              </a-card>
+            </a-list-item>
+          </template>
+        </a-list>
       </a-form-item>
 
       <a-form-item label="备注" name="note">
@@ -166,4 +124,9 @@ const { data: selectableInventoryUnits } = useQuery({
     return inventoryApi.listSelectableInventoryUnits(params);
   }
 });
+
+function findInventoryTitle(inventoryUnitId?: number): string {
+  const unit = selectableInventoryUnits?.value?.find((u) => u.id === inventoryUnitId);
+  return unit?.title || "-";
+}
 </script>

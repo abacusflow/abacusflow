@@ -10,6 +10,7 @@ import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDERS
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
+import org.bruwave.abacusflow.usecase.inventory.InventoryUnitForExportTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryUnitWithTitleTO
 import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitQueryService
@@ -17,7 +18,6 @@ import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
-import org.jooq.impl.DSL.condition
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.Instant
@@ -115,6 +115,65 @@ class InventoryUnitQueryServiceImpl(
 
         return inventoryUnits.map { record ->
             record.toInventoryUnitTO()
+        }
+    }
+
+    override fun listInventoryUnitsForExport(): List<InventoryUnitForExportTO> {
+        // 使用 JOOQ 执行联接查询
+        val inventoryUnits =
+            dslContext
+                .select(
+                    INVENTORY_UNIT.UNIT_TYPE,
+                    INVENTORY_UNIT.BATCH_CODE,
+                    INVENTORY_UNIT.SERIAL_NUMBER,
+                    INVENTORY_UNIT.PURCHASE_ORDER_ID,
+                    INVENTORY_UNIT.SALE_ORDER_IDS,
+                    DEPOTS.NAME,
+                    INVENTORY_UNIT.INITIAL_QUANTITY,
+                    INVENTORY_UNIT.QUANTITY,
+                    INVENTORY_UNIT.FROZEN_QUANTITY,
+                    INVENTORY_UNIT.UNIT_PRICE,
+                    INVENTORY_UNIT.RECEIVED_AT,
+                    INVENTORIES.PRODUCT_ID,
+                    INVENTORY_UNIT.STATUS,
+                    PRODUCTS.NAME,
+                    PURCHASE_ORDERS.NO,
+                    DSL.arrayAgg(SALE_ORDERS.NO).`as`("sale_order_nos"),
+                )
+                .from(INVENTORY_UNIT)
+                .leftJoin(INVENTORIES).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID)) // 关联 INVENTORY 表
+                .leftJoin(PRODUCTS).on(PRODUCTS.ID.eq(INVENTORIES.PRODUCT_ID)) // 关联 Product 表
+                .leftJoin(PURCHASE_ORDERS)
+                .on(PURCHASE_ORDERS.ID.eq(INVENTORY_UNIT.PURCHASE_ORDER_ID)) // 关联 PurchaseOrder 表
+                .leftJoin(SALE_ORDERS).on(
+                    DSL.condition("{0} = ANY({1})", SALE_ORDERS.ID, INVENTORY_UNIT.SALE_ORDER_IDS),
+                )
+                .leftJoin(DEPOTS).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOTS.ID))
+                .where(INVENTORY_UNIT.QUANTITY.gt(0)) // ✅ 新增过滤条件
+                .groupBy(
+                    INVENTORY_UNIT.UNIT_TYPE,
+                    INVENTORY_UNIT.BATCH_CODE,
+                    INVENTORY_UNIT.SERIAL_NUMBER,
+                    INVENTORY_UNIT.PURCHASE_ORDER_ID,
+                    INVENTORY_UNIT.SALE_ORDER_IDS,
+                    DEPOTS.NAME,
+                    INVENTORY_UNIT.INITIAL_QUANTITY,
+                    INVENTORY_UNIT.QUANTITY,
+                    INVENTORY_UNIT.FROZEN_QUANTITY,
+                    INVENTORY_UNIT.UNIT_PRICE,
+                    INVENTORY_UNIT.RECEIVED_AT,
+                    INVENTORY_UNIT.STATUS,
+                    INVENTORIES.PRODUCT_ID,
+                    PRODUCTS.NAME,
+                    PURCHASE_ORDERS.NO,
+                    INVENTORY_UNIT.CREATED_AT
+                )
+                .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
+                .fetch()
+
+        // 转换查询结果
+        return inventoryUnits.map { record ->
+            record.toInventoryUnitForExportTO()
         }
     }
 
@@ -231,6 +290,39 @@ class InventoryUnitQueryServiceImpl(
             type = unitType.name,
             title = title,
             status = this[INVENTORY_UNIT.STATUS] ?: "UNKNOWN",
+        )
+    }
+
+
+    fun Record.toInventoryUnitForExportTO(): InventoryUnitForExportTO? {
+        val unitType: InventoryUnit.UnitType = InventoryUnit.UnitType.valueOf(this[INVENTORY_UNIT.UNIT_TYPE]!!)
+
+        val title: String =
+            when (unitType) {
+                InventoryUnit.UnitType.BATCH -> "${this[PRODUCTS.NAME]}-批次号:-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCTS.NAME]}-序列号:-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+            }
+        val saleOrderNos: List<UUID> =
+            this.get("sale_order_nos", Array<UUID>::class.java)
+                ?.toList() ?: emptyList()
+
+        val quantity = this[INVENTORY_UNIT.QUANTITY] ?: 0L
+        val frozenQuantity = this[INVENTORY_UNIT.FROZEN_QUANTITY] ?: 0L
+
+        return InventoryUnitForExportTO(
+            title = title,
+            type = unitType.name, // 通常是枚举/字符串，如 "INSTANCE" 或 "BATCH"
+            purchaseOrderNo = this[PURCHASE_ORDERS.NO]!!,
+            saleOrderNos = saleOrderNos,
+            depotName = this[DEPOTS.NAME],
+            initialQuantity = this[INVENTORY_UNIT.INITIAL_QUANTITY] ?: 0L,
+            quantity = quantity,
+            remainingQuantity = quantity - frozenQuantity,
+            unitPrice = this[INVENTORY_UNIT.UNIT_PRICE] ?: BigDecimal.ZERO,
+            receivedAt = this[INVENTORY_UNIT.RECEIVED_AT]?.toInstant() ?: Instant.EPOCH,
+            batchCode = this[INVENTORY_UNIT.BATCH_CODE],
+            serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER],
+            status = this[INVENTORY_UNIT.STATUS],
         )
     }
 }

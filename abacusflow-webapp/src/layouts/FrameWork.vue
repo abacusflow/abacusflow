@@ -19,7 +19,11 @@
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
         <RouterView />
       </a-layout-content>
-      <a-layout-footer :style="{ textAlign: 'center' }"> BruWave ©2025 </a-layout-footer>
+      <a-layout-footer :style="{ textAlign: 'center' }">
+        <div>BruWave ©2025</div>
+        <a href="https://beian.miit.gov.cn" target="_blank">鲁ICP备2025171035号</a>
+        <a href="https://beian.mps.gov.cn" target="_blank" style="margin-left: 8px"> 🛡️ </a>
+      </a-layout-footer>
     </a-layout>
   </a-layout>
 </template>

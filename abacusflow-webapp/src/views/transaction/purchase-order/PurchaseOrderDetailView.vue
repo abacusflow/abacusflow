@@ -25,64 +25,21 @@
         />
       </a-form-item>
 
-      <a-form-item label="订单明细" required>
-        <div
-          v-for="(item, index) in formState.orderItems"
-          :key="index"
-          style="margin-bottom: 12px; border: 1px dashed #ccc; padding: 12px; border-radius: 6px"
-        >
-          <!-- 产品名称 -->
-          <a-form-item
-            label="产品名称"
-            :name="['orderItems', index, 'productId']"
-            :rules="[{ required: true, message: '请选择产品' }]"
-          >
-            <a-select v-model:value="item.productId" placeholder="请选择产品">
-              <a-select-option v-for="product in products" :key="product.id" :value="product.id">
-                {{ product.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-
-          <!-- 数量 -->
-          <a-form-item
-            label="数量"
-            :name="['orderItems', index, 'quantity']"
-            :rules="[{ required: true, message: '请输入数量' }]"
-          >
-            <a-input-number
-              v-model:value="item.quantity"
-              :min="1"
-              placeholder="数量"
-              style="width: 100%"
-            />
-          </a-form-item>
-
-          <!-- 单价 -->
-          <a-form-item
-            label="单价"
-            :name="['orderItems', index, 'unitPrice']"
-            :rules="[{ required: true, message: '请输入单价' }]"
-          >
-            <a-input-number
-              v-model:value="item.unitPrice"
-              placeholder="单价"
-              :min="0"
-              :precision="2"
-              style="width: 100%"
-            />
-          </a-form-item>
-
-          <!-- 序列号 -->
-          <a-form-item
-            v-if="isAsset(item.productId, products!)"
-            label="序列号"
-            :name="['orderItems', index, 'serialNumber']"
-            :rules="[{ required: true, message: '资产类产品必须填写序列号' }]"
-          >
-            <a-input v-model:value="item.serialNumber" placeholder="请输入序列号" />
-          </a-form-item>
-        </div>
+      <a-form-item label="订单明细">
+        <a-list :data-source="formState.orderItems" bordered size="small">
+          <template #renderItem="{ item }">
+            <a-list-item style="padding: 0">
+              <a-card size="small" :bordered="false" style="width: 100%">
+                <a-row><strong>产品名称：</strong> {{ findProductName(item.productId) }}</a-row>
+                <a-row><strong>数量：</strong> {{ item.quantity }}</a-row>
+                <a-row><strong>单价：</strong> ¥{{ item.unitPrice?.toFixed(2) }}</a-row>
+                <a-row v-if="isAsset(item.productId, products)">
+                  <strong>序列号：</strong> {{ item.serialNumber || "-" }}
+                </a-row>
+              </a-card>
+            </a-list-item>
+          </template>
+        </a-list>
       </a-form-item>
 
       <a-form-item label="备注" name="note">
@@ -162,5 +119,10 @@ function isAsset(productId?: number, products?: SelectableProduct[]): boolean {
 
   const product = products.find((p) => p.id === productId);
   return product?.type === ProductType.Asset;
+}
+
+function findProductName(productId?: number): string {
+  const product = products?.value?.find((p) => p.id === productId);
+  return product?.name || "-";
 }
 </script>

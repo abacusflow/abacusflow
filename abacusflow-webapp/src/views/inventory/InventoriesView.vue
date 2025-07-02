@@ -159,9 +159,9 @@ import {
   ProductType
 } from "@/core/openapi";
 import { translateProductType } from "@/util/productUtils";
-import { useQuery } from "@tanstack/vue-query";
-import { type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
-import { computed, h, inject, nextTick, reactive, ref, watch } from "vue";
+import { useMutation, useQuery } from "@tanstack/vue-query";
+import { message, type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
+import { computed, h, inject, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
@@ -251,6 +251,12 @@ const {
   }
 });
 
+const { mutateAsync: getPdfBlob } = useMutation({
+  mutationFn: () => {
+    return inventoryApi.exportInventoryPdf();
+  }
+});
+
 function handleAdjustWarningLine(inventory: BasicInventory) {
   editingInventory.value = inventory;
   showEditWarningLine.value = true;
@@ -261,15 +267,29 @@ function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
 
   showAssignDepot.value = true;
 }
-const handlePrintInventories = async () => {
-  await nextTick();
-  const original = document.body.innerHTML;
-  const printContent = printAreaRef.value?.innerHTML ?? "";
 
-  document.body.innerHTML = printContent;
-  window.print();
-  document.body.innerHTML = original;
-  location.reload(); // 恢复原页面（否则会丢失 Vue 控制）
+const handlePrintInventories = async () => {
+  try {
+    const result = await getPdfBlob();
+    if (!(result instanceof Blob)) {
+      message.error("打印失败，请稍后重试");
+      return;
+    }
+
+    const url = URL.createObjectURL(result);
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+
+    iframe.onload = () => {
+      iframe.contentWindow?.print();
+    };
+
+    document.body.appendChild(iframe);
+  } catch (error) {
+    console.error(error);
+    message.error("打印失败，请稍后重试");
+  }
 };
 
 function onCategorySelected(productCategoryId: string | number) {

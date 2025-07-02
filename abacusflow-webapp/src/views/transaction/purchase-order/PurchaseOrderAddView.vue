@@ -38,6 +38,7 @@
       >
         <!-- 产品名称 -->
         <a-form-item
+          class="compact-form-item"
           label="产品名称"
           :name="['orderItems', index, 'productId']"
           :rules="[{ required: true, message: '请选择产品' }]"
@@ -61,6 +62,7 @@
 
         <!-- 数量 -->
         <a-form-item
+          class="compact-form-item"
           label="数量"
           :name="['orderItems', index, 'quantity']"
           :rules="[{ required: true, message: '请输入数量' }]"
@@ -86,6 +88,7 @@
 
         <!-- 单价 -->
         <a-form-item
+          class="compact-form-item"
           label="单价"
           :name="['orderItems', index, 'unitPrice']"
           :rules="[{ required: true, message: '请输入单价' }]"
@@ -102,6 +105,7 @@
         <!-- 序列号 -->
         <a-form-item
           v-if="isAsset(item.productId, products!)"
+          class="compact-form-item"
           label="序列号"
           :name="['orderItems', index, 'serialNumber']"
           :rules="[{ required: true, message: '资产类产品必须填写序列号' }]"
@@ -236,3 +240,9 @@ const handleOk = () => {
     });
 };
 </script>
+
+<style scoped>
+.compact-form-item {
+  margin-bottom: 6px !important;
+}
+</style>
