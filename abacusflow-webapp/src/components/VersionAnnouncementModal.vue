@@ -7,8 +7,8 @@
     </template>
 
     <template #default>
-      <div v-for="item in ANNOUNCEMENTS" :key="item.version">
-        <h3>📌 v{{ item.version }}（{{ item.date }}）</h3>
+      <div v-for="(item, index) in ANNOUNCEMENTS" :key="item.version">
+        <h3><span v-if="index === 0">📌</span> v{{ item.version }}（{{ item.date }}）</h3>
         <ul>
           <li v-for="line in item.content" :key="line" v-html="line"></li>
         </ul>

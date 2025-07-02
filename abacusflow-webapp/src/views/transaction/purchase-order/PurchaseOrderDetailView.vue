@@ -28,7 +28,7 @@
       <a-form-item label="订单明细">
         <a-list :data-source="formState.orderItems" bordered size="small">
           <template #renderItem="{ item }">
-            <a-list-item style="padding: 0;">
+            <a-list-item style="padding: 0">
               <a-card size="small" :bordered="false" style="width: 100%">
                 <a-row><strong>产品名称：</strong> {{ findProductName(item.productId) }}</a-row>
                 <a-row><strong>数量：</strong> {{ item.quantity }}</a-row>

@@ -46,15 +46,18 @@ class InventoryReportServiceImpl(
         }
         document.add(title)
 
-        val table = PdfPTable(13).apply {
+        val table = PdfPTable(11).apply {
             widthPercentage = 100f
-            setWidths(floatArrayOf(2.5f, 1.5f, 1.5f, 3f, 3f, 2f, 1.2f, 1.2f, 1.5f, 1.5f, 2f, 2.5f, 2.5f))
+            setWidths(floatArrayOf(2.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 2f, 2f, 2f, 2.5f, 2.5f))
         }
 
         val headers = listOf(
             "库存名称", "类型", "状态", "当前数量", "可用数量", "初始数量", "单价（元）",
             "收货时间", "存储点", "批次号", "序列号"
         )
+
+        check(headers.size == table.numberOfColumns) { "列数不匹配：headers.size=${headers.size} vs table.columns=${table.numberOfColumns}" }
+
         headers.forEach { header ->
             table.addCell(Phrase(header, font))
         }
