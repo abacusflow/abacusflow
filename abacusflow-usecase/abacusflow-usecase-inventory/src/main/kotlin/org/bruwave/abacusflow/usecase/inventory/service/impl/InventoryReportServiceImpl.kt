@@ -16,12 +16,17 @@ import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitQueryServic
 import org.springframework.stereotype.Service
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.collections.joinToString
 
 @Service
 class InventoryReportServiceImpl(
     private val inventoryUnitQueryService: InventoryUnitQueryService
 ) : InventoryReportService {
+    val formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm:ss")
+        .withZone(ZoneId.of("Asia/Shanghai"))
+
     override fun exportInventoryAsPdf(): ByteArray {
         //TODO 批量查询防止oom
         val units = inventoryUnitQueryService.listInventoryUnitsForExport()
@@ -48,12 +53,12 @@ class InventoryReportServiceImpl(
 
         val table = PdfPTable(11).apply {
             widthPercentage = 100f
-            setWidths(floatArrayOf(2.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 2f, 2f, 2f, 2.5f, 2.5f))
+            setWidths(floatArrayOf(5f, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.5f, 3f, 2.5f, 2.5f, 2f))
         }
 
         val headers = listOf(
             "库存名称", "类型", "状态", "当前数量", "可用数量", "初始数量", "单价（元）",
-            "收货时间", "存储点", "批次号", "序列号"
+            "收货时间", "序列号", "存储点", "批次号"
         )
 
         check(headers.size == table.numberOfColumns) { "列数不匹配：headers.size=${headers.size} vs table.columns=${table.numberOfColumns}" }
@@ -70,10 +75,10 @@ class InventoryReportServiceImpl(
             table.addCell(Phrase(unit.remainingQuantity.toString(), font))
             table.addCell(Phrase(unit.initialQuantity.toString(), font))
             table.addCell(Phrase(unit.unitPrice.toPlainString(), font))
-            table.addCell(Phrase(unit.receivedAt.toString(), font))
-            table.addCell(Phrase(unit.depotName ?: "-", font))
-            table.addCell(Phrase(unit.batchCode?.toString() ?: "-", font))
+            table.addCell(Phrase(formatter.format(unit.receivedAt), font))
             table.addCell(Phrase(unit.serialNumber ?: "-", font))
+            table.addCell(Phrase(unit.batchCode?.toString() ?: "-", font))
+            table.addCell(Phrase(unit.depotName ?: "-", font))
         }
 
         document.add(table)
