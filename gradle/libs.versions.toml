@@ -75,6 +75,9 @@ jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datat
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 jsonschema-validator = { module = "com.networknt:json-schema-validator", version.ref = "jsonschema-validator" }
 
+# pdf
+openpdf = { module = "com.github.librepdf:openpdf", version = "2.0.5" }
+
 # Others
 netty = { module = "io.netty:netty-all", version.ref = "netty" }
 swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger" }

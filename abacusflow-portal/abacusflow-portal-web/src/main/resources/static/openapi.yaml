@@ -913,6 +913,21 @@ paths:
               schema:
                 type: boolean
 
+  /inventories/report:
+    get:
+      operationId: exportInventoryPdf
+      summary: 导出库存清单 PDF
+      tags:
+        - inventory
+      responses:
+        "200":
+          description: 成功导出 PDF 文件
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
   /inventory-units/{id}:
     get:
       operationId: getInventoryUnit

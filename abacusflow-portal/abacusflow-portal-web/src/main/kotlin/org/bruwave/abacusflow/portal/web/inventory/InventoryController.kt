@@ -1,5 +1,6 @@
 package org.bruwave.abacusflow.portal.web.inventory
 
+import jakarta.servlet.http.HttpServletResponse
 import org.bruwave.abacusflow.portal.web.api.InventoriesApi
 import org.bruwave.abacusflow.portal.web.model.AdjustWarningLineRequestVO
 import org.bruwave.abacusflow.portal.web.model.InventoryVO
@@ -7,14 +8,21 @@ import org.bruwave.abacusflow.portal.web.model.ListBasicInventoriesPage200Respon
 import org.bruwave.abacusflow.portal.web.model.ProductTypeVO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryCommandService
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryQueryService
+import org.bruwave.abacusflow.usecase.inventory.service.InventoryReportService
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 
 @RestController
 class InventoryController(
     private val inventoryCommandService: InventoryCommandService,
     private val inventoryQueryService: InventoryQueryService,
+    private val inventoryReportService: InventoryReportService,
 ) : InventoriesApi {
     override fun listBasicInventoriesPage(
         pageIndex: Int,
@@ -65,5 +73,28 @@ class InventoryController(
             adjustWarningLineRequestVO.maxStock,
         )
         return ResponseEntity.ok().build()
+    }
+
+    override fun exportInventoryPdf(): ResponseEntity<Resource> {
+        val pdf = inventoryReportService.exportInventoryAsPdf()
+
+        if (pdf.isEmpty()) {
+            return ResponseEntity.noContent().build()
+        }
+
+        val filename = "inventory-${LocalDate.now()}.pdf"
+
+        val headers = HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_PDF
+            add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
+        }
+
+        val resource = ByteArrayResource(pdf)
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .contentLength(pdf.size.toLong())
+            .body(resource)
     }
 }
