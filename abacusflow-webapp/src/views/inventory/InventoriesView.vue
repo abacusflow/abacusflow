@@ -160,8 +160,8 @@ import {
 } from "@/core/openapi";
 import { translateProductType } from "@/util/productUtils";
 import { useMutation, useQuery } from "@tanstack/vue-query";
-import { type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
-import { computed, h, inject,  reactive, ref, watch } from "vue";
+import { message, type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
+import { computed, h, inject, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
@@ -254,7 +254,7 @@ const {
 const { mutateAsync: getPdfBlob } = useMutation({
   mutationFn: () => {
     return inventoryApi.exportInventoryPdf();
-  },
+  }
 });
 
 function handleAdjustWarningLine(inventory: BasicInventory) {
@@ -272,7 +272,7 @@ const handlePrintInventories = async () => {
   try {
     const result = await getPdfBlob();
     if (!(result instanceof Blob)) {
-      alert("打印失败，请稍后重试");
+      message.error("打印失败，请稍后重试");
       return;
     }
 
@@ -283,20 +283,14 @@ const handlePrintInventories = async () => {
 
     iframe.onload = () => {
       iframe.contentWindow?.print();
-      // 延迟清理，确保打印完成
-      // setTimeout(() => {
-      //   URL.revokeObjectURL(url);
-      //   document.body.removeChild(iframe);
-      // }, 2000);
     };
 
     document.body.appendChild(iframe);
   } catch (error) {
     console.error(error);
-    alert("打印失败，请稍后重试");
+    message.error("打印失败，请稍后重试");
   }
 };
-
 
 function onCategorySelected(productCategoryId: string | number) {
   router.push({
