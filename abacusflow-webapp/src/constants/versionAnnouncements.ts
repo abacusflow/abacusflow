@@ -8,9 +8,7 @@ export const ANNOUNCEMENTS: VersionAnnouncement[] = [
   {
     version: "0.0.3",
     date: "2025-07-03",
-    content: [
-      "📅 <strong>仪表盘</strong>查看商品热销Top10",
-    ]
+    content: ["📅 <strong>仪表盘</strong>查看商品热销Top10"]
   },
   {
     version: "0.0.2",

@@ -51,9 +51,9 @@ class InventoryReportServiceImpl(
         }
         document.add(title)
 
-        val table = PdfPTable(11).apply {
+        val table = PdfPTable(10).apply {
             widthPercentage = 100f
-            setWidths(floatArrayOf(5f, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.5f, 3f, 2.5f, 2.5f, 2f))
+            setWidths(floatArrayOf(5f, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.5f, 3f, 2.5f, 2.5f))
         }
 
         val headers = listOf(
@@ -61,12 +61,17 @@ class InventoryReportServiceImpl(
             "收货时间", "序列号", "批次号", "存储点"
         )
 
-        check(headers.size == table.numberOfColumns) { "列数不匹配：headers.size=${headers.size} vs table.columns=${table.numberOfColumns}" }
+        // 检查表头与表格列数是否匹配
+        check(headers.size == table.numberOfColumns) {
+            "列数不匹配：headers.size=${headers.size} vs table.columns=${table.numberOfColumns}"
+        }
 
+        // 添加表头
         headers.forEach { header ->
             table.addCell(Phrase(header, font))
         }
 
+        // 添加表格数据
         for (unit in units) {
             table.addCell(Phrase(unit.title, font))
             table.addCell(Phrase(mapInventoryUnitTypeToChinese(unit.type), font))
