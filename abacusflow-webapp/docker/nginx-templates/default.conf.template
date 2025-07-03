@@ -35,4 +35,9 @@ server {
         rewrite ^/api/(.*)$ /$1 break;
         proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/;
     }
+
+    location /cubejs-api/ {
+        client_max_body_size 0;
+        proxy_pass http://${ABACUSFLOW_CUBE_HOST}:${ABACUSFLOW_CUBE_PORT}/cubejs-api/;
+    }
 }

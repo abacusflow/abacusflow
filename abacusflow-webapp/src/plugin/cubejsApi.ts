@@ -14,7 +14,7 @@ interface CubeError {
 const CUBE_API_URL = "/cubejs-api/v1";
 const CUBE_API_TOKEN = Cookies.get("CUBE_JWT_TOKEN"); // 你可以用 js-cookie 库
 
-const baseCubejsApi: CubeApi = cubejs(CUBE_API_TOKEN, {
+const baseCubejsApi: CubeApi = cubejs(CUBE_API_TOKEN || "default", {
   apiUrl: `${CUBE_API_URL}`
 });
 

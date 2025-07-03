@@ -35,6 +35,8 @@ services:
       - abacusflow-network
     ports:
       - 4000:4000
+    expose:
+      - 4000
     volumes:
       - ./config/cube:/cube/conf
 
