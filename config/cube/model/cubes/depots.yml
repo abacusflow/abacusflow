@@ -1,0 +1,41 @@
+cubes:
+  - name: depots
+    sql_table: public.depots
+    data_source: default
+
+    joins: []
+
+    dimensions:
+      - name: id
+        sql: id
+        type: number
+        primary_key: true
+
+      - name: location
+        sql: location
+        type: string
+
+      - name: enabled
+        sql: enabled
+        type: boolean
+
+      - name: name
+        sql: name
+        type: string
+
+      - name: created_at
+        sql: created_at
+        type: time
+
+      - name: updated_at
+        sql: updated_at
+        type: time
+
+    measures:
+      - name: count
+        type: count
+
+    pre_aggregations:
+      # Pre-aggregation definitions go here.
+      # Learn more in the documentation: https://cube.dev/docs/caching/pre-aggregations/getting-started
+

@@ -1,0 +1,49 @@
+cubes:
+  - name: suppliers
+    sql_table: public.suppliers
+    data_source: default
+
+    joins: []
+
+    dimensions:
+      - name: id
+        sql: id
+        type: number
+        primary_key: true
+
+      - name: enabled
+        sql: enabled
+        type: boolean
+
+      - name: address
+        sql: address
+        type: string
+
+      - name: phone
+        sql: phone
+        type: string
+
+      - name: contact_person
+        sql: contact_person
+        type: string
+
+      - name: name
+        sql: name
+        type: string
+
+      - name: created_at
+        sql: created_at
+        type: time
+
+      - name: updated_at
+        sql: updated_at
+        type: time
+
+    measures:
+      - name: count
+        type: count
+
+    pre_aggregations:
+      # Pre-aggregation definitions go here.
+      # Learn more in the documentation: https://cube.dev/docs/caching/pre-aggregations/getting-started
+
