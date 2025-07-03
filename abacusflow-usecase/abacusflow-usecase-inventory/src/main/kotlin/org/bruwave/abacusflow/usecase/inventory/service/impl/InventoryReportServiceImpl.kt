@@ -57,8 +57,8 @@ class InventoryReportServiceImpl(
         }
 
         val headers = listOf(
-            "库存名称", "类型", "状态", "当前数量", "可用数量", "初始数量", "单价（元）",
-            "收货时间", "序列号", "存储点", "批次号"
+            "库存名称", "类型", "状态", "当前数量", "可用数量", "单价(元)",
+            "收货时间", "序列号", "批次号", "存储点"
         )
 
         check(headers.size == table.numberOfColumns) { "列数不匹配：headers.size=${headers.size} vs table.columns=${table.numberOfColumns}" }
@@ -73,7 +73,6 @@ class InventoryReportServiceImpl(
             table.addCell(Phrase(mapInventoryUnitStatusToChinese(unit.status), font))
             table.addCell(Phrase(unit.quantity.toString(), font))
             table.addCell(Phrase(unit.remainingQuantity.toString(), font))
-            table.addCell(Phrase(unit.initialQuantity.toString(), font))
             table.addCell(Phrase(unit.unitPrice.toPlainString(), font))
             table.addCell(Phrase(formatter.format(unit.receivedAt), font))
             table.addCell(Phrase(unit.serialNumber ?: "-", font))
