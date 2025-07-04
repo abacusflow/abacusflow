@@ -10,6 +10,7 @@ import jakarta.persistence.Table
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.PositiveOrZero
 import java.math.BigDecimal
+import java.util.UUID
 
 @Entity
 @Table(name = "purchase_order_items")
@@ -23,6 +24,7 @@ class PurchaseOrderItem(
     @field:PositiveOrZero
     val unitPrice: BigDecimal,
     val serialNumber: String?,
+    val batchCode: UUID?,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

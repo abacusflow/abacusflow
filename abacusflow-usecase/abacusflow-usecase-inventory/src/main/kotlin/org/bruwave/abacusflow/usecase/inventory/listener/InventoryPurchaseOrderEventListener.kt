@@ -4,6 +4,7 @@ import org.bruwave.abacusflow.db.inventory.InventoryRepository
 import org.bruwave.abacusflow.db.inventory.InventoryUnitRepository
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.transaction.PurchaseOrderCompletedEvent
+import org.bruwave.abacusflow.transaction.PurchaseOrderItem
 import org.bruwave.abacusflow.transaction.PurchaseOrderReversedEvent
 import org.bruwave.abacusflow.transaction.TransactionProductType.ASSET
 import org.bruwave.abacusflow.transaction.TransactionProductType.MATERIAL
@@ -22,50 +23,80 @@ class InventoryPurchaseOrderEventListener(
         val order = event.order
         println("PurchaseOrder Completed orderNo: ${order.no}")
 
-        order.items.groupBy { it.productId }.forEach { (productId, products) ->
-            val inventory =
-                inventoryRepository.findByProductId(productId)
-                    ?: throw NoSuchElementException("Product with id $productId not found")
+        // 按照一个产品类型进行分组
+        val units = order.items.groupBy { it.productType }.flatMap { (productType, items) ->
+            when (productType) {
+                MATERIAL -> buildMaterialUnits(items, order.id)
+                ASSET -> buildAssetUnits(items, order.id)
+            }
+        }
 
-            val units =
-                products.groupBy { it.productType }.flatMap { (type, productsByType) ->
-                    val simpleProduct = productsByType.first()
-                    val sumQuantity = productsByType.sumOf { it.quantity.toLong() }
+        if (units.size > 0) {
+            inventoryUnitRepository.saveAll(units)
+        }
+    }
 
-                    when (type) {
-                        MATERIAL -> {
-                            val unitPriceSet = productsByType.map { it.unitPrice }.toSet()
-                            require(unitPriceSet.size == 1) { "MATERIAL 产品存在多个不同单价" }
+    private fun buildMaterialUnits(
+        items: List<PurchaseOrderItem>,
+        orderId: Long
+    ): List<InventoryUnit.BatchInventoryUnit> {
+        return items.groupBy { it.productId }.map { (productId, batchItems) ->
+            val inventory = inventoryRepository.findByProductId(productId)
+                ?: throw NoSuchElementException("Product with id $productId not found")
 
-                            listOf(
-                                InventoryUnit.BatchInventoryUnit(
-                                    inventory,
-                                    purchaseOrderId = order.id,
-                                    initialQuantity = sumQuantity,
-                                    unitPrice = simpleProduct.unitPrice,
-                                    depotId = null,
-                                ),
-                            )
-                        }
+            // 验证同一产品的单价一致
+            check(items.map { it.unitPrice }.distinct().size == 1) {
+                "Product $productId has inconsistent unit prices"
+            }
 
-                        ASSET ->
-                            productsByType.map { item ->
-                                require(item.quantity == 1) { "资产类产品每项 quantity 应为 1" }
-                                val serialNumber = requireNotNull(item.serialNumber) { "资产类产品缺少 serialNumber" }
+            // 验证同一产品的批次代码一致
+            check(items.map { it.batchCode }.distinct().size == 1) {
+                "Product $productId has inconsistent batch codes"
+            }
 
-                                InventoryUnit.InstanceInventoryUnit(
-                                    inventory,
-                                    purchaseOrderId = order.id,
-                                    unitPrice = item.unitPrice,
-                                    serialNumber = serialNumber,
-                                    depotId = null,
-                                )
-                            }
-                    }
+            val simpleItem = batchItems.first()
+            val totalQuantity = batchItems.sumOf { it.quantity.toLong() }
+
+            val batchCode = checkNotNull(items.first().batchCode) {
+                "Product $productId missing batch code"
+            }
+
+            InventoryUnit.BatchInventoryUnit(
+                inventory = inventory,
+                purchaseOrderId = orderId,
+                initialQuantity = totalQuantity,
+                unitPrice = simpleItem.unitPrice,
+                batchCode = batchCode,
+                depotId = null
+            )
+        }
+    }
+
+    private fun buildAssetUnits(
+        items: List<PurchaseOrderItem>,
+        orderId: Long
+    ): List<InventoryUnit.InstanceInventoryUnit> {
+        return items.groupBy { it.productId }.flatMap { (productId, items) ->
+            val inventory = inventoryRepository.findByProductId(productId)
+                ?: throw NoSuchElementException("Product with id $productId not found")
+
+            items.map { item ->
+                check(item.quantity == 1) {
+                    "Asset product quantity must be 1, found: ${item.quantity}"
                 }
 
-            if (units.size > 0) {
-                inventoryUnitRepository.saveAll(units)
+                // 验证序列号存在
+                val serialNumber = checkNotNull(item.serialNumber) {
+                    "Asset product $productId must have serial number"
+                }
+
+                InventoryUnit.InstanceInventoryUnit(
+                    inventory = inventory,
+                    purchaseOrderId = orderId,
+                    unitPrice = item.unitPrice,
+                    serialNumber = serialNumber,
+                    depotId = null
+                )
             }
         }
     }
