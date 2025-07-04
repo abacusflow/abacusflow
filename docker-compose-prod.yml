@@ -13,7 +13,8 @@ services:
     networks:
       - abacusflow-network
     depends_on:
-      - db
+      - postgres
+      - cube
     expose:
       - 8080
     ports:
@@ -24,6 +25,8 @@ services:
     environment:
       - ABACUSFLOW_SERVER_HOST=${ABACUSFLOW_SERVER_HOST}
       - ABACUSFLOW_SERVER_PORT=${ABACUSFLOW_SERVER_PORT}
+      - ABACUSFLOW_CUBE_HOST=${ABACUSFLOW_CUBE_HOST}
+      - ABACUSFLOW_CUBE_PORT=${ABACUSFLOW_CUBE_PORT}
     networks:
       - abacusflow-network
     depends_on:

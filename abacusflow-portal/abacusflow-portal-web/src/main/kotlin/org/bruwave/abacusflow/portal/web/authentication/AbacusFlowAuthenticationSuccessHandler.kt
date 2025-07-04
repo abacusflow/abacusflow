@@ -1,6 +1,7 @@
 package org.bruwave.abacusflow.portal.web.authentication
 
 import jakarta.servlet.ServletException
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.bruwave.abacusflow.usecase.user.service.UserAuthenticationService
@@ -15,12 +16,20 @@ import java.net.URISyntaxException
 class AbacusFlowAuthenticationSuccessHandler(
     private val userAuthenticationService: UserAuthenticationService,
 ) : AuthenticationSuccessHandler {
+
+    // 先写死，之后会后端签发的
+    val CUBE_JWT_TOKEN =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTc1MTYyNDQzOH0.9PYDk96jITyoNjlmZ04by_1N_VR6HUw6h_A7jlk6m-Q";
+
     @Throws(IOException::class, ServletException::class)
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
+
+        setCubeTokenCookie(request, response)
+
         val redirect = request.getParameter("redirect")
 
         if (!redirect.isNullOrBlank() && isValidLocalUrl(redirect)) {
@@ -30,6 +39,16 @@ class AbacusFlowAuthenticationSuccessHandler(
             // 如果不是本站 URL 或参数为空，重定向到主页
             response.sendRedirect("/")
         }
+    }
+
+    private fun setCubeTokenCookie(request: HttpServletRequest, response: HttpServletResponse) {
+        val cookie = Cookie("CUBE_JWT_TOKEN", CUBE_JWT_TOKEN).apply {
+            path = "/"
+            isHttpOnly = false  // ✅ 如果你用 JS 读取，可设为 false；若你打算前端不读、直接 header 传回，建议 true
+            maxAge = 60 * 60 * 24 * 365  // 1年
+//            secure = request.isSecure  // 若是 HTTPS
+        }
+        response.addCookie(cookie)
     }
 
     /**

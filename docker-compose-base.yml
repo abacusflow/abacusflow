@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     container_name: abacusflow-postgres
     image: postgres:${POSTGRES_VERSION}
     environment:
@@ -16,6 +16,37 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
 
+  cube:
+    container_name: abacusflow-cube
+    image: cubejs/cube:${CUBE_VERSION}
+    environment:
+      - CUBEJS_API_SECRET=123ABCdef*1qaz2wsx3edc4rfv5tgb6yhn7ujm
+      - CUBEJS_DEV_MODE=false
+      - CUBEJS_DB_TYPE=postgres
+      - CUBEJS_DB_HOST=postgres
+      - CUBEJS_DB_PORT=${POSTGRES_PORT}
+      - CUBEJS_DB_NAME=${POSTGRES_DB}
+      - CUBEJS_DB_USER=${POSTGRES_USER}
+      - CUBEJS_DB_PASS=${POSTGRES_PASSWORD}
+      - CUBEJS_CUBESTORE_HOST=cubestore
+    depends_on:
+      - cubestore
+    networks:
+      - abacusflow-network
+    ports:
+      - 4000:4000
+    expose:
+      - 4000
+    volumes:
+      - ./config/cube:/cube/conf
+
+  cubestore:
+    container_name: abacusflow-cubestore
+    image: cubejs/cubestore:${CUBE_VERSION}
+    expose:
+      - 3030
+    networks:
+      - abacusflow-network
 networks:
   abacusflow-network:
     driver: bridge

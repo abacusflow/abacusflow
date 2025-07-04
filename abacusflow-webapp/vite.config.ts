@@ -40,6 +40,10 @@ export default defineConfig(({ mode }) => {
         "/static": {
           target: envVars.VITE_SERVER_ENDPOINT,
           changeOrigin: true
+        },
+        "/cubejs-api": {
+          target: envVars.VITE_CUBE_ENDPOINT,
+          changeOrigin: true,
         }
       }
     }

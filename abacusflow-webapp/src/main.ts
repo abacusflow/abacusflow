@@ -14,6 +14,7 @@ import { dateToFormattedString, timestampToLocaleString } from "./util/timestamp
 import { formatNumber } from "./util/numberUtils";
 import { translateOrderStatus } from "./util/orderUtil";
 import { translateProductType, translateProductUnit } from "./util/productUtils";
+import "./plugin/echarts"; // 注册 echarts 模块
 
 const app = createApp(App);
 

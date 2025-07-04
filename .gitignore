@@ -4,6 +4,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### cube ###
+config/cube/.cubestore/
+
 ### IntelliJ IDEA ###
 .idea/
 *.iws

@@ -16,12 +16,17 @@ import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitQueryServic
 import org.springframework.stereotype.Service
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.collections.joinToString
 
 @Service
 class InventoryReportServiceImpl(
     private val inventoryUnitQueryService: InventoryUnitQueryService
 ) : InventoryReportService {
+    val formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm:ss")
+        .withZone(ZoneId.of("Asia/Shanghai"))
+
     override fun exportInventoryAsPdf(): ByteArray {
         //TODO 批量查询防止oom
         val units = inventoryUnitQueryService.listInventoryUnitsForExport()
@@ -46,34 +51,38 @@ class InventoryReportServiceImpl(
         }
         document.add(title)
 
-        val table = PdfPTable(11).apply {
+        val table = PdfPTable(10).apply {
             widthPercentage = 100f
-            setWidths(floatArrayOf(2.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 2f, 2f, 2f, 2.5f, 2.5f))
+            setWidths(floatArrayOf(5f, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.5f, 3f, 2.5f, 2.5f))
         }
 
         val headers = listOf(
-            "库存名称", "类型", "状态", "当前数量", "可用数量", "初始数量", "单价（元）",
-            "收货时间", "存储点", "批次号", "序列号"
+            "库存名称", "类型", "状态", "当前数量", "可用数量", "单价(元)",
+            "收货时间", "序列号", "批次号", "存储点"
         )
 
-        check(headers.size == table.numberOfColumns) { "列数不匹配：headers.size=${headers.size} vs table.columns=${table.numberOfColumns}" }
+        // 检查表头与表格列数是否匹配
+        check(headers.size == table.numberOfColumns) {
+            "列数不匹配：headers.size=${headers.size} vs table.columns=${table.numberOfColumns}"
+        }
 
+        // 添加表头
         headers.forEach { header ->
             table.addCell(Phrase(header, font))
         }
 
+        // 添加表格数据
         for (unit in units) {
             table.addCell(Phrase(unit.title, font))
             table.addCell(Phrase(mapInventoryUnitTypeToChinese(unit.type), font))
             table.addCell(Phrase(mapInventoryUnitStatusToChinese(unit.status), font))
             table.addCell(Phrase(unit.quantity.toString(), font))
             table.addCell(Phrase(unit.remainingQuantity.toString(), font))
-            table.addCell(Phrase(unit.initialQuantity.toString(), font))
             table.addCell(Phrase(unit.unitPrice.toPlainString(), font))
-            table.addCell(Phrase(unit.receivedAt.toString(), font))
-            table.addCell(Phrase(unit.depotName ?: "-", font))
-            table.addCell(Phrase(unit.batchCode?.toString() ?: "-", font))
+            table.addCell(Phrase(formatter.format(unit.receivedAt), font))
             table.addCell(Phrase(unit.serialNumber ?: "-", font))
+            table.addCell(Phrase(unit.batchCode?.toString() ?: "-", font))
+            table.addCell(Phrase(unit.depotName ?: "-", font))
         }
 
         document.add(table)
