@@ -24,7 +24,7 @@ const chartOption = computed((): EChartsOption | null => {
   if (!chatData.value) return null;
   const raw = chatData.value.rawData();
   return {
-    title: { text: "商品热销 Top 10", left: "center" },
+    title: { text: "热销 Top 10", left: "center" },
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     xAxis: { type: "category", data: raw.map((r) => r["product.name"] as string) },
     yAxis: { type: "value" },

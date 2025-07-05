@@ -14,7 +14,7 @@ const { data: chatData } = useQuery({
   queryKey: ["salesTrendData"],
   queryFn: () =>
     cubejsApi.load({
-      measures: ["sale_order_item.revenue"],
+      measures: ["sale_order_item.revenue", "sale_order_item.count"],
       timeDimensions: [
         {
           dimension: "sale_order.order_date",
@@ -30,47 +30,70 @@ const chartOption = computed((): EChartsOption | null => {
   if (!chatData.value) return null;
 
   const raw = chatData.value.rawData();
-  // 提取时间和销售金额数据
+
   const dates: string[] = [];
-  const amounts: number[] = [];
+  const revenues: number[] = [];
+  const counts: number[] = [];
 
   raw.forEach((row) => {
     const rawDate = row["sale_order.order_date"];
-    const formattedDate = dayjs(rawDate).format("YYYY-MM-DD"); // 👈 格式化为 2025-06-27
+    const formattedDate = dayjs(rawDate).format("YYYY-MM-DD");
 
     dates.push(formattedDate);
-    amounts.push(Number(row["sale_order_item.revenue"]));
+    revenues.push(Number(row["sale_order_item.revenue"]));
+    counts.push(Number(row["sale_order_item.count"]));
   });
 
   return {
     tooltip: {
-      trigger: "axis",
+      trigger: "axis"
+    },
+    legend: {
+      data: ["销售金额", "订单数量"],
+      top: 30 //  往下挪一点，避免覆盖标题
     },
     xAxis: {
       type: "category",
       data: dates,
       name: "日期",
       axisLabel: {
-        rotate: 45 // 防止日期太挤
+        rotate: 45
       }
     },
-    yAxis: {
-      type: "value",
-      name: "销售金额",
-      axisLabel: {
-        formatter: "{value} 元"
+    yAxis: [
+      {
+        type: "value",
+        name: "销售金额",
+        axisLabel: {
+          formatter: "{value} 元"
+        }
+      },
+      {
+        type: "value",
+        name: "订单数量",
+        axisLabel: {
+          formatter: "{value} 单"
+        }
       }
-    },
+    ],
     series: [
       {
-        type: "line", // 可替换为 "bar"
-        data: amounts,
+        name: "销售金额",
+        type: "line",
+        data: revenues,
         smooth: true,
-        name: "销售金额"
+        yAxisIndex: 0
+      },
+      {
+        name: "订单数量",
+        type: "line",
+        data: counts,
+        smooth: true,
+        yAxisIndex: 1 // 使用第二个 y 轴
       }
     ],
     title: {
-      text: "每日销售金额趋势",
+      text: "每日销售趋势（金额 + 数量）",
       left: "center"
     },
     grid: {
