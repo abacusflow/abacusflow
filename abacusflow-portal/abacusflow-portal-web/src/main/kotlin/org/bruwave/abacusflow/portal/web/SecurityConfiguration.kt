@@ -29,9 +29,6 @@ class SecurityConfiguration(
             }
 
             authorizeHttpRequests {
-//                staticResources.forEach {
-//                    authorize("/$it/**", permitAll)
-//                }
                 authorize("/static/**", permitAll)
                 authorize("/login", permitAll)
                 authorize("/login", permitAll)
@@ -45,10 +42,6 @@ class SecurityConfiguration(
                 authenticationFailureHandler = abacusFlowAuthenticationFailureHandler
                 permitAll()
             }
-
-//            //TODO ADDD BASIC -> NO AUTH
-//            httpBasic {
-//            }
         }
         return http.build()
     }

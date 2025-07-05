@@ -14,7 +14,7 @@ import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
 
 @Entity
-@Table(name = "customers")
+@Table(name = "customer")
 class Customer(
     name: String,
     phone: String?,

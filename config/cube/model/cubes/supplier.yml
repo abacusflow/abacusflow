@@ -1,12 +1,9 @@
 cubes:
-  - name: purchase_orders
-    sql_table: public.purchase_orders
+  - name: supplier
+    sql_table: public.supplier
     data_source: default
 
-    joins:
-      - name: suppliers
-        sql: "{CUBE}.supplier_id = {suppliers.id}"
-        relationship: many_to_one
+    joins: []
 
     dimensions:
       - name: id
@@ -14,16 +11,24 @@ cubes:
         type: number
         primary_key: true
 
-      - name: status
-        sql: status
+      - name: enabled
+        sql: enabled
+        type: boolean
+
+      - name: address
+        sql: address
         type: string
 
-      - name: note
-        sql: note
+      - name: phone
+        sql: phone
         type: string
 
-      - name: no
-        sql: no
+      - name: contact_person
+        sql: contact_person
+        type: string
+
+      - name: name
+        sql: name
         type: string
 
       - name: created_at
@@ -32,10 +37,6 @@ cubes:
 
       - name: updated_at
         sql: updated_at
-        type: time
-
-      - name: order_date
-        sql: order_date
         type: time
 
     measures:

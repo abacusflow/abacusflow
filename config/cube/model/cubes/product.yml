@@ -1,6 +1,6 @@
 cubes:
-  - name: products
-    sql_table: public.products
+  - name: product
+    sql_table: public.product
     data_source: default
 
     joins: []

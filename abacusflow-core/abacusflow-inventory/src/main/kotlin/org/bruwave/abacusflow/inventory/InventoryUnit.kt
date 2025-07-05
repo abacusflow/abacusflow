@@ -194,7 +194,7 @@ abstract class InventoryUnit(
         initialQuantity: Long,
         depotId: Long?,
         unitPrice: BigDecimal,
-        val batchCode: UUID = UUID.randomUUID(),
+        val batchCode: UUID,
     ) : InventoryUnit(
         inventory = inventory,
         purchaseOrderId = purchaseOrderId,
@@ -202,7 +202,6 @@ abstract class InventoryUnit(
         unitPrice = unitPrice,
         depotId = depotId,
     )
-
 
     enum class UnitType {
         INSTANCE,

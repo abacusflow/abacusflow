@@ -14,7 +14,7 @@ import jakarta.validation.constraints.PositiveOrZero
 import java.math.BigDecimal
 
 @Entity
-@Table(name = "sale_order_items")
+@Table(name = "sale_order_item")
 class SaleOrderItem(
     val inventoryUnitId: Long,
     // 冗余字段：产品类型（用于区分资产类或普通产品）

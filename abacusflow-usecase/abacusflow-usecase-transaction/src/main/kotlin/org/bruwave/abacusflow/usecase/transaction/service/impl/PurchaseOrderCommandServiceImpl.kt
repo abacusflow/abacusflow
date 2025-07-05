@@ -14,6 +14,7 @@ import org.bruwave.abacusflow.usecase.transaction.mapper.toTO
 import org.bruwave.abacusflow.usecase.transaction.service.PurchaseOrderCommandService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 @Transactional
@@ -85,6 +86,7 @@ class PurchaseOrderCommandServiceImpl(
                     item.quantity,
                     item.unitPrice,
                     serialNumber = null,
+                    batchCode = UUID.randomUUID()
                 )
 
             Product.ProductType.ASSET -> {
@@ -95,6 +97,7 @@ class PurchaseOrderCommandServiceImpl(
                     1,
                     item.unitPrice,
                     serialNumber = item.serialNumber,
+                    batchCode = null
                 )
             }
         }

@@ -1,9 +1,9 @@
 package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.CustomerRepository
-import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMERS
-import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDERS
-import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEMS
+import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMER
+import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER
+import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEM
 import org.bruwave.abacusflow.usecase.partner.BasicCustomerTO
 import org.bruwave.abacusflow.usecase.partner.CustomerTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toTO
@@ -44,15 +44,15 @@ class CustomerQueryServiceImpl(
     ): Page<BasicCustomerTO> {
         val conditions = mutableListOf<Condition>().apply {
             name?.takeIf { it.isNotBlank() }?.let {
-                add(CUSTOMERS.NAME.containsIgnoreCase(it))
+                add(CUSTOMER.NAME.containsIgnoreCase(it))
             }
 
             phone?.takeIf { it.isNotBlank() }?.let {
-                add(CUSTOMERS.PHONE.containsIgnoreCase(it))
+                add(CUSTOMER.PHONE.containsIgnoreCase(it))
             }
 
             address?.takeIf { it.isNotBlank() }?.let {
-                add(CUSTOMERS.ADDRESS.containsIgnoreCase(it))
+                add(CUSTOMER.ADDRESS.containsIgnoreCase(it))
             }
         }
 
@@ -60,7 +60,7 @@ class CustomerQueryServiceImpl(
         val total =
             jooqDsl
                 .selectCount()
-                .from(CUSTOMERS)
+                .from(CUSTOMER)
                 .where(conditions)
                 .fetchOne(0, Long::class.java) ?: 0L
 
@@ -68,39 +68,39 @@ class CustomerQueryServiceImpl(
         val records =
             jooqDsl
                 .select(
-                    CUSTOMERS.ID,
-                    CUSTOMERS.NAME,
-                    CUSTOMERS.PHONE,
-                    CUSTOMERS.ADDRESS,
+                    CUSTOMER.ID,
+                    CUSTOMER.NAME,
+                    CUSTOMER.PHONE,
+                    CUSTOMER.ADDRESS,
                     // 聚合字段
-                    DSL.countDistinct(SALE_ORDERS.ID).`as`("total_order_count"),
+                    DSL.countDistinct(SALE_ORDER.ID).`as`("total_order_count"),
                     DSL.sum(
-                        SALE_ORDER_ITEMS.UNIT_PRICE
-                            .mul(SALE_ORDER_ITEMS.QUANTITY)
-                            .mul(SALE_ORDER_ITEMS.DISCOUNT_FACTOR)
+                        SALE_ORDER_ITEM.UNIT_PRICE
+                            .mul(SALE_ORDER_ITEM.QUANTITY)
+                            .mul(SALE_ORDER_ITEM.DISCOUNT_FACTOR)
                     ).`as`("total_order_amount"),
-                    DSL.max(SALE_ORDERS.CREATED_AT).`as`("last_order_time")
+                    DSL.max(SALE_ORDER.CREATED_AT).`as`("last_order_time")
                 )
-                .from(CUSTOMERS)
-                .leftJoin(SALE_ORDERS).on(SALE_ORDERS.CUSTOMER_ID.eq(CUSTOMERS.ID))
-                .leftJoin(SALE_ORDER_ITEMS).on(SALE_ORDER_ITEMS.ORDER_ID.eq(SALE_ORDERS.ID))
+                .from(CUSTOMER)
+                .leftJoin(SALE_ORDER).on(SALE_ORDER.CUSTOMER_ID.eq(CUSTOMER.ID))
+                .leftJoin(SALE_ORDER_ITEM).on(SALE_ORDER_ITEM.ORDER_ID.eq(SALE_ORDER.ID))
                 .where(conditions)
                 .groupBy(
-                    CUSTOMERS.ID,
-                    CUSTOMERS.NAME,
-                    CUSTOMERS.PHONE,
-                    CUSTOMERS.ADDRESS
+                    CUSTOMER.ID,
+                    CUSTOMER.NAME,
+                    CUSTOMER.PHONE,
+                    CUSTOMER.ADDRESS
                 )
-                .orderBy(CUSTOMERS.CREATED_AT.desc()) // 或 pageable.sort 转换
+                .orderBy(CUSTOMER.CREATED_AT.desc()) // 或 pageable.sort 转换
                 .offset(pageable.offset)
                 .limit(pageable.pageSize)
                 .fetch()
                 .map {
                     BasicCustomerTO(
-                        id = it[CUSTOMERS.ID]!!,
-                        name = it[CUSTOMERS.NAME]!!,
-                        phone = it[CUSTOMERS.PHONE],
-                        address = it[CUSTOMERS.ADDRESS],
+                        id = it[CUSTOMER.ID]!!,
+                        name = it[CUSTOMER.NAME]!!,
+                        phone = it[CUSTOMER.PHONE],
+                        address = it[CUSTOMER.ADDRESS],
                         totalOrderCount = it.get("total_order_count", Int::class.java) ?: 0,
                         totalOrderAmount = it.get("total_order_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
                         lastOrderTime = it.get("last_order_time", OffsetDateTime::class.java)?.toInstant(),

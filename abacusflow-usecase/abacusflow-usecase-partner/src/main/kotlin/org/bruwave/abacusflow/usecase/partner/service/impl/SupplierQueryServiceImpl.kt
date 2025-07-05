@@ -1,9 +1,9 @@
 package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEMS
-import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIERS
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEM
+import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIER
 import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toTO
@@ -42,26 +42,27 @@ class SupplierQueryServiceImpl(
         phone: String?,
         address: String?,
     ): Page<BasicSupplierTO> {
-        val conditions = mutableListOf<Condition>()
+        val conditions = buildList<Condition> {
+            name?.takeIf { it.isNotBlank() }?.let {
+                add(SUPPLIER.NAME.containsIgnoreCase(it))
+            }
+            contactPerson?.takeIf { it.isNotBlank() }?.let {
+                add(SUPPLIER.CONTACT_PERSON.containsIgnoreCase(it))
+            }
+            phone?.takeIf { it.isNotBlank() }?.let {
+                add(SUPPLIER.PHONE.containsIgnoreCase(it))
+            }
+            address?.takeIf { it.isNotBlank() }?.let {
+                add(SUPPLIER.ADDRESS.containsIgnoreCase(it))
+            }
+        }
 
-        name?.takeIf { it.isNotBlank() }?.let {
-            conditions += SUPPLIERS.NAME.containsIgnoreCase(it)
-        }
-        contactPerson?.takeIf { it.isNotBlank() }?.let {
-            conditions += SUPPLIERS.CONTACT_PERSON.containsIgnoreCase(it)
-        }
-        phone?.takeIf { it.isNotBlank() }?.let {
-            conditions += SUPPLIERS.PHONE.containsIgnoreCase(it)
-        }
-        address?.takeIf { it.isNotBlank() }?.let {
-            conditions += SUPPLIERS.ADDRESS.containsIgnoreCase(it)
-        }
 
         // 1. 查询总记录数
         val total =
             jooqDsl
                 .selectCount()
-                .from(SUPPLIERS)
+                .from(SUPPLIER)
                 .where(conditions)
                 .fetchOne(0, Long::class.java) ?: 0L
 
@@ -69,41 +70,41 @@ class SupplierQueryServiceImpl(
         val records =
             jooqDsl
                 .select(
-                    SUPPLIERS.ID,
-                    SUPPLIERS.NAME,
-                    SUPPLIERS.CONTACT_PERSON,
-                    SUPPLIERS.PHONE,
-                    SUPPLIERS.ADDRESS,
+                    SUPPLIER.ID,
+                    SUPPLIER.NAME,
+                    SUPPLIER.CONTACT_PERSON,
+                    SUPPLIER.PHONE,
+                    SUPPLIER.ADDRESS,
                     // 聚合字段
-                    DSL.countDistinct(PURCHASE_ORDERS.ID).`as`("total_order_count"),
+                    DSL.countDistinct(PURCHASE_ORDER.ID).`as`("total_order_count"),
                     DSL.sum(
-                        PURCHASE_ORDER_ITEMS.UNIT_PRICE
-                            .mul(PURCHASE_ORDER_ITEMS.QUANTITY)
+                        PURCHASE_ORDER_ITEM.UNIT_PRICE
+                            .mul(PURCHASE_ORDER_ITEM.QUANTITY)
                     ).`as`("total_order_amount"),
-                    DSL.max(PURCHASE_ORDERS.CREATED_AT).`as`("last_order_time")
+                    DSL.max(PURCHASE_ORDER.CREATED_AT).`as`("last_order_time")
                 )
-                .from(SUPPLIERS)
-                .leftJoin(PURCHASE_ORDERS).on(PURCHASE_ORDERS.SUPPLIER_ID.eq(SUPPLIERS.ID))
-                .leftJoin(PURCHASE_ORDER_ITEMS).on(PURCHASE_ORDER_ITEMS.ORDER_ID.eq(PURCHASE_ORDERS.ID))
+                .from(SUPPLIER)
+                .leftJoin(PURCHASE_ORDER).on(PURCHASE_ORDER.SUPPLIER_ID.eq(SUPPLIER.ID))
+                .leftJoin(PURCHASE_ORDER_ITEM).on(PURCHASE_ORDER_ITEM.ORDER_ID.eq(PURCHASE_ORDER.ID))
                 .where(conditions)
                 .groupBy(
-                    SUPPLIERS.ID,
-                    SUPPLIERS.NAME,
-                    SUPPLIERS.CONTACT_PERSON,
-                    SUPPLIERS.PHONE,
-                    SUPPLIERS.ADDRESS,
+                    SUPPLIER.ID,
+                    SUPPLIER.NAME,
+                    SUPPLIER.CONTACT_PERSON,
+                    SUPPLIER.PHONE,
+                    SUPPLIER.ADDRESS,
                 )
-                .orderBy(SUPPLIERS.CREATED_AT.desc())
+                .orderBy(SUPPLIER.CREATED_AT.desc())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize)
                 .fetch()
                 .map {
                     BasicSupplierTO(
-                        id = it[SUPPLIERS.ID]!!,
-                        name = it[SUPPLIERS.NAME]!!,
-                        contactPerson = it[SUPPLIERS.CONTACT_PERSON],
-                        phone = it[SUPPLIERS.PHONE],
-                        address = it[SUPPLIERS.ADDRESS],
+                        id = it[SUPPLIER.ID]!!,
+                        name = it[SUPPLIER.NAME]!!,
+                        contactPerson = it[SUPPLIER.CONTACT_PERSON],
+                        phone = it[SUPPLIER.PHONE],
+                        address = it[SUPPLIER.ADDRESS],
                         totalOrderCount = it.get("total_order_count", Int::class.java) ?: 0,
                         totalOrderAmount = it.get("total_order_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
                         lastOrderTime = it.get("last_order_time", OffsetDateTime::class.java)?.toInstant(),

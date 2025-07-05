@@ -1,6 +1,6 @@
 cubes:
-  - name: product_categories
-    sql_table: public.product_categories
+  - name: product_category
+    sql_table: public.product_category
     data_source: default
 
     joins: []

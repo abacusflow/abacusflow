@@ -8,7 +8,7 @@ import jakarta.persistence.Table
 import org.springframework.data.domain.AbstractAggregateRoot
 
 @Entity
-@Table(name = "permissions")
+@Table(name = "permission")
 class Permission(
     val name: String,
     val label: String,

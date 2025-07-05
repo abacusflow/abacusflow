@@ -1,12 +1,14 @@
 package org.bruwave.abacusflow.usecase.transaction.service.impl
 
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
-import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMERS
-import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
-import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDERS
-import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEMS
-import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIERS
+import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMER
+import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
+import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER
+import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEM
+import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIER
+import org.bruwave.abacusflow.generated.jooq.enums.EnumPurchaseStatus
+import org.bruwave.abacusflow.generated.jooq.enums.EnumSaleStatus
 import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
@@ -38,50 +40,57 @@ class SaleOrderQueryServiceImpl(
     ): Page<BasicSaleOrderTO> {
         val conditions = mutableListOf<Condition>().apply {
             orderNo?.let {
-                add(SALE_ORDERS.NO.eq(it))
+                add(SALE_ORDER.NO.eq(it))
             }
 
             orderDate?.let {
-                add(SALE_ORDERS.ORDER_DATE.eq(it))
+                add(SALE_ORDER.ORDER_DATE.eq(it))
             }
 
             customerName?.takeIf { it.isNotBlank() }?.let {
-                add(CUSTOMERS.NAME.containsIgnoreCase(it))
+                add(CUSTOMER.NAME.containsIgnoreCase(it))
             }
 
             status?.takeIf { it.isNotBlank() }?.let {
-                add(SALE_ORDERS.STATUS.eq(it))
+                val statusEnum = when (it.uppercase()) {
+                    "PENDING"-> EnumSaleStatus.PENDING
+                    "COMPLETED"-> EnumSaleStatus.COMPLETED
+                    "CANCELED"-> EnumSaleStatus.CANCELED
+                    "REVERSED"-> EnumSaleStatus.REVERSED
+                    else -> throw IllegalArgumentException("Order status not supported: $it")
+                }
+                add(SALE_ORDER.STATUS.eq(statusEnum))
             }
 
             productName?.takeIf { it.isNotBlank() }?.let {
-                add(PRODUCTS.NAME.containsIgnoreCase(it))
+                add(PRODUCT.NAME.containsIgnoreCase(it))
             }
         }
 
         val joinedTables =
-            SALE_ORDERS
-                .leftJoin(CUSTOMERS).on(SALE_ORDERS.CUSTOMER_ID.eq(CUSTOMERS.ID))
-                .leftJoin(SALE_ORDER_ITEMS).on(SALE_ORDER_ITEMS.ORDER_ID.eq(SALE_ORDERS.ID))
+            SALE_ORDER
+                .leftJoin(CUSTOMER).on(SALE_ORDER.CUSTOMER_ID.eq(CUSTOMER.ID))
+                .leftJoin(SALE_ORDER_ITEM).on(SALE_ORDER_ITEM.ORDER_ID.eq(SALE_ORDER.ID))
 
         val total =
             jooqDsl
-                .select(DSL.countDistinct(SALE_ORDERS.ID))
+                .select(DSL.countDistinct(SALE_ORDER.ID))
                 .from(joinedTables)
                 .fetchOne(0, Long::class.java) ?: 0L
 
-        val totalAmountField = DSL.sum(SALE_ORDER_ITEMS.UNIT_PRICE.mul(SALE_ORDER_ITEMS.QUANTITY)).`as`("total_amount")
-        val totalQuantityField = DSL.sum(SALE_ORDER_ITEMS.QUANTITY).`as`("total_quantity")
-        val itemCountField = DSL.countDistinct(SALE_ORDER_ITEMS.ID).`as`("item_count")
+        val totalAmountField = DSL.sum(SALE_ORDER_ITEM.UNIT_PRICE.mul(SALE_ORDER_ITEM.QUANTITY)).`as`("total_amount")
+        val totalQuantityField = DSL.sum(SALE_ORDER_ITEM.QUANTITY).`as`("total_quantity")
+        val itemCountField = DSL.countDistinct(SALE_ORDER_ITEM.ID).`as`("item_count")
 
         val records =
             jooqDsl
                 .select(
-                    SALE_ORDERS.ID,
-                    SALE_ORDERS.NO,
-                    SALE_ORDERS.STATUS,
-                    SALE_ORDERS.ORDER_DATE,
-                    SALE_ORDERS.CREATED_AT,
-                    CUSTOMERS.NAME,
+                    SALE_ORDER.ID,
+                    SALE_ORDER.NO,
+                    SALE_ORDER.STATUS,
+                    SALE_ORDER.ORDER_DATE,
+                    SALE_ORDER.CREATED_AT,
+                    CUSTOMER.NAME,
                     totalAmountField,
                     totalQuantityField,
                     itemCountField,
@@ -89,35 +98,35 @@ class SaleOrderQueryServiceImpl(
                 .from(joinedTables)
                 .where(conditions)
                 .groupBy(
-                    SALE_ORDERS.ID,
-                    SALE_ORDERS.NO,
-                    SALE_ORDERS.STATUS,
-                    SALE_ORDERS.ORDER_DATE,
-                    SALE_ORDERS.CREATED_AT,
-                    CUSTOMERS.NAME,
+                    SALE_ORDER.ID,
+                    SALE_ORDER.NO,
+                    SALE_ORDER.STATUS,
+                    SALE_ORDER.ORDER_DATE,
+                    SALE_ORDER.CREATED_AT,
+                    CUSTOMER.NAME,
                 )
-                .orderBy(SALE_ORDERS.CREATED_AT.desc())
+                .orderBy(SALE_ORDER.CREATED_AT.desc())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize)
                 .fetch()
                 .map {
-                    val status = it[SALE_ORDERS.STATUS]!!
-                    val createdAt = it[SALE_ORDERS.CREATED_AT]!!
+                    val status = it[SALE_ORDER.STATUS]
+                    val createdAt = it[SALE_ORDER.CREATED_AT]!!
 
                     val autoCompleteDate: LocalDate? =
-                        if (status == OrderStatus.PENDING.name) {
+                        if (status.name == OrderStatus.PENDING.name) {
                             createdAt.plusDays(7).toLocalDate()
                         } else {
                             null
                         }
 
                     BasicSaleOrderTO(
-                        id = it[SALE_ORDERS.ID]!!,
-                        orderNo = it[SALE_ORDERS.NO]!!,
-                        customerName = it[CUSTOMERS.NAME] ?: "unknown",
-                        status = status,
-                        orderDate = it[SALE_ORDERS.ORDER_DATE]!!,
-                        createdAt = it[SALE_ORDERS.CREATED_AT]!!.toInstant(),
+                        id = it[SALE_ORDER.ID]!!,
+                        orderNo = it[SALE_ORDER.NO]!!,
+                        customerName = it[CUSTOMER.NAME] ?: "unknown",
+                        status = status.name,
+                        orderDate = it[SALE_ORDER.ORDER_DATE]!!,
+                        createdAt = it[SALE_ORDER.CREATED_AT]!!.toInstant(),
                         totalAmount = it.get("total_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
                         totalQuantity = it.get("total_quantity", Long::class.java) ?: 0L,
                         itemCount = it.get("item_count", Int::class.java) ?: 0,

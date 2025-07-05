@@ -1,11 +1,11 @@
 cubes:
-  - name: inventories
-    sql_table: public.inventories
+  - name: sale_order
+    sql_table: public.sale_order
     data_source: default
 
     joins:
-      - name: products
-        sql: "{CUBE}.product_id = {products.id}"
+      - name: customer
+        sql: "{CUBE}.customer_id = {customer.id}"
         relationship: many_to_one
 
     dimensions:
@@ -14,12 +14,28 @@ cubes:
         type: number
         primary_key: true
 
+      - name: note
+        sql: note
+        type: string
+
+      - name: status
+        sql: status
+        type: string
+
+      - name: no
+        sql: no
+        type: string
+
       - name: created_at
         sql: created_at
         type: time
 
       - name: updated_at
         sql: updated_at
+        type: time
+
+      - name: order_date
+        sql: order_date
         type: time
 
     measures:

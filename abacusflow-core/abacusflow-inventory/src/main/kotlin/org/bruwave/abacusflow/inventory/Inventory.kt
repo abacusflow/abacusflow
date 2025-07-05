@@ -15,7 +15,7 @@ import java.time.Instant
 
 @Entity
 @Table(
-    name = "inventories",
+    name = "inventory",
     uniqueConstraints = [UniqueConstraint(columnNames = ["product_id"])],
 )
 class Inventory(

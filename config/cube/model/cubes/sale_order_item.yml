@@ -1,6 +1,6 @@
 cubes:
-  - name: sale_order_items
-    sql_table: public.sale_order_items
+  - name: sale_order_item
+    sql_table: public.sale_order_item
     data_source: default
 
     joins:

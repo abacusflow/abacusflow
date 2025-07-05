@@ -2,13 +2,14 @@ package org.bruwave.abacusflow.usecase.inventory.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.bruwave.abacusflow.db.inventory.InventoryRepository
-import org.bruwave.abacusflow.generated.jooq.Tables.DEPOTS
-import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORIES
+import org.bruwave.abacusflow.generated.jooq.Tables.DEPOT
+import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORY
 import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORY_UNIT
-import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
-import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT_CATEGORIES
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
-import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDERS
+import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
+import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT_CATEGORY
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
+import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER
+import org.bruwave.abacusflow.generated.jooq.enums.EnumProductType
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
@@ -34,6 +35,7 @@ class InventoryQueryServiceImpl(
     private val jooqDsl: DSLContext,
     private val objectMapper: ObjectMapper,
 ) : InventoryQueryService {
+    // TODO: 这是最佳实践吗这种kt代码group，不应该sqlgroup才是马
     override fun listBasicInventoriesPage(
         pageable: Pageable,
         productCategoryId: Long?,
@@ -47,61 +49,66 @@ class InventoryQueryServiceImpl(
                 productCategoryId?.let { catId ->
                     val categoryIds = findAllChildrenCategories(catId)
                     if (categoryIds.isNotEmpty()) {
-                        add(PRODUCTS.CATEGORY_ID.`in`(categoryIds))
+                        add(PRODUCT.CATEGORY_ID.`in`(categoryIds))
                     } else {
                         add(DSL.noCondition())
                     }
                 }
-                productName?.takeIf { it.isNotBlank() }?.let {
-                    add(PRODUCTS.NAME.containsIgnoreCase(it))
-                }
-                productType?.let {
-                    add(PRODUCTS.TYPE.eq(it))
-                }
-                inventoryUnitCode?.takeIf { it.isNotBlank() }?.let {
-                    val uuidCode =
-                        try {
-                            UUID.fromString(it) // 尝试将字符串转换为 UUID
-                        } catch (e: IllegalArgumentException) {
-                            null // 如果转换失败，返回 null
-                        }
 
-                    uuidCode?.let { uuid ->
-                        add(INVENTORY_UNIT.SERIAL_NUMBER.eq(it).or(INVENTORY_UNIT.BATCH_CODE.eq(uuid)))
-                    } ?: run {
-                        add(INVENTORY_UNIT.SERIAL_NUMBER.eq(it))
-                    }
+                productName?.takeIf { it.isNotBlank() }?.let {
+                    add(PRODUCT.NAME.containsIgnoreCase(it))
                 }
+
+                productType?.let {
+                    val typeEnum = when (it.uppercase()) {
+                        "MATERIAL" -> EnumProductType.MATERIAL
+                        "ASSET" -> EnumProductType.ASSET
+                        else -> throw IllegalArgumentException("Product type not supported: $it")
+                    }
+                    add(PRODUCT.TYPE.eq(typeEnum))
+                }
+
+                inventoryUnitCode?.takeIf { it.isNotBlank() }?.let { code ->
+                    val condition = try {
+                        val uuid = UUID.fromString(code)
+                        INVENTORY_UNIT.BATCH_CODE.eq(uuid)
+                    } catch (e: IllegalArgumentException) {
+                        INVENTORY_UNIT.SERIAL_NUMBER.eq(code)
+                    }
+
+                    add(condition)
+                }
+
                 depotName?.takeIf { it.isNotBlank() }?.let {
-                    add(DEPOTS.NAME.containsIgnoreCase(it))
+                    add(DEPOT.NAME.containsIgnoreCase(it))
                 }
             }
 
         val total =
             jooqDsl
                 .selectCount()
-                .from(INVENTORIES)
-                .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
-                .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
+                .from(INVENTORY)
+                .leftJoin(INVENTORY_UNIT).on(INVENTORY.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
+                .leftJoin(PRODUCT).on(INVENTORY.PRODUCT_ID.eq(PRODUCT.ID))
                 .where(condition)
                 .fetchOne(0, Int::class.java) ?: 0
 
         val records =
             jooqDsl
                 .select(
-                    INVENTORIES.ID,
-                    INVENTORIES.PRODUCT_ID,
-                    INVENTORIES.SAFETY_STOCK,
-                    INVENTORIES.MAX_STOCK,
-                    PRODUCTS.NAME,
-                    PRODUCTS.SPECIFICATION,
-                    PRODUCTS.NOTE,
-                    PRODUCTS.TYPE,
+                    INVENTORY.ID,
+                    INVENTORY.PRODUCT_ID,
+                    INVENTORY.SAFETY_STOCK,
+                    INVENTORY.MAX_STOCK,
+                    PRODUCT.NAME,
+                    PRODUCT.SPECIFICATION,
+                    PRODUCT.NOTE,
+                    PRODUCT.TYPE,
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
                     INVENTORY_UNIT.PURCHASE_ORDER_ID,
-                    PURCHASE_ORDERS.NO,
-                    DEPOTS.NAME,
+                    PURCHASE_ORDER.NO,
+                    DEPOT.NAME,
                     INVENTORY_UNIT.INITIAL_QUANTITY,
                     INVENTORY_UNIT.QUANTITY,
                     INVENTORY_UNIT.FROZEN_QUANTITY,
@@ -110,31 +117,31 @@ class InventoryQueryServiceImpl(
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
                     INVENTORY_UNIT.STATUS,
-                    DSL.arrayAgg(SALE_ORDERS.NO).`as`("sale_order_nos"),
+                    DSL.arrayAgg(SALE_ORDER.NO).`as`("sale_order_nos"),
                 )
-                .from(INVENTORIES)
-                .leftJoin(INVENTORY_UNIT).on(INVENTORIES.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
-                .leftJoin(PRODUCTS).on(INVENTORIES.PRODUCT_ID.eq(PRODUCTS.ID))
-                .leftJoin(PURCHASE_ORDERS).on(INVENTORY_UNIT.PURCHASE_ORDER_ID.eq(PURCHASE_ORDERS.ID))
-                .leftJoin(SALE_ORDERS).on(
-                    DSL.condition("{0} = ANY({1})", SALE_ORDERS.ID, INVENTORY_UNIT.SALE_ORDER_IDS),
+                .from(INVENTORY)
+                .leftJoin(INVENTORY_UNIT).on(INVENTORY.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
+                .leftJoin(PRODUCT).on(INVENTORY.PRODUCT_ID.eq(PRODUCT.ID))
+                .leftJoin(PURCHASE_ORDER).on(INVENTORY_UNIT.PURCHASE_ORDER_ID.eq(PURCHASE_ORDER.ID))
+                .leftJoin(SALE_ORDER).on(
+                    DSL.condition("{0} = ANY({1})", SALE_ORDER.ID, INVENTORY_UNIT.SALE_ORDER_IDS),
                 )
-                .leftJoin(DEPOTS).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOTS.ID))
+                .leftJoin(DEPOT).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOT.ID))
                 .where(condition)
                 .groupBy(
-                    INVENTORIES.ID,
-                    INVENTORIES.PRODUCT_ID,
-                    INVENTORIES.SAFETY_STOCK,
-                    INVENTORIES.MAX_STOCK,
-                    PRODUCTS.NAME,
-                    PRODUCTS.SPECIFICATION,
-                    PRODUCTS.NOTE,
-                    PRODUCTS.TYPE,
+                    INVENTORY.ID,
+                    INVENTORY.PRODUCT_ID,
+                    INVENTORY.SAFETY_STOCK,
+                    INVENTORY.MAX_STOCK,
+                    PRODUCT.NAME,
+                    PRODUCT.SPECIFICATION,
+                    PRODUCT.NOTE,
+                    PRODUCT.TYPE,
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
                     INVENTORY_UNIT.PURCHASE_ORDER_ID,
-                    PURCHASE_ORDERS.NO,
-                    DEPOTS.NAME,
+                    PURCHASE_ORDER.NO,
+                    DEPOT.NAME,
                     INVENTORY_UNIT.INITIAL_QUANTITY,
                     INVENTORY_UNIT.QUANTITY,
                     INVENTORY_UNIT.FROZEN_QUANTITY,
@@ -148,33 +155,33 @@ class InventoryQueryServiceImpl(
                     // 排序将数量计数为 0 的记录推送到末尾
                     DSL.`when`(DSL.count(INVENTORY_UNIT.QUANTITY).eq(0), 1).otherwise(0)
                         .asc(),
-                    INVENTORIES.CREATED_AT.desc(),
+                    INVENTORY.CREATED_AT.desc(),
                 )
                 .offset(pageable.offset.toInt())
                 .limit(pageable.pageSize)
                 .fetch()
 
         val recordsGrouped =
-            records.groupBy { it[INVENTORIES.ID]!! }.map { (_, group) ->
+            records.groupBy { it[INVENTORY.ID]!! }.map { (_, group) ->
                 val first = group.first()
 
-                val productType: Product.ProductType = Product.ProductType.valueOf(first[PRODUCTS.TYPE]!!)
+                val productType = first[PRODUCT.TYPE].toDomainProductType()
 
                 val quantity = group.mapNotNull { it[INVENTORY_UNIT.QUANTITY] }.sumOf { it }
                 val frozenQuantity = group.mapNotNull { it[INVENTORY_UNIT.FROZEN_QUANTITY] }.sumOf { it }
 
                 BasicInventoryTO(
-                    id = first[INVENTORIES.ID]!!,
-                    productName = first[PRODUCTS.NAME]!!,
-                    productSpecification = first[PRODUCTS.SPECIFICATION],
-                    productNote = first[PRODUCTS.NOTE],
+                    id = first[INVENTORY.ID]!!,
+                    productName = first[PRODUCT.NAME]!!,
+                    productSpecification = first[PRODUCT.SPECIFICATION],
+                    productNote = first[PRODUCT.NOTE],
                     productType = productType.name,
                     quantity = group.mapNotNull { it[INVENTORY_UNIT.QUANTITY] }.sumOf { it },
                     initialQuantity = group.mapNotNull { it[INVENTORY_UNIT.INITIAL_QUANTITY] }.sumOf { it },
                     remainingQuantity = quantity - frozenQuantity,
-                    depotNames = group.mapNotNull { it[DEPOTS.NAME] },
-                    safetyStock = first[INVENTORIES.SAFETY_STOCK],
-                    maxStock = first[INVENTORIES.MAX_STOCK],
+                    depotNames = group.mapNotNull { it[DEPOT.NAME] },
+                    safetyStock = first[INVENTORY.SAFETY_STOCK],
+                    maxStock = first[INVENTORY.MAX_STOCK],
                     units = group.mapNotNull { it.toBasicInventoryUnitTO() },
                 )
             }
@@ -189,6 +196,12 @@ class InventoryQueryServiceImpl(
             .toTO()
     }
 
+    fun EnumProductType.toDomainProductType(): Product.ProductType = when (this) {
+        EnumProductType.MATERIAL -> Product.ProductType.MATERIAL
+        EnumProductType.ASSET -> Product.ProductType.ASSET
+    }
+
+
     private fun findAllChildrenCategories(categoryId: Long): List<Long> {
         val result = mutableSetOf<Long>()
         val queue = mutableListOf(categoryId)
@@ -200,9 +213,9 @@ class InventoryQueryServiceImpl(
             // 查询直接子分类
             val children =
                 jooqDsl
-                    .select(PRODUCT_CATEGORIES.ID)
-                    .from(PRODUCT_CATEGORIES)
-                    .where(PRODUCT_CATEGORIES.PARENT_ID.eq(currentId))
+                    .select(PRODUCT_CATEGORY.ID)
+                    .from(PRODUCT_CATEGORY)
+                    .where(PRODUCT_CATEGORY.PARENT_ID.eq(currentId))
                     .fetch()
                     .map { it.value1() }
 
@@ -219,8 +232,8 @@ class InventoryQueryServiceImpl(
 
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCTS.NAME]}-批次号-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCTS.NAME]}-序列号-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-批次号-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-序列号-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         val saleOrderNos: List<UUID> =
             this.get("sale_order_nos", Array<UUID>::class.java)
@@ -233,9 +246,9 @@ class InventoryQueryServiceImpl(
             id = id,
             title = title,
             type = unitType.name, // 通常是枚举/字符串，如 "INSTANCE" 或 "BATCH"
-            purchaseOrderNo = this[PURCHASE_ORDERS.NO]!!,
+            purchaseOrderNo = this[PURCHASE_ORDER.NO]!!,
             saleOrderNos = saleOrderNos,
-            depotName = this[DEPOTS.NAME],
+            depotName = this[DEPOT.NAME],
             initialQuantity = this[INVENTORY_UNIT.INITIAL_QUANTITY] ?: 0L,
             quantity = quantity,
             remainingQuantity = quantity - frozenQuantity,
@@ -243,7 +256,7 @@ class InventoryQueryServiceImpl(
             receivedAt = this[INVENTORY_UNIT.RECEIVED_AT]?.toInstant() ?: Instant.EPOCH,
             batchCode = this[INVENTORY_UNIT.BATCH_CODE],
             serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER],
-            status = this[INVENTORY_UNIT.STATUS],
+            status = this[INVENTORY_UNIT.STATUS].name,
         )
     }
 }

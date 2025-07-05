@@ -21,9 +21,10 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
+import kotlin.collections.filter
 
 @Entity
-@Table(name = "purchase_orders")
+@Table(name = "purchase_order")
 class PurchaseOrder(
     val supplierId: Long,
     val orderDate: LocalDate = LocalDate.now(),
@@ -50,6 +51,11 @@ class PurchaseOrder(
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
         private set
+
+    init {
+        validateAssetItems(items)
+        validateMaterialItems(items)
+    }
 
     fun completeOrder() {
         require(status == OrderStatus.PENDING) { "只有待处理订单才能完成" }
@@ -89,6 +95,45 @@ class PurchaseOrder(
         get() = items.sumOf { it.quantity.toLong() }
     val itemCount: Int
         get() = items.distinctBy { it.productId }.size
+
+    private fun validateAssetItems(items: List<PurchaseOrderItem>) {
+        val duplicateSerials = items
+            .filter { it.productType == TransactionProductType.ASSET }
+            .mapNotNull { it.serialNumber }
+            .groupingBy { it }
+            .eachCount()
+            .filterValues { it > 1 }
+
+        require(duplicateSerials.isEmpty()) {
+            "资产类商品中存在重复的序列号: ${duplicateSerials.keys}"
+        }
+    }
+
+    private fun validateMaterialItems(items: List<PurchaseOrderItem>) {
+        val materialItems = items.filter { it.productType == TransactionProductType.MATERIAL }
+
+        val duplicateUnitPrices = materialItems
+            .groupingBy { it.productId to it.unitPrice }
+            .eachCount()
+            .filterValues { it > 1 }
+
+        val duplicateBatchCodes = materialItems
+            .filter { it.batchCode != null }
+            .groupingBy { it.productId to it.batchCode }
+            .eachCount()
+            .filterValues { it > 1 }
+
+        require(duplicateUnitPrices.isEmpty() && duplicateBatchCodes.isEmpty()) {
+            buildString {
+                if (duplicateUnitPrices.isNotEmpty()) {
+                    append("普通类商品中存在重复单价（相同 productId + unitPrice）: ${duplicateUnitPrices.keys}。")
+                }
+                if (duplicateBatchCodes.isNotEmpty()) {
+                    append("普通类商品中存在重复批次号（相同 productId + batchCode）: ${duplicateBatchCodes.keys}。")
+                }
+            }
+        }
+    }
 
     @PrePersist
     fun prePersist() {

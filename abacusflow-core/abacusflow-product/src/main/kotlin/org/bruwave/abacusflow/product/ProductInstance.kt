@@ -21,7 +21,7 @@ class ProductInstance()
 //
 // @Entity
 // @Table(
-//    name = "product_instances",
+//    name = "product_instance",
 //    uniqueConstraints = [UniqueConstraint(columnNames = ["serial_number"])],
 // )
 // class ProductInstance(
