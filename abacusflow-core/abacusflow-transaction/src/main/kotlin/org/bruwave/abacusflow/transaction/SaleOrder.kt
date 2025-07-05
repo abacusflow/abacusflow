@@ -14,7 +14,12 @@ import jakarta.persistence.PrePersist
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.JdbcType
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.annotations.Type
 import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
+import org.hibernate.type.SqlTypes
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.math.BigDecimal
 import java.time.Duration
@@ -41,6 +46,7 @@ class SaleOrder(
     val no: UUID = UUID.randomUUID()
 
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     var status: OrderStatus = OrderStatus.PENDING
         private set
 

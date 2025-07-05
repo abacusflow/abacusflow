@@ -36,7 +36,7 @@ const chartOption = computed((): EChartsOption | null => {
   const counts: number[] = [];
 
   raw.forEach((row) => {
-    const rawDate = row["sale_order.order_date"];
+    const rawDate = row["sale_order.order_date"] as string | null;
     const formattedDate = dayjs(rawDate).format("YYYY-MM-DD");
 
     dates.push(formattedDate);
