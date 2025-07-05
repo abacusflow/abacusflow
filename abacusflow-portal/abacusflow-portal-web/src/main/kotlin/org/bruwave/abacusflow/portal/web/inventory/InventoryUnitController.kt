@@ -3,7 +3,6 @@ package org.bruwave.abacusflow.portal.web.inventory
 import org.bruwave.abacusflow.portal.web.api.InventoryUnitsApi
 import org.bruwave.abacusflow.portal.web.api.NotFoundException
 import org.bruwave.abacusflow.portal.web.model.AssignInventoryUnitDepotRequestVO
-import org.bruwave.abacusflow.portal.web.model.BasicInventoryUnitVO
 import org.bruwave.abacusflow.portal.web.model.InventoryUnitStatusVO
 import org.bruwave.abacusflow.portal.web.model.InventoryUnitVO
 import org.bruwave.abacusflow.portal.web.model.SelectableInventoryUnitVO

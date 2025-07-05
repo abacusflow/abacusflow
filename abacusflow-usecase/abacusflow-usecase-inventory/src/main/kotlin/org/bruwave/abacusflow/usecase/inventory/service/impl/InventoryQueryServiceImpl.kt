@@ -60,21 +60,23 @@ class InventoryQueryServiceImpl(
                 }
 
                 productType?.let {
-                    val typeEnum = when (it.uppercase()) {
-                        "MATERIAL" -> EnumProductType.MATERIAL
-                        "ASSET" -> EnumProductType.ASSET
-                        else -> throw IllegalArgumentException("Product type not supported: $it")
-                    }
+                    val typeEnum =
+                        when (it.uppercase()) {
+                            "MATERIAL" -> EnumProductType.MATERIAL
+                            "ASSET" -> EnumProductType.ASSET
+                            else -> throw IllegalArgumentException("Product type not supported: $it")
+                        }
                     add(PRODUCT.TYPE.eq(typeEnum))
                 }
 
                 inventoryUnitCode?.takeIf { it.isNotBlank() }?.let { code ->
-                    val condition = try {
-                        val uuid = UUID.fromString(code)
-                        INVENTORY_UNIT.BATCH_CODE.eq(uuid)
-                    } catch (e: IllegalArgumentException) {
-                        INVENTORY_UNIT.SERIAL_NUMBER.eq(code)
-                    }
+                    val condition =
+                        try {
+                            val uuid = UUID.fromString(code)
+                            INVENTORY_UNIT.BATCH_CODE.eq(uuid)
+                        } catch (e: IllegalArgumentException) {
+                            INVENTORY_UNIT.SERIAL_NUMBER.eq(code)
+                        }
 
                     add(condition)
                 }
@@ -196,11 +198,11 @@ class InventoryQueryServiceImpl(
             .toTO()
     }
 
-    fun EnumProductType.toDomainProductType(): Product.ProductType = when (this) {
-        EnumProductType.MATERIAL -> Product.ProductType.MATERIAL
-        EnumProductType.ASSET -> Product.ProductType.ASSET
-    }
-
+    fun EnumProductType.toDomainProductType(): Product.ProductType =
+        when (this) {
+            EnumProductType.MATERIAL -> Product.ProductType.MATERIAL
+            EnumProductType.ASSET -> Product.ProductType.ASSET
+        }
 
     private fun findAllChildrenCategories(categoryId: Long): List<Long> {
         val result = mutableSetOf<Long>()

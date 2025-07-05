@@ -13,7 +13,7 @@ interface InventoryUnitRepository : JpaRepository<InventoryUnit, Long> {
 
     fun findByIdAndStatusIn(
         id: Long,
-        statuses: List<InventoryUnit.InventoryUnitStatus>
+        statuses: List<InventoryUnit.InventoryUnitStatus>,
     ): List<InventoryUnit>
 
     fun findByDepotId(depotId: Long): List<InventoryUnit>

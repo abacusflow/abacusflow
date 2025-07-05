@@ -42,19 +42,20 @@ class CustomerQueryServiceImpl(
         phone: String?,
         address: String?,
     ): Page<BasicCustomerTO> {
-        val conditions = mutableListOf<Condition>().apply {
-            name?.takeIf { it.isNotBlank() }?.let {
-                add(CUSTOMER.NAME.containsIgnoreCase(it))
-            }
+        val conditions =
+            mutableListOf<Condition>().apply {
+                name?.takeIf { it.isNotBlank() }?.let {
+                    add(CUSTOMER.NAME.containsIgnoreCase(it))
+                }
 
-            phone?.takeIf { it.isNotBlank() }?.let {
-                add(CUSTOMER.PHONE.containsIgnoreCase(it))
-            }
+                phone?.takeIf { it.isNotBlank() }?.let {
+                    add(CUSTOMER.PHONE.containsIgnoreCase(it))
+                }
 
-            address?.takeIf { it.isNotBlank() }?.let {
-                add(CUSTOMER.ADDRESS.containsIgnoreCase(it))
+                address?.takeIf { it.isNotBlank() }?.let {
+                    add(CUSTOMER.ADDRESS.containsIgnoreCase(it))
+                }
             }
-        }
 
         // 1. 查询总数
         val total =
@@ -77,9 +78,9 @@ class CustomerQueryServiceImpl(
                     DSL.sum(
                         SALE_ORDER_ITEM.UNIT_PRICE
                             .mul(SALE_ORDER_ITEM.QUANTITY)
-                            .mul(SALE_ORDER_ITEM.DISCOUNT_FACTOR)
+                            .mul(SALE_ORDER_ITEM.DISCOUNT_FACTOR),
                     ).`as`("total_order_amount"),
-                    DSL.max(SALE_ORDER.CREATED_AT).`as`("last_order_time")
+                    DSL.max(SALE_ORDER.CREATED_AT).`as`("last_order_time"),
                 )
                 .from(CUSTOMER)
                 .leftJoin(SALE_ORDER).on(SALE_ORDER.CUSTOMER_ID.eq(CUSTOMER.ID))
@@ -89,7 +90,7 @@ class CustomerQueryServiceImpl(
                     CUSTOMER.ID,
                     CUSTOMER.NAME,
                     CUSTOMER.PHONE,
-                    CUSTOMER.ADDRESS
+                    CUSTOMER.ADDRESS,
                 )
                 .orderBy(CUSTOMER.CREATED_AT.desc()) // 或 pageable.sort 转换
                 .offset(pageable.offset)

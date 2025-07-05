@@ -165,12 +165,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val serialNumber: String,
     ) : InventoryUnit(
-        inventory = inventory,
-        purchaseOrderId = purchaseOrderId,
-        initialQuantity = 1,
-        depotId = depotId,
-        unitPrice = unitPrice,
-    ) {
+            inventory = inventory,
+            purchaseOrderId = purchaseOrderId,
+            initialQuantity = 1,
+            depotId = depotId,
+            unitPrice = unitPrice,
+        ) {
         val inStock: Boolean
             get() = remainingQuantity == 1L
 
@@ -196,12 +196,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val batchCode: UUID,
     ) : InventoryUnit(
-        inventory = inventory,
-        purchaseOrderId = purchaseOrderId,
-        initialQuantity = initialQuantity,
-        unitPrice = unitPrice,
-        depotId = depotId,
-    )
+            inventory = inventory,
+            purchaseOrderId = purchaseOrderId,
+            initialQuantity = initialQuantity,
+            unitPrice = unitPrice,
+            depotId = depotId,
+        )
 
     enum class UnitType {
         INSTANCE,

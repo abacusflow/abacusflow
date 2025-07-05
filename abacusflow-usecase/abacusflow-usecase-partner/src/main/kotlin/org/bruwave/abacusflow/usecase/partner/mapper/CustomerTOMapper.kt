@@ -1,7 +1,6 @@
 package org.bruwave.abacusflow.usecase.partner.mapper
 
 import org.bruwave.abacusflow.partner.Customer
-import org.bruwave.abacusflow.usecase.partner.BasicCustomerTO
 import org.bruwave.abacusflow.usecase.partner.CustomerTO
 
 fun Customer.toTO() =

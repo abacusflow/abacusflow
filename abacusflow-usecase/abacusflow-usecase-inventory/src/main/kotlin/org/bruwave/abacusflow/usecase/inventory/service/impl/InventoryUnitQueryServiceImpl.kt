@@ -9,8 +9,8 @@ import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
-import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryUnitForExportTO
+import org.bruwave.abacusflow.usecase.inventory.InventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryUnitWithTitleTO
 import org.bruwave.abacusflow.usecase.inventory.mapper.toTO
 import org.bruwave.abacusflow.usecase.inventory.service.InventoryUnitQueryService
@@ -29,7 +29,7 @@ class InventoryUnitQueryServiceImpl(
     private val dslContext: DSLContext,
 ) : InventoryUnitQueryService {
     override fun listBasicInventoryUnits(): List<BasicInventoryUnitTO> {
-       // 使用 JOOQ 执行联接查询
+        // 使用 JOOQ 执行联接查询
         val inventoryUnits =
             dslContext
                 .select(
@@ -166,7 +166,7 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY.PRODUCT_ID,
                     PRODUCT.NAME,
                     PURCHASE_ORDER.NO,
-                    INVENTORY_UNIT.CREATED_AT
+                    INVENTORY_UNIT.CREATED_AT,
                 )
                 .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
                 .fetch()
@@ -195,7 +195,7 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
                     PRODUCT.NAME,
-                    INVENTORY_UNIT.CREATED_AT
+                    INVENTORY_UNIT.CREATED_AT,
                 )
                 .from(INVENTORY_UNIT)
                 .leftJoin(INVENTORY).on(INVENTORY.ID.eq(INVENTORY_UNIT.INVENTORY_ID)) // 关联 INVENTORY 表
@@ -292,7 +292,6 @@ class InventoryUnitQueryServiceImpl(
             status = this[INVENTORY_UNIT.STATUS].name,
         )
     }
-
 
     fun Record.toInventoryUnitForExportTO(): InventoryUnitForExportTO? {
         val unitType: InventoryUnit.UnitType = InventoryUnit.UnitType.valueOf(this[INVENTORY_UNIT.UNIT_TYPE]!!)
