@@ -9,7 +9,7 @@ import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT_CATEGORY
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER
-import org.bruwave.abacusflow.generated.jooq.enums.EnumProductType
+import org.bruwave.abacusflow.generated.jooq.enums.ProductTypeDbEnum
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.product.Product
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryTO
@@ -62,8 +62,8 @@ class InventoryQueryServiceImpl(
                 productType?.let {
                     val typeEnum =
                         when (it.uppercase()) {
-                            "MATERIAL" -> EnumProductType.MATERIAL
-                            "ASSET" -> EnumProductType.ASSET
+                            "MATERIAL" -> ProductTypeDbEnum.MATERIAL
+                            "ASSET" -> ProductTypeDbEnum.ASSET
                             else -> throw IllegalArgumentException("Product type not supported: $it")
                         }
                     add(PRODUCT.TYPE.eq(typeEnum))
@@ -167,7 +167,7 @@ class InventoryQueryServiceImpl(
             records.groupBy { it[INVENTORY.ID]!! }.map { (_, group) ->
                 val first = group.first()
 
-                val productType = first[PRODUCT.TYPE].toDomainProductType()
+                val productType = first[PRODUCT.TYPE].toCoreProductType()
 
                 val quantity = group.mapNotNull { it[INVENTORY_UNIT.QUANTITY] }.sumOf { it }
                 val frozenQuantity = group.mapNotNull { it[INVENTORY_UNIT.FROZEN_QUANTITY] }.sumOf { it }
@@ -198,10 +198,10 @@ class InventoryQueryServiceImpl(
             .toTO()
     }
 
-    fun EnumProductType.toDomainProductType(): Product.ProductType =
+    fun ProductTypeDbEnum.toCoreProductType(): Product.ProductType =
         when (this) {
-            EnumProductType.MATERIAL -> Product.ProductType.MATERIAL
-            EnumProductType.ASSET -> Product.ProductType.ASSET
+            ProductTypeDbEnum.MATERIAL -> Product.ProductType.MATERIAL
+            ProductTypeDbEnum.ASSET -> Product.ProductType.ASSET
         }
 
     private fun findAllChildrenCategories(categoryId: Long): List<Long> {

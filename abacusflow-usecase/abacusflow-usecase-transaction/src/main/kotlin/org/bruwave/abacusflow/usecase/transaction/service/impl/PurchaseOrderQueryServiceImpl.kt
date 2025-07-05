@@ -5,7 +5,7 @@ import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEM
 import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIER
-import org.bruwave.abacusflow.generated.jooq.enums.EnumPurchaseStatus
+import org.bruwave.abacusflow.generated.jooq.enums.OrderStatusDbEnum
 import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
@@ -52,10 +52,10 @@ class PurchaseOrderQueryServiceImpl(
                 status?.takeIf { it.isNotBlank() }?.let {
                     val statusEnum =
                         when (it.uppercase()) {
-                            "PENDING" -> EnumPurchaseStatus.PENDING
-                            "COMPLETED" -> EnumPurchaseStatus.COMPLETED
-                            "CANCELED" -> EnumPurchaseStatus.CANCELED
-                            "REVERSED" -> EnumPurchaseStatus.REVERSED
+                            "PENDING" -> OrderStatusDbEnum.PENDING
+                            "COMPLETED" -> OrderStatusDbEnum.COMPLETED
+                            "CANCELED" -> OrderStatusDbEnum.CANCELED
+                            "REVERSED" -> OrderStatusDbEnum.REVERSED
                             else -> throw IllegalArgumentException("Order status not supported: $it")
                         }
                     add(PURCHASE_ORDER.STATUS.eq(statusEnum))

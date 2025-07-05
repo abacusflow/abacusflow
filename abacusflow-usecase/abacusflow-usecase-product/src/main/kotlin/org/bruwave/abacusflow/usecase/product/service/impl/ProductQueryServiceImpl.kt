@@ -3,7 +3,7 @@ package org.bruwave.abacusflow.usecase.product.service.impl
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT_CATEGORY
-import org.bruwave.abacusflow.generated.jooq.enums.EnumProductType
+import org.bruwave.abacusflow.generated.jooq.enums.ProductTypeDbEnum
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
@@ -49,8 +49,8 @@ class ProductQueryServiceImpl(
                 type?.takeIf { it.isNotBlank() }?.let {
                     val typeEnum =
                         when (it.uppercase()) {
-                            "MATERIAL" -> EnumProductType.MATERIAL
-                            "ASSET" -> EnumProductType.ASSET
+                            "MATERIAL" -> ProductTypeDbEnum.MATERIAL
+                            "ASSET" -> ProductTypeDbEnum.ASSET
                             else -> throw IllegalArgumentException("Product type not supported: $it")
                         }
                     add(PRODUCT.TYPE.eq(typeEnum))
