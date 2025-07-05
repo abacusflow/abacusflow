@@ -15,7 +15,7 @@ interface SaleOrderQueryService {
         status: String?,
         productName: String?,
         orderDate: LocalDate?,
-): Page<BasicSaleOrderTO>
+    ): Page<BasicSaleOrderTO>
 
     fun getSaleOrder(id: Long): SaleOrderTO
 }

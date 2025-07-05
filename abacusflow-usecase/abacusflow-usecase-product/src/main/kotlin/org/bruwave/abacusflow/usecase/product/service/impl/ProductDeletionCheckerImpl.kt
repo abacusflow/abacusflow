@@ -23,13 +23,13 @@ class ProductDeletionCheckerImpl(
         val relatedInventoryUnitIds = relatedInventoryUnits.map { it.id }
 
         val noPurchaseOrder = purchaseOrderItemRepository.countPurchaseOrderItemByProductId(productId) == 0L
-        val noSaleOrder = if (relatedInventoryUnitIds.isEmpty()) {
-            true // 没有库存单位就说明没有入库更是没有销售绑定
-        } else {
-            saleOrderItemRepository.countSaleOrderItemByInventoryUnitIdIn(relatedInventoryUnitIds) == 0L
-        }
+        val noSaleOrder =
+            if (relatedInventoryUnitIds.isEmpty()) {
+                true // 没有库存单位就说明没有入库更是没有销售绑定
+            } else {
+                saleOrderItemRepository.countSaleOrderItemByInventoryUnitIdIn(relatedInventoryUnitIds) == 0L
+            }
 
         return noPurchaseOrder && noSaleOrder
     }
-
 }

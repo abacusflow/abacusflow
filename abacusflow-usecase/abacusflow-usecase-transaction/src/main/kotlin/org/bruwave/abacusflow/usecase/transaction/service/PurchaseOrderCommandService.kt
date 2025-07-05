@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.usecase.transaction.service
 
-import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.CreatePurchaseOrderInputTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
 

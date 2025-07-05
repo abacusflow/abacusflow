@@ -11,6 +11,8 @@ import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.PositiveOrZero
+import org.hibernate.annotations.JdbcType
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import java.math.BigDecimal
 
 @Entity
@@ -19,6 +21,7 @@ class SaleOrderItem(
     val inventoryUnitId: Long,
     // 冗余字段：产品类型（用于区分资产类或普通产品）
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     val inventoryUnitType: TransactionInventoryUnitType,
     @field:Positive
     val quantity: Int,

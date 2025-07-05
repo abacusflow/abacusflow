@@ -1,6 +1,5 @@
 package org.bruwave.abacusflow.portal.web.inventory
 
-import jakarta.servlet.http.HttpServletResponse
 import org.bruwave.abacusflow.portal.web.api.InventoriesApi
 import org.bruwave.abacusflow.portal.web.model.AdjustWarningLineRequestVO
 import org.bruwave.abacusflow.portal.web.model.InventoryVO
@@ -84,10 +83,11 @@ class InventoryController(
 
         val filename = "inventory-${LocalDate.now()}.pdf"
 
-        val headers = HttpHeaders().apply {
-            contentType = MediaType.APPLICATION_PDF
-            add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
-        }
+        val headers =
+            HttpHeaders().apply {
+                contentType = MediaType.APPLICATION_PDF
+                add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
+            }
 
         val resource = ByteArrayResource(pdf)
 

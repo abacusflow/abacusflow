@@ -7,8 +7,8 @@ spring:
       transaction-isolation: TRANSACTION_REPEATABLE_READ
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
+    show-sql: false
 
 logging:
   pattern:

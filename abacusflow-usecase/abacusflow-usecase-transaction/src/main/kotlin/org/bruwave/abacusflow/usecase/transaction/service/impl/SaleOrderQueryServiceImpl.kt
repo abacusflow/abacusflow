@@ -3,12 +3,9 @@ package org.bruwave.abacusflow.usecase.transaction.service.impl
 import org.bruwave.abacusflow.db.transaction.SaleOrderRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMER
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEM
-import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIER
-import org.bruwave.abacusflow.generated.jooq.enums.EnumPurchaseStatus
-import org.bruwave.abacusflow.generated.jooq.enums.EnumSaleStatus
+import org.bruwave.abacusflow.generated.jooq.enums.OrderStatusDbEnum
 import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.transaction.BasicSaleOrderTO
 import org.bruwave.abacusflow.usecase.transaction.SaleOrderTO
@@ -38,34 +35,36 @@ class SaleOrderQueryServiceImpl(
         productName: String?,
         orderDate: LocalDate?,
     ): Page<BasicSaleOrderTO> {
-        val conditions = mutableListOf<Condition>().apply {
-            orderNo?.let {
-                add(SALE_ORDER.NO.eq(it))
-            }
-
-            orderDate?.let {
-                add(SALE_ORDER.ORDER_DATE.eq(it))
-            }
-
-            customerName?.takeIf { it.isNotBlank() }?.let {
-                add(CUSTOMER.NAME.containsIgnoreCase(it))
-            }
-
-            status?.takeIf { it.isNotBlank() }?.let {
-                val statusEnum = when (it.uppercase()) {
-                    "PENDING"-> EnumSaleStatus.PENDING
-                    "COMPLETED"-> EnumSaleStatus.COMPLETED
-                    "CANCELED"-> EnumSaleStatus.CANCELED
-                    "REVERSED"-> EnumSaleStatus.REVERSED
-                    else -> throw IllegalArgumentException("Order status not supported: $it")
+        val conditions =
+            mutableListOf<Condition>().apply {
+                orderNo?.let {
+                    add(SALE_ORDER.NO.eq(it))
                 }
-                add(SALE_ORDER.STATUS.eq(statusEnum))
-            }
 
-            productName?.takeIf { it.isNotBlank() }?.let {
-                add(PRODUCT.NAME.containsIgnoreCase(it))
+                orderDate?.let {
+                    add(SALE_ORDER.ORDER_DATE.eq(it))
+                }
+
+                customerName?.takeIf { it.isNotBlank() }?.let {
+                    add(CUSTOMER.NAME.containsIgnoreCase(it))
+                }
+
+                status?.takeIf { it.isNotBlank() }?.let {
+                    val statusEnum =
+                        when (it.uppercase()) {
+                            "PENDING" -> OrderStatusDbEnum.PENDING
+                            "COMPLETED" -> OrderStatusDbEnum.COMPLETED
+                            "CANCELED" -> OrderStatusDbEnum.CANCELED
+                            "REVERSED" -> OrderStatusDbEnum.REVERSED
+                            else -> throw IllegalArgumentException("Order status not supported: $it")
+                        }
+                    add(SALE_ORDER.STATUS.eq(statusEnum))
+                }
+
+                productName?.takeIf { it.isNotBlank() }?.let {
+                    add(PRODUCT.NAME.containsIgnoreCase(it))
+                }
             }
-        }
 
         val joinedTables =
             SALE_ORDER

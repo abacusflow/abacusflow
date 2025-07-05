@@ -8,7 +8,6 @@ data class BasicCustomerTO(
     val name: String,
     val phone: String?,
     val address: String?,
-
     // 历史交易维度
     val totalOrderCount: Int,
     val totalOrderAmount: BigDecimal,

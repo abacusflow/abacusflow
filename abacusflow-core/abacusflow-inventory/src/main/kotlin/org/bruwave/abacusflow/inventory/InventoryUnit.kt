@@ -12,12 +12,15 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Version
 import jakarta.validation.constraints.PositiveOrZero
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.JdbcType
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.hibernate.type.SqlTypes
 import java.math.BigDecimal
 import java.time.Instant
@@ -28,6 +31,7 @@ import java.util.UUID
 @DiscriminatorColumn(name = "unit_type", discriminatorType = DiscriminatorType.STRING)
 abstract class InventoryUnit(
     @ManyToOne
+    @JoinColumn(name = "inventory_id", nullable = false)
     open val inventory: Inventory,
     open val purchaseOrderId: Long,
     // 初始库存
@@ -66,6 +70,7 @@ abstract class InventoryUnit(
     open val id: Long = 0
 
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     @Column(nullable = false)
     open var status: InventoryUnitStatus = InventoryUnitStatus.NORMAL
         protected set
@@ -165,12 +170,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val serialNumber: String,
     ) : InventoryUnit(
-        inventory = inventory,
-        purchaseOrderId = purchaseOrderId,
-        initialQuantity = 1,
-        depotId = depotId,
-        unitPrice = unitPrice,
-    ) {
+            inventory = inventory,
+            purchaseOrderId = purchaseOrderId,
+            initialQuantity = 1,
+            depotId = depotId,
+            unitPrice = unitPrice,
+        ) {
         val inStock: Boolean
             get() = remainingQuantity == 1L
 
@@ -196,12 +201,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val batchCode: UUID,
     ) : InventoryUnit(
-        inventory = inventory,
-        purchaseOrderId = purchaseOrderId,
-        initialQuantity = initialQuantity,
-        unitPrice = unitPrice,
-        depotId = depotId,
-    )
+            inventory = inventory,
+            purchaseOrderId = purchaseOrderId,
+            initialQuantity = initialQuantity,
+            unitPrice = unitPrice,
+            depotId = depotId,
+        )
 
     enum class UnitType {
         INSTANCE,

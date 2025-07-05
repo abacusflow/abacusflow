@@ -86,7 +86,7 @@ class PurchaseOrderCommandServiceImpl(
                     item.quantity,
                     item.unitPrice,
                     serialNumber = null,
-                    batchCode = UUID.randomUUID()
+                    batchCode = UUID.randomUUID(),
                 )
 
             Product.ProductType.ASSET -> {
@@ -97,7 +97,7 @@ class PurchaseOrderCommandServiceImpl(
                     1,
                     item.unitPrice,
                     serialNumber = item.serialNumber,
-                    batchCode = null
+                    batchCode = null,
                 )
             }
         }

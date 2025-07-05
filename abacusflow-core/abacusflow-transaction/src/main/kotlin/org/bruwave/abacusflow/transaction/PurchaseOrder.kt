@@ -14,7 +14,9 @@ import jakarta.persistence.PrePersist
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.JdbcType
 import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.math.BigDecimal
 import java.time.Duration
@@ -42,6 +44,7 @@ class PurchaseOrder(
     val no: UUID = UUID.randomUUID()
 
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     var status: OrderStatus = OrderStatus.PENDING
         private set
 
@@ -97,12 +100,13 @@ class PurchaseOrder(
         get() = items.distinctBy { it.productId }.size
 
     private fun validateAssetItems(items: List<PurchaseOrderItem>) {
-        val duplicateSerials = items
-            .filter { it.productType == TransactionProductType.ASSET }
-            .mapNotNull { it.serialNumber }
-            .groupingBy { it }
-            .eachCount()
-            .filterValues { it > 1 }
+        val duplicateSerials =
+            items
+                .filter { it.productType == TransactionProductType.ASSET }
+                .mapNotNull { it.serialNumber }
+                .groupingBy { it }
+                .eachCount()
+                .filterValues { it > 1 }
 
         require(duplicateSerials.isEmpty()) {
             "资产类商品中存在重复的序列号: ${duplicateSerials.keys}"
@@ -112,16 +116,18 @@ class PurchaseOrder(
     private fun validateMaterialItems(items: List<PurchaseOrderItem>) {
         val materialItems = items.filter { it.productType == TransactionProductType.MATERIAL }
 
-        val duplicateUnitPrices = materialItems
-            .groupingBy { it.productId to it.unitPrice }
-            .eachCount()
-            .filterValues { it > 1 }
+        val duplicateUnitPrices =
+            materialItems
+                .groupingBy { it.productId to it.unitPrice }
+                .eachCount()
+                .filterValues { it > 1 }
 
-        val duplicateBatchCodes = materialItems
-            .filter { it.batchCode != null }
-            .groupingBy { it.productId to it.batchCode }
-            .eachCount()
-            .filterValues { it > 1 }
+        val duplicateBatchCodes =
+            materialItems
+                .filter { it.batchCode != null }
+                .groupingBy { it.productId to it.batchCode }
+                .eachCount()
+                .filterValues { it > 1 }
 
         require(duplicateUnitPrices.isEmpty() && duplicateBatchCodes.isEmpty()) {
             buildString {

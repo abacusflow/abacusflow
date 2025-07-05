@@ -28,8 +28,8 @@ class InventorySaleOrderEventListener(
                     inventoryUnitId,
                     listOf(
                         InventoryUnit.InventoryUnitStatus.NORMAL,
-                        InventoryUnit.InventoryUnitStatus.REVERSED
-                    )
+                        InventoryUnit.InventoryUnitStatus.REVERSED,
+                    ),
                 )
 
             units.forEach { unit ->
@@ -51,8 +51,8 @@ class InventorySaleOrderEventListener(
                     inventoryUnitId,
                     listOf(
                         InventoryUnit.InventoryUnitStatus.NORMAL,
-                        InventoryUnit.InventoryUnitStatus.REVERSED
-                    )
+                        InventoryUnit.InventoryUnitStatus.REVERSED,
+                    ),
                 )
 
             units.forEach { unit ->
@@ -74,8 +74,8 @@ class InventorySaleOrderEventListener(
                     inventoryUnitId,
                     listOf(
                         InventoryUnit.InventoryUnitStatus.NORMAL,
-                        InventoryUnit.InventoryUnitStatus.REVERSED
-                    )
+                        InventoryUnit.InventoryUnitStatus.REVERSED,
+                    ),
                 )
 
             units.forEach { unit ->

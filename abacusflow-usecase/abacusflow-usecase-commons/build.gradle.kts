@@ -1,3 +1,5 @@
+import org.jooq.meta.jaxb.MatcherRule
+import org.jooq.meta.jaxb.MatcherTransformType
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -33,11 +35,28 @@ jooq {
                 packageName = "org.bruwave.abacusflow.generated.jooq"
                 directory = "${projectDir}/build/generated/jooq/main"
             }
+
+            strategy {
+                matchers {
+                    enums {
+                        enum_ {
+//                          // 默认匹配所有数据库 enum
+                            enumLiteral =  MatcherRule()
+                                .withTransform(MatcherTransformType.UPPER)
+//                                .withExpression("\$0")
+                            enumClass = MatcherRule()
+                                .withTransform(MatcherTransformType.PASCAL)
+                                // db_enum -> DbEnum
+                                .withExpression("\$0_db_enum")  // Append "DbEnum" suffix to enum class names
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-sourceSets["main"].kotlin.srcDir(projectDir.resolve( "build/generated/jooq/main").absolutePath)
+sourceSets["main"].kotlin.srcDir(projectDir.resolve("build/generated/jooq/main").absolutePath)
 
 tasks.compileKotlin {
     dependsOn(tasks.jooqCodegen)

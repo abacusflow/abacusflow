@@ -17,7 +17,9 @@ import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import org.bruwave.abacusflow.commons.Sex
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.JdbcType
 import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
 
@@ -42,6 +44,7 @@ class User(
     val id: Long = 0
 
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     var sex: Sex? = null
         private set
 
@@ -174,5 +177,7 @@ class User(
         return newPassword
     }
 
-    val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    companion object{
+        const val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    }
 }

@@ -42,21 +42,21 @@ class SupplierQueryServiceImpl(
         phone: String?,
         address: String?,
     ): Page<BasicSupplierTO> {
-        val conditions = buildList<Condition> {
-            name?.takeIf { it.isNotBlank() }?.let {
-                add(SUPPLIER.NAME.containsIgnoreCase(it))
+        val conditions =
+            buildList<Condition> {
+                name?.takeIf { it.isNotBlank() }?.let {
+                    add(SUPPLIER.NAME.containsIgnoreCase(it))
+                }
+                contactPerson?.takeIf { it.isNotBlank() }?.let {
+                    add(SUPPLIER.CONTACT_PERSON.containsIgnoreCase(it))
+                }
+                phone?.takeIf { it.isNotBlank() }?.let {
+                    add(SUPPLIER.PHONE.containsIgnoreCase(it))
+                }
+                address?.takeIf { it.isNotBlank() }?.let {
+                    add(SUPPLIER.ADDRESS.containsIgnoreCase(it))
+                }
             }
-            contactPerson?.takeIf { it.isNotBlank() }?.let {
-                add(SUPPLIER.CONTACT_PERSON.containsIgnoreCase(it))
-            }
-            phone?.takeIf { it.isNotBlank() }?.let {
-                add(SUPPLIER.PHONE.containsIgnoreCase(it))
-            }
-            address?.takeIf { it.isNotBlank() }?.let {
-                add(SUPPLIER.ADDRESS.containsIgnoreCase(it))
-            }
-        }
-
 
         // 1. 查询总记录数
         val total =
@@ -79,9 +79,9 @@ class SupplierQueryServiceImpl(
                     DSL.countDistinct(PURCHASE_ORDER.ID).`as`("total_order_count"),
                     DSL.sum(
                         PURCHASE_ORDER_ITEM.UNIT_PRICE
-                            .mul(PURCHASE_ORDER_ITEM.QUANTITY)
+                            .mul(PURCHASE_ORDER_ITEM.QUANTITY),
                     ).`as`("total_order_amount"),
-                    DSL.max(PURCHASE_ORDER.CREATED_AT).`as`("last_order_time")
+                    DSL.max(PURCHASE_ORDER.CREATED_AT).`as`("last_order_time"),
                 )
                 .from(SUPPLIER)
                 .leftJoin(PURCHASE_ORDER).on(PURCHASE_ORDER.SUPPLIER_ID.eq(SUPPLIER.ID))

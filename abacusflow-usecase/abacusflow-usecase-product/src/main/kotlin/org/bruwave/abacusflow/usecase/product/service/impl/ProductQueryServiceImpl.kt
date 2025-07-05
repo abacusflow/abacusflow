@@ -3,7 +3,7 @@ package org.bruwave.abacusflow.usecase.product.service.impl
 import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT_CATEGORY
-import org.bruwave.abacusflow.generated.jooq.enums.EnumProductType
+import org.bruwave.abacusflow.generated.jooq.enums.ProductTypeDbEnum
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
@@ -40,33 +40,35 @@ class ProductQueryServiceImpl(
         enabled: Boolean?,
         categoryId: Long?,
     ): Page<BasicProductTO> {
-        val conditions = buildList<Condition> {
-            name?.takeIf { it.isNotBlank() }?.let {
-                add(PRODUCT.NAME.containsIgnoreCase(it))
-            }
-
-            type?.takeIf { it.isNotBlank() }?.let {
-                val typeEnum = when (it.uppercase()) {
-                    "MATERIAL" -> EnumProductType.MATERIAL
-                    "ASSET" -> EnumProductType.ASSET
-                    else -> throw IllegalArgumentException("Product type not supported: $it")
+        val conditions =
+            buildList<Condition> {
+                name?.takeIf { it.isNotBlank() }?.let {
+                    add(PRODUCT.NAME.containsIgnoreCase(it))
                 }
-                add(PRODUCT.TYPE.eq(typeEnum))
-            }
 
-            enabled?.let {
-                add(PRODUCT.ENABLED.eq(it))
-            }
+                type?.takeIf { it.isNotBlank() }?.let {
+                    val typeEnum =
+                        when (it.uppercase()) {
+                            "MATERIAL" -> ProductTypeDbEnum.MATERIAL
+                            "ASSET" -> ProductTypeDbEnum.ASSET
+                            else -> throw IllegalArgumentException("Product type not supported: $it")
+                        }
+                    add(PRODUCT.TYPE.eq(typeEnum))
+                }
 
-            categoryId?.let { catId ->
-                val categoryIds = findAllChildrenCategories(catId)
-                if (categoryIds.isNotEmpty()) {
-                    add(PRODUCT.CATEGORY_ID.`in`(categoryIds))
-                } else {
-                    add(DSL.noCondition())
+                enabled?.let {
+                    add(PRODUCT.ENABLED.eq(it))
+                }
+
+                categoryId?.let { catId ->
+                    val categoryIds = findAllChildrenCategories(catId)
+                    if (categoryIds.isNotEmpty()) {
+                        add(PRODUCT.CATEGORY_ID.`in`(categoryIds))
+                    } else {
+                        add(DSL.noCondition())
+                    }
                 }
             }
-        }
 
         // 1. 查询总数
         val total =

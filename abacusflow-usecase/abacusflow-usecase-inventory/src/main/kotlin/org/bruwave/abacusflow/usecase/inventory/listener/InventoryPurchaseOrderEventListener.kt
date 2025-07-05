@@ -24,12 +24,13 @@ class InventoryPurchaseOrderEventListener(
         println("PurchaseOrder Completed orderNo: ${order.no}")
 
         // 按照一个产品类型进行分组
-        val units = order.items.groupBy { it.productType }.flatMap { (productType, items) ->
-            when (productType) {
-                MATERIAL -> buildMaterialUnits(items, order.id)
-                ASSET -> buildAssetUnits(items, order.id)
+        val units =
+            order.items.groupBy { it.productType }.flatMap { (productType, items) ->
+                when (productType) {
+                    MATERIAL -> buildMaterialUnits(items, order.id)
+                    ASSET -> buildAssetUnits(items, order.id)
+                }
             }
-        }
 
         if (units.size > 0) {
             inventoryUnitRepository.saveAll(units)
@@ -38,11 +39,12 @@ class InventoryPurchaseOrderEventListener(
 
     private fun buildMaterialUnits(
         items: List<PurchaseOrderItem>,
-        orderId: Long
+        orderId: Long,
     ): List<InventoryUnit.BatchInventoryUnit> {
         return items.groupBy { it.productId }.map { (productId, batchItems) ->
-            val inventory = inventoryRepository.findByProductId(productId)
-                ?: throw NoSuchElementException("Product with id $productId not found")
+            val inventory =
+                inventoryRepository.findByProductId(productId)
+                    ?: throw NoSuchElementException("Product with id $productId not found")
 
             // 验证同一产品的单价一致
             check(items.map { it.unitPrice }.distinct().size == 1) {
@@ -57,9 +59,10 @@ class InventoryPurchaseOrderEventListener(
             val simpleItem = batchItems.first()
             val totalQuantity = batchItems.sumOf { it.quantity.toLong() }
 
-            val batchCode = checkNotNull(items.first().batchCode) {
-                "Product $productId missing batch code"
-            }
+            val batchCode =
+                checkNotNull(items.first().batchCode) {
+                    "Product $productId missing batch code"
+                }
 
             InventoryUnit.BatchInventoryUnit(
                 inventory = inventory,
@@ -67,18 +70,19 @@ class InventoryPurchaseOrderEventListener(
                 initialQuantity = totalQuantity,
                 unitPrice = simpleItem.unitPrice,
                 batchCode = batchCode,
-                depotId = null
+                depotId = null,
             )
         }
     }
 
     private fun buildAssetUnits(
         items: List<PurchaseOrderItem>,
-        orderId: Long
+        orderId: Long,
     ): List<InventoryUnit.InstanceInventoryUnit> {
         return items.groupBy { it.productId }.flatMap { (productId, items) ->
-            val inventory = inventoryRepository.findByProductId(productId)
-                ?: throw NoSuchElementException("Product with id $productId not found")
+            val inventory =
+                inventoryRepository.findByProductId(productId)
+                    ?: throw NoSuchElementException("Product with id $productId not found")
 
             items.map { item ->
                 check(item.quantity == 1) {
@@ -86,16 +90,17 @@ class InventoryPurchaseOrderEventListener(
                 }
 
                 // 验证序列号存在
-                val serialNumber = checkNotNull(item.serialNumber) {
-                    "Asset product $productId must have serial number"
-                }
+                val serialNumber =
+                    checkNotNull(item.serialNumber) {
+                        "Asset product $productId must have serial number"
+                    }
 
                 InventoryUnit.InstanceInventoryUnit(
                     inventory = inventory,
                     purchaseOrderId = orderId,
                     unitPrice = item.unitPrice,
                     serialNumber = serialNumber,
-                    depotId = null
+                    depotId = null,
                 )
             }
         }

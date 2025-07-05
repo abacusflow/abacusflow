@@ -3,7 +3,6 @@ package org.bruwave.abacusflow.usecase.inventory.service.impl
 import com.lowagie.text.Document
 import com.lowagie.text.Element
 import com.lowagie.text.Font
-import com.lowagie.text.FontFactory
 import com.lowagie.text.PageSize
 import com.lowagie.text.Paragraph
 import com.lowagie.text.Phrase
@@ -18,17 +17,17 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import kotlin.collections.joinToString
 
 @Service
 class InventoryReportServiceImpl(
-    private val inventoryUnitQueryService: InventoryUnitQueryService
+    private val inventoryUnitQueryService: InventoryUnitQueryService,
 ) : InventoryReportService {
-    val formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm:ss")
-        .withZone(ZoneId.of("Asia/Shanghai"))
+    val formatter =
+        DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm:ss")
+            .withZone(ZoneId.of("Asia/Shanghai"))
 
     override fun exportInventoryAsPdf(): ByteArray {
-        //TODO 批量查询防止oom
+        // TODO 批量查询防止oom
         val units = inventoryUnitQueryService.listInventoryUnitsForExport()
         require(units.isNotEmpty()) { "导出数据为空，无法生成 PDF" }
         return generatePdf(units)
@@ -45,21 +44,24 @@ class InventoryReportServiceImpl(
         val baseFont = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED)
         val font = Font(baseFont, 10f)
 
-        val title = Paragraph("库存单元清单 - ${LocalDate.now()}", font).apply {
-            alignment = Element.ALIGN_CENTER
-            spacingAfter = 10f
-        }
+        val title =
+            Paragraph("库存单元清单 - ${LocalDate.now()}", font).apply {
+                alignment = Element.ALIGN_CENTER
+                spacingAfter = 10f
+            }
         document.add(title)
 
-        val table = PdfPTable(10).apply {
-            widthPercentage = 100f
-            setWidths(floatArrayOf(5f, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.5f, 3f, 2.5f, 2.5f))
-        }
+        val table =
+            PdfPTable(10).apply {
+                widthPercentage = 100f
+                setWidths(floatArrayOf(5f, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.5f, 3f, 2.5f, 2.5f))
+            }
 
-        val headers = listOf(
-            "库存名称", "类型", "状态", "当前数量", "可用数量", "单价(元)",
-            "收货时间", "序列号", "批次号", "存储点"
-        )
+        val headers =
+            listOf(
+                "库存名称", "类型", "状态", "当前数量", "可用数量", "单价(元)",
+                "收货时间", "序列号", "批次号", "存储点",
+            )
 
         // 检查表头与表格列数是否匹配
         check(headers.size == table.numberOfColumns) {

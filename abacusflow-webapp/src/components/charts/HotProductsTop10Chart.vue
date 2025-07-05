@@ -10,7 +10,7 @@ import type { EChartsOption } from "echarts";
 import { useQuery } from "@tanstack/vue-query";
 
 const { data: chatData } = useQuery({
-  queryKey: ["hot-products-top10"],
+  queryKey: ["hotProductsTop10Data"],
   queryFn: () =>
     cubejsApi.load({
       measures: ["sale_order_item.quantity"],
@@ -24,10 +24,25 @@ const chartOption = computed((): EChartsOption | null => {
   if (!chatData.value) return null;
   const raw = chatData.value.rawData();
   return {
-    title: { text: "商品热销 Top 10", left: "center" },
+    title: { text: "热销 Top 10", left: "center" },
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    xAxis: { type: "category", data: raw.map((r) => r["product.name"] as string) },
-    yAxis: { type: "value" },
+    grid: {
+      containLabel: true
+    },
+    xAxis: {
+      type: "category",
+      axisLabel: {
+        rotate: 15
+      },
+      data: raw.map((r) => r["product.name"] as string)
+    },
+    yAxis: {
+      type: "value",
+      name: "销售数量",
+      axisLabel: {
+        formatter: "{value}"
+      }
+    },
     series: [
       {
         name: "销售数量",

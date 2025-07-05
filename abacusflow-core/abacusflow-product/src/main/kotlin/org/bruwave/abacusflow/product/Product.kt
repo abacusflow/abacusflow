@@ -17,7 +17,9 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.JdbcType
 import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
 
@@ -26,6 +28,7 @@ import java.time.Instant
 class Product(
     name: String,
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     val type: ProductType = ProductType.MATERIAL,
     specification: String?,
     unit: ProductUnit,
