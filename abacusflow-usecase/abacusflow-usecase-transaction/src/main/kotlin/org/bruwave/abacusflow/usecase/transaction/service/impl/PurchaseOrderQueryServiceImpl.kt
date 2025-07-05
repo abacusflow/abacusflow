@@ -1,10 +1,12 @@
 package org.bruwave.abacusflow.usecase.transaction.service.impl
 
 import org.bruwave.abacusflow.db.transaction.PurchaseOrderRepository
-import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCTS
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDERS
-import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEMS
-import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIERS
+import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
+import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEM
+import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIER
+import org.bruwave.abacusflow.generated.jooq.enums.EnumProductType
+import org.bruwave.abacusflow.generated.jooq.enums.EnumPurchaseStatus
 import org.bruwave.abacusflow.transaction.OrderStatus
 import org.bruwave.abacusflow.usecase.transaction.BasicPurchaseOrderTO
 import org.bruwave.abacusflow.usecase.transaction.PurchaseOrderTO
@@ -36,54 +38,61 @@ class PurchaseOrderQueryServiceImpl(
     ): Page<BasicPurchaseOrderTO> {
         val conditions = mutableListOf<Condition>().apply {
             orderNo?.let {
-                add(PURCHASE_ORDERS.NO.eq(it))
+                add(PURCHASE_ORDER.NO.eq(it))
             }
 
             orderDate?.let {
-                add(PURCHASE_ORDERS.ORDER_DATE.eq(it))
+                add(PURCHASE_ORDER.ORDER_DATE.eq(it))
             }
 
             supplierName?.takeIf { it.isNotBlank() }?.let {
-                add(SUPPLIERS.NAME.containsIgnoreCase(it))
+                add(SUPPLIER.NAME.containsIgnoreCase(it))
             }
 
             status?.takeIf { it.isNotBlank() }?.let {
-                add(PURCHASE_ORDERS.STATUS.eq(it))
+                val statusEnum = when (it.uppercase()) {
+                    "PENDING"-> EnumPurchaseStatus.PENDING
+                    "COMPLETED"-> EnumPurchaseStatus.COMPLETED
+                    "CANCELED"-> EnumPurchaseStatus.CANCELED
+                    "REVERSED"-> EnumPurchaseStatus.REVERSED
+                    else -> throw IllegalArgumentException("Order status not supported: $it")
+                }
+                add(PURCHASE_ORDER.STATUS.eq(statusEnum))
             }
 
             productName?.takeIf { it.isNotBlank() }?.let {
-                add(PRODUCTS.NAME.containsIgnoreCase(it))
+                add(PRODUCT.NAME.containsIgnoreCase(it))
             }
         }
 
 
         val joinedTables =
-            PURCHASE_ORDERS
-                .leftJoin(SUPPLIERS).on(PURCHASE_ORDERS.SUPPLIER_ID.eq(SUPPLIERS.ID))
-                .leftJoin(PURCHASE_ORDER_ITEMS).on(PURCHASE_ORDER_ITEMS.ORDER_ID.eq(PURCHASE_ORDERS.ID))
-                .leftJoin(PRODUCTS).on(PURCHASE_ORDER_ITEMS.PRODUCT_ID.eq(PRODUCTS.ID))
+            PURCHASE_ORDER
+                .leftJoin(SUPPLIER).on(PURCHASE_ORDER.SUPPLIER_ID.eq(SUPPLIER.ID))
+                .leftJoin(PURCHASE_ORDER_ITEM).on(PURCHASE_ORDER_ITEM.ORDER_ID.eq(PURCHASE_ORDER.ID))
+                .leftJoin(PRODUCT).on(PURCHASE_ORDER_ITEM.PRODUCT_ID.eq(PRODUCT.ID))
 
         val total =
             jooqDsl
-                .select(DSL.countDistinct(PURCHASE_ORDERS.ID))
+                .select(DSL.countDistinct(PURCHASE_ORDER.ID))
                 .from(joinedTables)
                 .where(conditions)
                 .fetchOne(0, Long::class.java) ?: 0L
 
         val totalAmountField =
-            DSL.sum(PURCHASE_ORDER_ITEMS.UNIT_PRICE.mul(PURCHASE_ORDER_ITEMS.QUANTITY)).`as`("total_amount")
-        val totalQuantityField = DSL.sum(PURCHASE_ORDER_ITEMS.QUANTITY).`as`("total_quantity")
-        val itemCountField = DSL.countDistinct(PURCHASE_ORDER_ITEMS.ID).`as`("item_count")
+            DSL.sum(PURCHASE_ORDER_ITEM.UNIT_PRICE.mul(PURCHASE_ORDER_ITEM.QUANTITY)).`as`("total_amount")
+        val totalQuantityField = DSL.sum(PURCHASE_ORDER_ITEM.QUANTITY).`as`("total_quantity")
+        val itemCountField = DSL.countDistinct(PURCHASE_ORDER_ITEM.ID).`as`("item_count")
 
         val records =
             jooqDsl
                 .select(
-                    PURCHASE_ORDERS.ID,
-                    PURCHASE_ORDERS.NO,
-                    PURCHASE_ORDERS.STATUS,
-                    PURCHASE_ORDERS.CREATED_AT,
-                    PURCHASE_ORDERS.ORDER_DATE,
-                    SUPPLIERS.NAME,
+                    PURCHASE_ORDER.ID,
+                    PURCHASE_ORDER.NO,
+                    PURCHASE_ORDER.STATUS,
+                    PURCHASE_ORDER.CREATED_AT,
+                    PURCHASE_ORDER.ORDER_DATE,
+                    SUPPLIER.NAME,
                     totalAmountField,
                     totalQuantityField,
                     itemCountField,
@@ -91,35 +100,35 @@ class PurchaseOrderQueryServiceImpl(
                 .from(joinedTables)
                 .where(conditions)
                 .groupBy(
-                    PURCHASE_ORDERS.ID,
-                    PURCHASE_ORDERS.NO,
-                    PURCHASE_ORDERS.STATUS,
-                    PURCHASE_ORDERS.CREATED_AT,
-                    PURCHASE_ORDERS.ORDER_DATE,
-                    SUPPLIERS.NAME,
+                    PURCHASE_ORDER.ID,
+                    PURCHASE_ORDER.NO,
+                    PURCHASE_ORDER.STATUS,
+                    PURCHASE_ORDER.CREATED_AT,
+                    PURCHASE_ORDER.ORDER_DATE,
+                    SUPPLIER.NAME,
                 )
-                .orderBy(PURCHASE_ORDERS.CREATED_AT.desc())
+                .orderBy(PURCHASE_ORDER.CREATED_AT.desc())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize)
                 .fetch()
                 .map {
-                    val status = it[PURCHASE_ORDERS.STATUS]!!
-                    val createdAt = it[PURCHASE_ORDERS.CREATED_AT]!!
+                    val status = it[PURCHASE_ORDER.STATUS]!!
+                    val createdAt = it[PURCHASE_ORDER.CREATED_AT]!!
                     val autoCompleteDate: LocalDate? =
-                        if (status == OrderStatus.PENDING.name) {
+                        if (status.name == OrderStatus.PENDING.name) {
                             createdAt.plusDays(7).toLocalDate()
                         } else {
                             null
                         }
 
                     BasicPurchaseOrderTO(
-                        id = it[PURCHASE_ORDERS.ID]!!,
-                        orderNo = it[PURCHASE_ORDERS.NO]!!,
-                        status = it[PURCHASE_ORDERS.STATUS]!!,
-                        createdAt = it[PURCHASE_ORDERS.CREATED_AT]!!.toInstant(),
-                        orderDate = it[PURCHASE_ORDERS.ORDER_DATE],
+                        id = it[PURCHASE_ORDER.ID]!!,
+                        orderNo = it[PURCHASE_ORDER.NO]!!,
+                        status = it[PURCHASE_ORDER.STATUS].name,
+                        createdAt = it[PURCHASE_ORDER.CREATED_AT]!!.toInstant(),
+                        orderDate = it[PURCHASE_ORDER.ORDER_DATE],
                         autoCompleteDate = autoCompleteDate,
-                        supplierName = it[SUPPLIERS.NAME] ?: "unknown",
+                        supplierName = it[SUPPLIER.NAME] ?: "unknown",
                         totalAmount = it.get("total_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
                         totalQuantity = it.get("total_quantity", Long::class.java) ?: 0,
                         itemCount = it.get("item_count", Int::class.java) ?: 0,

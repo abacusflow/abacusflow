@@ -15,7 +15,7 @@ import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 
 @Entity
-@Table(name = "product_categories")
+@Table(name = "product_category")
 class ProductCategory(
     name: String,
     description: String?,

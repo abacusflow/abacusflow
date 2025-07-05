@@ -23,7 +23,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @Entity
-@Table(name = "sale_orders")
+@Table(name = "sale_order")
 class SaleOrder(
     val customerId: Long,
     val orderDate: LocalDate = LocalDate.now(),

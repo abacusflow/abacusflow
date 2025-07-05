@@ -24,7 +24,7 @@ import java.util.UUID
 import kotlin.collections.filter
 
 @Entity
-@Table(name = "purchase_orders")
+@Table(name = "purchase_order")
 class PurchaseOrder(
     val supplierId: Long,
     val orderDate: LocalDate = LocalDate.now(),

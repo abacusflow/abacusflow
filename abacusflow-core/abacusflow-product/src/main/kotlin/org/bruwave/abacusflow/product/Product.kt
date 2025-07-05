@@ -22,7 +22,7 @@ import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.Instant
 
 @Entity
-@Table(name = "products")
+@Table(name = "product")
 class Product(
     name: String,
     @Enumerated(EnumType.STRING)

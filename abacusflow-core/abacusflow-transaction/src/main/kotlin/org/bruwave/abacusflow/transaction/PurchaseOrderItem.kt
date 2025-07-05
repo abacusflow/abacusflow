@@ -13,7 +13,7 @@ import java.math.BigDecimal
 import java.util.UUID
 
 @Entity
-@Table(name = "purchase_order_items")
+@Table(name = "purchase_order_item")
 class PurchaseOrderItem(
     val productId: Long,
     // 冗余字段：产品类型（用于区分资产类或普通产品）
