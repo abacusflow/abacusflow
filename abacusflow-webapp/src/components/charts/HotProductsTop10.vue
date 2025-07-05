@@ -13,9 +13,9 @@ const { data: chatData } = useQuery({
   queryKey: ["hot-products-top10"],
   queryFn: () =>
     cubejsApi.load({
-      measures: ["sale_order_items.quantity"],
-      dimensions: ["products.name"],
-      order: { "sale_order_items.quantity": "desc" },
+      measures: ["sale_order_item.quantity"],
+      dimensions: ["product.name"],
+      order: { "sale_order_item.quantity": "desc" },
       limit: 10
     })
 });
@@ -26,13 +26,13 @@ const chartOption = computed((): EChartsOption | null => {
   return {
     title: { text: "商品热销 Top 10", left: "center" },
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    xAxis: { type: "category", data: raw.map((r) => r["products.name"] as string) },
+    xAxis: { type: "category", data: raw.map((r) => r["product.name"] as string) },
     yAxis: { type: "value" },
     series: [
       {
         name: "销售数量",
         type: "bar",
-        data: raw.map((r) => r["sale_order_items.quantity"] as number),
+        data: raw.map((r) => r["sale_order_item.quantity"] as number),
         itemStyle: {
           borderRadius: [6, 6, 0, 0],
           color: {

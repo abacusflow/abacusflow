@@ -4,16 +4,16 @@ cubes:
     data_source: default
 
     joins:
-      - name: depots
-        sql: "{CUBE}.depot_id = {depots.id}"
+      - name: depot
+        sql: "{CUBE}.depot_id = {depot.id}"
         relationship: many_to_one
 
-      - name: purchase_orders
-        sql: "{CUBE}.purchase_order_id = {purchase_orders.id}"
+      - name: purchase_order
+        sql: "{CUBE}.purchase_order_id = {purchase_order.id}"
         relationship: many_to_one
 
-      - name: inventories
-        sql: "{CUBE}.inventory_id = {inventories.id}"
+      - name: inventory
+        sql: "{CUBE}.inventory_id = {inventory.id}"
         relationship: many_to_one
 
     dimensions:

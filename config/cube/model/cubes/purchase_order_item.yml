@@ -1,9 +1,12 @@
 cubes:
-  - name: customers
-    sql_table: public.customers
+  - name: purchase_order_item
+    sql_table: public.purchase_order_item
     data_source: default
 
-    joins: []
+    joins:
+      - name: product
+        sql: "{CUBE}.product_id = {product.id}"
+        relationship: many_to_one
 
     dimensions:
       - name: id
@@ -11,33 +14,25 @@ cubes:
         type: number
         primary_key: true
 
-      - name: phone
-        sql: phone
+      - name: unit_price
+        sql: unit_price
         type: string
 
-      - name: enabled
-        sql: enabled
-        type: boolean
-
-      - name: address
-        sql: address
+      - name: product_type
+        sql: product_type
         type: string
 
-      - name: name
-        sql: name
+      - name: serial_number
+        sql: serial_number
         type: string
-
-      - name: created_at
-        sql: created_at
-        type: time
-
-      - name: updated_at
-        sql: updated_at
-        type: time
 
     measures:
       - name: count
         type: count
+
+      - name: quantity
+        sql: quantity
+        type: sum
 
     pre_aggregations:
       # Pre-aggregation definitions go here.
