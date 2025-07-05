@@ -26,8 +26,23 @@ const chartOption = computed((): EChartsOption | null => {
   return {
     title: { text: "热销 Top 10", left: "center" },
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    xAxis: { type: "category", data: raw.map((r) => r["product.name"] as string) },
-    yAxis: { type: "value" },
+    grid: {
+      containLabel: true
+    },
+    xAxis: {
+      type: "category",
+      axisLabel: {
+        rotate: 15
+      },
+      data: raw.map((r) => r["product.name"] as string)
+    },
+    yAxis: {
+      type: "value",
+      name: "销售数量",
+      axisLabel: {
+        formatter: "{value}"
+      }
+    },
     series: [
       {
         name: "销售数量",

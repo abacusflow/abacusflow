@@ -45,6 +45,10 @@ const chartOption = computed((): EChartsOption | null => {
   });
 
   return {
+    title: {
+      text: "每日销售趋势（金额 + 数量）",
+      left: "center"
+    },
     tooltip: {
       trigger: "axis"
     },
@@ -52,12 +56,15 @@ const chartOption = computed((): EChartsOption | null => {
       data: ["销售金额", "订单数量"],
       top: 30 //  往下挪一点，避免覆盖标题
     },
+    grid: {
+      containLabel: true
+    },
     xAxis: {
       type: "category",
       data: dates,
       name: "日期",
       axisLabel: {
-        rotate: 45
+        // rotate: 25
       }
     },
     yAxis: [
@@ -91,17 +98,7 @@ const chartOption = computed((): EChartsOption | null => {
         smooth: true,
         yAxisIndex: 1 // 使用第二个 y 轴
       }
-    ],
-    title: {
-      text: "每日销售趋势（金额 + 数量）",
-      left: "center"
-    },
-    grid: {
-      left: "10%",
-      right: "10%",
-      bottom: "15%",
-      containLabel: true
-    }
+    ]
   };
 });
 </script>
