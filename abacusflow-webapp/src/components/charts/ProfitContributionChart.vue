@@ -10,12 +10,12 @@ import type { EChartsOption } from "echarts";
 import { useQuery } from "@tanstack/vue-query";
 
 const { data: chatData } = useQuery({
-  queryKey: ["hot-products-top10"],
+  queryKey: ["chatData"],
   queryFn: () =>
     cubejsApi.load({
-      measures: ["sale_order_item.quantity"],
+      measures: ["sale_order_item.profit"],
       dimensions: ["product.name"],
-      order: { "sale_order_item.quantity": "desc" },
+      order: { "sale_order_item.profit": "desc" },
       limit: 10
     })
 });

@@ -8,11 +8,19 @@ cubes:
         sql: "{CUBE}.product_id = {product.id}"
         relationship: many_to_one
 
+      - name: purchase_order
+        sql: "{CUBE}.order_id = {purchase_order.id}"
+        relationship: many_to_one
+
     dimensions:
       - name: id
         sql: id
         type: number
         primary_key: true
+
+      - name: order_id
+        sql: order_id
+        type: number
 
       - name: unit_price
         sql: unit_price
@@ -32,6 +40,10 @@ cubes:
 
       - name: quantity
         sql: quantity
+        type: sum
+
+      - name: cost
+        sql: unit_price * quantity
         type: sum
 
     pre_aggregations:
