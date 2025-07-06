@@ -1,5 +1,5 @@
 <template>
-  <a-row justify="center" gutter="{16}">
+  <a-row justify="center">
     <a-col :span="24">
       <a-card style="height: 400px">
         <SaleTrendChart></SaleTrendChart>

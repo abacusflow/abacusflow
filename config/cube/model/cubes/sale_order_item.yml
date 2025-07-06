@@ -28,7 +28,7 @@ cubes:
 
       - name: unit_price
         sql: unit_price
-        type: string
+        type: number
 
       - name: inventory_unit_type
         sql: inventory_unit_type
@@ -43,12 +43,12 @@ cubes:
         type: sum
 
       - name: revenue
-        sql: unit_price * quantity
+        sql: ROUND({CUBE}.unit_price * {CUBE}.discount_factor, 2) *{CUBE}. quantity
         type: sum
 
-#      - name: profit
-#        sql: (unit_price - {CUBE}.purchase_order_items.unit_price) * quantity
-#        type: sum
+      - name: profit
+        sql: ({CUBE}.unit_price * {CUBE}.discount_factor - {inventory_unit.unit_price}) * {CUBE}.quantity
+        type: sum
 
     pre_aggregations:
       # Pre-aggregation definitions go here.

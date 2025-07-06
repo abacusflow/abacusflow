@@ -36,7 +36,7 @@ cubes:
 
       - name: unit_price
         sql: unit_price
-        type: string
+        type: number
 
       - name: sale_order_ids
         sql: sale_order_ids
