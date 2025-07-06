@@ -1,10 +1,12 @@
 package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
+import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMER
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEM
 import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIER
 import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
+import org.bruwave.abacusflow.usecase.partner.CustomerTO
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toTO
 import org.bruwave.abacusflow.usecase.partner.service.SupplierQueryService
@@ -115,8 +117,19 @@ class SupplierQueryServiceImpl(
     }
 
     override fun listSuppliers(): List<SupplierTO> {
-        return supplierRepository
-            .findAll()
-            .map { it.toTO() }
+        return jooqDsl
+            .selectFrom(SUPPLIER)
+            .orderBy(SUPPLIER.CREATED_AT.desc())
+            .fetch()
+            .map {
+                SupplierTO(
+                    id = it.id,
+                    name = it.name,
+                    contactPerson = it.contactPerson,
+                    phone = it.phone,
+                    createdAt = it.createdAt.toInstant(),
+                    updatedAt = it.updatedAt.toInstant(),
+                )
+            }
     }
 }

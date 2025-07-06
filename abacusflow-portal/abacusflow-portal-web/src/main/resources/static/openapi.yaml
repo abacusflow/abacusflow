@@ -928,6 +928,69 @@ paths:
                 type: string
                 format: binary
 
+  /inventory-units:
+    get:
+      operationId: listBasicInventoryUnitsPage
+      tags:
+        - inventory
+      summary: Query InventoryUnits with pagination and filters
+      parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: productCategoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: productName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: productType
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProductType"
+        - name: inventoryUnitCode
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: depotName
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Paged result of matching inventories
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PageTemplate"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BasicInventoryUnit"
+
   /inventory-units/{id}:
     get:
       operationId: getInventoryUnit

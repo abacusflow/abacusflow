@@ -59,59 +59,75 @@
           </a-card>
 
           <a-card :bordered="false">
-            <div ref="printAreaRef" class="print-area">
-              <a-table
-                :columns="columns"
-                :data-source="pageData?.content || []"
-                :loading="isPending"
-                row-key="id"
-                size="small"
-                :pagination="pagination"
-                v-model:expandedRowKeys="expandedRowKeys"
-              >
-                <template #bodyCell="{ column, record }">
-                  <template v-if="column.key === 'quantity'">
-                    <a-tooltip
-                      :title="stockHealthTip(record.quantity, record.safetyStock, record.maxStock)"
+            <a-button type="primary" ghost size="small" @click="showEmbeddedTable = !showEmbeddedTable">
+              {{ showEmbeddedTable ? "显示普通表格" : "显示内嵌表格" }}
+            </a-button>
+            <a-table
+              v-if="showEmbeddedTable"
+              :columns="inventoryColumns"
+              :data-source="inventoriesPageData?.content || []"
+              :loading="inventoriesIsPending"
+              row-key="id"
+              size="small"
+              :pagination="pagination"
+              v-model:expandedRowKeys="expandedRowKeys"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'quantity'">
+                  <a-tooltip
+                    :title="stockHealthTip(record.quantity, record.safetyStock, record.maxStock)"
+                  >
+                    <a-tag
+                      :color="
+                        stockHealthColor(record.quantity, record.safetyStock, record.maxStock)
+                      "
                     >
-                      <a-tag
-                        :color="
-                          stockHealthColor(record.quantity, record.safetyStock, record.maxStock)
-                        "
-                      >
-                        {{ record.quantity }}
-                      </a-tag>
-                    </a-tooltip>
-                  </template>
-
-                  <template v-if="column.key === 'action'">
-                    <a-space>
-                      <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
-                        >调整预警线</a-button
-                      >
-                    </a-space>
-                  </template>
+                      {{ record.quantity }}
+                    </a-tag>
+                  </a-tooltip>
                 </template>
 
-                <template #expandedRowRender="{ record }">
-                  <a-table :columns="innerColumns" :data-source="record.units" :pagination="false">
-                    <template #emptyText>
-                      <p>暂无数据</p>
-                    </template>
-
-                    <template #bodyCell="{ column, record }">
-                      <template v-if="column.key === 'action'">
-                        <a-space>
-                          <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
-                            >分配储存点</a-button
-                          >
-                        </a-space>
-                      </template>
-                    </template>
-                  </a-table>
+                <template v-if="column.key === 'action'">
+                  <a-space>
+                    <a-button type="link" shape="circle" @click="handleAdjustWarningLine(record)"
+                      >调整预警线</a-button
+                    >
+                  </a-space>
                 </template>
-              </a-table>
-            </div>
+              </template>
+
+              <template #expandedRowRender="{ record }">
+                <a-table
+                  :columns="inventoryInnerColumns"
+                  :data-source="record.units"
+                  :pagination="false"
+                >
+                  <template #emptyText>
+                    <p>暂无数据</p>
+                  </template>
+
+                  <template #bodyCell="{ column, record }">
+                    <template v-if="column.key === 'action'">
+                      <a-space>
+                        <a-button type="link" shape="circle" @click="handleAssignDepot(record)"
+                          >分配储存点</a-button
+                        >
+                      </a-space>
+                    </template>
+                  </template>
+                </a-table>
+              </template>
+            </a-table>
+
+            <a-table
+              v-if="!showEmbeddedTable"
+              :columns="inventoryUnitColumns"
+              :data-source="inventoryUnitsPageData?.content || []"
+              :loading="inventoryUnitsIsPending"
+              row-key="id"
+              size="small"
+              :pagination="pagination"
+            ></a-table>
           </a-card>
         </a-flex>
       </a-flex>
@@ -156,6 +172,7 @@ import {
   type InventoryApi,
   InventoryUnitType,
   type ListBasicInventoriesPageRequest,
+  type ListBasicInventoryUnitsPageRequest,
   ProductType
 } from "@/core/openapi";
 import { translateProductType } from "@/util/productUtils";
@@ -178,7 +195,7 @@ const showEditWarningLine = ref(false);
 const editingInventory = ref<BasicInventory | null>(null);
 const editingInventoryUnit = ref<BasicInventoryUnit | null>(null);
 const expandedRowKeys = ref<number[]>([]);
-const printAreaRef = ref<HTMLElement | null>(null);
+const showEmbeddedTable = ref(true);
 
 const productCategoryId = computed(() => {
   const id = route.query.productCategoryId;
@@ -198,6 +215,15 @@ const handleSearch = () => {
   refetch();
 };
 
+// 刷新
+const refetch = () => {
+  if (showEmbeddedTable.value) {
+    refetchInventories();
+  } else {
+    refetchInventoryUnits();
+  }
+};
+
 // 重置搜索
 const resetSearch = () => {
   searchForm.productName = undefined;
@@ -207,23 +233,26 @@ const resetSearch = () => {
   pageIndex.value = 1;
   refetch();
 };
+const pagination = computed(() => {
+  const pageData = showEmbeddedTable.value ? inventoriesPageData : inventoryUnitsPageData;
 
-const pagination = computed(() => ({
-  current: pageIndex.value,
-  pageSize: pageSize.value,
-  total: pageData.value?.totalElements,
-  showTotal: (total: number) => `共 ${total} 条`,
-  onChange: (page: number, size: number) => {
-    pageIndex.value = page;
-    pageSize.value = size;
-    refetch();
-  }
-}));
+  return {
+    current: pageIndex.value,
+    pageSize: pageSize.value,
+    total: pageData.value?.totalElements as number,
+    showTotal: (total: number) => `共 ${total} 条`,
+    onChange: (page: number, size: number) => {
+      pageIndex.value = page;
+      pageSize.value = size;
+      refetch();
+    }
+  };
+});
 
 const {
-  data: pageData,
-  isPending,
-  refetch
+  data: inventoriesPageData,
+  isPending: inventoriesIsPending,
+  refetch: refetchInventories
 } = useQuery({
   queryKey: [
     "inventories",
@@ -248,6 +277,37 @@ const {
       pageSize: pageSize.value
     };
     return inventoryApi.listBasicInventoriesPage(params);
+  }
+});
+
+const {
+  data: inventoryUnitsPageData,
+  isPending: inventoryUnitsIsPending,
+  refetch: refetchInventoryUnits
+} = useQuery({
+  queryKey: [
+    "inventoryUnits",
+    productCategoryId,
+    searchForm.productName,
+    searchForm.depotName,
+    searchForm.productType,
+    searchForm.inventoryUnitCode,
+    pageIndex,
+    pageSize
+  ],
+  queryFn: () => {
+    const { productName, depotName, productType, inventoryUnitCode } = searchForm;
+
+    const params: ListBasicInventoryUnitsPageRequest = {
+      productCategoryId: productCategoryId.value,
+      productName: productName || undefined,
+      inventoryUnitCode: inventoryUnitCode || undefined,
+      depotName: depotName || undefined,
+      productType: productType || undefined,
+      pageIndex: pageIndex.value,
+      pageSize: pageSize.value
+    };
+    return inventoryApi.listBasicInventoryUnitsPage(params);
   }
 });
 
@@ -302,8 +362,9 @@ function onCategorySelected(productCategoryId: string | number) {
   });
 }
 
+// 内嵌表格的默认展开
 watch(
-  () => pageData.value?.content,
+  () => inventoriesPageData.value?.content,
   (newContent) => {
     // 只展开类型为 Asset 且有剩余库存的行
     expandedRowKeys.value =
@@ -353,7 +414,7 @@ const stockHealthColor = (value: number = 0, min: number = 0, max: number = Infi
   return "green";
 };
 
-const columns: StrictTableColumnsType<BasicInventory> = [
+const inventoryColumns: StrictTableColumnsType<BasicInventory> = [
   { title: "产品名称", dataIndex: "productName", key: "productName" },
   { title: "产品规格", dataIndex: "productSpecification", key: "productSpecification" },
   {
@@ -391,8 +452,7 @@ const columns: StrictTableColumnsType<BasicInventory> = [
   { title: "操作", key: "action" }
 ];
 
-const innerColumns: TableColumnsType<BasicInventoryUnit> = [
-  // { title: "库存单元名", dataIndex: "title", key: "title" },
+const inventoryInnerColumns: TableColumnsType<BasicInventoryUnit> = [
   {
     title: "序列号/批次号",
     key: "identity",
@@ -407,7 +467,6 @@ const innerColumns: TableColumnsType<BasicInventoryUnit> = [
       }
     }
   },
-  { title: "储存点", dataIndex: "depotName", key: "depotName" },
   {
     title: "可用库存数量",
     dataIndex: "remainingQuantity",
@@ -459,6 +518,83 @@ const innerColumns: TableColumnsType<BasicInventoryUnit> = [
       return h(Tooltip, { title: content, placement: "topLeft" }, () => content);
     }
   },
+  { title: "储存点", dataIndex: "depotName", key: "depotName" },
+  { title: "操作", key: "action" }
+];
+
+const inventoryUnitColumns: TableColumnsType<BasicInventoryUnit> = [
+  {
+    title: "库存单元名",
+    dataIndex: "title",
+    key: "title",
+    width: 200
+  },
+  {
+    title: "序列号/批次号",
+    key: "identity",
+    customRender: ({ record }) => {
+      switch (record.type) {
+        case InventoryUnitType.batch:
+          return record.batchCode ?? "-";
+        case InventoryUnitType.instance:
+          return record.serialNumber ?? "-";
+        default:
+          return "-";
+      }
+    }
+  },
+  {
+    title: "可用库存数量",
+    dataIndex: "remainingQuantity",
+    key: "remainingQuantity",
+    customRender: ({ text }) => {
+      return h(Tag, () => text.toString());
+    }
+  },
+  {
+    title: "库存数量",
+    dataIndex: "quantity",
+    key: "quantity",
+    customRender: ({ text, record }) => {
+      const color = text === 0 ? "red" : text < record.remainingQuantity ? "orange" : "green";
+      return h(Tag, { color }, () => text.toString());
+    }
+  },
+  { title: "初始库存数量", dataIndex: "initialQuantity", key: "initialQuantity" },
+  {
+    title: "单价",
+    dataIndex: "unitPrice",
+    key: "unitPrice",
+    customRender: ({ text }) => text.toFixed(2)
+  },
+  {
+    title: "入库时间",
+    dataIndex: "receivedAt",
+    key: "receivedAt",
+    customRender: ({ text }) => new Date(text).toLocaleString("zh-CN")
+  },
+  {
+    title: "采购单号",
+    dataIndex: "purchaseOrderNo",
+    key: "purchaseOrderNo",
+    width: 120,
+    ellipsis: true,
+    customRender: ({ text }) => {
+      return h(Tooltip, { title: text, placement: "topLeft" }, () => text);
+    }
+  },
+  {
+    title: "销售单号",
+    dataIndex: "saleOrderNos",
+    key: "saleOrderNos",
+    width: 120,
+    ellipsis: true,
+    customRender: ({ text }) => {
+      const content = text?.join(", ") ?? "-";
+      return h(Tooltip, { title: content, placement: "topLeft" }, () => content);
+    }
+  },
+  { title: "储存点", dataIndex: "depotName", key: "depotName" },
   { title: "操作", key: "action" }
 ];
 </script>
