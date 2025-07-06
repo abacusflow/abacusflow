@@ -9,4 +9,5 @@ dependencies {
     implementation(project(":abacusflow-core:abacusflow-transaction"))
     implementation(project(":abacusflow-core:abacusflow-depot"))
     implementation(libs.openpdf)
+    implementation(libs.poi.ooxml)
 }

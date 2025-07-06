@@ -112,8 +112,19 @@ class CustomerQueryServiceImpl(
     }
 
     override fun listCustomers(): List<CustomerTO> {
-        return customerRepository
-            .findAll()
-            .map { it.toTO() }
+        return jooqDsl
+            .selectFrom(CUSTOMER)
+            .orderBy(CUSTOMER.CREATED_AT.desc())
+            .fetch()
+            .map {
+                CustomerTO(
+                    id = it.id,
+                    name = it.name,
+                    phone = it.phone,
+                    address = it.address,
+                    createdAt = it.createdAt.toInstant(),
+                    updatedAt = it.updatedAt.toInstant(),
+                )
+            }
     }
 }

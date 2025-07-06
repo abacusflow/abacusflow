@@ -77,6 +77,7 @@ jsonschema-validator = { module = "com.networknt:json-schema-validator", version
 
 # pdf
 openpdf = { module = "com.github.librepdf:openpdf", version = "2.0.5" }
+poi-ooxml = { module = "org.apache.poi:poi-ooxml", version = "5.4.1" }
 
 # Others
 netty = { module = "io.netty:netty-all", version.ref = "netty" }

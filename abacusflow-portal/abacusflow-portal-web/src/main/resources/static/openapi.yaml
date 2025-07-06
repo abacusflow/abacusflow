@@ -913,20 +913,97 @@ paths:
               schema:
                 type: boolean
 
-  /inventories/report:
+  /inventories/export/{format}:
     get:
-      operationId: exportInventoryPdf
-      summary: 导出库存清单 PDF
+      operationId: exportInventory
+      summary: 导出库存
+      description: 根据指定的格式导出库存数据，可导出为 EXCEL 或 PDF。
       tags:
         - inventory
+      parameters:
+        - name: format
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - excel
+              - pdf
       responses:
         "200":
-          description: 成功导出 PDF 文件
+          description: 导出的库存文件
           content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
             application/pdf:
               schema:
                 type: string
                 format: binary
+
+  /inventory-units:
+    get:
+      operationId: listBasicInventoryUnitsPage
+      tags:
+        - inventory
+      summary: Query InventoryUnits with pagination and filters
+      parameters:
+        - name: pageIndex
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 10
+            maximum: 100
+        - name: productCategoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: productName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: productType
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProductType"
+        - name: inventoryUnitCode
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: depotName
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Paged result of matching inventories
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PageTemplate"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BasicInventoryUnit"
 
   /inventory-units/{id}:
     get:

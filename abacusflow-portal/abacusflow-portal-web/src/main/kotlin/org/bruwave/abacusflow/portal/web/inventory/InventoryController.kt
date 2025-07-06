@@ -74,27 +74,38 @@ class InventoryController(
         return ResponseEntity.ok().build()
     }
 
-    override fun exportInventoryPdf(): ResponseEntity<Resource> {
-        val pdf = inventoryReportService.exportInventoryAsPdf()
+    override fun exportInventory(format: String): ResponseEntity<Resource> {
+        val (data, mediaType, extension) = when (format.uppercase()) {
+            "PDF" -> Triple(
+                inventoryReportService.exportInventoryAsPdf(),
+                MediaType.APPLICATION_PDF,
+                "pdf"
+            )
 
-        if (pdf.isEmpty()) {
+            "EXCEL" -> Triple(
+                inventoryReportService.exportInventoryAsExcel(),
+                MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+                "xlsx"
+            )
+
+            else -> throw IllegalArgumentException("Invalid format: $format")
+        }
+
+        if (data.isEmpty()) {
             return ResponseEntity.noContent().build()
         }
 
-        val filename = "inventory-${LocalDate.now()}.pdf"
+        val filename = "inventory-${LocalDate.now()}.$extension"
 
-        val headers =
-            HttpHeaders().apply {
-                contentType = MediaType.APPLICATION_PDF
-                add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
-            }
-
-        val resource = ByteArrayResource(pdf)
+        val headers = HttpHeaders().apply {
+            contentType = mediaType
+            add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
+        }
 
         return ResponseEntity
             .ok()
             .headers(headers)
-            .contentLength(pdf.size.toLong())
-            .body(resource)
+            .contentLength(data.size.toLong())
+            .body(ByteArrayResource(data))
     }
 }

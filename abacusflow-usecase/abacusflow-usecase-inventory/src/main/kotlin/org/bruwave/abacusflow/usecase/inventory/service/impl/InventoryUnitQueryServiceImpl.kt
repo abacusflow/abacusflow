@@ -5,8 +5,10 @@ import org.bruwave.abacusflow.generated.jooq.Tables.DEPOT
 import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORY
 import org.bruwave.abacusflow.generated.jooq.Tables.INVENTORY_UNIT
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
+import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT_CATEGORY
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER
+import org.bruwave.abacusflow.generated.jooq.enums.ProductTypeDbEnum
 import org.bruwave.abacusflow.inventory.InventoryUnit
 import org.bruwave.abacusflow.usecase.inventory.BasicInventoryUnitTO
 import org.bruwave.abacusflow.usecase.inventory.InventoryUnitForExportTO
@@ -18,6 +20,9 @@ import org.jooq.Condition
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.Instant
@@ -26,12 +31,70 @@ import java.util.UUID
 @Service
 class InventoryUnitQueryServiceImpl(
     private val inventoryUnitRepository: InventoryUnitRepository,
-    private val dslContext: DSLContext,
+    private val jooqDsl: DSLContext,
 ) : InventoryUnitQueryService {
-    override fun listBasicInventoryUnits(): List<BasicInventoryUnitTO> {
+    override fun listBasicInventoryUnits(
+        pageable: Pageable,
+        productCategoryId: Long?,
+        productName: String?,
+        productType: String?,
+        inventoryUnitCode: String?,
+        depotName: String?
+    ): Page<BasicInventoryUnitTO> {
+        val condition =
+            buildList<Condition> {
+                productCategoryId?.let { catId ->
+                    val categoryIds = findAllChildrenCategories(catId)
+                    if (categoryIds.isNotEmpty()) {
+                        add(PRODUCT.CATEGORY_ID.`in`(categoryIds))
+                    } else {
+                        add(DSL.noCondition())
+                    }
+                }
+
+                productName?.takeIf { it.isNotBlank() }?.let {
+                    add(PRODUCT.NAME.containsIgnoreCase(it))
+                }
+
+                productType?.let {
+                    val typeEnum =
+                        when (it.uppercase()) {
+                            "MATERIAL" -> ProductTypeDbEnum.MATERIAL
+                            "ASSET" -> ProductTypeDbEnum.ASSET
+                            else -> throw IllegalArgumentException("Product type not supported: $it")
+                        }
+                    add(PRODUCT.TYPE.eq(typeEnum))
+                }
+
+                inventoryUnitCode?.takeIf { it.isNotBlank() }?.let { code ->
+                    val condition =
+                        try {
+                            val uuid = UUID.fromString(code)
+                            INVENTORY_UNIT.BATCH_CODE.eq(uuid)
+                        } catch (e: IllegalArgumentException) {
+                            INVENTORY_UNIT.SERIAL_NUMBER.eq(code)
+                        }
+
+                    add(condition)
+                }
+
+                depotName?.takeIf { it.isNotBlank() }?.let {
+                    add(DEPOT.NAME.containsIgnoreCase(it))
+                }
+            }
+
+        val total =
+            jooqDsl
+                .selectCount()
+                .from(INVENTORY)
+                .leftJoin(INVENTORY_UNIT).on(INVENTORY.ID.eq(INVENTORY_UNIT.INVENTORY_ID))
+                .leftJoin(PRODUCT).on(INVENTORY.PRODUCT_ID.eq(PRODUCT.ID))
+                .where(condition)
+                .fetchOne(0, Int::class.java) ?: 0
+
         // 使用 JOOQ 执行联接查询
         val inventoryUnits =
-            dslContext
+            jooqDsl
                 .select(
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
@@ -56,11 +119,11 @@ class InventoryUnitQueryServiceImpl(
                 .leftJoin(PRODUCT).on(PRODUCT.ID.eq(INVENTORY.PRODUCT_ID)) // 关联 Product 表
                 .leftJoin(PURCHASE_ORDER)
                 .on(PURCHASE_ORDER.ID.eq(INVENTORY_UNIT.PURCHASE_ORDER_ID)) // 关联 PurchaseOrder 表
-//            .leftJoin(SALE_ORDER).on(SALE_ORDER.ID.`in`(INVENTORY_UNIT.SALE_ORDER_IDS)) // 关联 SaleOrder 表
                 .leftJoin(SALE_ORDER).on(
                     DSL.condition("{0} = ANY({1})", SALE_ORDER.ID, INVENTORY_UNIT.SALE_ORDER_IDS),
                 )
                 .leftJoin(DEPOT).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOT.ID))
+                .where(condition)
                 .groupBy(
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
@@ -79,18 +142,28 @@ class InventoryUnitQueryServiceImpl(
                     PRODUCT.NAME,
                     PURCHASE_ORDER.NO,
                 )
-                .orderBy(INVENTORY_UNIT.CREATED_AT.desc())
+                .orderBy(
+                    // 排序将数量计数为 0 的记录推送到末尾
+                    DSL.`when`(INVENTORY_UNIT.QUANTITY.eq(0L), 1).otherwise(0).asc(),
+                    INVENTORY_UNIT.CREATED_AT.desc(),
+                )
+                .offset(pageable.offset.toInt())
+                .limit(pageable.pageSize)
                 .fetch()
 
         // 转换查询结果为 BasicInventoryUnitTO
-        return inventoryUnits.map { record ->
-            record.toBasicInventoryUnitTO()
-        }
+        return PageImpl(
+            inventoryUnits.map { record ->
+                record.toBasicInventoryUnitTO()
+            },
+            pageable,
+            total.toLong()
+        )
     }
 
     override fun listInventoryUnits(): List<InventoryUnitTO> {
         val inventoryUnits =
-            dslContext
+            jooqDsl
                 .select(
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
@@ -121,7 +194,7 @@ class InventoryUnitQueryServiceImpl(
     override fun listInventoryUnitsForExport(): List<InventoryUnitForExportTO> {
         // 使用 JOOQ 执行联接查询
         val inventoryUnits =
-            dslContext
+            jooqDsl
                 .select(
                     INVENTORY_UNIT.UNIT_TYPE,
                     INVENTORY_UNIT.BATCH_CODE,
@@ -187,7 +260,7 @@ class InventoryUnitQueryServiceImpl(
             }
 
         val inventoryUnits =
-            dslContext
+            jooqDsl
                 .selectDistinct(
                     INVENTORY_UNIT.ID,
                     INVENTORY_UNIT.UNIT_TYPE,
@@ -222,8 +295,8 @@ class InventoryUnitQueryServiceImpl(
 
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-批次号:-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-序列号:-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         val saleOrderNos: List<UUID> =
             this.get("sale_order_nos", Array<UUID>::class.java)
@@ -298,8 +371,8 @@ class InventoryUnitQueryServiceImpl(
 
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-批次号:-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-序列号:-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         val saleOrderNos: List<UUID> =
             this.get("sale_order_nos", Array<UUID>::class.java)
@@ -323,5 +396,28 @@ class InventoryUnitQueryServiceImpl(
             serialNumber = this[INVENTORY_UNIT.SERIAL_NUMBER],
             status = this[INVENTORY_UNIT.STATUS].name,
         )
+    }
+
+    private fun findAllChildrenCategories(categoryId: Long): List<Long> {
+        val result = mutableSetOf<Long>()
+        val queue = mutableListOf(categoryId)
+
+        while (queue.isNotEmpty()) {
+            val currentId = queue.removeAt(0)
+            result.add(currentId)
+
+            // 查询直接子分类
+            val children =
+                jooqDsl
+                    .select(PRODUCT_CATEGORY.ID)
+                    .from(PRODUCT_CATEGORY)
+                    .where(PRODUCT_CATEGORY.PARENT_ID.eq(currentId))
+                    .fetch()
+                    .map { it.value1() }
+
+            queue.addAll(children)
+        }
+
+        return result.toList()
     }
 }

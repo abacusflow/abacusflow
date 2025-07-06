@@ -88,7 +88,7 @@ import type {
   Supplier
 } from "@/core/openapi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import { message, Tag } from "ant-design-vue";
+import { message, Tag, Tooltip } from "ant-design-vue";
 import { computed, h, inject, reactive, ref } from "vue";
 import SupplierAddView from "./SupplierAddView.vue";
 import SupplierEditView from "./SupplierEditView.vue";
@@ -190,7 +190,16 @@ const columns: StrictTableColumnsType<BasicSupplier> = [
   { title: "供应商名", dataIndex: "name", key: "name" },
   { title: "联系人", dataIndex: "contactPerson", key: "contactPerson" },
   { title: "联系电话", dataIndex: "phone", key: "phone" },
-  { title: "联系地址", dataIndex: "address", key: "address" },
+  {
+    title: "联系地址",
+    dataIndex: "address",
+    key: "address",
+    width: 260,
+    ellipsis: true,
+    customRender: ({ text }) => {
+      return h(Tooltip, { title: text, placement: "topLeft" }, () => text);
+    }
+  },
   {
     title: "历史订单总数",
     dataIndex: "totalOrderCount",

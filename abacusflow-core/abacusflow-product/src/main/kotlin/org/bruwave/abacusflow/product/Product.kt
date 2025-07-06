@@ -50,6 +50,7 @@ class Product(
 
     @field:NotNull
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType::class)
     var unit: ProductUnit = unit
         private set
 

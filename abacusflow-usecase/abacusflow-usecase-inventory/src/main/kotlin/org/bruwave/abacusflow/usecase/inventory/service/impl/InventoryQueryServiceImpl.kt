@@ -155,8 +155,7 @@ class InventoryQueryServiceImpl(
                 )
                 .orderBy(
                     // 排序将数量计数为 0 的记录推送到末尾
-                    DSL.`when`(DSL.count(INVENTORY_UNIT.QUANTITY).eq(0), 1).otherwise(0)
-                        .asc(),
+                    DSL.`when`(INVENTORY_UNIT.QUANTITY.eq(0L), 1).otherwise(0).asc(),
                     INVENTORY.CREATED_AT.desc(),
                 )
                 .offset(pageable.offset.toInt())
@@ -234,8 +233,8 @@ class InventoryQueryServiceImpl(
 
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-批次号-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-序列号-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         val saleOrderNos: List<UUID> =
             this.get("sale_order_nos", Array<UUID>::class.java)
