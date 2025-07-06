@@ -3,9 +3,18 @@
     <a-space direction="vertical" style="width: 100%">
       <a-flex justify="space-between" align="center">
         <h1>库存管理</h1>
-        <a-button type="primary" @click="handlePrintInventories" style="margin-bottom: 16px">
-          打印库存
-        </a-button>
+        <a-space>
+          <a-dropdown>
+            <a-button type="primary"> 导出库存 <DownOutlined /> </a-button>
+            <template #overlay>
+              <a-menu @click="({ key }: any) => handleExportInventories(key)">
+                <a-menu-item key="excel">导出 Excel</a-menu-item>
+                <a-menu-item key="pdf">导出 PDF</a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+          <a-button type="primary" @click="handlePrintInventories"> 打印库存 </a-button>
+        </a-space>
       </a-flex>
 
       <a-flex justify="flex-start" align="start" style="height: 100%">
@@ -59,7 +68,12 @@
           </a-card>
 
           <a-card :bordered="false">
-            <a-button type="primary" ghost size="small" @click="showEmbeddedTable = !showEmbeddedTable">
+            <a-button
+              type="primary"
+              ghost
+              size="small"
+              @click="showEmbeddedTable = !showEmbeddedTable"
+            >
               {{ showEmbeddedTable ? "显示普通表格" : "显示内嵌表格" }}
             </a-button>
             <a-table
@@ -169,6 +183,7 @@ import type { StrictTableColumnsType } from "@/core/antdv/antdev-table";
 import {
   type BasicInventory,
   type BasicInventoryUnit,
+  ExportInventoryFormatEnum,
   type InventoryApi,
   InventoryUnitType,
   type ListBasicInventoriesPageRequest,
@@ -177,6 +192,7 @@ import {
 } from "@/core/openapi";
 import { translateProductType } from "@/util/productUtils";
 import { useMutation, useQuery } from "@tanstack/vue-query";
+import { DownOutlined } from "@ant-design/icons-vue";
 import { message, type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
 import { computed, h, inject, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -311,9 +327,9 @@ const {
   }
 });
 
-const { mutateAsync: getPdfBlob } = useMutation({
-  mutationFn: () => {
-    return inventoryApi.exportInventoryPdf();
+const { mutateAsync: fetchExportInventory } = useMutation({
+  mutationFn: (format: ExportInventoryFormatEnum) => {
+    return inventoryApi.exportInventoryRaw({ format });
   }
 });
 
@@ -328,29 +344,69 @@ function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
   showAssignDepot.value = true;
 }
 
-const handlePrintInventories = async () => {
-  try {
-    const result = await getPdfBlob();
-    if (!(result instanceof Blob)) {
+function handleExportInventories(format: ExportInventoryFormatEnum) {
+  fetchExportInventory(format)
+    .then((response) => {
+      // 先获取 headers 信息
+      const contentDisposition = response.raw.headers.get("Content-Disposition") || "";
+      const match = contentDisposition.match(/filename="(.+?)"/);
+      const filename = match?.[1] || `inventory-${new Date().toISOString().slice(0, 10)}.${format}`;
+
+      // 再获取 blob，并将 filename 一起传递
+      return response.value().then((blob) => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+      if (!(blob instanceof Blob)) {
+        message.error("导出失败，请稍后重试");
+        return;
+      }
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+
+      // 清理
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      message.success(`导出成功：${filename}`);
+    })
+    .catch((error) => {
+      console.error("导出失败", error);
+      message.error("导出失败，请稍后重试");
+    });
+}
+
+function handlePrintInventories() {
+  fetchExportInventory("pdf")
+    .then((response) => response.value())
+    .then((blob) => {
+      if (!(blob instanceof Blob)) {
+        message.error("打印失败，请稍后重试");
+        return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const iframe = document.createElement("iframe");
+
+      iframe.style.display = "none";
+      iframe.src = url;
+      iframe.onload = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      };
+
+      document.body.appendChild(iframe);
+    })
+    .catch((error) => {
+      console.error("打印库存报告失败：", error);
       message.error("打印失败，请稍后重试");
-      return;
-    }
-
-    const url = URL.createObjectURL(result);
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = url;
-
-    iframe.onload = () => {
-      iframe.contentWindow?.print();
-    };
-
-    document.body.appendChild(iframe);
-  } catch (error) {
-    console.error(error);
-    message.error("打印失败，请稍后重试");
-  }
-};
+    });
+}
 
 function onCategorySelected(productCategoryId: string | number) {
   router.push({

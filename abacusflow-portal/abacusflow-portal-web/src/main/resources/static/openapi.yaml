@@ -913,16 +913,30 @@ paths:
               schema:
                 type: boolean
 
-  /inventories/report:
+  /inventories/export/{format}:
     get:
-      operationId: exportInventoryPdf
-      summary: 导出库存清单 PDF
+      operationId: exportInventory
+      summary: 导出库存
+      description: 根据指定的格式导出库存数据，可导出为 EXCEL 或 PDF。
       tags:
         - inventory
+      parameters:
+        - name: format
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - excel
+              - pdf
       responses:
         "200":
-          description: 成功导出 PDF 文件
+          description: 导出的库存文件
           content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
             application/pdf:
               schema:
                 type: string
