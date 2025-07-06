@@ -3,7 +3,10 @@ cubes:
     sql_table: public.product_category
     data_source: default
 
-    joins: []
+    joins:
+      - name: product
+        sql: "{CUBE}.id = {product.category_id}"
+        relationship: one_to_many
 
     dimensions:
       - name: id
