@@ -50,7 +50,7 @@ const chartOption = computed((): EChartsOption | null => {
 
   return {
     title: {
-      text: "新老客户销售对比",
+      text: "本月新老客户销售对比",
       left: "center"
     },
     legend: {
@@ -71,7 +71,8 @@ const chartOption = computed((): EChartsOption | null => {
           { name: "老客户", value: oldRevenue }
         ],
         label: {
-          formatter: (params) => `${params.name}: ${Math.round(params.percent || 0)}%\n${params.value}元`
+          formatter: (params) =>
+            `${params.name}: ${Math.round(params.percent || 0)}%\n${params.value}元`
         }
       },
       {
@@ -84,7 +85,8 @@ const chartOption = computed((): EChartsOption | null => {
           { name: "老客户", value: oldOrders }
         ],
         label: {
-          formatter: (params) => `${params.name}: ${Math.round(params.percent || 0)}%\n${params.value}单`
+          formatter: (params) =>
+            `${params.name}: ${Math.round(params.percent || 0)}%\n${params.value}单`
         }
       }
     ]
