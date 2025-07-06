@@ -11,14 +11,20 @@
       </a-card>
     </a-col>
     <a-col :span="12">
-      <a-card style="height: 400px"> </a-card>
+      <a-card style="height: 430px">
+        <ProductCategorySalesPieChart></ProductCategorySalesPieChart>
+      </a-card>
     </a-col>
     <a-col :span="12">
-      <a-card style="height: 400px"> </a-card>
+      <a-card style="height: 430px">
+        <NewVsReturningChart></NewVsReturningChart>
+      </a-card>
     </a-col>
   </a-row>
 </template>
 <script lang="ts" setup>
 import HotProductsTop10 from "@/components/charts/HotProductsTop10Chart.vue";
+import NewVsReturningChart from "@/components/charts/NewVsReturningChart.vue";
+import ProductCategorySalesPieChart from "@/components/charts/ProductCategorySalesPieChart.vue";
 import SaleTrendChart from "@/components/charts/SaleTrendChart.vue";
 </script>

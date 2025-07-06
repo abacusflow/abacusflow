@@ -3,7 +3,10 @@ cubes:
     sql_table: public.product
     data_source: default
 
-    joins: []
+    joins:
+      - name: product_category
+        sql: "{CUBE}.category_id = {product_category.id}"
+        relationship: many_to_one
 
     dimensions:
       - name: id
@@ -30,10 +33,6 @@ cubes:
       - name: enabled
         sql: enabled
         type: boolean
-
-      - name: note
-        sql: note
-        type: string
 
       - name: created_at
         sql: created_at
