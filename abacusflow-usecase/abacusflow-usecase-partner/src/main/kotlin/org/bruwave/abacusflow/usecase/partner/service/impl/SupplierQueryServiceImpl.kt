@@ -1,12 +1,11 @@
 package org.bruwave.abacusflow.usecase.partner.service.impl
 
 import org.bruwave.abacusflow.db.partner.SupplierRepository
-import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMER
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.PURCHASE_ORDER_ITEM
 import org.bruwave.abacusflow.generated.jooq.Tables.SUPPLIER
+import org.bruwave.abacusflow.generated.jooq.enums.OrderStatusDbEnum
 import org.bruwave.abacusflow.usecase.partner.BasicSupplierTO
-import org.bruwave.abacusflow.usecase.partner.CustomerTO
 import org.bruwave.abacusflow.usecase.partner.SupplierTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toTO
 import org.bruwave.abacusflow.usecase.partner.service.SupplierQueryService
@@ -18,6 +17,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.OffsetDateTime
 
 @Service
@@ -78,12 +78,15 @@ class SupplierQueryServiceImpl(
                     SUPPLIER.PHONE,
                     SUPPLIER.ADDRESS,
                     // 聚合字段
-                    DSL.countDistinct(PURCHASE_ORDER.ID).`as`("total_order_count"),
+                    DSL.countDistinct(PURCHASE_ORDER.ID)
+                        .filterWhere(PURCHASE_ORDER.STATUS.eq(OrderStatusDbEnum.COMPLETED))
+                        .`as`("total_order_count"),
                     DSL.sum(
                         PURCHASE_ORDER_ITEM.UNIT_PRICE
-                            .mul(PURCHASE_ORDER_ITEM.QUANTITY),
-                    ).`as`("total_order_amount"),
-                    DSL.max(PURCHASE_ORDER.CREATED_AT).`as`("last_order_time"),
+                            .mul(PURCHASE_ORDER_ITEM.QUANTITY)
+                    ).filterWhere(PURCHASE_ORDER.STATUS.eq(OrderStatusDbEnum.COMPLETED))
+                        .`as`("total_order_amount"),
+                    DSL.max(PURCHASE_ORDER.ORDER_DATE).`as`("last_order_date"),
                 )
                 .from(SUPPLIER)
                 .leftJoin(PURCHASE_ORDER).on(PURCHASE_ORDER.SUPPLIER_ID.eq(SUPPLIER.ID))
@@ -109,7 +112,7 @@ class SupplierQueryServiceImpl(
                         address = it[SUPPLIER.ADDRESS],
                         totalOrderCount = it.get("total_order_count", Int::class.java) ?: 0,
                         totalOrderAmount = it.get("total_order_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
-                        lastOrderTime = it.get("last_order_time", OffsetDateTime::class.java)?.toInstant(),
+                        lastOrderDate = it.get("last_order_date", LocalDate::class.java),
                     )
                 }
 

@@ -14,7 +14,7 @@ fun BasicSupplierTO.toBasicVO(): BasicSupplierVO =
         address = address,
         totalOrderCount = totalOrderCount,
         totalOrderAmount = totalOrderAmount.toDouble(),
-        lastOrderTime = lastOrderTime?.toEpochMilli(),
+        lastOrderDate = lastOrderDate,
     )
 
 fun SupplierTO.toVO(): SupplierVO =

@@ -42,6 +42,10 @@ cubes:
         sql: quantity
         type: sum
 
+      - name: avg_price
+        sql: unit_price
+        type: avg
+
       - name: cost
         sql: unit_price * quantity
         type: sum

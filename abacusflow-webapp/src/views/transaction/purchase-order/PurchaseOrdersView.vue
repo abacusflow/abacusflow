@@ -178,9 +178,9 @@ import {
 import { translateOrderStatus } from "@/util/orderUtil";
 import { dateToFormattedString, isWithinDays } from "@/util/timestampUtils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import { message } from "ant-design-vue";
+import { message, Tag } from "ant-design-vue";
 import dayjs from "dayjs";
-import { computed, inject, reactive, ref } from "vue";
+import { computed, h, inject, reactive, ref } from "vue";
 import PurchaseOrderAddView from "./PurchaseOrderAddView.vue";
 import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
 
@@ -369,7 +369,9 @@ const columns: StrictTableColumnsType<BasicPurchaseOrder> = [
     title: "订单总金额",
     dataIndex: "totalAmount",
     key: "totalAmount",
-    customRender: ({ text }) => text.toFixed(2)
+    customRender: ({ text }) => {
+      return h(Tag, { color: "blue" }, () => text.toFixed(2));
+    }
   },
   {
     title: "总采购数量",

@@ -6,6 +6,11 @@
       </a-card>
     </a-col>
     <a-col :span="24">
+      <a-card style="height: 500px">
+        <ProductPriceTrackingChart></ProductPriceTrackingChart>
+      </a-card>
+    </a-col>
+    <a-col :span="24">
       <a-card style="height: 400px">
         <HotProductsTop10 />
       </a-card>
@@ -26,5 +31,6 @@
 import HotProductsTop10 from "@/components/charts/HotProductsTop10Chart.vue";
 import NewVsReturningChart from "@/components/charts/NewVsReturningChart.vue";
 import ProductCategorySalesPieChart from "@/components/charts/ProductCategorySalesPieChart.vue";
+import ProductPriceTrackingChart from "@/components/charts/ProductPriceTrackingChart.vue";
 import SaleTrendChart from "@/components/charts/SaleTrendChart.vue";
 </script>

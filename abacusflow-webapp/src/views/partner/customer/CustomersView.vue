@@ -89,6 +89,7 @@ import { message, Tag, Tooltip } from "ant-design-vue";
 import { computed, h, inject, reactive, ref } from "vue";
 import CustomerAddView from "./CustomerAddView.vue";
 import CustomerEditView from "./CustomerEditView.vue";
+import { dateToFormattedString } from "@/util/timestampUtils";
 
 const partnerApi = inject("partnerApi") as PartnerApi;
 const queryClient = useQueryClient();
@@ -209,10 +210,10 @@ const columns: StrictTableColumnsType<BasicCustomer> = [
     }
   },
   {
-    title: "最近一次交易时间",
-    dataIndex: "lastOrderTime",
-    key: "lastOrderTime",
-    customRender: ({ text }) => (text ? new Date(text).toLocaleString("zh-CN") : "")
+    title: "最近一次交易日期",
+    dataIndex: "lastOrderDate",
+    key: "lastOrderDate",
+    customRender: ({ record }) => dateToFormattedString(record.lastOrderDate, "YYYY-MM-DD")
   },
   { title: "操作", key: "action" }
 ];

@@ -1577,9 +1577,10 @@ components:
           type: number
           format: double
           description: 历史订单总金额
-        lastOrderTime:
-          type: long
-          format: format
+        lastOrderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
           nullable: true
           description: 最近一次交易时间
         # topProductsSummary:
@@ -1718,9 +1719,10 @@ components:
           type: number
           format: double
           description: 历史订单总金额
-        lastOrderTime:
-          type: long
-          format: format
+        lastOrderDate:
+          type: string
+          format: date
+          example: "1970-01-01"
           nullable: true
           description: 最近一次交易时间
         # topProductsSummary:
