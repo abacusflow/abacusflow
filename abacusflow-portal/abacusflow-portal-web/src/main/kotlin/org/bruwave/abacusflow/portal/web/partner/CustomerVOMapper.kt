@@ -13,7 +13,7 @@ fun BasicCustomerTO.toBasicVO(): BasicCustomerVO =
         address = address,
         totalOrderCount = totalOrderCount,
         totalOrderAmount = totalOrderAmount.toDouble(),
-        lastOrderTime = lastOrderTime?.toEpochMilli(),
+        lastOrderDate = lastOrderDate,
     )
 
 fun CustomerTO.toVO(): CustomerVO =

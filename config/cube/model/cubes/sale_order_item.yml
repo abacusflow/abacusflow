@@ -42,6 +42,10 @@ cubes:
         sql: quantity
         type: sum
 
+      - name: avg_price
+        sql: unit_price
+        type: avg
+
       - name: revenue
         sql: ROUND({CUBE}.unit_price * {CUBE}.discount_factor, 2) *{CUBE}. quantity
         type: sum

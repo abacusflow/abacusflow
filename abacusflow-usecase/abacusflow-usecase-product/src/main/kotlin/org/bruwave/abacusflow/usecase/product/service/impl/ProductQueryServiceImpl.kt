@@ -4,6 +4,7 @@ import org.bruwave.abacusflow.db.product.ProductRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT
 import org.bruwave.abacusflow.generated.jooq.Tables.PRODUCT_CATEGORY
 import org.bruwave.abacusflow.generated.jooq.enums.ProductTypeDbEnum
+import org.bruwave.abacusflow.generated.jooq.tables.records.ProductRecord
 import org.bruwave.abacusflow.usecase.product.BasicProductTO
 import org.bruwave.abacusflow.usecase.product.ProductTO
 import org.bruwave.abacusflow.usecase.product.mapper.toTO
@@ -117,9 +118,27 @@ class ProductQueryServiceImpl(
     }
 
     override fun listProducts(): List<ProductTO> {
-        return productRepository
-            .findAll()
+        return jooqDsl
+            .selectFrom(PRODUCT)
+            .orderBy(PRODUCT.CREATED_AT.desc())
+            .fetch()
             .map { it.toTO() }
+    }
+
+
+    fun ProductRecord.toTO(): ProductTO {
+        return ProductTO(
+            id = this.id,
+            type = this.type.literal,
+            name = this.name,
+            specification = this.specification,
+            unit = this.unit.literal,
+            categoryId = this.categoryId,
+            note = this.note,
+            enabled = this.enabled,
+            createdAt = this.createdAt.toInstant(),
+            updatedAt = this.updatedAt.toInstant()
+        )
     }
 
     private fun findAllChildrenCategories(categoryId: Long): List<Long> {

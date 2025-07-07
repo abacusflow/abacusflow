@@ -4,6 +4,8 @@ import org.bruwave.abacusflow.db.partner.CustomerRepository
 import org.bruwave.abacusflow.generated.jooq.Tables.CUSTOMER
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER
 import org.bruwave.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEM
+import org.bruwave.abacusflow.generated.jooq.enums.OrderStatusDbEnum
+import org.bruwave.abacusflow.generated.jooq.tables.records.CustomerRecord
 import org.bruwave.abacusflow.usecase.partner.BasicCustomerTO
 import org.bruwave.abacusflow.usecase.partner.CustomerTO
 import org.bruwave.abacusflow.usecase.partner.mapper.toTO
@@ -16,6 +18,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import kotlin.jvm.java
 
@@ -74,13 +77,16 @@ class CustomerQueryServiceImpl(
                     CUSTOMER.PHONE,
                     CUSTOMER.ADDRESS,
                     // 聚合字段
-                    DSL.countDistinct(SALE_ORDER.ID).`as`("total_order_count"),
+                    DSL.countDistinct(SALE_ORDER.ID)
+                        .filterWhere(SALE_ORDER.STATUS.eq(OrderStatusDbEnum.COMPLETED))
+                        .`as`("total_order_count"),
                     DSL.sum(
                         SALE_ORDER_ITEM.UNIT_PRICE
                             .mul(SALE_ORDER_ITEM.QUANTITY)
-                            .mul(SALE_ORDER_ITEM.DISCOUNT_FACTOR),
-                    ).`as`("total_order_amount"),
-                    DSL.max(SALE_ORDER.CREATED_AT).`as`("last_order_time"),
+                            .mul(SALE_ORDER_ITEM.DISCOUNT_FACTOR)
+                    ).filterWhere(SALE_ORDER.STATUS.eq(OrderStatusDbEnum.COMPLETED))
+                        .`as`("total_order_amount"),
+                    DSL.max(SALE_ORDER.ORDER_DATE).`as`("last_order_date"),
                 )
                 .from(CUSTOMER)
                 .leftJoin(SALE_ORDER).on(SALE_ORDER.CUSTOMER_ID.eq(CUSTOMER.ID))
@@ -104,7 +110,7 @@ class CustomerQueryServiceImpl(
                         address = it[CUSTOMER.ADDRESS],
                         totalOrderCount = it.get("total_order_count", Int::class.java) ?: 0,
                         totalOrderAmount = it.get("total_order_amount", BigDecimal::class.java) ?: BigDecimal.ZERO,
-                        lastOrderTime = it.get("last_order_time", OffsetDateTime::class.java)?.toInstant(),
+                        lastOrderDate = it.get("last_order_date", LocalDate::class.java),
                     )
                 }
 
@@ -116,15 +122,18 @@ class CustomerQueryServiceImpl(
             .selectFrom(CUSTOMER)
             .orderBy(CUSTOMER.CREATED_AT.desc())
             .fetch()
-            .map {
-                CustomerTO(
-                    id = it.id,
-                    name = it.name,
-                    phone = it.phone,
-                    address = it.address,
-                    createdAt = it.createdAt.toInstant(),
-                    updatedAt = it.updatedAt.toInstant(),
-                )
-            }
+            .map { it.toTO() }
+    }
+
+
+    fun CustomerRecord.toTO(): CustomerTO {
+        return CustomerTO(
+            id = id,
+            name = name,
+            phone = phone,
+            address = address,
+            createdAt = createdAt.toInstant(),
+            updatedAt = updatedAt.toInstant(),
+        )
     }
 }

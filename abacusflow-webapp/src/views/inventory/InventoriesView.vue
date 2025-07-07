@@ -545,7 +545,9 @@ const inventoryInnerColumns: TableColumnsType<BasicInventoryUnit> = [
     title: "单价",
     dataIndex: "unitPrice",
     key: "unitPrice",
-    customRender: ({ text }) => text.toFixed(2)
+    customRender: ({ text }) => {
+      return h(Tag, { color: "blue" }, () => text.toFixed(2));
+    }
   },
   {
     title: "入库时间",
@@ -621,7 +623,9 @@ const inventoryUnitColumns: TableColumnsType<BasicInventoryUnit> = [
     title: "单价",
     dataIndex: "unitPrice",
     key: "unitPrice",
-    customRender: ({ text }) => text.toFixed(2)
+    customRender: ({ text }) => {
+      return h(Tag, { color: "blue" }, () => text.toFixed(2));
+    }
   },
   {
     title: "入库时间",
