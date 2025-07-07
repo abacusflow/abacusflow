@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, inject } from "vue";
+import { ref, computed, inject, watch } from "vue";
 import VChart from "vue-echarts";
 import type { EChartsOption } from "echarts";
 import cubejsApi from "@/plugin/cubejsApi";
@@ -35,8 +35,6 @@ import dayjs from "dayjs";
 const productApi = inject("productApi") as ProductApi;
 
 const selectedProductId = ref<number | null>(null);
-// 加载状态
-const isLoading = computed(() => isLoadingPurchase.value || isLoadingSale.value);
 
 // 产品选项数据
 const { data: productOptions } = useQuery({
@@ -44,59 +42,63 @@ const { data: productOptions } = useQuery({
   queryFn: () => productApi.listSelectableProducts()
 });
 
-//  采购价格数据
-const { data: purchaseData, isLoading: isLoadingPurchase } = useQuery({
-  queryKey: ["purchasePriceTrend", selectedProductId],
-  queryFn: () =>
-    cubejsApi.load({
-      measures: ["purchase_order_item.avg_price"],
-      timeDimensions: [
-        {
-          dimension: "purchase_order.order_date",
-          granularity: "day",
-          dateRange: "Last 90 days"
-        }
-      ],
-      filters: [
-        {
-          dimension: "product.id",
-          operator: "equals",
-          values: [String(selectedProductId.value)]
-        }
-      ]
-    }),
-  enabled: computed(() => !!selectedProductId.value)
+// 当产品加载完成后，如果还没选中任何产品，则默认选择第一个
+watch(productOptions, (newOptions) => {
+  if (newOptions && newOptions.length > 0 && selectedProductId.value === null) {
+    selectedProductId.value = newOptions[0].id;
+  }
 });
 
-// 销售价格数据
-const { data: saleData, isLoading: isLoadingSale } = useQuery({
-  queryKey: ["salePriceTrend", selectedProductId],
+const { data: blendedData, isLoading } = useQuery({
+  queryKey: ["priceTrend", selectedProductId],
   queryFn: () =>
-    cubejsApi.load({
-      measures: ["sale_order_item.avg_price"],
-      timeDimensions: [
-        {
-          dimension: "sale_order.order_date",
-          granularity: "day",
-          dateRange: "Last 90 days"
-        }
-      ],
-      filters: [
-        {
-          dimension: "product.id",
-          operator: "equals",
-          values: [String(selectedProductId.value)]
-        }
-      ]
-    }),
+    cubejsApi.load([
+      {
+        measures: ["purchase_order_item.avg_price"],
+        timeDimensions: [
+          {
+            dimension: "purchase_order.order_date",
+            granularity: "day",
+            dateRange: "Last 90 days"
+          }
+        ],
+        filters: [
+          {
+            dimension: "product.id",
+            operator: "equals",
+            values: [String(selectedProductId.value)]
+          }
+        ]
+      },
+      {
+        measures: ["sale_order_item.avg_price"],
+        timeDimensions: [
+          {
+            dimension: "sale_order.order_date",
+            granularity: "day",
+            dateRange: "Last 90 days"
+          }
+        ],
+        filters: [
+          {
+            dimension: "product.id",
+            operator: "equals",
+            values: [String(selectedProductId.value)]
+          }
+        ]
+      }
+    ]),
   enabled: computed(() => !!selectedProductId.value)
 });
 
 // 构建图表配置
 const chartOption = computed((): EChartsOption | null => {
-  if (!purchaseData.value || !saleData.value) return null;
+  if (!blendedData.value) return null;
+  const results = blendedData.value.decompose();
+  const purchaseData = results[0].rawData();
+  const saleData = results[1].rawData();
 
-  const purchaseTrend = purchaseData.value.rawData().map((row) => {
+  const purchaseTrend = purchaseData.map((row) => {
     const rawDate = String(row["purchase_order.order_date"]);
     const formattedDate = dayjs(rawDate).format("YYYY-MM-DD");
     return {
@@ -105,7 +107,7 @@ const chartOption = computed((): EChartsOption | null => {
     };
   });
 
-  const saleTrend = saleData.value.rawData().map((row) => {
+  const saleTrend = saleData.map((row) => {
     const rawDate = String(row["sale_order.order_date"]);
     const formattedDate = dayjs(rawDate).format("YYYY-MM-DD");
     return {
