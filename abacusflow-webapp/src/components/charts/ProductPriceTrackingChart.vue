@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, inject, watch, onMounted } from "vue";
+import { ref, computed, inject, onMounted, watch } from "vue";
 import VChart from "vue-echarts";
 import type { EChartsOption } from "echarts";
 import cubejsApi from "@/plugin/cubejsApi";
@@ -42,14 +42,6 @@ const selectedProductId = ref<number | null>(null);
 const { data: productOptions } = useQuery({
   queryKey: ["selectableProducts"],
   queryFn: () => productApi.listSelectableProducts()
-});
-
-
-onMounted(() => {
-  // 如果已经加载完成了数据，手动设置默认值
-  if (productOptions.value && productOptions.value.length > 0 && selectedProductId.value === null) {
-    selectedProductId.value = productOptions.value[0].id;
-  }
 });
 
 const { data: blendedData, isLoading } = useQuery({
@@ -161,5 +153,18 @@ const chartOption = computed((): EChartsOption | null => {
       }
     ]
   };
+});
+
+onMounted(() => {
+  // 如果已经加载完成了数据，手动设置默认值
+  if (productOptions.value && productOptions.value.length > 0 && selectedProductId.value === null) {
+    selectedProductId.value = productOptions.value[0].id;
+  }
+});
+
+watch(productOptions, (newOptions) => {
+  if (newOptions && newOptions.length > 0 && selectedProductId.value === null) {
+    selectedProductId.value = newOptions[0].id;
+  }
 });
 </script>
