@@ -3,11 +3,13 @@
     <a-select
       v-model:value="selectedProductId"
       placeholder="请选择产品"
-      style="width: 200px; margin-bottom: 16px"
+      style="min-width: 200px"
       size="small"
       allowClear
+      show-search
+      optionFilterProp="label"
     >
-      <a-select-option v-for="p in productOptions" :key="p.id" :value="p.id">
+      <a-select-option v-for="p in productOptions" :key="p.id" :value="p.id" :label="p.name">
         {{ p.name }}
       </a-select-option>
     </a-select>
@@ -24,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, inject, watch } from "vue";
+import { ref, computed, inject, watch, onMounted } from "vue";
 import VChart from "vue-echarts";
 import type { EChartsOption } from "echarts";
 import cubejsApi from "@/plugin/cubejsApi";
@@ -42,10 +44,11 @@ const { data: productOptions } = useQuery({
   queryFn: () => productApi.listSelectableProducts()
 });
 
-// 当产品加载完成后，如果还没选中任何产品，则默认选择第一个
-watch(productOptions, (newOptions) => {
-  if (newOptions && newOptions.length > 0 && selectedProductId.value === null) {
-    selectedProductId.value = newOptions[0].id;
+
+onMounted(() => {
+  // 如果已经加载完成了数据，手动设置默认值
+  if (productOptions.value && productOptions.value.length > 0 && selectedProductId.value === null) {
+    selectedProductId.value = productOptions.value[0].id;
   }
 });
 
