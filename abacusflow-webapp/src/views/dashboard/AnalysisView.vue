@@ -6,7 +6,7 @@
       </a-card>
     </a-col>
     <a-col :span="24">
-      <a-card style="height: 500px">
+      <a-card style="height: 430px">
         <ProductPriceTrackingChart></ProductPriceTrackingChart>
       </a-card>
     </a-col>

@@ -1,0 +1,12 @@
+server {
+    listen       80;
+    server_name  abacusflow.cn;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # 主站页面（SPA 路由支持）
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

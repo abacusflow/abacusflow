@@ -56,7 +56,7 @@ tasks.register<NpmTask>("buildFrontend") {
     outputs.dir("dist")
 }
 
-tasks.register<Exec>("buildDockerImage") {
+tasks.register<Exec>("buildWebappDockerImage") {
     group = "build"
     description = "构建前端 Docker 镜像"
     dependsOn("buildFrontend") // 保证前端构建先完成
@@ -64,7 +64,7 @@ tasks.register<Exec>("buildDockerImage") {
     workingDir = projectDir // Dockerfile 所在目录
     commandLine = listOf(
         "docker", "build",
-        "-t", "abacusflow-web:${project.version}",
+        "-t", "abacusflow-webapp:${project.version}",
         "."
     )
 }
