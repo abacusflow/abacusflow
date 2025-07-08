@@ -635,7 +635,7 @@
 <!-- 导航栏 -->
 <nav class="navbar">
     <div class="nav-container">
-        <div class="logo">AbacuFlow</div>
+        <div class="logo">AbacusFlow</div>
         <ul class="nav-links">
             <li><a href="#advantages">核心优势</a></li>
             <li><a href="#product">产品展示</a></li>
@@ -649,7 +649,7 @@
 <section class="hero">
     <div class="hero-content">
         <h1>小算盘</h1>
-        <h3>AbacuFlow</h3>
+        <h3>AbacusFlow</h3>
         <p>新一代智能零售进销存系统</p>
         <div class="hero-subtitle">无处不在的灵活关联 • 深度数据挖掘 • 智能库存管理</div>
         <a href="http://abacusflow.cn" class="cta-button" target="_blank">免费体验</a>
@@ -865,7 +865,11 @@
                 我们重视每一位用户的反馈，期待与您的交流
             </p>
         </div>
-        <p>&copy; 2025 AbacuFlow. 新一代智能零售进销存系统</p>
+        <p>&copy; 2025 AbacusFlow. 小算盘</p>
+        <a href="https://beian.miit.gov.cn" target="_blank">鲁ICP备2025171035号</a>
+        <a href="http://www.beian.gov.cn/portal" target="_blank" style="margin-left: 8px;">
+            🛡️<span style="margin-left:4px;">鲁公网安备 37010202012503号</span>
+        </a>
     </div>
 </footer>
 
@@ -875,6 +879,7 @@
     const slides = document.querySelectorAll('.carousel-slide');
     const indicators = document.querySelectorAll('.indicator');
     const totalSlides = slides.length;
+    let isHovered = false;
 
     function showSlide(index) {
         // 隐藏所有幻灯片
@@ -889,8 +894,10 @@
     }
 
     function nextSlide() {
-        const nextIndex = (currentSlideIndex + 1) % totalSlides;
-        showSlide(nextIndex);
+        if (!isHovered) {
+            const nextIndex = (currentSlideIndex + 1) % totalSlides;
+            showSlide(nextIndex);
+        }
     }
 
     function prevSlide() {
@@ -902,7 +909,16 @@
         showSlide(index);
     }
 
-    // 自动播放
+    // 鼠标悬停控制滚动
+    const carousel = document.querySelector('.carousel-container');
+    carousel.addEventListener('mouseenter', () => {
+        isHovered = true;
+    });
+    carousel.addEventListener('mouseleave', () => {
+        isHovered = false;
+    });
+
+    // 自动播放轮播图
     setInterval(nextSlide, 5000);
 
     // 滚动动画
