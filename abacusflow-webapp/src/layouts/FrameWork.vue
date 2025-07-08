@@ -21,8 +21,6 @@
       </a-layout-content>
       <a-layout-footer :style="{ textAlign: 'center' }">
         <div>BruWave ©2025</div>
-        <a href="https://beian.miit.gov.cn" target="_blank">鲁ICP备2025171035号</a>
-        <a href="https://beian.mps.gov.cn" target="_blank" style="margin-left: 8px"> 🛡️ </a>
       </a-layout-footer>
     </a-layout>
   </a-layout>
