@@ -3,9 +3,14 @@
     <a-space direction="vertical" style="width: 100%">
       <a-flex justify="space-between" align="center">
         <h1>采购单管理</h1>
-        <a-button type="primary" @click="handleAddPurchaseOrder" style="margin-bottom: 16px">
-          新增采购单
-        </a-button>
+        <a-space>
+          <a-button type="primary" @click="handleScanAddPurchaseOrder" style="margin-bottom: 16px">
+            扫描录入采购单
+          </a-button>
+          <a-button type="primary" @click="handleAddPurchaseOrder" style="margin-bottom: 16px">
+            新增采购单
+          </a-button>
+        </a-space>
       </a-flex>
 
       <a-card :bordered="false">
@@ -141,6 +146,20 @@
       </a-card>
     </a-space>
     <a-drawer
+      title="扫描录入采购单"
+      size="large"
+      :open="showScanAdd"
+      :closable="false"
+      @close="showScanAdd = false"
+    >
+      <PurchaseOrderScanAddView
+        v-if="showScanAdd"
+        v-model:visible="showScanAdd"
+        @success="refetch"
+      />
+    </a-drawer>
+
+    <a-drawer
       title="新增采购单"
       width="550"
       :open="showAdd"
@@ -183,12 +202,14 @@ import dayjs from "dayjs";
 import { computed, h, inject, reactive, ref } from "vue";
 import PurchaseOrderAddView from "./PurchaseOrderAddView.vue";
 import PurchaseOrderEditView from "./PurchaseOrderDetailView.vue";
+import PurchaseOrderScanAddView from "@/terminal/purchase/PurchaseOrderScanAddView.vue";
 
 const transactionApi = inject("transactionApi") as TransactionApi;
 const queryClient = useQueryClient();
 
 const pageIndex = ref(1);
 const pageSize = ref(10);
+const showScanAdd = ref(false);
 const showAdd = ref(false);
 const showEdit = ref(false);
 const editingPurchaseOrder = ref<BasicPurchaseOrder | null>(null);
@@ -230,6 +251,7 @@ const resetSearch = () => {
 };
 
 const handleAddPurchaseOrder = () => (showAdd.value = true);
+const handleScanAddPurchaseOrder = () => (showScanAdd.value = true);
 const handleEditPurchaseOrder = (purchaseOrder: BasicPurchaseOrder) => {
   editingPurchaseOrder.value = purchaseOrder;
   showEdit.value = true;

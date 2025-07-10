@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, RouterView } from "vue-router";
-import ScanInputPurchaseView from "@/terminal/purchase/ScanInputPurchaseView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,16 +51,6 @@ const router = createRouter({
             title: "采购单管理",
             icon: "shop",
             permission: ["transaction:purchase-order"]
-          }
-        },
-        {
-          path: "purchase-order-scan-input",
-          name: "ScanInputPurchaseView",
-          component: ScanInputPurchaseView,
-          meta: {
-            title: "采购扫码录入",
-            permission: ["transaction:purchase-order-scan-input"],
-            hidden: true
           }
         },
         {
