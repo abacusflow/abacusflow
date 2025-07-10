@@ -79,7 +79,7 @@ function generateMenuItems(routes: readonly RouteRecordRaw[], parentPath = ""): 
           key: fullPath,
           label: route.meta?.title ?? route.name,
           icon: renderIcon(route.meta?.icon as string),
-          children: generateMenuItems(route.children, fullPath)
+          children: generateMenuItems(visibleChildren, fullPath)
         };
       }
 

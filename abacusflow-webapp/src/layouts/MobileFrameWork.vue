@@ -3,12 +3,7 @@
     <!-- 顶部导航栏 -->
     <div class="mobile-header" v-if="showHeader">
       <div class="header-left">
-        <a-button
-          type="text"
-          size="large"
-          @click="handleBack"
-          v-if="showBackButton"
-        >
+        <a-button type="text" size="large" @click="handleBack" v-if="showBackButton">
           <template #icon>
             <LeftOutlined />
           </template>
@@ -62,10 +57,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-import {
-  LeftOutlined} from '@ant-design/icons-vue';
+import { onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { LeftOutlined } from "@ant-design/icons-vue";
 
 interface TabItem {
   key: string;
@@ -86,12 +80,12 @@ interface Props {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = withDefaults(defineProps<Props>(), {
-  title: '小算盘移动端',
+  title: "小算盘移动端",
   showHeader: true,
   showFooter: true,
   showBackButton: true,
   enableSafeArea: true,
-  loading: false,
+  loading: false
   // footerTabs: () => [
   //   {
   //     key: 'home',
@@ -141,7 +135,7 @@ const handleBack = () => {
   if (window.history.length > 1) {
     router.go(-1);
   } else {
-    router.push('/');
+    router.push("/");
   }
 };
 
@@ -160,17 +154,20 @@ onMounted(() => {
   // 设置viewport meta标签
   const viewport = document.querySelector('meta[name="viewport"]');
   if (viewport) {
-    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+    viewport.setAttribute(
+      "content",
+      "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    );
   }
 
   // 禁用双指缩放
-  document.addEventListener('gesturestart', handleGestureStart, { passive: false });
-  document.addEventListener('touchstart', handleTouchStart, { passive: false });
+  document.addEventListener("gesturestart", handleGestureStart, { passive: false });
+  document.addEventListener("touchstart", handleTouchStart, { passive: false });
 });
 
 onUnmounted(() => {
-  document.removeEventListener('gesturestart', handleGestureStart);
-  document.removeEventListener('touchstart', handleTouchStart);
+  document.removeEventListener("gesturestart", handleGestureStart);
+  document.removeEventListener("touchstart", handleTouchStart);
 });
 
 // 禁用手势缩放
@@ -320,7 +317,8 @@ const handleTouchStart = (e: TouchEvent) => {
 }
 
 /* 输入框可选择 */
-input, textarea {
+input,
+textarea {
   -webkit-user-select: auto;
   user-select: auto;
 }

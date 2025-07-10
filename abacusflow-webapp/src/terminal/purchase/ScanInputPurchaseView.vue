@@ -292,7 +292,7 @@ const startScanning = async () => {
       scanStatusMessage.value = "请将条形码对准扫描区域";
 
       // 开始解码
-      codeReader.decodeFromVideoDevice(null, videoRef.value, (result, err) => {
+      codeReader.decodeFromVideoDevice(null, videoRef.value, (result) => {
         if (result) {
           handleBarcodeScanned(result.getText());
         }
@@ -371,7 +371,7 @@ const startSerialScanning = async () => {
     if (serialVideoRef.value) {
       serialVideoRef.value.srcObject = stream;
 
-      serialCodeReader.decodeFromVideoDevice(null, serialVideoRef.value, (result, err) => {
+      serialCodeReader.decodeFromVideoDevice(null, serialVideoRef.value, (result) => {
         if (result) {
           handleSerialScanned(result.getText());
         }
