@@ -33,6 +33,10 @@ class Product(
     specification: String?,
     unit: ProductUnit,
     category: ProductCategory,
+
+    @field:Size(max = 100)
+    @Column(name = "barcode", unique = true)
+    val barcode: String,
     note: String?,
 ) : AbstractAggregateRoot<Product>() {
     @Id

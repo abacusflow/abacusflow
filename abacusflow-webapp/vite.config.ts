@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     server: {
+      host: true,
       proxy: {
         "/api": {
           target: envVars.VITE_SERVER_ENDPOINT,

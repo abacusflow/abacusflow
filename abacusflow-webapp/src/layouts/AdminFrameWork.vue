@@ -17,19 +17,21 @@
     <a-layout :style="{ marginLeft: '200px' }">
       <a-layout-header :style="{ background: '#fff', padding: 0 }" />
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-        <RouterView />
+        <slot></slot>
       </a-layout-content>
       <a-layout-footer :style="{ textAlign: 'center' }">
         <div>BruWave ©2025</div>
       </a-layout-footer>
     </a-layout>
   </a-layout>
+  <VersionAnnouncementModal />
 </template>
 <script lang="ts" setup>
 import { type RouteRecordRaw, useRoute, useRouter } from "vue-router";
 import { capitalize, h, ref, type VNode, watch } from "vue";
 import * as Icons from "@ant-design/icons-vue"; // 用于动态渲染图标
 import { type ItemType } from "ant-design-vue";
+import VersionAnnouncementModal from "@/components/VersionAnnouncementModal.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -67,7 +69,9 @@ function generateMenuItems(routes: readonly RouteRecordRaw[], parentPath = ""): 
           : `${parentPath}/${route.path}`.replace(/\/+/g, "/")
         : parentPath;
 
-      if (route.children && route.children.length > 0) {
+      const visibleChildren = route.children?.filter((child) => !child.meta?.hidden);
+
+      if (Array.isArray(visibleChildren) && visibleChildren.length > 0) {
         // 设置submenu展开
         openKeys.value.push(route.path);
 

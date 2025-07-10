@@ -10,6 +10,7 @@ fun Product.toTO() =
     ProductTO(
         id = id,
         name = name,
+        barcode = barcode,
         specification = specification,
         type = type.name,
         unit = unit.name,
@@ -24,6 +25,7 @@ fun Product.toBasicTO(instances: List<ProductInstanceForBasicProductTO>?) =
     BasicProductTO(
         id = id,
         name = name,
+        barcode = barcode,
         specification = specification,
         type = type.name,
         categoryName = category.name,

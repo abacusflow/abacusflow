@@ -8,7 +8,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./initdb:/docker-entrypoint-initdb.d
+      - ./script/initdb:/docker-entrypoint-initdb.d
     networks:
       - abacusflow-network
     expose:

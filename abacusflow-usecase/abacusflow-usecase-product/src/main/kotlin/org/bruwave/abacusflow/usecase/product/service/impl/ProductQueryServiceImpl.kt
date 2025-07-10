@@ -86,6 +86,7 @@ class ProductQueryServiceImpl(
                     PRODUCT.ID,
                     PRODUCT.NAME,
                     PRODUCT.TYPE,
+                    PRODUCT.BARCODE,
                     PRODUCT.ENABLED,
                     PRODUCT.SPECIFICATION,
                     PRODUCT.UNIT,
@@ -104,13 +105,14 @@ class ProductQueryServiceImpl(
                 .map {
                     BasicProductTO(
                         id = it[PRODUCT.ID]!!,
-                        name = it[PRODUCT.NAME]!!,
-                        type = it[PRODUCT.TYPE].name,
-                        enabled = it[PRODUCT.ENABLED]!!,
+                        name = it[PRODUCT.NAME],
+                        barcode = it[PRODUCT.BARCODE],
                         specification = it[PRODUCT.SPECIFICATION],
+                        type = it[PRODUCT.TYPE].name,
+                        categoryName = it[PRODUCT_CATEGORY.NAME],
                         unit = it[PRODUCT.UNIT].name,
                         note = it[PRODUCT.NOTE],
-                        categoryName = it[PRODUCT_CATEGORY.NAME],
+                        enabled = it[PRODUCT.ENABLED]!!,
                     )
                 }
 
@@ -131,6 +133,7 @@ class ProductQueryServiceImpl(
             id = this.id,
             type = this.type.literal,
             name = this.name,
+            barcode = this.barcode,
             specification = this.specification,
             unit = this.unit.literal,
             categoryId = this.categoryId,

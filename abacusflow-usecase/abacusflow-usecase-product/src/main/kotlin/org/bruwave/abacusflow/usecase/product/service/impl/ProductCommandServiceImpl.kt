@@ -31,6 +31,7 @@ class ProductCommandServiceImpl(
             Product(
                 name = input.name,
                 type = mapProductTypeTOToDO(input.type),
+                barcode = input.barcode,
                 unit = mapProductUnitTOToDO(input.unit),
                 category = newProductCategory,
                 specification = input.specification,
