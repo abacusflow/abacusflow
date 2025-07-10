@@ -5,8 +5,14 @@ services:
   abacusflow-website:
     container_name: abacusflow--website
     image: brucewang5638/abacusflow-website:${ABACUSFLOW_WEBSITE_VERSION}
+    networks:
+      - abacusflow-network
+    volumes:
+      - /opt/acme-https/www:/var/www/certbot:ro
+      - /opt/acme-https/letsencrypt:/etc/letsencrypt:ro
     ports:
-      - "${ABACUSFLOW_WEBSITE_PORT}:80"
+      - "80:80"
+      - "443:443"
 
   abacusflow-server:
     container_name: abacusflow-server
@@ -33,10 +39,12 @@ services:
       - ABACUSFLOW_SERVER_PORT=${ABACUSFLOW_SERVER_PORT}
       - ABACUSFLOW_CUBE_HOST=${ABACUSFLOW_CUBE_HOST}
       - ABACUSFLOW_CUBE_PORT=${ABACUSFLOW_CUBE_PORT}
+    volumes:
+      - /opt/acme-https/letsencrypt:/etc/letsencrypt:ro
     networks:
       - abacusflow-network
     depends_on:
       - abacusflow-server
     ports:
-      - "${ABACUSFLOW_WEBAPP_PORT}:80"
+      - "${ABACUSFLOW_WEBAPP_PORT}:443"
 

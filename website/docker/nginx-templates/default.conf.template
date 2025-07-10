@@ -2,6 +2,30 @@ server {
     listen       80;
     server_name  abacusflow.cn;
 
+    # 80端口始终提供https签名所需的接口
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # HTTP 重定向到 HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name abacusflow.cn;
+
+    # SSL 证书配置
+    ssl_certificate     /etc/letsencrypt/live/abacusflow.cn/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/abacusflow.cn/privkey.pem;
+
+    # SSL 安全配置
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+
     root /usr/share/nginx/html;
     index index.html;
 

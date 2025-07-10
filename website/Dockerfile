@@ -7,7 +7,3 @@ COPY public/ /usr/share/nginx/html/
 # 拷贝模板配置
 COPY docker/nginx-templates/default.conf.template /etc/nginx/templates/default.conf.template
 
-#COPY docker/ssl /ssl
-
-## 容器启动时执行 nginx
-#CMD ["nginx", "-g", "daemon off;"]
