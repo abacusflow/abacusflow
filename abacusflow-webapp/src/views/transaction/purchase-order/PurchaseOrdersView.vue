@@ -147,7 +147,7 @@
     </a-space>
     <a-drawer
       title="扫描录入采购单"
-      size="large"
+      width="90%"
       :open="showScanAdd"
       :closable="false"
       @close="showScanAdd = false"
