@@ -227,13 +227,18 @@ function handleDeleteProduct(id: number) {
 const columns: StrictTableColumnsType<BasicProduct> = [
   { title: "产品名称", dataIndex: "name", key: "name" },
   { title: "产品规格", dataIndex: "specification", key: "specification" },
+  { title: "产品类别", dataIndex: "categoryName", key: "categoryName" },
   {
     title: "产品类型",
     dataIndex: "type",
     key: "type",
     customRender: ({ record }) => translateProductType(record.type)
   },
-  { title: "产品类别", dataIndex: "categoryName", key: "categoryName" },
+  {
+    title: "条形码",
+    dataIndex: "barcode",
+    key: "barcode"
+  },
   {
     title: "单位",
     dataIndex: "unit",

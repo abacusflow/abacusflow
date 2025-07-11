@@ -31,6 +31,7 @@ fun BasicProductTO.toBasicVO(): BasicProductVO =
         categoryName = categoryName,
         enabled = enabled,
         note = note,
+        barcode = barcode,
     )
 
 fun mapProductUnitTOToVO(unit: String): ProductUnitVO =

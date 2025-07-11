@@ -1836,6 +1836,7 @@ components:
         - id
         - name
         - type
+        - barcode
         - unit
         - unitPrice
         - categoryName
@@ -1851,6 +1852,9 @@ components:
           description: 产品名称
         type:
           $ref: "#/components/schemas/ProductType"
+        barcode:
+          type: string
+          description: 条形码
         specification:
           type: string
           description: 产品规格
@@ -1871,6 +1875,7 @@ components:
       required:
         - name
         - type
+        - barcode
         - unit
         - categoryId
       properties:
@@ -1880,6 +1885,9 @@ components:
           description: 产品名称
         type:
           $ref: "#/components/schemas/ProductType"
+        barcode:
+          type: string
+          description: 条形码
         specification:
           type: string
           description: 产品规格
@@ -1923,6 +1931,7 @@ components:
         - id
         - name
         - type
+        - barcode
       properties:
         id:
           type: integer
@@ -1933,6 +1942,9 @@ components:
           description: 产品名称
         type:
           $ref: "#/components/schemas/ProductType"
+        barcode:
+          type: string
+          description: 条形码
 
     # ============= ProductCategory schemas =============
     ProductCategory:

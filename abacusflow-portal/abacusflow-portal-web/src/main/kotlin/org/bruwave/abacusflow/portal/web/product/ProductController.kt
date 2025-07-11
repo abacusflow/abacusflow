@@ -65,11 +65,12 @@ class ProductController(
             productCommandService.createProduct(
                 CreateProductInputTO(
                     name = createProductInputVO.name,
+                    type = createProductInputVO.type.name,
+                    barcode = createProductInputVO.barcode,
+                    specification = createProductInputVO.specification,
                     categoryId = createProductInputVO.categoryId,
                     unit = createProductInputVO.unit.name,
                     note = createProductInputVO.note,
-                    type = createProductInputVO.type.name,
-                    specification = createProductInputVO.specification,
                 ),
             )
         return ResponseEntity.ok(
@@ -110,6 +111,7 @@ class ProductController(
                     it.id,
                     it.name,
                     type = mapProductTypeTOToVO(it.type),
+                    it.barcode,
                 )
             }
         return ResponseEntity.ok(productVOs)
