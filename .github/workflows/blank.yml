@@ -38,11 +38,11 @@ jobs:
           java-version: 17
           cache: gradle
 
-      # 3) 构建 + 产出镜像（Spring Boot 的 bootBuildImage & 自定义 buildWebappDockerImage）
-      - name: Gradle build & build images
+      # 3) 构建
+      - name: Gradle build
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build bootBuildImage buildWebappDockerImage --no-daemon
+          ./gradlew clean build -PskipJooq=true --no-daemon
 
       # ───────── 下面步骤只在“合规 Tag”场景继续 ─────────
       # 1) 确认 Tag 格式 v<digit>.<digit>.<digit>
@@ -57,6 +57,13 @@ jobs:
             exit 1
           fi
           echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+
+      # 2) 产出镜像
+      - name: Gradle build Docker images
+        if: steps.verify.outcome == 'success'
+        run: |
+          ./gradlew bootBuildImage buildWebappDockerImage -PskipJooq=true --no-daemon
 
       # 2) Docker 登录
       - name: Docker login
