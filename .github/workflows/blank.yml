@@ -66,7 +66,7 @@ jobs:
           done
 
       - name: Generate JOOQ sources
-        run: ./gradlew clean generateJooq --no-daemon
+        run: ./gradlew clean jooqCodegen --no-daemon
 
       - name: Upload JOOQ sources
         uses: actions/upload-artifact@v4
