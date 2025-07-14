@@ -58,10 +58,6 @@ tasks.runKtlintCheckOverMainSourceSet {
     dependsOn(tasks.openApiGenerate)
 }
 
-tasks.runKtlintFormatOverMainSourceSet {
-    dependsOn(tasks.openApiGenerate)
-}
-
 ktlint {
     filter {
         exclude { entry ->
