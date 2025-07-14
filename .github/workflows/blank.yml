@@ -23,7 +23,6 @@ jobs:
       POSTGRES_PORT: "5432"
       POSTGRES_DB: abacusflow
       POSTGRES_USER: abacusflow
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     services:
       postgres:
         image: postgres:13
@@ -39,9 +38,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
@@ -65,12 +61,27 @@ jobs:
                  -f "$file"
           done
 
+      - name: Generate JOOQ sources
+        run: ./gradlew clean generateJooq --no-daemon
+
+      - name: Upload JOOQ sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: jooq-src
+          path: abacusflow-usecase/abacusflow-usecase-commons/build/generated/jooq
+          retention-days: 1
   build:
     runs-on: ubuntu-latest
     needs: prepare
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download JOOQ sources
+        uses: actions/download-artifact@v4
+        with:
+          name: jooq-src
+          path: abacusflow-usecase/abacusflow-usecase-commons/build/generated/jooq
 
       - name: Setup JDK & Gradle cache
         uses: actions/setup-java@v4
@@ -91,6 +102,7 @@ jobs:
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
       DOCKER_REGISTRY: docker.io
       DOCKER_ORG: brucewang5638
+      DOCKER_USER: brucewang5638@gmail.com
     needs: build
     if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -130,7 +142,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ env.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # docker push
