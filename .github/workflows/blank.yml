@@ -15,15 +15,8 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 jobs:
-  prepare:
+  build:
     runs-on: ubuntu-latest
-    env:
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-      POSTGRES_HOST: localhost
-      POSTGRES_PORT: "5432"
-      POSTGRES_DB: abacusflow
-      POSTGRES_USER: abacusflow
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}   # ← 别删它
     services:
       postgres:
         image: postgres:13
@@ -42,20 +35,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup JDK & Gradle cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
-      # 等待数据库健康检查通过
-      - name: Wait for Postgres
-        run: |
-          until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB; do
-            echo "⏳ waiting for Postgres…" && sleep 2
-          done
-          echo "✅ Postgres is ready!"
-
-      # 执行所有 initdb 脚本
       - name: Run initdb scripts
         run: |
           for file in "$GITHUB_WORKSPACE/script/initdb"/*.sql; do
@@ -64,40 +55,6 @@ jobs:
                  -v ON_ERROR_STOP=1 \
                  -f "$file"
           done
-
-      - name: Generate JOOQ sources
-        run: ./gradlew clean jooqCodegen --no-daemon
-
-      - name: Upload JOOQ sources
-        uses: actions/upload-artifact@v4
-        with:
-          name: jooq-src
-          path: temp-jooq/
-          retention-days: 1
-  build:
-    runs-on: ubuntu-latest
-    needs: prepare
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download JOOQ sources
-        uses: actions/download-artifact@v4
-        with:
-          name: jooq-src
-          path: temp-download/
-
-      - name: Move files to correct location
-        run: |
-          mkdir -p abacusflow-usecase/abacusflow-usecase-commons/build/generated/jooq
-          mv temp-download/* abacusflow-usecase/abacusflow-usecase-commons/build/generated/jooq/
-
-      - name: Setup JDK & Gradle cache
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-          cache: gradle
 
       - name: Gradle build
         run: |
