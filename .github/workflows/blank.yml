@@ -2,35 +2,155 @@
 
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
     branches: [ "master" ]
+    tags: [ "v*.*.*" ]
   pull_request:
     branches: [ "master" ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    env:
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: abacusflow
+      POSTGRES_USER: abacusflow
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}   # ← 别删它
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Setup JDK & Gradle cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Install PostgreSQL client
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run initdb scripts
+        run: |
+          for file in "$GITHUB_WORKSPACE/script/initdb"/*.sql; do
+            echo "→ running $file"
+            psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" \
+                 -v ON_ERROR_STOP=1 \
+                 -f "$file"
+          done
+
+      - name: Gradle build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build --no-daemon
+          ./gradlew test --no-daemon
+
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+      DOCKER_REGISTRY: docker.io
+      DOCKER_ORG: brucewang5638
+      DOCKER_USER: brucewang5638@gmail.com
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK & Gradle cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "Detected tag: $TAG"
+          
+          # 验证标签格式
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag $TAG 不符合版本规范，应形如 v1.0.0"
+            exit 1
+          fi
+          
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build Docker images
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bootBuildImage buildWebappDockerImage -PskipJooq=true --no-daemon
+
+      # docker login
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # docker push
+      - name: Tag and push Docker images
+        run: |
+          VERSION=${{ steps.extract_version.outputs.version }}
+          
+          # 检查镜像是否存在
+          if ! docker image inspect "abacusflow-webapp:$VERSION" >/dev/null 2>&1; then
+            echo "::error::Docker image abacusflow-webapp:$VERSION not found"
+            exit 1
+          fi
+          
+          if ! docker image inspect "abacusflow-server:$VERSION" >/dev/null 2>&1; then
+            echo "::error::Docker image abacusflow-server:$VERSION not found"
+            exit 1
+          fi
+          
+          # Tag and push webapp
+          docker tag "abacusflow-webapp:$VERSION" "$DOCKER_ORG/abacusflow-webapp:$VERSION"
+          docker tag "abacusflow-webapp:$VERSION" "$DOCKER_ORG/abacusflow-webapp:latest"
+          docker push "$DOCKER_ORG/abacusflow-webapp:$VERSION"
+          docker push "$DOCKER_ORG/abacusflow-webapp:latest"
+          
+          # Tag and push server
+          docker tag "abacusflow-server:$VERSION" "$DOCKER_ORG/abacusflow-server:$VERSION"
+          docker tag "abacusflow-server:$VERSION" "$DOCKER_ORG/abacusflow-server:latest"
+          docker push "$DOCKER_ORG/abacusflow-server:$VERSION"
+          docker push "$DOCKER_ORG/abacusflow-server:latest"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.extract_version.outputs.tag }}
+          name: Release ${{ steps.extract_version.outputs.tag }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true

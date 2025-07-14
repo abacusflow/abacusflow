@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.OffsetDateTime
 
 @Service
 class SupplierQueryServiceImpl(
@@ -83,7 +82,7 @@ class SupplierQueryServiceImpl(
                         .`as`("total_order_count"),
                     DSL.sum(
                         PURCHASE_ORDER_ITEM.UNIT_PRICE
-                            .mul(PURCHASE_ORDER_ITEM.QUANTITY)
+                            .mul(PURCHASE_ORDER_ITEM.QUANTITY),
                     ).filterWhere(PURCHASE_ORDER.STATUS.eq(OrderStatusDbEnum.COMPLETED))
                         .`as`("total_order_amount"),
                     DSL.max(PURCHASE_ORDER.ORDER_DATE).`as`("last_order_date"),

@@ -75,21 +75,24 @@ class InventoryController(
     }
 
     override fun exportInventory(format: String): ResponseEntity<Resource> {
-        val (data, mediaType, extension) = when (format.uppercase()) {
-            "PDF" -> Triple(
-                inventoryReportService.exportInventoryAsPdf(),
-                MediaType.APPLICATION_PDF,
-                "pdf"
-            )
+        val (data, mediaType, extension) =
+            when (format.uppercase()) {
+                "PDF" ->
+                    Triple(
+                        inventoryReportService.exportInventoryAsPdf(),
+                        MediaType.APPLICATION_PDF,
+                        "pdf",
+                    )
 
-            "EXCEL" -> Triple(
-                inventoryReportService.exportInventoryAsExcel(),
-                MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-                "xlsx"
-            )
+                "EXCEL" ->
+                    Triple(
+                        inventoryReportService.exportInventoryAsExcel(),
+                        MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+                        "xlsx",
+                    )
 
-            else -> throw IllegalArgumentException("Invalid format: $format")
-        }
+                else -> throw IllegalArgumentException("Invalid format: $format")
+            }
 
         if (data.isEmpty()) {
             return ResponseEntity.noContent().build()
@@ -97,10 +100,11 @@ class InventoryController(
 
         val filename = "inventory-${LocalDate.now()}.$extension"
 
-        val headers = HttpHeaders().apply {
-            contentType = mediaType
-            add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
-        }
+        val headers =
+            HttpHeaders().apply {
+                contentType = mediaType
+                add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$filename\"")
+            }
 
         return ResponseEntity
             .ok()

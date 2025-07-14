@@ -57,6 +57,7 @@ tasks.compileKotlin {
 tasks.runKtlintCheckOverMainSourceSet {
     dependsOn(tasks.openApiGenerate)
 }
+
 ktlint {
     filter {
         exclude { entry ->
