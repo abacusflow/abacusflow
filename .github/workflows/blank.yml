@@ -66,7 +66,7 @@ jobs:
       - name: Gradle build
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build -PskipJooq=true --no-daemon
+          ./gradlew clean build --no-daemon
           ./gradlew test --no-daemon
 
   release:
