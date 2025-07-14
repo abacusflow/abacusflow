@@ -7,6 +7,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
     branches: [ "master" ]
+    tags: [ "v*.*.*" ]            # 只有 vX.Y.Z 才会触发（先粗过滤，细验证见下）
   pull_request:
     branches: [ "master" ]
 
@@ -20,10 +21,62 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    env: # 镜像仓库命名片段
+      REGISTRY: docker.io
+      ORG: brucewang5638         # Docker Hub 组织或用户名
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # 1) Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
+
+      # 2) JDK / Gradle cache
+      - name: Setup JDK & Gradle cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      # 3) 构建 + 产出镜像（Spring Boot 的 bootBuildImage & 自定义 buildWebappDockerImage）
+      - name: Gradle build & build images
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build bootBuildImage buildWebappDockerImage --no-daemon
+
+      # ───────── 下面步骤只在“合规 Tag”场景继续 ─────────
+      # 1) 确认 Tag 格式 v<digit>.<digit>.<digit>
+      - name: Verify tag naming rule
+        id: verify
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "Detected tag: $TAG"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag $TAG 不符合版本规范，应形如 v0.0.1"
+            exit 1
+          fi
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      # 2) Docker 登录
+      - name: Docker login
+        if: steps.verify.outcome == 'success'
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | \
+          docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin $REGISTRY
+
+      # 3) Tag & push
+      - name: Tag & push images
+        if: steps.verify.outcome == 'success'
+        run: |
+          VERSION=${{ steps.verify.outputs.version }}
+          
+          # webapp
+          docker tag abacusflow-webapp:$VERSION $ORG/abacusflow-webapp:$VERSION
+          docker push $ORG/abacusflow-webapp:$VERSION
+          
+          # server
+          docker tag abacusflow-server:$VERSION $ORG/abacusflow-server:$VERSION
+          docker push $ORG/abacusflow-server:$VERSION
 
       # Runs a single command using the runners shell
       - name: Run a one-line script

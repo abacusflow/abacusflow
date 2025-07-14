@@ -38,6 +38,14 @@
       </a-select>
     </a-form-item>
 
+    <a-form-item
+      label="条形码"
+      name="barcode"
+      :rules="[{ required: true, message: '请输入产品条形码' }]"
+    >
+      <a-input v-model:value="formState.barcode" />
+    </a-form-item>
+
     <a-form-item label="单位" name="unit" :rules="[{ required: true, message: '请选择单位' }]">
       <a-select v-model:value="formState.unit" placeholder="请选择单位">
         <a-select-option v-for="value in Object.values(ProductUnit)" :key="value" :value="value">
@@ -70,6 +78,7 @@ const formRef = ref<FormInstance>();
 const formState = reactive<Partial<CreateProductInput>>({
   name: undefined,
   type: undefined,
+  barcode: undefined,
   specification: undefined,
   categoryId: undefined,
   unit: ProductUnit.Item,
