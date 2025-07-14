@@ -23,13 +23,14 @@ jobs:
       POSTGRES_PORT: "5432"
       POSTGRES_DB: abacusflow
       POSTGRES_USER: abacusflow
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}   # ← 别删它
     services:
       postgres:
         image: postgres:13
         env:
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
