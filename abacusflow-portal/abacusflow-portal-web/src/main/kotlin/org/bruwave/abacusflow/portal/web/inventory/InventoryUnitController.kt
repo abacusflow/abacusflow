@@ -26,7 +26,7 @@ class InventoryUnitController(
         productName: String?,
         productType: ProductTypeVO?,
         inventoryUnitCode: String?,
-        depotName: String?
+        depotName: String?,
     ): ResponseEntity<ListBasicInventoryUnitsPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
 

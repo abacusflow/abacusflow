@@ -127,7 +127,6 @@ class ProductQueryServiceImpl(
             .map { it.toTO() }
     }
 
-
     fun ProductRecord.toTO(): ProductTO {
         return ProductTO(
             id = this.id,
@@ -140,7 +139,7 @@ class ProductQueryServiceImpl(
             note = this.note,
             enabled = this.enabled,
             createdAt = this.createdAt.toInstant(),
-            updatedAt = this.updatedAt.toInstant()
+            updatedAt = this.updatedAt.toInstant(),
         )
     }
 

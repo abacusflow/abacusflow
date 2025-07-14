@@ -26,7 +26,6 @@ import java.time.format.DateTimeFormatter
 class InventoryReportServiceImpl(
     private val inventoryUnitQueryService: InventoryUnitQueryService,
 ) : InventoryReportService {
-
     override fun exportInventoryAsPdf(): ByteArray {
         // TODO 批量查询防止oom
         val units = inventoryUnitQueryService.listInventoryUnitsForExport()
@@ -46,20 +45,24 @@ class InventoryReportServiceImpl(
         val sheet = workbook.createSheet("库存单元清单")
 
         // 使用与 PDF 相同的表头
-        val headers = listOf(
-            "库存名称", "类型", "状态", "当前数量", "可用数量", "单价(元)",
-            "收货时间", "序列号", "批次号", "存储点"
-        )
+        val headers =
+            listOf(
+                "库存名称", "类型", "状态", "当前数量", "可用数量", "单价(元)",
+                "收货时间", "序列号", "批次号", "存储点",
+            )
 
         // 表头样式
-        val headerStyle = workbook.createCellStyle().apply {
-            fillForegroundColor = IndexedColors.GREY_25_PERCENT.index
-            fillPattern = FillPatternType.SOLID_FOREGROUND
-            alignment = HorizontalAlignment.CENTER
-            setFont(workbook.createFont().apply {
-                bold = true
-            })
-        }
+        val headerStyle =
+            workbook.createCellStyle().apply {
+                fillForegroundColor = IndexedColors.GREY_25_PERCENT.index
+                fillPattern = FillPatternType.SOLID_FOREGROUND
+                alignment = HorizontalAlignment.CENTER
+                setFont(
+                    workbook.createFont().apply {
+                        bold = true
+                    },
+                )
+            }
 
         // 写入表头
         val headerRow = sheet.createRow(0)

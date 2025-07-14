@@ -171,13 +171,13 @@ class User(
 
         val newPassword =
             (1..10)
-                .map { chars.random() }
+                .map { CHARS.random() }
                 .joinToString("")
         password = passwordEncoder.encode(newPassword)
         return newPassword
     }
 
-    companion object{
-        const val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    companion object {
+        const val CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     }
 }

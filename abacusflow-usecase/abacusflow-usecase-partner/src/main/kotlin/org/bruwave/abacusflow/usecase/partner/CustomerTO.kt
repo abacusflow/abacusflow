@@ -4,7 +4,6 @@ import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 
-
 data class BasicCustomerTO(
     val id: Long,
     val name: String,

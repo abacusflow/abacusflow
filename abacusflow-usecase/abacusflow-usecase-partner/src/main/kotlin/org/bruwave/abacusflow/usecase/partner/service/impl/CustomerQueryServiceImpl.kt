@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.OffsetDateTime
 import kotlin.jvm.java
 
 @Service
@@ -83,7 +82,7 @@ class CustomerQueryServiceImpl(
                     DSL.sum(
                         SALE_ORDER_ITEM.UNIT_PRICE
                             .mul(SALE_ORDER_ITEM.QUANTITY)
-                            .mul(SALE_ORDER_ITEM.DISCOUNT_FACTOR)
+                            .mul(SALE_ORDER_ITEM.DISCOUNT_FACTOR),
                     ).filterWhere(SALE_ORDER.STATUS.eq(OrderStatusDbEnum.COMPLETED))
                         .`as`("total_order_amount"),
                     DSL.max(SALE_ORDER.ORDER_DATE).`as`("last_order_date"),
@@ -124,7 +123,6 @@ class CustomerQueryServiceImpl(
             .fetch()
             .map { it.toTO() }
     }
-
 
     fun CustomerRecord.toTO(): CustomerTO {
         return CustomerTO(

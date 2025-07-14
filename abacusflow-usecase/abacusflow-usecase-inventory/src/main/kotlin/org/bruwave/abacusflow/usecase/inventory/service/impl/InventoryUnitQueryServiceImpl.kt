@@ -39,7 +39,7 @@ class InventoryUnitQueryServiceImpl(
         productName: String?,
         productType: String?,
         inventoryUnitCode: String?,
-        depotName: String?
+        depotName: String?,
     ): Page<BasicInventoryUnitTO> {
         val condition =
             buildList<Condition> {
@@ -157,7 +157,7 @@ class InventoryUnitQueryServiceImpl(
                 record.toBasicInventoryUnitTO()
             },
             pageable,
-            total.toLong()
+            total.toLong(),
         )
     }
 
