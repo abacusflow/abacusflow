@@ -127,18 +127,13 @@ jobs:
           username: ${{ env.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # docker push
-      - name: Tag and push Docker images
+      - name: Push Docker images
         run: |
-          # Tag and push webapp
-          docker tag "abacusflow-webapp:$VERSION" "$DOCKER_ORG/abacusflow-webapp:$VERSION"
-          docker tag "abacusflow-webapp:$VERSION" "$DOCKER_ORG/abacusflow-webapp:latest"
+          # Webapp 镜像
           docker push "$DOCKER_ORG/abacusflow-webapp:$VERSION"
           docker push "$DOCKER_ORG/abacusflow-webapp:latest"
           
-          # Tag and push server
-          docker tag "abacusflow-server:$VERSION" "$DOCKER_ORG/abacusflow-server:$VERSION"
-          docker tag "abacusflow-server:$VERSION" "$DOCKER_ORG/abacusflow-server:latest"
+          # Server 镜像
           docker push "$DOCKER_ORG/abacusflow-server:$VERSION"
           docker push "$DOCKER_ORG/abacusflow-server:latest"
 
