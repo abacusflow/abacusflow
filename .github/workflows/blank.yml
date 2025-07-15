@@ -82,10 +82,8 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            build/libs/
-            build/docker/
-            webapp/build/
-            webapp/dist/
+            abacusflow-server/build
+            abacusflow-webapp/build
           retention-days: 1
 
   release:
@@ -112,6 +110,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+          path: .
 
       - name: Extract version from tag
         id: extract_version
@@ -156,11 +155,3 @@ jobs:
           docker push "$DOCKER_ORG/abacusflow-server:$VERSION"
           docker push "$DOCKER_ORG/abacusflow-server:latest"
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.extract_version.outputs.tag }}
-          name: Release ${{ steps.extract_version.outputs.tag }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
