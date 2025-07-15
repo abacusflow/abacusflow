@@ -1,9 +1,11 @@
 name: Init DB
 description: Run SQL scripts to initialize DB
+
 runs:
-  using: composite
+  using: "composite"
   steps:
     - name: Run initdb scripts
+      shell: bash
       run: |
         for file in "$GITHUB_WORKSPACE/script/initdb"/*.sql; do
           echo "→ running $file"
@@ -11,4 +13,3 @@ runs:
               -v ON_ERROR_STOP=1 \
               -f "$file"
         done
-
