@@ -91,14 +91,46 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     env:
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: abacusflow
+      POSTGRES_USER: abacusflow
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}   # ← 别删它
       DOCKER_REGISTRY: docker.io
       DOCKER_ORG: brucewang5638
       DOCKER_USER: brucewang5638@gmail.com
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+
+          # 验证标签格式
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag $TAG 不符合版本规范，应形如 v1.0.0"
+            exit 1
+          fi
+
+          VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -109,31 +141,31 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - name: Setup Node.js for Frontend
+        uses: actions/setup-node@v4
         with:
-          name: build-artifacts
-          path: .
+          node-version: 22
+          cache: npm
+          cache-dependency-path: abacusflow-webapp/package-lock.json
 
-      - name: Extract version from tag
-        id: extract_version
+      - name: Install PostgreSQL client
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          
-          # 验证标签格式
-          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Tag $TAG 不符合版本规范，应形如 v1.0.0"
-            exit 1
-          fi
-          
-          VERSION="${TAG#v}"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
 
-      - name: Build Docker images
+      - name: Run initdb scripts
+        run: |
+          for file in "$GITHUB_WORKSPACE/script/initdb"/*.sql; do
+            echo "→ running $file"
+            psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB" \
+                 -v ON_ERROR_STOP=1 \
+                 -f "$file"
+          done
+
+      - name: Gradle build Docker images
         run: |
           chmod +x ./gradlew
-          ./gradlew bootBuildImage buildWebappDockerImage -PskipJooq=true --no-daemon
+          ./gradlew bootBuildImage buildWebappDockerImage --no-daemon
 
       # docker login
       - name: Login to Docker Hub
