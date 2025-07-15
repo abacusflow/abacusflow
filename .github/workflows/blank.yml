@@ -75,15 +75,18 @@ jobs:
           ./gradlew clean build --no-daemon
           ./gradlew test --no-daemon
 
-      # 保存构建产物，供 release job 使用
+      # 保存完整的构建输出和 Gradle 缓存
       - name: Upload build artifacts
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: |
-            abacusflow-server/build
-            abacusflow-webapp/build
+            abacusflow-server/build/
+            abacusflow-webapp/build/
+            abacusflow-webapp/dist/
+            build/
+            .gradle/
           retention-days: 1
 
   release:
