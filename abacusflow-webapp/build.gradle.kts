@@ -68,3 +68,7 @@ tasks.register<Exec>("buildWebappDockerImage") {
         "."
     )
 }
+
+tasks.named("build") {
+    dependsOn("buildFrontend")
+}

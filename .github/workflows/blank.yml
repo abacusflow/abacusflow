@@ -48,6 +48,12 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Setup Node.js for Frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
@@ -68,6 +74,19 @@ jobs:
           ./gradlew clean build --no-daemon
           ./gradlew test --no-daemon
 
+      # 保存构建产物，供 release job 使用
+      - name: Upload build artifacts
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            build/libs/
+            build/docker/
+            webapp/build/
+            webapp/dist/
+          retention-days: 1
+
   release:
     runs-on: ubuntu-latest
     env:
@@ -76,7 +95,7 @@ jobs:
       DOCKER_ORG: brucewang5638
       DOCKER_USER: brucewang5638@gmail.com
     needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -88,11 +107,15 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
       - name: Extract version from tag
         id: extract_version
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
-          echo "Detected tag: $TAG"
           
           # 验证标签格式
           if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -101,8 +124,8 @@ jobs:
           fi
           
           VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Build Docker images
         run: |
@@ -114,25 +137,12 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ env.DOCKER_USERNAME }}
+          username: ${{ env.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # docker push
       - name: Tag and push Docker images
         run: |
-          VERSION=${{ steps.extract_version.outputs.version }}
-          
-          # 检查镜像是否存在
-          if ! docker image inspect "abacusflow-webapp:$VERSION" >/dev/null 2>&1; then
-            echo "::error::Docker image abacusflow-webapp:$VERSION not found"
-            exit 1
-          fi
-          
-          if ! docker image inspect "abacusflow-server:$VERSION" >/dev/null 2>&1; then
-            echo "::error::Docker image abacusflow-server:$VERSION not found"
-            exit 1
-          fi
-          
           # Tag and push webapp
           docker tag "abacusflow-webapp:$VERSION" "$DOCKER_ORG/abacusflow-webapp:$VERSION"
           docker tag "abacusflow-webapp:$VERSION" "$DOCKER_ORG/abacusflow-webapp:latest"
