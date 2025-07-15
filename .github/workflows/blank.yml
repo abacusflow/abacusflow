@@ -69,9 +69,6 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/abacusflow/abacusflow-ci:latest
-      options: --user root
     env:
       DOCKER_REGISTRY: docker.io
       DOCKER_ORG: brucewang5638
