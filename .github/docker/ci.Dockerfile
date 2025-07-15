@@ -1,9 +1,6 @@
-FROM ubuntu:22.04
+FROM postgres:15
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV POSTGRES_USER=abacusflow
-ENV POSTGRES_PASSWORD=abacusflow
-ENV POSTGRES_DB=abacusflow
 
 # 安装基础工具
 RUN apt-get update && \
@@ -17,21 +14,3 @@ RUN apt-get install -y openjdk-17-jdk
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y nodejs
 
-# 安装 PostgreSQL server + client
-RUN apt-get install -y postgresql postgresql-client && \
-    mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql
-
-# 初始化数据库
-USER postgres
-RUN /etc/init.d/postgresql start && \
-    psql --command "CREATE USER ${POSTGRES_USER} WITH SUPERUSER PASSWORD '${POSTGRES_PASSWORD}';" && \
-    createdb -O ${POSTGRES_USER} ${POSTGRES_DB}
-
-WORKDIR /app
-USER root
-
-# 添加 PostgreSQL 启动脚本
-COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
