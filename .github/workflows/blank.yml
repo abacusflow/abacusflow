@@ -13,9 +13,11 @@ on:
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  POSTGRES_USER: "abacusflow"
-  POSTGRES_PASSWORD: "abacusflow"
-  POSTGRES_DB: "abacusflow"
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_USER: abacusflow
+  POSTGRES_PASSWORD: abacusflow
+  POSTGRES_DB: abacusflow
 jobs:
   build:
     runs-on: ubuntu-latest
