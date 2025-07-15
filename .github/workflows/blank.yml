@@ -44,6 +44,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Init DB
+        uses: ./.github/actions/init-db
+
       - name: Gradle build
         run: |
           chmod +x ./gradlew
