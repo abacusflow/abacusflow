@@ -19,35 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/abacusflow/abacusflow-ci:latest
-    env:
-      POSTGRES_HOST: localhost
-      POSTGRES_PORT: "5432"
-      POSTGRES_DB: abacusflow
-      POSTGRES_USER: abacusflow
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}   # ← 别删它
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+      volumes:
+        - ${{ github.workspace }}/script/initdb:/etc/initdb:ro
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Java & Node
-        uses: ./.github/actions/setup-env
-
       - name: Init DB
         uses: ./.github/actions/init-db
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
 
       - name: Gradle build
         run: |
