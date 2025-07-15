@@ -19,7 +19,7 @@ tasks.register<Exec>("buildWebsiteDockerImage") {
 }
 
 tasks.named("build") {
-    dependsOn(":abacusflow-webapp:buildFrontend")
+//    dependsOn(":abacusflow-webapp:buildFrontend")
 }
 
 tasks.named("clean") {
