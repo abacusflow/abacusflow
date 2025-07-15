@@ -21,3 +21,9 @@ tasks.register<Exec>("buildWebsiteDockerImage") {
 tasks.named("build") {
     dependsOn(":abacusflow-webapp:buildFrontend")
 }
+
+tasks.named("clean") {
+    doLast {
+        delete("abacusflow-webapp/src/core/openapi")
+    }
+}
