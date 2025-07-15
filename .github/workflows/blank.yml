@@ -69,8 +69,10 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/abacusflow/abacusflow-ci:latest
+      options: --user root
     env:
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
       DOCKER_REGISTRY: docker.io
       DOCKER_ORG: brucewang5638
       DOCKER_USER: brucewang5638@gmail.com
@@ -79,13 +81,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup JDK & Gradle cache
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-          cache: gradle
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -110,8 +105,15 @@ jobs:
 
       - name: Build Docker images
         run: |
-          chmod +x ./gradlew
-          ./gradlew bootBuildImage buildWebappDockerImage -PskipJooq=true --no-daemon
+          # 构建 webapp 镜像
+          docker build -t "$DOCKER_ORG/abacusflow-webapp:$VERSION" \
+          -t "$DOCKER_ORG/abacusflow-webapp:latest" \
+          -f abacusflow-webapp/Dockerfile abacusflow-webapp
+      
+          # 构建 server 镜像
+          docker build -t "$DOCKER_ORG/abacusflow-server:$VERSION" \
+          -t "$DOCKER_ORG/abacusflow-server:latest" \
+          -f abacusflow-server/Dockerfile abacusflow-server
 
       # docker login
       - name: Login to Docker Hub
