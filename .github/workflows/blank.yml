@@ -22,8 +22,22 @@ jobs:
     container:
       image: ghcr.io/abacusflow/abacusflow-ci:latest
       options: --user root
-      volumes:
-        - ${{ github.workspace }}/script/initdb:/etc/initdb:ro
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        ports:
+          - 5432:5432
+        volumes:
+          - ${{ github.workspace }}/script/initdb:/docker-entrypoint-initdb.d:ro
+        options: >-
+          --health-cmd "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
