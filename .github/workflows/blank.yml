@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/abacusflow/abacusflow-ci:latest
+      options: --user root
       volumes:
         - ${{ github.workspace }}/script/initdb:/etc/initdb:ro
     steps:

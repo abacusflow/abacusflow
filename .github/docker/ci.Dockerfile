@@ -1,5 +1,3 @@
-# ci.Dockerfile
-
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -29,10 +27,11 @@ RUN /etc/init.d/postgresql start && \
     psql --command "CREATE USER ${POSTGRES_USER} WITH SUPERUSER PASSWORD '${POSTGRES_PASSWORD}';" && \
     createdb -O ${POSTGRES_USER} ${POSTGRES_DB}
 
-# 添加 PostgreSQL 启动脚本
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
 WORKDIR /app
 USER root
+
+# 添加 PostgreSQL 启动脚本
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
