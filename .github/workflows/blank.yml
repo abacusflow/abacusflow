@@ -100,6 +100,11 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: List files for debugging
+        run: |
+          ls -la
+          ls -la abacusflow-webapp/
+
       - name: Build Docker images
         run: |
           # 构建 webapp 镜像
