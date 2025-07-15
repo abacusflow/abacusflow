@@ -29,14 +29,10 @@ RUN /etc/init.d/postgresql start && \
     psql --command "CREATE USER ${POSTGRES_USER} WITH SUPERUSER PASSWORD '${POSTGRES_PASSWORD}';" && \
     createdb -O ${POSTGRES_USER} ${POSTGRES_DB}
 
-# 切回普通用户用于构建
-USER root
-RUN useradd -m ci && mkdir /app && chown -R ci:ci /app
-WORKDIR /app
-
 # 添加 PostgreSQL 启动脚本
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-USER ci
+WORKDIR /app
+USER root
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
