@@ -1,6 +1,5 @@
 plugins {
     id("abacusflow-base")
-//    id("co.uzzu.dotenv.gradle") version "4.0.0"
 }
 
 group = "org.bruwave.abacusflow"
@@ -17,4 +16,14 @@ tasks.register<Exec>("buildWebsiteDockerImage") {
         "-t", "abacusflow-website:latest",
         "."
     )
+}
+
+tasks.named("build") {
+    dependsOn(":abacusflow-webapp:buildFrontend")
+}
+
+tasks.named("clean") {
+    doLast {
+        delete("abacusflow-webapp/src/core/openapi")
+    }
 }

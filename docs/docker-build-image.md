@@ -19,3 +19,5 @@ docker compose -f docker-compose-prod.yml up -d --remove-orphans
 
 docker compose  up -d
 
+docker build -f ci.Dockerfile -t abacusflow .
+docker push ghcr.io/abacusflow/abacusflow-ci:latest

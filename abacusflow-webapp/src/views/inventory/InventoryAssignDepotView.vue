@@ -28,7 +28,7 @@ import { inject, reactive, ref, watchEffect } from "vue";
 import { type FormInstance, message } from "ant-design-vue";
 import { DepotApi, type InventoryApi } from "@/core/openapi";
 import { useMutation, useQuery } from "@tanstack/vue-query";
-import type { AssignDepotRequest } from "@/core/openapi/models/assign-depot-request";
+import type { AssignInventoryUnitDepotRequest } from "@/core/openapi";
 
 const formRef = ref<FormInstance>();
 
@@ -39,7 +39,7 @@ const depotApi = inject("depotApi") as DepotApi;
 
 const emit = defineEmits(["success", "close", "update:visible"]);
 
-const formState = reactive<Partial<AssignDepotRequest>>({
+const formState = reactive<Partial<AssignInventoryUnitDepotRequest>>({
   depotId: undefined
 });
 
@@ -67,7 +67,7 @@ const { data: depots } = useQuery({
 });
 
 const { mutate: assignDepot } = useMutation({
-  mutationFn: ({ depotId }: AssignDepotRequest) =>
+  mutationFn: ({ depotId }: AssignInventoryUnitDepotRequest) =>
     inventoryApi.assignInventoryUnitDepot({
       id: props.inventoryUnitId,
       assignInventoryUnitDepotRequest: { depotId }
@@ -102,7 +102,9 @@ const handleOk = () => {
   formRef.value
     ?.validate()
     .then(() => {
-      assignDepot(formRef.value?.getFieldsValue() as { id: number } & AssignDepotRequest);
+      assignDepot(
+        formRef.value?.getFieldsValue() as { id: number } & AssignInventoryUnitDepotRequest
+      );
     })
     .catch((error) => {
       console.error("表单验证失败", error);
