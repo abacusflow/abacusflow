@@ -18,7 +18,13 @@
       </a-flex>
 
       <a-flex justify="flex-start" align="start" style="height: 100%">
-        <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
+        <a-flex vertical>
+          <a-typography-text mark style="margin-bottom: 8px; text-align: center; display: block">
+            未选择分类：导出全部<br />
+            已选择分类：导出所选
+          </a-typography-text>
+          <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
+        </a-flex>
         <a-flex vertical style="flex: 1; padding-left: 16px">
           <a-card :bordered="false">
             <a-form layout="inline" :model="searchForm">
@@ -184,6 +190,7 @@ import {
   type BasicInventory,
   type BasicInventoryUnit,
   ExportInventoryFormatEnum,
+  type ExportInventoryRequest,
   type InventoryApi,
   InventoryUnitType,
   type ListBasicInventoriesPageRequest,
@@ -328,8 +335,8 @@ const {
 });
 
 const { mutateAsync: fetchExportInventory } = useMutation({
-  mutationFn: (format: ExportInventoryFormatEnum) => {
-    return inventoryApi.exportInventoryRaw({ format });
+  mutationFn: ({ format, productCategoryId }: ExportInventoryRequest) => {
+    return inventoryApi.exportInventoryRaw({ format, productCategoryId });
   }
 });
 
@@ -345,7 +352,11 @@ function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
 }
 
 function handleExportInventories(format: ExportInventoryFormatEnum) {
-  fetchExportInventory(format)
+  const curProductCategoryId = productCategoryId;
+  fetchExportInventory({
+    format,
+    productCategoryId: curProductCategoryId.value
+  })
     .then((response) => {
       // 先获取 headers 信息
       const contentDisposition = response.raw.headers.get("Content-Disposition") || "";
@@ -382,7 +393,11 @@ function handleExportInventories(format: ExportInventoryFormatEnum) {
 }
 
 function handlePrintInventories() {
-  fetchExportInventory("pdf")
+  const curProductCategoryId = productCategoryId;
+  fetchExportInventory({
+    format: "pdf",
+    productCategoryId: curProductCategoryId.value
+  })
     .then((response) => response.value())
     .then((blob) => {
       if (!(blob instanceof Blob)) {

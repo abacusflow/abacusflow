@@ -74,19 +74,19 @@ class InventoryController(
         return ResponseEntity.ok().build()
     }
 
-    override fun exportInventory(format: String): ResponseEntity<Resource> {
+    override fun exportInventory(format: String, productCategoryId: Long?): ResponseEntity<Resource> {
         val (data, mediaType, extension) =
             when (format.uppercase()) {
                 "PDF" ->
                     Triple(
-                        inventoryReportService.exportInventoryAsPdf(),
+                        inventoryReportService.exportInventoryAsPdf(productCategoryId),
                         MediaType.APPLICATION_PDF,
                         "pdf",
                     )
 
                 "EXCEL" ->
                     Triple(
-                        inventoryReportService.exportInventoryAsExcel(),
+                        inventoryReportService.exportInventoryAsExcel(productCategoryId),
                         MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
                         "xlsx",
                     )

@@ -33,8 +33,6 @@ jobs:
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
-        volumes:
-          - ${{ github.workspace }}/script/initdb:/docker-entrypoint-initdb.d:ro
         options: >-
           --health-cmd "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
           --health-interval 10s

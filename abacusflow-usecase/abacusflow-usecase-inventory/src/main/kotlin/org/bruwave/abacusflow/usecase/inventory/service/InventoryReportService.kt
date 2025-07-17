@@ -1,7 +1,7 @@
 package org.bruwave.abacusflow.usecase.inventory.service
 
 interface InventoryReportService {
-    fun exportInventoryAsPdf(): ByteArray
+    fun exportInventoryAsPdf(productCategoryId: Long?): ByteArray
 
-    fun exportInventoryAsExcel(): ByteArray
+    fun exportInventoryAsExcel(productCategoryId: Long?): ByteArray
 }

@@ -26,16 +26,16 @@ import java.time.format.DateTimeFormatter
 class InventoryReportServiceImpl(
     private val inventoryUnitQueryService: InventoryUnitQueryService,
 ) : InventoryReportService {
-    override fun exportInventoryAsPdf(): ByteArray {
+    override fun exportInventoryAsPdf(productCategoryId: Long?): ByteArray {
         // TODO 批量查询防止oom
-        val units = inventoryUnitQueryService.listInventoryUnitsForExport()
+        val units = inventoryUnitQueryService.listInventoryUnitsForExport(productCategoryId)
         require(units.isNotEmpty()) { "导出数据为空，无法生成 PDF" }
         return generatePdf(units)
     }
 
-    override fun exportInventoryAsExcel(): ByteArray {
+    override fun exportInventoryAsExcel(productCategoryId: Long?): ByteArray {
         // TODO 批量查询防止oom
-        val units = inventoryUnitQueryService.listInventoryUnitsForExport()
+        val units = inventoryUnitQueryService.listInventoryUnitsForExport(productCategoryId)
         require(units.isNotEmpty()) { "导出数据为空，无法生成 PDF" }
         return generateExcel(units)
     }

@@ -929,6 +929,12 @@ paths:
             enum:
               - excel
               - pdf
+        - name: productCategoryId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         "200":
           description: 导出的库存文件

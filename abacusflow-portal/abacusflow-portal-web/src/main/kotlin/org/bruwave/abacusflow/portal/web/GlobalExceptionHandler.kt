@@ -1,51 +1,57 @@
 package org.bruwave.abacusflow.portal.web
 
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.ConstraintViolationException
+import org.bruwave.abacusflow.portal.web.model.ErrorVO
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-
-sealed class ControllerException(
-    msg: String,
-    val code: Int,
-) : Exception(msg)
-
-class NotFoundException(
-    msg: String,
-    code: Int = HttpStatus.NOT_FOUND.value(),
-) : ControllerException(msg, code)
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-    //    // 处理自定义业务异常
-//    @ExceptionHandler(NotFoundException::class)
-//    fun handleBusinessException(
-//        ex: ApiException,
-//        request: HttpServletRequest,
-//        response: HttpServletResponse
-//    ): Unit {
-//        response.sendError(ex.code, ex.message)
-//    }
-//
-//    // 处理参数校验异常（比如 @Valid 校验失败）
-//    @ExceptionHandler(MethodArgumentNotValidException::class)
-//    fun handleValidationException(
-//        ex: MethodArgumentNotValidException,
-//        request: HttpServletRequest
-//    ): ResponseEntity<ErrorVO> {
-//        val errorMsg = ex.bindingResult.fieldErrors.joinToString("; ") {
-//            "${it.field}：${it.defaultMessage}"
-//        }
-//
-//        return ResponseEntity.badRequest().body(ErrorVO(400, "参数校验错误：$errorMsg"))
-//    }
+    // 处理参数校验异常（比如 @Valid 校验失败）
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationException(
+        ex: MethodArgumentNotValidException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorVO> {
+        val errorMsg = ex.bindingResult.fieldErrors.joinToString("; ") {
+            "${it.field}：${it.defaultMessage}"
+        }
 
-//    // 处理其他未捕获的异常
-//    @ExceptionHandler(Exception::class)
-//    fun handleGenericException(
-//        ex: Exception,
-//        request: HttpServletRequest
-//    ): ResponseEntity<ErrorVO> {
-//        ex.printStackTrace()  // 记录日志或上报
-//
-//        return ResponseEntity.internalServerError().body(ErrorVO(500, "服务器内部错误：${ex.message ?: "未知异常"}"))
-//    }
+        return ResponseEntity.badRequest().body(ErrorVO(400, "参数校验错误：$errorMsg"))
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    fun handleDataIntegrity(ex: DataIntegrityViolationException): ResponseEntity<ErrorVO> {
+        val rootMsg = ex.rootCause?.message ?: "违反数据完整性约束"
+        val match = DUPLICATE_KEY_REGEX.find(rootMsg)
+
+        val userFriendlyMsg = if (match != null) {
+            val value = match.groupValues[1]
+            "操作失败: 值 `$value` 已存在!"
+        } else {
+            "数据提交失败，请检查输入的数据是否符合要求。"
+        }
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+            ErrorVO(409, userFriendlyMsg)
+        )
+    }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArg(ex: IllegalArgumentException): ResponseEntity<ErrorVO> =
+        ResponseEntity.badRequest().body(ErrorVO(400, "参数非法：${ex.message}"))
+
+    @ExceptionHandler(IllegalStateException::class)
+    fun handleIllegalState(ex: IllegalStateException): ResponseEntity<ErrorVO> =
+        ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorVO(409, "状态异常：${ex.message}"))
+
+
+    companion object {
+        val DUPLICATE_KEY_REGEX = Regex("""Key \(.+?\)=\((.+?)\) already exists""")
+    }
 }
