@@ -38,8 +38,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    outputs:
-      tag_version: ${{ steps.extract_version.outputs.TAG_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,22 +45,10 @@ jobs:
       - name: Init DB
         uses: ./.github/actions/init-db
 
-      - name: Extract Version
-        id: extract_version
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          # 验证标签格式
-          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Tag $GITHUB_REF_NAME 不符合版本规范，应形如 v1.0.0"
-            exit 1
-          fi
-          export TAG_VERSION=${GITHUB_REF_NAME#v}
-          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_OUTPUT
-
       - name: Gradle build
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build --no-daemon
+          ./gradlew clean build -PnoVersion --no-daemon
           ./gradlew test --no-daemon
 
       # 保存完整的构建输出和 Gradle 缓存
@@ -81,12 +67,11 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: build
     env:
-      TAG_VERSION: ${{ needs.build.outputs.tag_version }}
       DOCKER_REGISTRY: docker.io
       DOCKER_ORG: brucewang5638
       DOCKER_USER: brucewang5638@gmail.com
+    needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout code
@@ -98,10 +83,19 @@ jobs:
           name: build-artifacts
           path: .
 
-      - name: List files for debugging
+      - name: Extract version from tag
+        id: extract_version
         run: |
-          ls -la
-          ls -la abacusflow-webapp/
+          TAG_NAME="${{ github.ref_name }}"
+          
+          # 验证标签格式
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag $TAG 不符合版本规范，应形如 v1.0.0"
+            exit 1
+          fi
+          
+          VERSION="${TAG#v}"
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Build Docker images
         run: |
@@ -109,7 +103,7 @@ jobs:
           docker build -t "$DOCKER_ORG/abacusflow-webapp:$TAG_VERSION" \
           -t "$DOCKER_ORG/abacusflow-webapp:latest" \
           -f abacusflow-webapp/Dockerfile abacusflow-webapp
-      
+          
           # 构建 server 镜像
           docker build \
           --build-arg VERSION=$TAG_VERSION \
