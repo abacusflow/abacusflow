@@ -94,7 +94,7 @@ jobs:
             exit 1
           fi
           
-          VERSION="${TAG#v}"
+          TAG_VERSION="${TAG#v}"
           echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Build Docker images
