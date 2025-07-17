@@ -47,11 +47,11 @@
 
           <!-- 用户下拉菜单 -->
           <a-dropdown placement="bottomRight">
-            <a-space size="small" align="center">
-              <user-outlined />
-              <span style="font-size: 14px">admin</span>
+            <span>
+              <user-outlined style="margin-right: 4px" />
+              <span style="font-size: 14px; margin-right: 4px">超级管理员</span>
               <down-outlined style="font-size: 12px" />
-            </a-space>
+            </span>
             <template #overlay>
               <a-menu>
                 <a-menu-item key="account">
@@ -255,8 +255,7 @@ const handleMenuSelect = ({ key }: { key: string }) => {
 
 /* 📄 内容区域样式（padding-top 避让 header） */
 .layout-content {
-  margin: 24px 16px 0;
-  padding: 72px 24px 24px; /* 64px header 高度 + 8px 间距更合适 */
+  padding: 64px 24px 24px; /* 64px header 高度 */
   background: #fff;
   min-height: 280px;
   overflow: initial;
