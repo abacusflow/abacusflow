@@ -1,7 +1,6 @@
 package org.bruwave.abacusflow.portal.web
 
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.validation.ConstraintViolationException
 import org.bruwave.abacusflow.portal.web.model.ErrorVO
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
@@ -16,11 +15,12 @@ class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationException(
         ex: MethodArgumentNotValidException,
-        request: HttpServletRequest
+        request: HttpServletRequest,
     ): ResponseEntity<ErrorVO> {
-        val errorMsg = ex.bindingResult.fieldErrors.joinToString("; ") {
-            "${it.field}：${it.defaultMessage}"
-        }
+        val errorMsg =
+            ex.bindingResult.fieldErrors.joinToString("; ") {
+                "${it.field}：${it.defaultMessage}"
+            }
 
         return ResponseEntity.badRequest().body(ErrorVO(400, "参数校验错误：$errorMsg"))
     }
@@ -30,15 +30,16 @@ class GlobalExceptionHandler {
         val rootMsg = ex.rootCause?.message ?: "违反数据完整性约束"
         val match = DUPLICATE_KEY_REGEX.find(rootMsg)
 
-        val userFriendlyMsg = if (match != null) {
-            val value = match.groupValues[1]
-            "操作失败: 值 `$value` 已存在!"
-        } else {
-            "数据提交失败，请检查输入的数据是否符合要求。"
-        }
+        val userFriendlyMsg =
+            if (match != null) {
+                val value = match.groupValues[1]
+                "操作失败: 值 `$value` 已存在!"
+            } else {
+                "数据提交失败，请检查输入的数据是否符合要求。"
+            }
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
-            ErrorVO(409, userFriendlyMsg)
+            ErrorVO(409, userFriendlyMsg),
         )
     }
 
@@ -49,7 +50,6 @@ class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException::class)
     fun handleIllegalState(ex: IllegalStateException): ResponseEntity<ErrorVO> =
         ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorVO(409, "状态异常：${ex.message}"))
-
 
     companion object {
         val DUPLICATE_KEY_REGEX = Regex("""Key \(.+?\)=\((.+?)\) already exists""")

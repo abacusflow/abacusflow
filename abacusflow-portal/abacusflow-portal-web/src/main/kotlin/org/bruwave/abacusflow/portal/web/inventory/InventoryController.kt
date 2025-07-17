@@ -74,7 +74,10 @@ class InventoryController(
         return ResponseEntity.ok().build()
     }
 
-    override fun exportInventory(format: String, productCategoryId: Long?): ResponseEntity<Resource> {
+    override fun exportInventory(
+        format: String,
+        productCategoryId: Long?,
+    ): ResponseEntity<Resource> {
         val (data, mediaType, extension) =
             when (format.uppercase()) {
                 "PDF" ->
