@@ -191,7 +191,22 @@ class InventoryUnitQueryServiceImpl(
         }
     }
 
-    override fun listInventoryUnitsForExport(): List<InventoryUnitForExportTO> {
+    override fun listInventoryUnitsForExport(productCategoryId: Long?): List<InventoryUnitForExportTO> {
+
+        val condition =
+            buildList {
+                add(INVENTORY_UNIT.QUANTITY.gt(0))
+
+                productCategoryId?.let { catId ->
+                    val categoryIds = findAllChildrenCategories(catId)
+                    if (categoryIds.isNotEmpty()) {
+                        add(PRODUCT.CATEGORY_ID.`in`(categoryIds))
+                    } else {
+                        add(DSL.noCondition())
+                    }
+                }
+            }
+
         // 使用 JOOQ 执行联接查询
         val inventoryUnits =
             jooqDsl
@@ -222,7 +237,7 @@ class InventoryUnitQueryServiceImpl(
                     DSL.condition("{0} = ANY({1})", SALE_ORDER.ID, INVENTORY_UNIT.SALE_ORDER_IDS),
                 )
                 .leftJoin(DEPOT).on(INVENTORY_UNIT.DEPOT_ID.eq(DEPOT.ID))
-                .where(INVENTORY_UNIT.QUANTITY.gt(0)) // ✅ 新增过滤条件
+                .where(condition)
                 .groupBy(
                     INVENTORY_UNIT.UNIT_TYPE,
                     INVENTORY_UNIT.BATCH_CODE,

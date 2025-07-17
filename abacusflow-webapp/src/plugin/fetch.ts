@@ -9,6 +9,7 @@ import {
   TransactionApi,
   UserApi
 } from "../core/openapi";
+import { notification } from "ant-design-vue";
 
 export default {
   install: (app: App) => {
@@ -45,13 +46,24 @@ const authMiddleware: Middleware = {
       }
     };
   },
-  post: async (context) => {
-    if (context.response.status === 401) {
-      const redirectUrl = document.location.pathname;
-      window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
-      return context.response;
+  post: async ({ response }) => {
+    if (!response.ok) {
+      if (response.status === 401) {
+        const redirectUrl = document.location.pathname;
+        window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
+        return response;
+      }
+
+      const error = await response.json();
+      // message.error(error.message || "接口异常");
+      notification.error({
+        message: "请求出错",
+        description: error.message || "接口异常",
+        duration: 30
+      });
     }
-    return;
+
+    return response;
   },
 
   onError: async (context) => {

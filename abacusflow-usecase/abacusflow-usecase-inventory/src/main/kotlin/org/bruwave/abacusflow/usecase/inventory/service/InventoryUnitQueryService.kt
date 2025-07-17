@@ -19,7 +19,7 @@ interface InventoryUnitQueryService {
 
     fun listInventoryUnits(): List<InventoryUnitTO>
 
-    fun listInventoryUnitsForExport(): List<InventoryUnitForExportTO>
+    fun listInventoryUnitsForExport(productCategoryId: Long?): List<InventoryUnitForExportTO>
 
     fun listInventoryUnitsWithTitle(statusList: List<String>? = null): List<InventoryUnitWithTitleTO>
 

@@ -8,8 +8,10 @@
             <a-button type="primary"> 导出库存 <DownOutlined /> </a-button>
             <template #overlay>
               <a-menu @click="({ key }: any) => handleExportInventories(key)">
-                <a-menu-item key="excel">导出 Excel</a-menu-item>
-                <a-menu-item key="pdf">导出 PDF</a-menu-item>
+                <a-menu-item key="current-excel">导出 当前类别 Excel</a-menu-item>
+                <a-menu-item key="current-pdf">导出 当前类别 PDF</a-menu-item>
+                <a-menu-item key="all-excel">导出 全部 Excel</a-menu-item>
+                <a-menu-item key="all-pdf">导出 全部 PDF</a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -344,7 +346,11 @@ function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
   showAssignDepot.value = true;
 }
 
-function handleExportInventories(format: ExportInventoryFormatEnum) {
+function handleExportInventories(key: "current-excel" | "current-pdf" | "all-excel" | "all-pdf") {
+  const [scopeStr, formatStr] = key.split("-");
+  const format = formatStr as ExportInventoryFormatEnum;
+  const scope = scopeStr;
+
   fetchExportInventory(format)
     .then((response) => {
       // 先获取 headers 信息
