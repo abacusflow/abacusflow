@@ -4,8 +4,6 @@ plugins {
 }
 
 group = "org.bruwave.abacusflow"
-version = libs.versions.abacusflow.get()
-
 
 tasks.register<Exec>("buildWebsiteDockerImage") {
     group = "build"
@@ -34,12 +32,3 @@ tasks.register("installGitHooks") {
     }
 }
 
-tasks.named("build") {
-    dependsOn(":abacusflow-webapp:buildFrontend")
-}
-
-tasks.named("clean") {
-    doLast {
-        delete("abacusflow-webapp/src/core/openapi")
-    }
-}

@@ -8,4 +8,3 @@ dependencies {
     implementation(project(":abacusflow-portal:abacusflow-portal-web"))
 }
 
-//apply<DockerBuildPlugin>()
