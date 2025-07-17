@@ -192,7 +192,6 @@ class InventoryUnitQueryServiceImpl(
     }
 
     override fun listInventoryUnitsForExport(productCategoryId: Long?): List<InventoryUnitForExportTO> {
-
         val condition =
             buildList {
                 add(INVENTORY_UNIT.QUANTITY.gt(0))

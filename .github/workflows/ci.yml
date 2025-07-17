@@ -5,9 +5,9 @@ name: CI
 on:
   push:
     branches: [ "master" ]
+    tags: [ "v*.*.*" ]
   pull_request:
     branches: [ "master" ]
-    tags: [ "v*.*.*" ]
 
   workflow_dispatch:
 
@@ -48,7 +48,7 @@ jobs:
       - name: Gradle build
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build --no-daemon
+          ./gradlew clean build -PnoVersion --no-daemon
           ./gradlew test --no-daemon
 
       # 保存完整的构建输出和 Gradle 缓存
@@ -86,7 +86,7 @@ jobs:
       - name: Extract version from tag
         id: extract_version
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
+          TAG="${{ github.ref_name }}"
           
           # 验证标签格式
           if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -94,26 +94,20 @@ jobs:
             exit 1
           fi
           
-          VERSION="${TAG#v}"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: List files for debugging
-        run: |
-          ls -la
-          ls -la abacusflow-webapp/
+          TAG_VERSION="${TAG#v}"
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
 
       - name: Build Docker images
         run: |
           # 构建 webapp 镜像
-          docker build -t "$DOCKER_ORG/abacusflow-webapp:$VERSION" \
+          docker build -t "$DOCKER_ORG/abacusflow-webapp:$TAG_VERSION" \
           -t "$DOCKER_ORG/abacusflow-webapp:latest" \
           -f abacusflow-webapp/Dockerfile abacusflow-webapp
-      
+          
           # 构建 server 镜像
           docker build \
-          --build-arg VERSION=$VERSION \
-          -t "$DOCKER_ORG/abacusflow-server:$VERSION" \
+          --build-arg VERSION=$TAG_VERSION \
+          -t "$DOCKER_ORG/abacusflow-server:$TAG_VERSION" \
           -t "$DOCKER_ORG/abacusflow-server:latest" \
           -f abacusflow-server/Dockerfile abacusflow-server
 
@@ -128,10 +122,10 @@ jobs:
       - name: Push Docker images
         run: |
           # Webapp 镜像
-          docker push "$DOCKER_ORG/abacusflow-webapp:$VERSION"
+          docker push "$DOCKER_ORG/abacusflow-webapp:$TAG_VERSION"
           docker push "$DOCKER_ORG/abacusflow-webapp:latest"
           
           # Server 镜像
-          docker push "$DOCKER_ORG/abacusflow-server:$VERSION"
+          docker push "$DOCKER_ORG/abacusflow-server:$TAG_VERSION"
           docker push "$DOCKER_ORG/abacusflow-server:latest"
 

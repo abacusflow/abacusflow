@@ -13,7 +13,7 @@ node {
 }
 
 tasks.register<NpmTask>("installDependencies") {
-    group = "install"
+    group = "npm"
     description = "安装依赖"
     args.set(listOf("ci"))
     inputs.files("package.json", "package-lock.json")
@@ -40,7 +40,7 @@ tasks.register<NpmTask>("openapiGenerateTs") {
     args.set(listOf("run", "generate"))
 }
 
-tasks.register<NpmTask>("buildFrontend") {
+tasks.register<NpmTask>("build") {
     group = "build"
     description = "前端打包构建"
     dependsOn("installDependencies", "lint-ts", "openapiGenerateTs")
@@ -59,7 +59,7 @@ tasks.register<NpmTask>("buildFrontend") {
 tasks.register<Exec>("buildWebappDockerImage") {
     group = "build"
     description = "构建前端 Docker 镜像"
-    dependsOn("buildFrontend") // 保证前端构建先完成
+    dependsOn("build") // 保证前端构建先完成
 
     workingDir = projectDir // Dockerfile 所在目录
     commandLine = listOf(
@@ -67,4 +67,11 @@ tasks.register<Exec>("buildWebappDockerImage") {
         "-t", "abacusflow-webapp:${project.version}",
         "."
     )
+}
+
+tasks.register<Delete>("clean") {
+    group = "build"
+    description = "清除前端构建产物"
+
+    delete("build", "dist", "abacusflow-webapp/src/core/openapi")
 }

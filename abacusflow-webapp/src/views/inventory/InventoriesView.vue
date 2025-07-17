@@ -20,8 +20,7 @@
       <a-flex justify="flex-start" align="start" style="height: 100%">
         <a-flex vertical>
           <a-typography-text mark style="margin-bottom: 8px; text-align: center; display: block">
-            未选择分类：导出全部<br />
-            已选择分类：导出所选
+            打印/导出依据所选分类
           </a-typography-text>
           <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
         </a-flex>
