@@ -8,10 +8,8 @@
             <a-button type="primary"> 导出库存 <DownOutlined /> </a-button>
             <template #overlay>
               <a-menu @click="({ key }: any) => handleExportInventories(key)">
-                <a-menu-item key="current-excel">导出 当前类别 Excel</a-menu-item>
-                <a-menu-item key="current-pdf">导出 当前类别 PDF</a-menu-item>
-                <a-menu-item key="all-excel">导出 全部 Excel</a-menu-item>
-                <a-menu-item key="all-pdf">导出 全部 PDF</a-menu-item>
+                <a-menu-item key="excel">导出 Excel</a-menu-item>
+                <a-menu-item key="pdf">导出 PDF</a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -20,7 +18,13 @@
       </a-flex>
 
       <a-flex justify="flex-start" align="start" style="height: 100%">
-        <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
+        <a-flex vertical>
+          <a-typography-text mark style="margin-bottom: 8px; text-align: center; display: block">
+            未选择分类：导出全部<br />
+            已选择分类：导出所选
+          </a-typography-text>
+          <ProductCategoryTreeComponent @categorySelected="onCategorySelected" />
+        </a-flex>
         <a-flex vertical style="flex: 1; padding-left: 16px">
           <a-card :bordered="false">
             <a-form layout="inline" :model="searchForm">
@@ -186,6 +190,7 @@ import {
   type BasicInventory,
   type BasicInventoryUnit,
   ExportInventoryFormatEnum,
+  type ExportInventoryRequest,
   type InventoryApi,
   InventoryUnitType,
   type ListBasicInventoriesPageRequest,
@@ -330,8 +335,8 @@ const {
 });
 
 const { mutateAsync: fetchExportInventory } = useMutation({
-  mutationFn: (format: ExportInventoryFormatEnum) => {
-    return inventoryApi.exportInventoryRaw({ format });
+  mutationFn: ({ format, productCategoryId }: ExportInventoryRequest) => {
+    return inventoryApi.exportInventoryRaw({ format, productCategoryId });
   }
 });
 
@@ -346,12 +351,12 @@ function handleAssignDepot(inventoryUnit: BasicInventoryUnit) {
   showAssignDepot.value = true;
 }
 
-function handleExportInventories(key: "current-excel" | "current-pdf" | "all-excel" | "all-pdf") {
-  const [scopeStr, formatStr] = key.split("-");
-  const format = formatStr as ExportInventoryFormatEnum;
-  const scope = scopeStr;
-
-  fetchExportInventory(format)
+function handleExportInventories(format: ExportInventoryFormatEnum) {
+  const curProductCategoryId = productCategoryId;
+  fetchExportInventory({
+    format,
+    productCategoryId: curProductCategoryId.value
+  })
     .then((response) => {
       // 先获取 headers 信息
       const contentDisposition = response.raw.headers.get("Content-Disposition") || "";
@@ -388,7 +393,11 @@ function handleExportInventories(key: "current-excel" | "current-pdf" | "all-exc
 }
 
 function handlePrintInventories() {
-  fetchExportInventory("pdf")
+  const curProductCategoryId = productCategoryId;
+  fetchExportInventory({
+    format: "pdf",
+    productCategoryId: curProductCategoryId.value
+  })
     .then((response) => response.value())
     .then((blob) => {
       if (!(blob instanceof Blob)) {
