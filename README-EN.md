@@ -53,11 +53,17 @@ AbacusFlow provides a range of built-in modules covering common PSI scenarios:
 
 <table>
     <tr>
-        <td><img src="./img/demo/inventory.png"/></td>
-        <td><img src="./img/demo/product.png"/></td>
+        <td><img src="./static/demo/dashboard.png"/></td>
+        <td></td>
+    </tr>
+        <td><img src="./static/demo/inventory.png"/></td>
+        <td><img src="./static/demo/product.png"/></td>
     </tr>
     <tr>
-        <td><img src="./img/demo/purchseorder.png"/></td>
-        <td><img src="./img/demo/saleorder.png"/></td>
+        <td><img src="./static/demo/purchseorder.png"/></td>
+        <td><img src="./static/demo/saleorder.png"/></td>
+    </tr>
+        <td><img src="./static/demo/customer.png"/></td>
+        <td><img src="./static/demo/supplier.png"/></td>
     </tr>
 </table>
