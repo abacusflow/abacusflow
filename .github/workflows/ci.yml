@@ -13,13 +13,7 @@ on:
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  POSTGRES_HOST: postgres
-  POSTGRES_PORT: 5432
-  POSTGRES_USER: abacusflow
-  POSTGRES_PASSWORD: abacusflow
-  POSTGRES_DB: abacusflow
   REGISTRY: ghcr.io
-  REGISTRY_ORG: ${{ github.repository_owner  }}
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
@@ -29,8 +23,12 @@ jobs:
       contents: read
       packages: read
     container:
-      image: ${{ env.REGISTRY }}/${{ env.REGISTRY_ORG }}/infra-ci:latest
+      image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/infra-ci:latest
       options: --user root
+    env:
+      POSTGRES_USER: abacusflow
+      POSTGRES_PASSWORD: abacusflow
+      POSTGRES_DB: abacusflow
     services:
       postgres:
         image: postgres:15
