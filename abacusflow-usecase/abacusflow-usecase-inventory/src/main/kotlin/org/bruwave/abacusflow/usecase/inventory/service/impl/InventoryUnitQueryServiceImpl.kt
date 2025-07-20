@@ -224,6 +224,7 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY.PRODUCT_ID,
                     INVENTORY_UNIT.STATUS,
                     PRODUCT.NAME,
+                    PRODUCT.SPECIFICATION,
                     PURCHASE_ORDER.NO,
                     DSL.arrayAgg(SALE_ORDER.NO).`as`("sale_order_nos"),
                 )
@@ -252,6 +253,7 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY_UNIT.STATUS,
                     INVENTORY.PRODUCT_ID,
                     PRODUCT.NAME,
+                    PRODUCT.SPECIFICATION,
                     PURCHASE_ORDER.NO,
                     INVENTORY_UNIT.CREATED_AT,
                 )
@@ -282,6 +284,7 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY_UNIT.BATCH_CODE,
                     INVENTORY_UNIT.SERIAL_NUMBER,
                     PRODUCT.NAME,
+                    PRODUCT.SPECIFICATION,
                     INVENTORY_UNIT.CREATED_AT,
                 )
                 .from(INVENTORY_UNIT)
@@ -309,8 +312,12 @@ class InventoryUnitQueryServiceImpl(
 
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH ->
+                    "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}" +
+                        "-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE ->
+                    "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}" +
+                        "-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         val saleOrderNos: List<UUID> =
             this.get("sale_order_nos", Array<UUID>::class.java)
@@ -385,8 +392,12 @@ class InventoryUnitQueryServiceImpl(
 
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH ->
+                    "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}" +
+                        "-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE ->
+                    "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}" +
+                        "-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         val saleOrderNos: List<UUID> =
             this.get("sale_order_nos", Array<UUID>::class.java)
