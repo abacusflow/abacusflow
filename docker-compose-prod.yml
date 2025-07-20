@@ -2,18 +2,6 @@ include:
   - path: ./docker-compose-base.yml
 
 services:
-  abacusflow-website:
-    container_name: abacusflow--website
-    image: brucewang5638/abacusflow-website:${ABACUSFLOW_WEBSITE_VERSION}
-    networks:
-      - abacusflow-network
-    volumes:
-      - /opt/acme-https/www:/var/www/certbot:ro
-      - /opt/acme-https/letsencrypt:/etc/letsencrypt:ro
-    ports:
-      - "80:80"
-      - "443:443"
-
   abacusflow-server:
     container_name: abacusflow-server
     image: brucewang5638/abacusflow-server:${ABACUSFLOW_SERVER_VERSION}
