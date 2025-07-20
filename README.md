@@ -48,17 +48,17 @@ AbacusFlow 内置模块涵盖典型的进销存场景：
 
 <table>
     <tr>
-        <td><img src="./static/demo/dashboard.png"/></td>
+        <td><img src="./static/img/demo/dashboard.png"/></td>
         <td></td>
     </tr>
-        <td><img src="./static/demo/inventory.png"/></td>
-        <td><img src="./static/demo/product.png"/></td>
+        <td><img src="./static/img/demo/inventory.png"/></td>
+        <td><img src="./static/img/demo/product.png"/></td>
     </tr>
     <tr>
-        <td><img src="./static/demo/purchseorder.png"/></td>
-        <td><img src="./static/demo/saleorder.png"/></td>
+        <td><img src="./static/img/demo/purchseorder.png"/></td>
+        <td><img src="./static/img/demo/saleorder.png"/></td>
     </tr>
-        <td><img src="./static/demo/customer.png"/></td>
-        <td><img src="./static/demo/supplier.png"/></td>
+        <td><img src="./static/img/demo/customer.png"/></td>
+        <td><img src="./static/img/demo/supplier.png"/></td>
     </tr>
 </table>
