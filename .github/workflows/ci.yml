@@ -26,6 +26,8 @@ jobs:
       image: ghcr.io/${{ github.repository_owner }}/infra-ci:latest
       options: --user root
     env:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
       POSTGRES_USER: abacusflow
       POSTGRES_PASSWORD: abacusflow
       POSTGRES_DB: abacusflow
