@@ -312,8 +312,12 @@ class InventoryUnitQueryServiceImpl(
 
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH ->
+                    "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}" +
+                        "-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE ->
+                    "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}" +
+                        "-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         val saleOrderNos: List<UUID> =
             this.get("sale_order_nos", Array<UUID>::class.java)
@@ -388,8 +392,12 @@ class InventoryUnitQueryServiceImpl(
 
         val title: String =
             when (unitType) {
-                InventoryUnit.UnitType.BATCH -> "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}-${this[INVENTORY_UNIT.BATCH_CODE]}"
-                InventoryUnit.UnitType.INSTANCE -> "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
+                InventoryUnit.UnitType.BATCH ->
+                    "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}" +
+                        "-${this[INVENTORY_UNIT.BATCH_CODE]}"
+                InventoryUnit.UnitType.INSTANCE ->
+                    "${this[PRODUCT.NAME]}-${this[PRODUCT.SPECIFICATION]}" +
+                        "-${this[INVENTORY_UNIT.SERIAL_NUMBER]}"
             }
         val saleOrderNos: List<UUID> =
             this.get("sale_order_nos", Array<UUID>::class.java)
