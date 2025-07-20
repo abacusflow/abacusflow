@@ -111,6 +111,7 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY.PRODUCT_ID,
                     INVENTORY_UNIT.STATUS,
                     PRODUCT.NAME,
+                    PRODUCT.SPECIFICATION,
                     PURCHASE_ORDER.NO,
                     DSL.arrayAgg(SALE_ORDER.NO).`as`("sale_order_nos"),
                 )
@@ -140,6 +141,7 @@ class InventoryUnitQueryServiceImpl(
                     INVENTORY_UNIT.STATUS,
                     INVENTORY.PRODUCT_ID,
                     PRODUCT.NAME,
+                    PRODUCT.SPECIFICATION,
                     PURCHASE_ORDER.NO,
                 )
                 .orderBy(

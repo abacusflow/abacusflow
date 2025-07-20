@@ -13,17 +13,24 @@ on:
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  POSTGRES_HOST: postgres
-  POSTGRES_PORT: 5432
-  POSTGRES_USER: abacusflow
-  POSTGRES_PASSWORD: abacusflow
-  POSTGRES_DB: abacusflow
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     container:
-      image: ghcr.io/abacusflow/abacusflow-ci:latest
+      image: ghcr.io/${{ github.repository_owner }}/infra-ci:latest
       options: --user root
+    env:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: abacusflow
+      POSTGRES_PASSWORD: abacusflow
+      POSTGRES_DB: abacusflow
     services:
       postgres:
         image: postgres:15
@@ -39,7 +46,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Init DB
@@ -51,7 +58,6 @@ jobs:
           ./gradlew clean build -PnoVersion --no-daemon
           ./gradlew test --no-daemon
 
-      # 保存完整的构建输出和 Gradle 缓存
       - name: Upload build artifacts
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
@@ -67,14 +73,14 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_REGISTRY: docker.io
-      DOCKER_ORG: brucewang5638
-      DOCKER_USER: brucewang5638@gmail.com
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Download build artifacts
@@ -83,49 +89,70 @@ jobs:
           name: build-artifacts
           path: .
 
-      - name: Extract version from tag
-        id: extract_version
-        run: |
-          TAG="${{ github.ref_name }}"
-          
-          # 验证标签格式
-          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Tag $TAG 不符合版本规范，应形如 v1.0.0"
-            exit 1
-          fi
-          
-          TAG_VERSION="${TAG#v}"
-          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_ENV
-
-      - name: Build Docker images
-        run: |
-          # 构建 webapp 镜像
-          docker build -t "$DOCKER_ORG/abacusflow-webapp:$TAG_VERSION" \
-          -t "$DOCKER_ORG/abacusflow-webapp:latest" \
-          -f abacusflow-webapp/Dockerfile abacusflow-webapp
-          
-          # 构建 server 镜像
-          docker build \
-          --build-arg VERSION=$TAG_VERSION \
-          -t "$DOCKER_ORG/abacusflow-server:$TAG_VERSION" \
-          -t "$DOCKER_ORG/abacusflow-server:latest" \
-          -f abacusflow-server/Dockerfile abacusflow-server
-
-      # docker login
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      # 安装 cosign 用于镜像签名
+      - name: Install cosign
+        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
         with:
-          registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ env.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          cosign-release: "v2.2.4"
 
-      - name: Push Docker images
-        run: |
-          # Webapp 镜像
-          docker push "$DOCKER_ORG/abacusflow-webapp:$TAG_VERSION"
-          docker push "$DOCKER_ORG/abacusflow-webapp:latest"
-          
-          # Server 镜像
-          docker push "$DOCKER_ORG/abacusflow-server:$TAG_VERSION"
-          docker push "$DOCKER_ORG/abacusflow-server:latest"
+      # 设置 Docker Buildx 支持多平台构建和缓存
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
 
+      # 登录到 GitHub Container Registry
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata for webapp
+        id: meta-webapp
+        uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-webapp
+
+      - name: Extract Docker metadata for server
+        id: meta-server
+        uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server
+
+      - name: Build and push webapp Docker image
+        id: build-and-push-webapp
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+        with:
+          context: ./abacusflow-webapp
+          file: ./abacusflow-webapp/Dockerfile
+          push: true
+          tags: ${{ steps.meta-webapp.outputs.tags }}
+          labels: ${{ steps.meta-webapp.outputs.labels }}
+          cache-from: type=gha,scope=webapp
+          cache-to: type=gha,mode=max,scope=webapp
+          platforms: linux/amd64,linux/arm64
+
+      - name: Build and push server Docker image
+        id: build-and-push-server
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+        with:
+          context: ./abacusflow-server
+          file: ./abacusflow-server/Dockerfile
+          push: true
+          tags: ${{ steps.meta-server.outputs.tags }}
+          labels: ${{ steps.meta-server.outputs.labels }}
+          cache-from: type=gha,scope=server
+          cache-to: type=gha,mode=max,scope=server
+          platforms: linux/amd64,linux/arm64
+
+      - name: Sign webapp Docker image
+        env:
+          TAGS: ${{ steps.meta-webapp.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push-webapp.outputs.digest }}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+      - name: Sign server Docker image
+        env:
+          TAGS: ${{ steps.meta-server.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push-server.outputs.digest }}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
