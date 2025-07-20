@@ -4,6 +4,10 @@ description: Run SQL scripts to initialize DB
 runs:
   using: "composite"
   steps:
+    - name: Install PostgreSQL client
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
     - name: Run initdb scripts
       shell: bash
       run: |
