@@ -46,7 +46,7 @@ jobs:
             set -e
 
             echo "Logging into GitHub Container Registry..."
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}"
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ github.actor }}"
             --password-stdin
   
             export ABACUSFLOW_SERVER_VERSION=${{ github.event.inputs.version }}
