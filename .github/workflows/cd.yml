@@ -2,6 +2,7 @@ name: CD
 
 permissions:
   contents: none
+  packages: read
 
 on:
   workflow_dispatch:
@@ -16,6 +17,10 @@ on:
         description: version
         required: true
         default: "latest"
+
+env:
+  REGISTRY: ghcr.io
+
 jobs:
   deploy:
     # Job名称会动态显示正在部署的环境
@@ -40,6 +45,10 @@ jobs:
           script: |
             set -e
 
+            echo "Logging into GitHub Container Registry..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ github.actor }}"
+            --password-stdin
+  
             export ABACUSFLOW_SERVER_VERSION=${{ github.event.inputs.version }}
             export ABACUSFLOW_WEBAPP_VERSION=${{ github.event.inputs.version }}
 
