@@ -1,5 +1,8 @@
 name: CD
 
+permissions:
+  contents: none
+
 on:
   workflow_dispatch:
     inputs:
