@@ -1,0 +1,49 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "目标部署环境"
+        required: true
+        type: choice
+        options: [ "production", "development" ]
+        default: "production"
+      version:
+        description: "要部署的镜像版本/标签 (例如: v1.2.0)"
+        required: true
+        default: "latest"
+jobs:
+  deploy:
+    # Job名称会动态显示正在部署的环境
+    name: Deploy ${{ github.event.inputs.version }} to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+
+    # 关联到GitHub的环境，可以添加审批等保护规则
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Deploy to Server
+        # 使用一个流行的、可靠的SSH Action
+        uses: appleboy/ssh-action@master
+        with:
+          # 从GitHub Secrets中读取服务器连接信息
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22 # SSH端口，默认为22
+
+          # 在远程服务器上执行的脚本
+          script: |
+            export ABACUSFLOW_SERVER_VERSION=${{ github.event.inputs.version }}
+            export ABACUSFLOW_WEBAPP_VERSION=${{ github.event.inputs.version }}
+
+            # 进入项目部署目录
+            cd /opt/abacusflow/abacusflow/
+
+            echo "Starting deployment of version ${{github.event.inputs.version}} to ${{github.event.inputs.environment }}..."
+
+            docker compose -f docker-compose-prod.yml pull
+            docker compose -f docker-compose-prod.yml up -d --remove-orphans
+
+            echo "Deployment completed successfully."
