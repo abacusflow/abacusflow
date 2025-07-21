@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "目标部署环境"
+        description: environment
         required: true
         type: choice
         options: [ "production", "development" ]
         default: "production"
       version:
-        description: "要部署的镜像版本/标签 (例如: v1.2.0)"
+        description: version
         required: true
         default: "latest"
 jobs:
@@ -31,8 +31,8 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           # 从GitHub Secrets中读取服务器连接信息
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22 # SSH端口，默认为22
 
