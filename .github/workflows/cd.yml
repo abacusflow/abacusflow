@@ -38,6 +38,8 @@ jobs:
 
           # 在远程服务器上执行的脚本
           script: |
+            set -e
+
             export ABACUSFLOW_SERVER_VERSION=${{ github.event.inputs.version }}
             export ABACUSFLOW_WEBAPP_VERSION=${{ github.event.inputs.version }}
 
@@ -46,7 +48,18 @@ jobs:
 
             echo "Starting deployment of version ${{github.event.inputs.version}} to ${{github.event.inputs.environment }}..."
 
-            docker compose -f docker-compose-prod.yml pull
-            docker compose -f docker-compose-prod.yml up -d --remove-orphans
+            # 根据环境选择不同的 docker-compose 文件
+            if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+              echo "Using production compose file..."
+              docker compose -f docker-compose-prod.yml pull
+              docker compose -f docker-compose-prod.yml up -d --remove-orphans
+            elif [ "${{ github.event.inputs.environment }}" = "development" ]; then
+              echo "Using development compose file..."
+              docker compose -f docker-compose-dev.yml pull
+              docker compose -f docker-compose-dev.yml up -d --remove-orphans
+            else
+              echo "Error: Unknown environment '${{ github.event.inputs.environment }}'"
+              exit 1
+            fi
 
             echo "Deployment completed successfully."
