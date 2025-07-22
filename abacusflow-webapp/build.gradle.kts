@@ -1,6 +1,6 @@
 import com.github.gradle.node.npm.task.NpmTask
 
-group = "org.bruwave.abacusflow"
+group = "org.abacusflow"
 version = libs.versions.abacusflow.get()
 
 plugins {

@@ -1,6 +1,6 @@
 val libsFun = versionCatalogs.named("libs")
 
-group = "org.bruwave.abacusflow"
+group = "org.abacusflow"
 version = getEnvOrPropOrDotenv("TAG_VERSION") ?: libsFun.findVersion("abacusflow").orElseThrow(::AssertionError)
 
 plugins {
