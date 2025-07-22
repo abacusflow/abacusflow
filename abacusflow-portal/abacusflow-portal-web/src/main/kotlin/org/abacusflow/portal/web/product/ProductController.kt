@@ -87,11 +87,12 @@ class ProductController(
                 id,
                 UpdateProductInputTO(
                     name = updateProductInputVO.name,
+                    type = updateProductInputVO.type?.name,
+                    barcode = updateProductInputVO.barcode,
+                    specification = updateProductInputVO.specification,
                     categoryId = updateProductInputVO.categoryId,
                     unit = updateProductInputVO.unit?.name,
                     note = updateProductInputVO.note,
-                    type = updateProductInputVO.type?.name,
-                    specification = updateProductInputVO.specification,
                 ),
             )
         return ResponseEntity.ok(

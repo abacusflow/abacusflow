@@ -25,6 +25,14 @@
         </a-select>
       </a-form-item>
 
+      <a-form-item
+        label="条形码"
+        name="barcode"
+        :rules="[{ required: true, message: '请输入产品条形码' }]"
+      >
+        <a-input v-model:value="formState.barcode" />
+      </a-form-item>
+
       <a-form-item label="单位" name="unit" :rules="[{ required: true, message: '请选择单位' }]">
         <a-select v-model:value="formState.unit" placeholder="请选择单位">
           <a-select-option v-for="value in Object.values(ProductUnit)" :key="value" :value="value">
@@ -64,6 +72,7 @@ const emit = defineEmits(["success", "close", "update:visible"]);
 const formState = reactive<Partial<UpdateProductInput>>({
   name: undefined,
   specification: undefined,
+  barcode: undefined,
   categoryId: undefined,
   unit: ProductUnit.Item,
   note: undefined
@@ -87,9 +96,10 @@ const { data: categories } = useQuery({
 // 当查询成功且有数据时，优先使用 API 数据
 watchEffect(() => {
   if (isSuccess.value && fetchedProduct.value) {
-    const { name, specification, categoryId, unit, note } = fetchedProduct.value;
+    const { name, specification, barcode, categoryId, unit, note } = fetchedProduct.value;
     formState.name = name;
     formState.specification = specification;
+    formState.barcode = barcode;
     formState.categoryId = categoryId;
     formState.unit = unit;
     formState.note = note;

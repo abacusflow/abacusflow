@@ -12,6 +12,7 @@ fun ProductTO.toVO(): ProductVO =
         id = id,
         name = name,
         specification = specification,
+        barcode = barcode,
         type = mapProductTypeTOToVO(type),
         unit = mapProductUnitTOToVO(unit),
         note = note,

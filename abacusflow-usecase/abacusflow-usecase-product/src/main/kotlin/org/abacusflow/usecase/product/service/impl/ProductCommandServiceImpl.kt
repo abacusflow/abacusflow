@@ -52,9 +52,10 @@ class ProductCommandServiceImpl(
         product.apply {
             updateBasicInfo(
                 newName = input.name,
+                newSpecification = input.specification,
+                newBarcode = input.barcode,
                 newNote = input.note,
                 newUnit = input.unit?.let { mapProductUnitTOToDO(it) },
-                newSpecification = input.specification,
             )
 
             input.categoryId?.let { categoryId ->

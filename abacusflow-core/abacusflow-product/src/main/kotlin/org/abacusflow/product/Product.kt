@@ -33,9 +33,7 @@ class Product(
     specification: String?,
     unit: ProductUnit,
     category: ProductCategory,
-    @field:Size(max = 100)
-    @Column(name = "barcode", unique = true)
-    val barcode: String,
+    barcode: String,
     note: String?,
 ) : AbstractAggregateRoot<Product>() {
     @Id
@@ -49,6 +47,12 @@ class Product(
 
     @field:Size(max = 50)
     var specification: String? = specification
+        private set
+
+
+    @field:Size(max = 100)
+    @Column(name = "barcode", unique = true)
+    var barcode: String = barcode
         private set
 
     @field:NotNull
@@ -80,6 +84,7 @@ class Product(
     fun updateBasicInfo(
         newName: String?,
         newSpecification: String?,
+        newBarcode: String?,
         newNote: String?,
         newUnit: ProductUnit?,
     ) {
@@ -88,6 +93,9 @@ class Product(
         }
         newSpecification?.let {
             specification = newSpecification
+        }
+        newBarcode?.let {
+            barcode = newBarcode
         }
         newNote?.let {
             note = newNote
