@@ -49,7 +49,6 @@ class Product(
     var specification: String? = specification
         private set
 
-
     @field:Size(max = 100)
     @Column(name = "barcode", unique = true)
     var barcode: String = barcode
