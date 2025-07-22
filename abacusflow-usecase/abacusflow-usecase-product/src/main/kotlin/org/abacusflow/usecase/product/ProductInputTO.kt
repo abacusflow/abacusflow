@@ -13,6 +13,7 @@ data class CreateProductInputTO(
 data class UpdateProductInputTO(
     val name: String?,
     val type: String?,
+    val barcode: String?,
     val specification: String?,
     val categoryId: Long?,
     val unit: String?,
