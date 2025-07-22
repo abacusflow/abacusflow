@@ -93,4 +93,14 @@ include("abacusflow-server")
 // ------------------------------------
 // 页面 webapp
 // ------------------------------------
-include("abacusflow-webapp")
+val webappModules =
+    listOf(
+        "abacusflow-webapp-admin",
+        "abacusflow-webapp-mobile",
+    )
+webappModules.forEach {
+    include(
+        "abacusflow-webapp:$it",
+    )
+    findProject(":abacusflow-webapp:$it")?.name = it
+}
