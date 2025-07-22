@@ -32,7 +32,7 @@ jooq {
                 excludes = "pg_catalog\\..*|information_schema\\..*"
             }
             target {
-                packageName = "org.bruwave.abacusflow.generated.jooq"
+                packageName = "org.abacusflow.generated.jooq"
                 directory = "${projectDir}/build/generated/jooq/main"
             }
 

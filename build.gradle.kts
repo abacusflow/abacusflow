@@ -2,7 +2,7 @@ plugins {
     id("abacusflow-base")
 }
 
-group = "org.bruwave.abacusflow"
+group = "org.abacusflow"
 
 
 tasks.register("installGitHooks") {

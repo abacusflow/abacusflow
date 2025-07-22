@@ -24,9 +24,9 @@ openApiGenerate {
             .dir("generated/openapi")
             .get()
             .asFile.absolutePath
-    apiPackage = "org.bruwave.abacusflow.portal.web.api"
-    invokerPackage = "org.bruwave.abacusflow.portal.web.invoker"
-    modelPackage = "org.bruwave.abacusflow.portal.web.model"
+    apiPackage = "org.abacusflow.portal.web.api"
+    invokerPackage = "org.abacusflow.portal.web.invoker"
+    modelPackage = "org.abacusflow.portal.web.model"
     configOptions.set(
         mapOf(
             "dateLibrary" to "java8", // 使用 Java8 日期类型
