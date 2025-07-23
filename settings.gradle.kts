@@ -95,12 +95,14 @@ include("abacusflow-server")
 // ------------------------------------
 val webappModules =
     listOf(
-        "abacusflow-webapp-admin",
-        "abacusflow-webapp-mobile",
+        "abacusflow-webapp",
+        "abacusflow-miniprogram",
+        "abacusflow-nativeapp",
     )
 webappModules.forEach {
     include(
-        "abacusflow-webapp:$it",
+        "abacusflow-app:$it",
     )
-    findProject(":abacusflow-webapp:$it")?.name = it
+    findProject(":abacusflow-app:$it")?.name = it
 }
+include("abacusflow-app:abacusflow-nativeapp")

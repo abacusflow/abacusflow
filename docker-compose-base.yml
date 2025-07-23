@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: abacusflow-postgres
+    container_name: postgres
     image: postgres:${POSTGRES_VERSION}
     environment:
       - TZ=Asia/Shanghai
@@ -17,7 +17,7 @@ services:
       - "${POSTGRES_PORT}:5432"
 
   cube:
-    container_name: abacusflow-cube
+    container_name: cube
     image: cubejs/cube:${CUBE_VERSION}
     environment:
       - CUBEJS_API_SECRET=123ABCdef*1qaz2wsx3edc4rfv5tgb6yhn7ujm
