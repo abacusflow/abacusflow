@@ -23,16 +23,19 @@ services:
     container_name: abacusflow-webapp
     image: ghcr.io/abacusflow/abacusflow-webapp:${ABACUSFLOW_WEBAPP_VERSION}
     environment:
+      - REDIRECT_TO_HTTPS: "false"
       - ABACUSFLOW_SERVER_HOST=${ABACUSFLOW_SERVER_HOST}
       - ABACUSFLOW_SERVER_PORT=${ABACUSFLOW_SERVER_PORT}
       - ABACUSFLOW_CUBE_HOST=${ABACUSFLOW_CUBE_HOST}
       - ABACUSFLOW_CUBE_PORT=${ABACUSFLOW_CUBE_PORT}
     volumes:
-      - /opt/acme-https/letsencrypt:/etc/letsencrypt:ro
+      - /etc/letsencrypt/live/admin.abacusflow.cn/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
+      - /etc/letsencrypt/live/admin.abacusflow.cn/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
     networks:
       - abacusflow-network
     depends_on:
       - abacusflow-server
     ports:
-      - "${ABACUSFLOW_WEBAPP_PORT}:443"
+      - "${ABACUSFLOW_WEBAPP_HTTP_PORT}:80"
+#      - "${ABACUSFLOW_WEBAPP_HTTPS_PORT}:443"
 

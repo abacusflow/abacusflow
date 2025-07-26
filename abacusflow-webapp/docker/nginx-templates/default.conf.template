@@ -1,9 +1,27 @@
+map "${REDIRECT_TO_HTTPS}" $redirect_url {
+    default "http://$host$request_uri";
+    "true" "http://$host$request_uri";
+    "false" "";
+}
+
 server {
     listen       80;
     server_name  ABACUSFLOW_WEBAPP;
 
-    # HTTP 重定向到 HTTPS
-    return 301 https://$server_name$request_uri;
+    # 基础的反向代理请求头
+    proxy_set_header        Host               $host;
+    proxy_set_header        X-Real-IP          $remote_addr;
+    proxy_set_header        X-Forwarded-For    $proxy_add_x_forwarded_for;
+    proxy_set_header        X-Forwarded-Proto  $scheme;
+    proxy_set_header        X-Forwarded-Port   $server_port;
+
+    if ($redirect_url) {
+        # HTTP 重定向到 HTTPS
+        return 301 $redirect_url;
+    }
+
+   # --- 包含通用的 SPA 配置 ---
+   include /etc/nginx/snippets/common_spa.conf;
 }
 
 server {
@@ -11,8 +29,8 @@ server {
     server_name  ABACUSFLOW_WEBAPP;
 
     # SSL 证书配置
-    ssl_certificate     /etc/letsencrypt/live/abacusflow.cn/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/abacusflow.cn/privkey.pem;
+    ssl_certificate     /etc/nginx/ssl/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/privkey.pem;
 
     # SSL 安全配置
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -22,44 +40,12 @@ server {
     ssl_session_timeout 10m;
 
     # 基础的反向代理请求头
-   proxy_set_header        Host               $host;
-   proxy_set_header        X-Real-IP          $remote_addr;
-   proxy_set_header        X-Forwarded-For    $proxy_add_x_forwarded_for;
-   proxy_set_header        X-Forwarded-Proto  $scheme;
-   proxy_set_header        X-Forwarded-Port   $server_port;
+    proxy_set_header        Host               $host;
+    proxy_set_header        X-Real-IP          $remote_addr;
+    proxy_set_header        X-Forwarded-For    $proxy_add_x_forwarded_for;
+    proxy_set_header        X-Forwarded-Proto  $scheme;
+    proxy_set_header        X-Forwarded-Port   $server_port;
 
-    # 前端静态页面（SPA）
-    location / {
-        root /usr/share/nginx/html;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-    }
-
-    # 静态资源接口转发
-    location /static {
-        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/static;
-    }
-
-    # 登录接口
-    location /login {
-        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/login;
-        proxy_redirect http://$host/ http://$host:${ABACUSFLOW_WEBAPP_PORT}/;
-    }
-
-    # 登出接口
-    location /logout {
-        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/logout;
-    }
-
-    # API 代理（支持大请求体）
-    location /api/ {
-        client_max_body_size 0;
-        rewrite ^/api/(.*)$ /$1 break;
-        proxy_pass http://${ABACUSFLOW_SERVER_HOST}:${ABACUSFLOW_SERVER_PORT}/;
-    }
-
-    location /cubejs-api/ {
-        client_max_body_size 0;
-        proxy_pass http://${ABACUSFLOW_CUBE_HOST}:${ABACUSFLOW_CUBE_PORT}/cubejs-api/;
-    }
+   # --- 包含通用的 SPA 配置 ---
+   include /etc/nginx/snippets/common_spa.conf;
 }
