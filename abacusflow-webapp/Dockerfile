@@ -8,7 +8,14 @@ ENV REDIRECT_TO_HTTPS=true
 COPY dist /usr/share/nginx/html
 
 # 复制可复用的配置片段
-COPY docker/nginx-snippets/common_spa.conf /etc/nginx/snippets/common_spa.conf
+COPY docker/nginx-templates/common_spa.inc.template /etc/nginx/templates/common_spa.inc.template
 
 # 复制主 Nginx 模板
 COPY docker/nginx-templates/default.conf.template /etc/nginx/templates/default.conf.template
+
+# 复制自定义启动脚本
+COPY docker/custom-entrypoint.sh /custom-entrypoint.sh
+RUN chmod +x /custom-entrypoint.sh
+
+ENTRYPOINT ["/custom-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
