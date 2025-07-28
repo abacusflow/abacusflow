@@ -13,4 +13,8 @@ COPY docker/nginx-templates/common_spa.inc.template /etc/nginx/templates/common_
 # 复制主 Nginx 模板
 COPY docker/nginx-templates/default.conf.template /etc/nginx/templates/default.conf.template
 
+# 复制自定义启动脚本
+COPY docker/custom-entrypoint.sh /custom-entrypoint.sh
+RUN chmod +x /custom-entrypoint.sh
+
 ENTRYPOINT ["/custom-entrypoint.sh"]
