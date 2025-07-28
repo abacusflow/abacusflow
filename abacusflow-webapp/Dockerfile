@@ -8,7 +8,7 @@ ENV REDIRECT_TO_HTTPS=true
 COPY dist /usr/share/nginx/html
 
 # 复制可复用的配置片段
-COPY docker/nginx-snippets/common_spa.conf.template /etc/nginx/snippets/common_spa.conf
+COPY docker/nginx-snippets/common_spa.conf.template /etc/nginx/snippets/common_spa.conf.template
 
 # 复制主 Nginx 模板
 COPY docker/nginx-templates/default.conf.template /etc/nginx/templates/default.conf.template
