@@ -98,7 +98,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-#            abacusflow-webapp/out/make/**/*
+            abacusflow-webapp/out/make/**/*
 
   release-docker:
     if: startsWith(github.ref, 'refs/tags/v')
