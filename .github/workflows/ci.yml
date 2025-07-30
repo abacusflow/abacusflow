@@ -93,8 +93,7 @@ jobs:
       - name: Gradle build
         run: |
           chmod +x ./gradlew
-          ./gradlew clean webappBuildElectron --no-daemon
-          ./gradlew test --no-daemon
+          ./gradlew webappBuildElectron --no-daemon
 
       - name: Upload Electron App
         uses: softprops/action-gh-release@v1

@@ -9,38 +9,37 @@ module.exports = {
   makers: [
     {
       name: "@electron-forge/maker-squirrel",
-      config: { name: "abacusflow" },
-      platforms: ["win32"]
+      config: {
+        authors: "Sample author",
+        description: "Some description"
+      }
     },
     {
       name: "@electron-forge/maker-zip",
-      platforms: ["win32", "darwin", "linux"]
-    },
-    {
-      name: "@electron-forge/maker-dmg",
-      config: {},
-      platforms: ["darwin"]
+      platforms: ["darwin", "linux"]
     },
     {
       name: "@electron-forge/maker-deb",
       config: {
+        authors: "Sample author",
+        description: "Some description",
+        name: "app",
+        category: "Games",
         options: {
           maintainer: "bruce@abcacusflow.cn",
           homepage: "https://abcacusflow.cn"
         }
-      },
-      platforms: ["linux"]
+      }
     },
-    {
-      name: "@electron-forge/maker-rpm",
-      config: {
-        options: {
-          maintainer: "bruce@abcacusflow.cn",
-          homepage: "https://abcacusflow.cn"
-        }
-      },
-      platforms: ["linux"]
-    }
+    // {
+    //   name: "@electron-forge/maker-rpm",
+    //   config: {
+    //     options: {
+    //       maintainer: "bruce@abcacusflow.cn",
+    //       homepage: "https://abcacusflow.cn"
+    //     }
+    //   }
+    // }
   ],
   plugins: [
     {
