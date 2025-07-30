@@ -347,6 +347,7 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.on("second-instance", (event, commandLine, workingDirectory) => {
     // 当运行第二个实例时，将会聚焦到主窗口
     if (windowManager.mainWindow) {
@@ -377,30 +378,3 @@ process.on("SIGINT", () => {
   app.quit();
 });
 
-function callbackReq() {
-  // import path from "path";
-  // import { dirname } from "path";
-  // import { fileURLToPath } from "url";
-  // const __filename = fileURLToPath(import.meta.url);
-  // const __dirname = dirname(__filename);
-  // const API_URL = "http://localhost:8080"; // 你的后端服务器地址
-  // // 定义需要转发的路径前缀
-  // const API_PATHS = ["/api/", "/login", "/logout", "/cubejs-api/", "/static"];
-  //   // 2. 获取默认的 session
-  //   const ses = session.defaultSession;
-  //   // 3. 使用 onBeforeRequest 监听所有即将发生的请求
-  //   ses.webRequest.onBeforeRequest((details, callback) => {
-  //     const url = new URL(details.url);
-  //     // 4. 检查请求是否来自我们的 file:// 页面，并且路径是我们想要拦截的
-  //     if (url.protocol === "file:" && API_PATHS.some((p) => url.pathname.startsWith(p))) {
-  //       // 5. 构建重定向的 URL
-  //       const redirectURL = `${API_URL}${url.pathname}`;
-  //       console.log(`Redirecting API request from ${details.url} to ${redirectURL}`);
-  //       // 6. 执行重定向
-  //       callback({ redirectURL: redirectURL });
-  //     } else {
-  //       // 7. 对于所有其他请求，不进行任何操作，让它们正常通过
-  //       callback({});
-  //     }
-  //   });
-}

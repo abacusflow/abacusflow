@@ -135,6 +135,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // 右键菜单增强
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   document.addEventListener("contextmenu", (event) => {
     // 可以在这里添加自定义右键菜单逻辑
     // event.preventDefault(); // 如果想禁用右键菜单
