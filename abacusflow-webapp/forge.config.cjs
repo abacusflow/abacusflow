@@ -90,7 +90,7 @@ module.exports = {
       name: "@electron-forge/maker-dmg",
       config: {
         format: "ULFO", // 压缩格式
-        setupIcon: "./src/assets/logo.ico",
+        setupIcon: "./src/assets/logo.icns",
         // background: "./assets/dmg-background.png", // 可选：DMG 背景图
         contents: [
           { x: 448, y: 344, type: "link", path: "/Applications" },
