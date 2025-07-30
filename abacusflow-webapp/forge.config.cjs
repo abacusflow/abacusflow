@@ -98,10 +98,12 @@ module.exports = {
         format: "ULFO", // 压缩格式
         setupIcon: "./src/assets/logo.icns",
         // background: "./assets/dmg-background.png", // 可选：DMG 背景图
-        contents: [
-          { x: 448, y: 344, type: "link", path: "/Applications" },
-          { x: 192, y: 344, type: "file", path: opts.appPath }
-        ]
+        contents: (opts) => {
+          return [
+            { x: 448, y: 344, type: "link", path: "/Applications" },
+            { x: 192, y: 344, type: "file", path: opts.appPath }
+          ];
+        }
       }
     }
   ],
