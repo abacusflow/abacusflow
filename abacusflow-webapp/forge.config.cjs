@@ -4,7 +4,7 @@ const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 module.exports = {
   packagerConfig: {
     asar: true,
-    executableName: "abacusflow-webapp",
+    executableName: "AbacusFlow",
     // 应用信息
     appBundleId: "cn.abacusflow.webapp", // macOS Bundle ID
     appCategoryType: "public.app-category.productivity", // macOS 应用分类
