@@ -4,7 +4,7 @@ const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 module.exports = {
   packagerConfig: {
     asar: true,
-    executableName: "AbacusFlow"
+    executableName: "abacusflow-webapp"
   },
   rebuildConfig: {},
   makers: [
@@ -31,16 +31,16 @@ module.exports = {
           homepage: "https://abcacusflow.cn"
         }
       }
+    },
+    {
+      name: "@electron-forge/maker-rpm",
+      config: {
+        options: {
+          maintainer: "bruce@abcacusflow.cn",
+          homepage: "https://abcacusflow.cn"
+        }
+      }
     }
-    // {
-    //   name: "@electron-forge/maker-rpm",
-    //   config: {
-    //     options: {
-    //       maintainer: "bruce@abcacusflow.cn",
-    //       homepage: "https://abcacusflow.cn"
-    //     }
-    //   }
-    // }
   ],
   plugins: [
     {

@@ -2,7 +2,7 @@
   "name": "abacusflow-webapp",
   "productName": "AbacusFlow",
   "version": "1.0.0",
-  "description": "A cross-platform desktop admin app for AbacusFlow system.",
+  "description": "Admin app for AbacusFlow",
   "private": true,
   "type": "module",
   "main": "electron.js",
