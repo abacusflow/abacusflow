@@ -19,17 +19,10 @@ tasks.register<NpmTask>("installDependencies") {
     inputs.files("package.json", "package-lock.json")
 }
 
-tasks.register<NpmTask>("tsFormat") {
-    group = "formatting"
-    description = "prettier代码风格统一"
-    dependsOn("installDependencies")
-    args.set(listOf("run", "format"))
-}
-
 tasks.register<NpmTask>("lint-ts") {
     group = "lint"
     description = "eslint代码检查"
-    dependsOn("installDependencies", "tsFormat")
+    dependsOn("installDependencies")
     args.set(listOf("run", "lint"))
 }
 
@@ -56,7 +49,7 @@ tasks.register<NpmTask>("build") {
     outputs.dir("dist")
 }
 
-tasks.register<Exec>("buildWebappDockerImage") {
+tasks.register<Exec>("webappBuildImage") {
     group = "build"
     description = "构建前端 Docker 镜像"
     dependsOn("build") // 保证前端构建先完成
@@ -67,6 +60,21 @@ tasks.register<Exec>("buildWebappDockerImage") {
         "-t", "abacusflow-webapp:${project.version}",
         "."
     )
+}
+
+tasks.register<NpmTask>("webappBuildElectron") {
+    group = "build"
+    description = "构建前端 Electron 应用"
+//    dependsOn("build") // TODO 之后改成页面时候需要依赖
+    dependsOn("installDependencies")
+    args.set(listOf("run", "make"))
+}
+
+tasks.register<NpmTask>("tsFormat") {
+    group = "formatting"
+    description = "prettier代码风格统一"
+    dependsOn("installDependencies")
+    args.set(listOf("run", "format"))
 }
 
 tasks.register<Delete>("clean") {

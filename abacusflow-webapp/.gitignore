@@ -31,3 +31,5 @@ coverage
 
 # openapi-genrate
 src/core/openapi
+
+out/
