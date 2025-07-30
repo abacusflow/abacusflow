@@ -87,13 +87,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Init DB
+      - name: Setup Env
         uses: ./.github/actions/setup-env
 
       - name: Gradle build
         run: |
           chmod +x ./gradlew
-          ./gradlew clean webappBuildElectron--no-daemon
+          ./gradlew clean webappBuildElectron --no-daemon
           ./gradlew test --no-daemon
 
       - name: Upload Electron App
