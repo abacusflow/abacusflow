@@ -17,8 +17,3 @@ runs:
         cache: npm
         cache-dependency-path: abacusflow-webapp/package-lock.json
 
-    - name: Install PostgreSQL client
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql-client
-

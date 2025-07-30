@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   const envVars = loadEnv(mode, process.cwd());
 
   return {
+    base: "./", // 确保是相对路径
     plugins: [
       vue(),
       vueDevTools()
@@ -44,7 +45,7 @@ export default defineConfig(({ mode }) => {
         },
         "/cubejs-api": {
           target: envVars.VITE_CUBE_ENDPOINT,
-          changeOrigin: true,
+          changeOrigin: true
         }
       }
     }
