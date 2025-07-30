@@ -3,7 +3,8 @@ const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 
 module.exports = {
   packagerConfig: {
-    asar: true
+    asar: true,
+    executableName: "AbacusFlow"
   },
   rebuildConfig: {},
   makers: [
@@ -30,7 +31,7 @@ module.exports = {
           homepage: "https://abcacusflow.cn"
         }
       }
-    },
+    }
     // {
     //   name: "@electron-forge/maker-rpm",
     //   config: {
