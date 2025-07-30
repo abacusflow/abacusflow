@@ -5,6 +5,11 @@ module.exports = {
   packagerConfig: {
     asar: true,
     executableName: "abacusflow-webapp",
+    // afterPack: [
+    //   (context, packagerResult) => {
+    //     //可以在此将package.json中的name替换
+    //   }
+    // ],
     // executableName: getExecutableName(process.platform),
     // 应用信息
     appBundleId: "cn.abacusflow.webapp", // macOS Bundle ID
@@ -95,7 +100,7 @@ module.exports = {
         // background: "./assets/dmg-background.png", // 可选：DMG 背景图
         contents: [
           { x: 448, y: 344, type: "link", path: "/Applications" },
-          { x: 192, y: 344, type: "file", path: "abacusflow-webapp.app" }
+          { x: 192, y: 344, type: "file", path: opts.appPath }
         ]
       }
     }
