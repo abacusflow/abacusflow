@@ -42,10 +42,26 @@ module.exports = {
       name: "@electron-forge/maker-squirrel",
       config: {
         authors: "AbacusFlow Team",
-        description: "AbacusFlow - 智能零售进销存系统",
-        setupExe: "AbacusFlow-Setup.exe",
+        description: "AbacusFlow - 智能零售进销存系统 - 静默安装版",
+        setupExe: "AbacusFlow-Silent-Setup.exe",
         setupIcon: "./src/assets/logo.ico"
         // loadingGif: "./assets/loading.gif" // 可选：安装时的加载动画
+      }
+    },
+    {
+      name: "@electron-forge/maker-nsis",
+      config: {
+        authors: "AbacusFlow Team",
+        description: "AbacusFlow - 智能零售进销存系统 - 传统安装版",
+        setupExe: "AbacusFlow-Wizard-Setup.exe",
+        setupIcon: "./src/assets/logo.ico",
+        // NSIS 特有的常用配置
+        installerIcon: "./src/assets/logo.ico", // 安装程序自身的图标
+        uninstallerIcon: "./src/assets/logo.ico", // 卸载程序的图标
+        oneClick: false, // 设置为 false 来显示安装向导
+        allowToChangeInstallationDirectory: true, // 允许用户更改安装路径
+        createDesktopShortcut: true, // 创建桌面快捷方式
+        createStartMenuShortcut: true // 创建开始菜单快捷方式
       }
     },
     {

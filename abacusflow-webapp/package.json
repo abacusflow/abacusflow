@@ -5,7 +5,7 @@
   "description": "Admin app for AbacusFlow",
   "private": true,
   "type": "module",
-  "main": "electron.js",
+  "main": "./electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",

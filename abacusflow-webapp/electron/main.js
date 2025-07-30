@@ -1,3 +1,6 @@
+import { handleSquirrelStartup } from './squirrel.js';
+await handleSquirrelStartup();  // 必须在最前面执行！
+
 import { app, BrowserWindow, session, Menu, shell, dialog, ipcMain } from "electron";
 import path from "path";
 import { dirname } from "path";
