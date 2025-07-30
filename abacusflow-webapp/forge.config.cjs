@@ -4,7 +4,8 @@ const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 module.exports = {
   packagerConfig: {
     asar: true,
-    executableName: "AbacusFlow",
+    executableName: "abacusflow-webapp",
+    // executableName: getExecutableName(process.platform),
     // 应用信息
     appBundleId: "cn.abacusflow.webapp", // macOS Bundle ID
     appCategoryType: "public.app-category.productivity", // macOS 应用分类
@@ -94,7 +95,7 @@ module.exports = {
         // background: "./assets/dmg-background.png", // 可选：DMG 背景图
         contents: [
           { x: 448, y: 344, type: "link", path: "/Applications" },
-          { x: 192, y: 344, type: "file", path: "AbacusFlow.app" }
+          { x: 192, y: 344, type: "file", path: "abacusflow-webapp.app" }
         ]
       }
     }
