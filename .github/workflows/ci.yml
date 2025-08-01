@@ -79,7 +79,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    needs: build
+#    needs: build
     permissions:
       contents: write
       packages: write
