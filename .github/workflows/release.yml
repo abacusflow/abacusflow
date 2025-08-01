@@ -20,7 +20,6 @@ env:
 
 jobs:
   build:
-    if: 1==2
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -80,7 +79,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-#    needs: build
+    needs: build
     permissions:
       contents: write
       packages: write
@@ -88,6 +87,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: .
 
       - name: Get release tag
         id: get-tag
