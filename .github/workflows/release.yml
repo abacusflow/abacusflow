@@ -1,15 +1,18 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Release
 
 on:
   push:
     branches: [ "master" ]
     tags: [ "v*.*.*" ]
-  pull_request:
-    branches: [ "master" ]
 
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
@@ -87,6 +90,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get release tag
+        id: get-tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Env
         uses: ./.github/actions/setup-env
 
@@ -95,10 +108,15 @@ jobs:
           chmod +x ./gradlew
           ./gradlew webappBuildElectron --no-daemon
 
-      - name: Upload Electron App
-        uses: softprops/action-gh-release@v1
+      - name: Release Electron App
+        uses: ncipollo/release-action@v1
         with:
-          files: |
+          tag: ${{ steps.get-tag.outputs.tag }}
+          draft: true
+          allowUpdates: true
+          makeLatest: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: |
             abacusflow-webapp/out/linux/*.AppImage
             abacusflow-webapp/out/linux/*.deb
             abacusflow-webapp/out/linux/*.rpm
