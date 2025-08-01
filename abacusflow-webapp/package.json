@@ -62,7 +62,7 @@
     "appId": "com.abacusflow.admin",
     "productName": "AbacusFlow Admin",
     "directories": {
-      "output": "out"
+      "output": "out/${platform}"
     },
     "asar": true,
     "asarUnpack": [

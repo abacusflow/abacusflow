@@ -100,30 +100,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            # Linux formats
-            abacusflow-webapp/out/*.AppImage
-            abacusflow-webapp/out/*.deb
-            abacusflow-webapp/out/*.rpm
-            abacusflow-webapp/out/*.tar.gz
-            abacusflow-webapp/out/*.snap
-            abacusflow-webapp/out/*.pacman
-            abacusflow-webapp/out/*.freebsd
-            
-            # Windows formats
-            abacusflow-webapp/out/*.exe         # NSIS 一键安装
-            abacusflow-webapp/out/*.msi         # Windows Installer
-            abacusflow-webapp/out/*.zip         # NSIS portable 或 zipOnly
-            abacusflow-webapp/out/*.7z          # Squirrel.windows 或可选压缩
-            
-            # macOS formats
-            abacusflow-webapp/out/*.dmg         # 推荐的 mac 安装方式
-            abacusflow-webapp/out/*.pkg         # Apple Installer
-            abacusflow-webapp/out/*.zip         # Mac portable zip 包（非 dmg）
-            abacusflow-webapp/out/*.app         # 未压缩的原始应用目录（用于手动上传或签名）
-            
-            # 通用调试/配置
-            abacusflow-webapp/out/*.yaml        # builder-effective-config.yaml / latest.yml
-            abacusflow-webapp/out/*.blockmap    # 适配 electron-updater 更新用
+            abacusflow-webapp/out/**/*
 
   release-docker:
     if: startsWith(github.ref, 'refs/tags/v')
