@@ -109,25 +109,27 @@
           "arch": [
             "x64",
             "ia32"
-          ],
-          "artifactName": "${productName}-${version}-${os}-${arch}-installer.${ext}"
+          ]
         },
         {
           "target": "portable",
           "arch": [
             "x64",
             "ia32"
-          ],
-          "artifactName": "${productName}-${version}-${os}-${arch}-portable.${ext}"
+          ]
         }
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "AbacusFlow Admin"
+      ],
+      "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true,
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "shortcutName": "AbacusFlow Admin",
+        "artifactName": "${productName}-${version}-${os}-${arch}-installer.${ext}"
+      },
+      "portable": {
+        "artifactName": "${productName}-${version}-${os}-${arch}-portable.${ext}"
+      }
     },
     "linux": {
       "icon": "assets/logo.png",
@@ -157,22 +159,22 @@
             "x64"
           ]
         }
-      ]
-    },
-    "deb": {
-      "depends": [
-        "gconf2",
-        "gconf-service",
-        "libnotify4",
-        "libappindicator1",
-        "libxtst6",
-        "libnss3"
-      ]
-    },
-    "rpm": {
-      "depends": [
-        "libXScrnSaver"
-      ]
+      ],
+      "deb": {
+        "depends": [
+          "gconf2",
+          "gconf-service",
+          "libnotify4",
+          "libappindicator1",
+          "libxtst6",
+          "libnss3"
+        ]
+      },
+      "rpm": {
+        "depends": [
+          "libXScrnSaver"
+        ]
+      }
     }
   }
 }
