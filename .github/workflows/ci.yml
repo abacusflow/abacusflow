@@ -99,7 +99,22 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            abacusflow-webapp/out/make/**/*
+            abacusflow-webapp/out/linux/*.AppImage
+            abacusflow-webapp/out/linux/*.deb
+            abacusflow-webapp/out/linux/*.rpm
+            abacusflow-webapp/out/linux/*.tar.gz
+            abacusflow-webapp/out/linux/*.snap
+            abacusflow-webapp/out/linux/*.pacman
+            abacusflow-webapp/out/linux/*.freebsd
+            abacusflow-webapp/out/win32/*.exe
+            abacusflow-webapp/out/win32/*.msi
+            abacusflow-webapp/out/win32/*.zip
+            abacusflow-webapp/out/win32/*.7z
+            abacusflow-webapp/out/darwin/*.dmg
+            abacusflow-webapp/out/darwin/*.pkg
+            abacusflow-webapp/out/darwin/*.zip
+            abacusflow-webapp/out/darwin/*.app
+            abacusflow-webapp/out/**/*.blockmap
 
   release-docker:
     if: startsWith(github.ref, 'refs/tags/v')
