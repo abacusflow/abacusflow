@@ -80,7 +80,7 @@
       "!build/**",
       "!*.log"
     ],
-    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "mac": {
       "category": "public.app-category.business",
       "icon": "assets/logo.icns",
@@ -99,8 +99,7 @@
             "arm64"
           ]
         }
-      ],
-      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+      ]
     },
     "win": {
       "icon": "assets/logo.ico",
@@ -110,17 +109,18 @@
           "arch": [
             "x64",
             "ia32"
-          ]
+          ],
+          "artifactName": "${productName}-${version}-${os}-${arch}-installer.${ext}"
         },
         {
           "target": "portable",
           "arch": [
             "x64",
             "ia32"
-          ]
+          ],
+          "artifactName": "${productName}-${version}-${os}-${arch}-portable.${ext}"
         }
-      ],
-      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -157,8 +157,7 @@
             "x64"
           ]
         }
-      ],
-      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+      ]
     },
     "deb": {
       "depends": [
