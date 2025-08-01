@@ -67,7 +67,7 @@ tasks.register<NpmTask>("webappBuildElectron") {
     description = "构建前端 Electron 应用"
 //    dependsOn("build") // TODO 之后改成页面时候需要依赖
     dependsOn("installDependencies")
-    args.set(listOf("run", "dist"))
+    args.set(listOf("run", "pack"))
 }
 
 tasks.register<NpmTask>("tsFormat") {
