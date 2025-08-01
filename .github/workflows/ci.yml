@@ -77,7 +77,8 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+#        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
 #    needs: build
     permissions:
@@ -111,14 +112,11 @@ jobs:
             abacusflow-webapp/out/win32/*.msi         # Windows Installer
             abacusflow-webapp/out/win32/*.zip         # NSIS portable 或 zipOnly
             abacusflow-webapp/out/win32/*.7z          # Squirrel.windows 或可选压缩
-            # macOS formats
             abacusflow-webapp/out/darwin/*.dmg         # 推荐的 mac 安装方式
             abacusflow-webapp/out/darwin/*.pkg         # Apple Installer
             abacusflow-webapp/out/darwin/*.zip         # Mac portable zip 包（非 dmg）
             abacusflow-webapp/out/darwin/*.app         # 未压缩的原始应用目录（用于手动上传或签名）
             
-            # 通用调试/配置
-            abacusflow-webapp/out/**/*.yaml        # builder-effective-config.yaml / latest.yml
             abacusflow-webapp/out/**/*.blockmap    # 适配 electron-updater 更新用
 
   release-docker:

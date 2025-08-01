@@ -60,7 +60,7 @@
   },
   "build": {
     "appId": "com.abacusflow.admin",
-    "productName": "AbacusFlow Admin",
+    "productName": "AbacusFlow-Admin",
     "directories": {
       "output": "out/${platform}"
     },
