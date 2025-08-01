@@ -97,11 +97,17 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
           else
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Setup Env
         uses: ./.github/actions/setup-env
+
+      - name: Set package.json version
+        run: |
+          TAG="${{ steps.get_tag.outputs.tag }}"
+          VERSION="${TAG#v}"
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - name: Gradle build
         run: |
