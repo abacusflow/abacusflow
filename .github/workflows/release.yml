@@ -106,7 +106,7 @@ jobs:
         working-directory: ./abacusflow-webapp
         shell: bash
         run: |
-          TAG="${{ steps.get_tag.outputs.tag }}"
+          TAG="${{ steps.get-tag.outputs.tag }}"
           VERSION="${TAG#v}"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
