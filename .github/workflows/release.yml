@@ -12,7 +12,14 @@ on:
         description: 'Release tag (e.g. v1.0.0)'
         required: true
         default: 'v1.0.0'
-
+      type:
+        description: 'Type of the release'
+        required: true
+        type: choice
+        options:
+          - prerelease
+          - latest
+        default: prerelease
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   REGISTRY: ghcr.io
@@ -76,7 +83,7 @@ jobs:
   release-webapp-electron:
     strategy:
       matrix:
-#        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        #        os: [ ubuntu-latest, windows-latest, macos-latest ]
         os: [ windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: build
@@ -94,15 +101,9 @@ jobs:
           name: build-artifacts
           path: .
 
-      - name: Get release tag
-        id: get-tag
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
-          else
-            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
+      - name: Get Release Info
+        id: release-info
+        uses: ./.github/actions/get-release-info
 
       - name: Setup Env
         uses: ./.github/actions/setup-env
@@ -111,7 +112,7 @@ jobs:
         working-directory: ./abacusflow-webapp
         shell: bash
         run: |
-          TAG="${{ steps.get-tag.outputs.tag }}"
+          TAG="${{ steps.release-info.outputs.tag }}"
           VERSION="${TAG#v}"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
@@ -123,7 +124,9 @@ jobs:
       - name: Release Electron App
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.get-tag.outputs.tag }}
+          tag: ${{ steps.release-info.outputs.tag }}
+          makeLatest: ${{ steps.release-info.outputs.is_latest }}
+          prerelease: ${{ steps.release-info.outputs.is_latest == 'false' }}
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: |
@@ -184,12 +187,20 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-webapp
+          flavor: |
+            latest=${{ steps.release-info.outputs.is_latest }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.release-info.outputs.tag }}
 
       - name: Extract Docker metadata for server
         id: meta-server
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server
+          flavor: |
+            latest=${{ steps.release-info.outputs.is_latest }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.release-info.outputs.tag }}
 
       - name: Build and push webapp Docker image
         id: build-and-push-webapp

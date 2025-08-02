@@ -1,9 +1,5 @@
-import org.gradle.kotlin.dsl.withType
-import org.jooq.codegen.gradle.CodegenTask
 import org.jooq.meta.jaxb.MatcherRule
 import org.jooq.meta.jaxb.MatcherTransformType
-
-val skipJooq = project.getEnvOrPropOrDotenv("skipJooq") == "true"
 
 plugins {
     id("abacusflow-base")
@@ -59,8 +55,4 @@ sourceSets["main"].kotlin.srcDir(projectDir.resolve("build/generated/jooq/main")
 
 tasks.compileKotlin {
     dependsOn(tasks.jooqCodegen)
-}
-
-tasks.withType<CodegenTask>().configureEach {
-    onlyIf{ !skipJooq }
 }
