@@ -20,6 +20,7 @@ env:
 
 jobs:
   build:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -75,7 +76,8 @@ jobs:
   release-webapp-electron:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+#        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: build
     permissions:
@@ -122,9 +124,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.get-tag.outputs.tag }}
-          draft: true
           allowUpdates: true
-          makeLatest: false
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: |
             abacusflow-webapp/out/linux/*.AppImage
