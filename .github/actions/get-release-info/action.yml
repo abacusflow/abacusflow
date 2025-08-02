@@ -1,0 +1,35 @@
+name: 'Get Release Info'
+description: 'Determines the release tag and whether it is a "latest" or "prerelease".'
+outputs:
+  tag:
+    description: 'The release tag to be used.'
+  is_latest:
+    description: 'A boolean ("true" or "false") indicating if this is a latest release.'
+runs:
+  using: "composite"
+  steps:
+    - name: Determine release info
+      id: get-info
+      shell: bash
+      run: |
+        # 1. 确定 Tag
+        RELEASE_TAG=""
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          RELEASE_TAG="${{ github.event.inputs.tag }}"
+        else
+          RELEASE_TAG="${{ github.ref_name }}"
+        fi
+        echo "tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+        
+        # 2. 确定是否为 Latest
+        IS_LATEST="false"
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ github.event.inputs.releaseType }}" = "latest" ]; then
+            IS_LATEST="true"
+          fi
+        else
+          if [[ ! "$RELEASE_TAG" =~ "-" ]]; then
+            IS_LATEST="true"
+          fi
+        fi
+        echo "is_latest=$IS_LATEST" >> $GITHUB_OUTPUT
