@@ -3,8 +3,11 @@ description: 'Determines the release tag and whether it is a "latest" or "prerel
 outputs:
   tag:
     description: 'The release tag to be used.'
+    value: ${{ steps.get-info.outputs.tag }}
+
   is_latest:
     description: 'A boolean ("true" or "false") indicating if this is a latest release.'
+    value: ${{ steps.get-info.outputs.is_latest }}
 runs:
   using: "composite"
   steps:
