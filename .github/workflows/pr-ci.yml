@@ -20,32 +20,9 @@ jobs:
     container:
       image: ghcr.io/${{ github.repository_owner }}/infra-ci:latest
       options: --user root
-    env:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: abacusflow
-      POSTGRES_PASSWORD: abacusflow
-      POSTGRES_DB: abacusflow
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Init DB
-        uses: ./.github/actions/init-db
 
       - name: Gradle build
         run: |

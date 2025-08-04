@@ -1,0 +1,29 @@
+name: 'Parse Git Tag Info'
+description: 'Parses the Git tag from the current ref and determines the release type: "latest", "pre", or "none".'
+
+outputs:
+  release_type:
+    description: 'The release type derived from the tag. One of: "latest", "pre", or "none".'
+    value: ${{ steps.parse_git_tag.outputs.release_type }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Determine release info
+      id: parse_git_tag
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        #  判断 Release 类型
+        RELEASE_TYPE="none"
+
+        if [[ "$RELEASE_TAG" =~ "-" ]]; then
+          # 示例：v1.0.0-beta、v2.0.0-rc → 预发布
+          RELEASE_TYPE="pre"
+        elif [[ "$RELEASE_TAG" =~ ^v?[0-9]+(\.[0-9]+)*$ ]]; then
+          # 示例：v1.0.0、1.2.3 → 正式版本
+          RELEASE_TYPE="latest"
+        fi
+
+        echo "release_type=$RELEASE_TYPE" >> "$GITHUB_OUTPUT"

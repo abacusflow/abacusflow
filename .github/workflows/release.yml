@@ -6,20 +6,6 @@ on:
   push:
     tags: [ "v*.*.*" ]
 
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Release tag (e.g. v1.0.0)'
-        required: true
-        default: 'v1.0.0'
-      releaseType:
-        description: 'Type of the release'
-        required: true
-        type: choice
-        options:
-          - prerelease
-          - latest
-        default: prerelease
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   REGISTRY: ghcr.io
@@ -27,7 +13,6 @@ env:
 
 jobs:
   build:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -35,32 +20,9 @@ jobs:
     container:
       image: ghcr.io/${{ github.repository_owner }}/infra-ci:latest
       options: --user root
-    env:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: abacusflow
-      POSTGRES_PASSWORD: abacusflow
-      POSTGRES_DB: abacusflow
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Init DB
-        uses: ./.github/actions/init-db
 
       - name: Gradle build
         run: |
@@ -101,18 +63,18 @@ jobs:
           name: build-artifacts
           path: .
 
-      - name: Get Release Info
-        id: release-info
-        uses: ./.github/actions/get-release-info
-
       - name: Setup Env
         uses: ./.github/actions/setup-env
+
+      - name: Parse Git Tag
+        id: parse-git-tag
+        uses: ./.github/actions/parse-git-tag
 
       - name: Set package.json version
         working-directory: ./abacusflow-webapp
         shell: bash
         run: |
-          TAG="${{ steps.release-info.outputs.tag }}"
+          TAG="${{ github.ref_name }}"
           VERSION="${TAG#v}"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
@@ -124,11 +86,10 @@ jobs:
       - name: Release Electron App
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.release-info.outputs.tag }}
-          makeLatest: ${{ steps.release-info.outputs.is_latest }}
-          prerelease: ${{ steps.release-info.outputs.is_latest == 'false' }}
+          draft: false
+          makeLatest: ${{ steps.parse-git-tag.outputs.release_type == 'latest' }}
+          prerelease: ${{ steps.parse-git-tag.outputs.release_type == 'pre' }}
           allowUpdates: true
-          token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: |
             abacusflow-webapp/out/linux/*.AppImage
             abacusflow-webapp/out/linux/*.deb
@@ -164,9 +125,9 @@ jobs:
           name: build-artifacts
           path: .
 
-      - name: Get Release Info
-        id: release-info
-        uses: ./.github/actions/get-release-info
+      - name: Parse Git Tag
+        id: parse-git-tag
+        uses: ./.github/actions/parse-git-tag
 
       # 安装 cosign 用于镜像签名
       - name: Install cosign
@@ -192,9 +153,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-webapp
           flavor: |
-            latest=${{ steps.release-info.outputs.is_latest }}
-          tags: |
-            type=semver,pattern={{version}},value=${{ steps.release-info.outputs.tag }}
+            latest=${{ steps.parse-git-tag.outputs.release_type == 'latest' }}
 
       - name: Extract Docker metadata for server
         id: meta-server
@@ -202,9 +161,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server
           flavor: |
-            latest=${{ steps.release-info.outputs.is_latest }}
-          tags: |
-            type=semver,pattern={{version}},value=${{ steps.release-info.outputs.tag }}
+            latest=${{ steps.parse-git-tag.outputs.release_type == 'latest' }}
 
       - name: Build and push webapp Docker image
         id: build-and-push-webapp
