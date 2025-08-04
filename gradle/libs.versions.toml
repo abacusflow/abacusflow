@@ -19,6 +19,7 @@ springdoc-openapi-ui = "1.8.0"
 docker-java = "3.2.13"
 querydsl = "5.1.0"
 jooq = "3.19.15"
+testcontainers = "1.20.0"
 
 [plugins]
 jsonschema2pojo = { id = "org.jsonschema2pojo", version = "1.2.2" }
@@ -78,6 +79,9 @@ jsonschema-validator = { module = "com.networknt:json-schema-validator", version
 # pdf
 openpdf = { module = "com.github.librepdf:openpdf", version = "2.0.5" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version = "5.4.1" }
+
+# testcontainers
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 
 # Others
 netty = { module = "io.netty:netty-all", version.ref = "netty" }

@@ -19,6 +19,10 @@ dependencies {
 
     implementation("org.jlleitschuh.gradle:ktlint-gradle:${libs.versions.ktlint.get()}")
 
+    implementation("org.jooq.jooq-codegen-gradle:org.jooq.jooq-codegen-gradle.gradle.plugin:${libs.versions.jooq.get()}")
+    implementation("org.jooq:jooq-codegen:${libs.versions.jooq.get()}")
+    implementation(libs.testcontainers.postgresql)
+
     testImplementation(kotlin("test"))
 }
 
