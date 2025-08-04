@@ -158,7 +158,7 @@ type CreatePurchaseOrderInputForm = Omit<CreatePurchaseOrderInput, "orderDate" |
 
 const formState = reactive<Partial<CreatePurchaseOrderInputForm>>({
   supplierId: undefined,
-  orderDate: dayjs(dayjs().format(dateFormat), dateFormat),
+  orderDate: dayjs(),
   note: undefined,
   orderItems: []
 });
@@ -233,7 +233,14 @@ const handleOk = () => {
   formRef.value
     ?.validate()
     .then(() => {
-      createPurchaseOrder(formRef.value?.getFieldsValue() as CreatePurchaseOrderInput);
+      const formData = formRef.value?.getFieldsValue() as CreatePurchaseOrderInput;
+
+      const transformedFormData = {
+        ...formData,
+        orderDate: dayjs(formData.orderDate).toDate()
+      };
+
+      createPurchaseOrder(transformedFormData);
     })
     .catch((error) => {
       console.error("表单验证失败", error);

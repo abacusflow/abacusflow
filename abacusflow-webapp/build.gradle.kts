@@ -20,7 +20,7 @@ tasks.register<NpmTask>("installDependencies") {
 }
 
 tasks.register<NpmTask>("lint-ts") {
-    group = "lint"
+    group = "verification"
     description = "eslint代码检查"
     dependsOn("installDependencies")
     args.set(listOf("run", "lint"))
