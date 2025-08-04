@@ -43,6 +43,7 @@ jobs:
           retention-days: 1
 
   release-webapp-electron:
+    if: 1==2 # TODO electron切换为静态文件时再开启
     strategy:
       matrix:
         #        os: [ ubuntu-latest, windows-latest, macos-latest ]

@@ -237,7 +237,7 @@ const handleOk = () => {
 
       const transformedFormData = {
         ...formData,
-        orderDate: dayjs(formData.orderDate).toDate(),
+        orderDate: dayjs(formData.orderDate).toDate()
       };
 
       createPurchaseOrder(transformedFormData);
