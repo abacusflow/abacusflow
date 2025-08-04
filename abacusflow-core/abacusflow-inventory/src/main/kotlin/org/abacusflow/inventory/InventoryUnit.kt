@@ -95,24 +95,11 @@ abstract class InventoryUnit(
     ) {
         require(amount > 0) { "销售数量必须为正数" }
         require(amount <= MAX_ADJUSTMENT) { "每次减少的库存数量不能超过 $MAX_ADJUSTMENT 个" }
-        require(remainingQuantity >= amount) { "剩余库存不足" }
-        require(status in setOf(InventoryUnitStatus.NORMAL, InventoryUnitStatus.REVERSED)) {
-            "当前是未出库或已退回状态才可出库"
-        }
+        require(amount <= remainingQuantity) { "剩余可用库存不足" }
+
         quantity -= amount
         saleOrderIdsMutable.add(saleOrderId)
 
-        if (remainingQuantity == 0L) {
-            status = InventoryUnitStatus.CONSUMED
-        }
-
-        updatedAt = Instant.now()
-    }
-
-    open fun cancel(reason: String?) {
-        require(remainingQuantity == quantity) { "只能取消尚未出库的库存" }
-
-        status = InventoryUnitStatus.CANCELED
         updatedAt = Instant.now()
     }
 
@@ -121,13 +108,11 @@ abstract class InventoryUnit(
         saleOrderId: Long,
     ) {
         require(amount > 0) { "回退数量必须为正" }
-        require(remainingQuantity < quantity) { "当前库存未出库，无需回退" }
-        require(remainingQuantity + amount <= quantity) { "库存无法回退，超过原始数量" }
+        require(quantity < initialQuantity) { "当前库存没有任何出库，无需回退" }
+        require(quantity + amount <= initialQuantity) { "库存无法回退，超过原始数量" }
 
         quantity += amount
         saleOrderIdsMutable.remove(saleOrderId)
-
-        status = InventoryUnitStatus.REVERSED
 
         updatedAt = Instant.now()
     }
@@ -170,12 +155,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val serialNumber: String,
     ) : InventoryUnit(
-            inventory = inventory,
-            purchaseOrderId = purchaseOrderId,
-            initialQuantity = 1,
-            depotId = depotId,
-            unitPrice = unitPrice,
-        ) {
+        inventory = inventory,
+        purchaseOrderId = purchaseOrderId,
+        initialQuantity = 1,
+        depotId = depotId,
+        unitPrice = unitPrice,
+    ) {
         val inStock: Boolean
             get() = remainingQuantity == 1L
 
@@ -201,12 +186,12 @@ abstract class InventoryUnit(
         unitPrice: BigDecimal,
         val batchCode: UUID,
     ) : InventoryUnit(
-            inventory = inventory,
-            purchaseOrderId = purchaseOrderId,
-            initialQuantity = initialQuantity,
-            unitPrice = unitPrice,
-            depotId = depotId,
-        )
+        inventory = inventory,
+        purchaseOrderId = purchaseOrderId,
+        initialQuantity = initialQuantity,
+        unitPrice = unitPrice,
+        depotId = depotId,
+    )
 
     enum class UnitType {
         INSTANCE,
@@ -214,10 +199,10 @@ abstract class InventoryUnit(
     }
 
     enum class InventoryUnitStatus {
-        NORMAL, // 初始状态，已入库未出库
-        CONSUMED, // 已出库
+        NORMAL, // 正常状态
+        CONSUMED, // 已全部出库
         CANCELED, // 被人为取消
-        REVERSED, // 因采购撤销等原因回退
+        REVERSED, // 发生过撤销
     }
 
     companion object {

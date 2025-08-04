@@ -48,7 +48,7 @@ class SecurityConfiguration(
                 permitAll()
             }
 
-            oneTimeTokenLogin {  }
+//            oneTimeTokenLogin {  }
 //            addFilterBefore<UsernamePasswordAuthenticationFilter>(abacusFlowJwtAuthenticationFilter)
         }
         return http.build()

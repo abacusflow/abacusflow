@@ -17,7 +17,7 @@
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
-    "generate": "openapi-generator-cli generate -i ../abacusflow-portal/abacusflow-portal-web/src/main/resources/static/openapi.yaml -g typescript-fetch -o src/core/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true,basePath=https://api.yourdomain.com --generate-alias-as-model",
+    "generate": "openapi-generator-cli generate -i ../../abacusflow-portal/abacusflow-portal-web/src/main/resources/static/openapi.yaml -g typescript-fetch -o src/core/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true,basePath=https://api.yourdomain.com --generate-alias-as-model",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
     "electron": "electron .",
