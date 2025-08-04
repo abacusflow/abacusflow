@@ -15,7 +15,16 @@ runs:
       run: |
         set -euo pipefail
 
-        #  判断 Release 类型
+        # 获取 Tag（来自 ref，例如 refs/tags/v1.0.0）
+        RELEASE_TAG="${{ github.ref_name }}"
+
+        # 如果未从 tag 触发，则报错
+        if [[ -z "$RELEASE_TAG" ]]; then
+          echo "❌ No Git tag found in github.ref_name. This action must be triggered from a Git tag."
+          exit 1
+        fi
+
+        # 判断 Release 类型
         RELEASE_TYPE="none"
 
         if [[ "$RELEASE_TAG" =~ "-" ]]; then
