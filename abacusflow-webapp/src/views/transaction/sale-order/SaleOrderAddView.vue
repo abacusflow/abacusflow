@@ -207,7 +207,7 @@ type CreateSaleOrderInputForm = Omit<CreateSaleOrderInput, "orderDate" | "orderI
 
 const formState = reactive<Partial<CreateSaleOrderInputForm>>({
   customerId: undefined,
-  orderDate: dayjs(dayjs().format(dateFormat), dateFormat),
+  orderDate: dayjs(),
   note: undefined,
   orderItems: []
 });
@@ -300,6 +300,7 @@ const handleOk = () => {
       // 创建一个新的对象并转换 discountFactor 为 0.01 - 1.00 范围
       const transformedFormData = {
         ...formData,
+        orderDate: dayjs(formData.orderDate).toDate(),
         orderItems: formData.orderItems.map((item) => ({
           ...item,
           discountFactor: item.discountFactor ? item.discountFactor / 100 : 1.0

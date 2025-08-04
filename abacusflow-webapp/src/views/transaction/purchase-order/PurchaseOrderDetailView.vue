@@ -77,7 +77,7 @@ type PurchaseOrderForm = Omit<PurchaseOrder, "orderDate"> & {
 };
 const formState = reactive<Partial<PurchaseOrderForm>>({
   supplierId: undefined,
-  orderDate: dayjs(dayjs().format(dateFormat), dateFormat),
+  orderDate: dayjs(),
   note: undefined,
   orderItems: []
 });
