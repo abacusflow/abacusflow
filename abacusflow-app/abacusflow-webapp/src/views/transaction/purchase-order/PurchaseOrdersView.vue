@@ -24,18 +24,18 @@
             />
           </a-form-item>
 
-          <a-form-item label="供应商名">
-            <a-input
-              v-model:value="searchForm.supplierName"
-              placeholder="请输入供应商名"
-              allow-clear
-            />
-          </a-form-item>
-
           <a-form-item label="产品名">
             <a-input
               v-model:value="searchForm.productName"
               placeholder="请输入产品名"
+              allow-clear
+            />
+          </a-form-item>
+
+          <a-form-item label="供应商名">
+            <a-input
+              v-model:value="searchForm.supplierName"
+              placeholder="请输入供应商名"
               allow-clear
             />
           </a-form-item>

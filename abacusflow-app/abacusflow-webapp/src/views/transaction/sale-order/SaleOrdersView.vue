@@ -22,6 +22,14 @@
             />
           </a-form-item>
 
+          <a-form-item label="库存单元名">
+            <a-input
+              v-model:value="searchForm.inventoryUnitName"
+              placeholder="请输入库存单元名"
+              allow-clear
+            />
+          </a-form-item>
+
           <a-form-item label="客户名">
             <a-input
               v-model:value="searchForm.customerName"
@@ -30,13 +38,6 @@
             />
           </a-form-item>
 
-          <a-form-item label="产品名">
-            <a-input
-              v-model:value="searchForm.productName"
-              placeholder="请输入产品名"
-              allow-clear
-            />
-          </a-form-item>
 
           <a-form-item>
             <a-space>
@@ -196,7 +197,7 @@ const editingSaleOrder = ref<BasicSaleOrder | null>(null);
 const searchForm = reactive({
   orderNo: undefined,
   status: undefined,
-  productName: undefined,
+  inventoryUnitName: undefined,
   customerName: undefined,
   orderDate: undefined
 });
@@ -222,7 +223,7 @@ const handleSearch = () => {
 const resetSearch = () => {
   searchForm.orderNo = undefined;
   searchForm.status = undefined;
-  searchForm.productName = undefined;
+  searchForm.inventoryUnitName = undefined;
   searchForm.customerName = undefined;
   searchForm.orderDate = undefined;
 
@@ -245,18 +246,18 @@ const {
     searchForm.orderNo,
     searchForm.customerName,
     searchForm.status,
-    searchForm.productName,
+    searchForm.inventoryUnitName,
     searchForm.orderDate,
     pageIndex,
     pageSize
   ],
   queryFn: () => {
-    const { orderNo, customerName, status, productName, orderDate } = searchForm;
+    const { orderNo, customerName, status, inventoryUnitName, orderDate } = searchForm;
     const params: ListBasicSaleOrdersPageRequest = {
       orderNo: orderNo || undefined,
       customerName: customerName || undefined,
       status: status || undefined,
-      productName: productName || undefined,
+      inventoryUnitName: inventoryUnitName || undefined,
       orderDate: orderDate || undefined,
       pageIndex: pageIndex.value,
       pageSize: pageSize.value

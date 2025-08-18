@@ -2,6 +2,8 @@ package org.abacusflow.usecase.transaction.service.impl
 
 import org.abacusflow.db.transaction.SaleOrderRepository
 import org.abacusflow.generated.jooq.Tables.CUSTOMER
+import org.abacusflow.generated.jooq.Tables.INVENTORY
+import org.abacusflow.generated.jooq.Tables.INVENTORY_UNIT
 import org.abacusflow.generated.jooq.Tables.PRODUCT
 import org.abacusflow.generated.jooq.Tables.SALE_ORDER
 import org.abacusflow.generated.jooq.Tables.SALE_ORDER_ITEM
@@ -32,7 +34,7 @@ class SaleOrderQueryServiceImpl(
         orderNo: UUID?,
         customerName: String?,
         status: String?,
-        productName: String?,
+        inventoryUnitName: String?,
         orderDate: LocalDate?,
     ): Page<BasicSaleOrderTO> {
         val conditions =
@@ -61,8 +63,21 @@ class SaleOrderQueryServiceImpl(
                     add(SALE_ORDER.STATUS.eq(statusEnum))
                 }
 
-                productName?.takeIf { it.isNotBlank() }?.let {
-                    add(PRODUCT.NAME.containsIgnoreCase(it))
+                inventoryUnitName?.takeIf { it.isNotBlank() }?.let {
+                    val existsSubquery =
+                        DSL.selectOne()
+                            .from(SALE_ORDER_ITEM)
+                            .join(INVENTORY_UNIT).on(SALE_ORDER_ITEM.INVENTORY_UNIT_ID.eq(INVENTORY_UNIT.ID))
+                            .join(INVENTORY).on(INVENTORY_UNIT.INVENTORY_ID.eq(INVENTORY.ID))
+                            .join(PRODUCT).on(INVENTORY.PRODUCT_ID.eq(PRODUCT.ID))
+                            .where(SALE_ORDER_ITEM.ORDER_ID.eq(SALE_ORDER.ID))
+                            .and(
+                                INVENTORY_UNIT.SERIAL_NUMBER.cast(String::class.java).containsIgnoreCase(it)
+                                    .or(INVENTORY_UNIT.BATCH_CODE.cast(String::class.java).containsIgnoreCase(it))
+                                    .or(PRODUCT.NAME.cast(String::class.java).containsIgnoreCase(it))
+                            )
+
+                    add(DSL.exists(existsSubquery))
                 }
             }
 

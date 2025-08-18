@@ -13,7 +13,7 @@ interface SaleOrderQueryService {
         orderNo: UUID?,
         customerName: String?,
         status: String?,
-        productName: String?,
+        inventoryUnitName: String?,
         orderDate: LocalDate?,
     ): Page<BasicSaleOrderTO>
 

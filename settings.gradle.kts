@@ -91,18 +91,17 @@ toolsModules.forEach {
 include("abacusflow-server")
 
 // ------------------------------------
-// 页面 webapp
+// 页面 app
 // ------------------------------------
-val webappModules =
+val appModules =
     listOf(
         "abacusflow-webapp",
         "abacusflow-miniprogram",
         "abacusflow-nativeapp",
     )
-webappModules.forEach {
+appModules.forEach {
     include(
         "abacusflow-app:$it",
     )
     findProject(":abacusflow-app:$it")?.name = it
 }
-include("abacusflow-app:abacusflow-nativeapp")

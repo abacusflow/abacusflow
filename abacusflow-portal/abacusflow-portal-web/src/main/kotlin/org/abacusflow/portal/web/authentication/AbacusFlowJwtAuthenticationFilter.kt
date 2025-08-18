@@ -12,9 +12,8 @@ class AbacusFlowJwtAuthenticationFilter(
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         TODO("Not yet implemented")
     }
-
 }
