@@ -19,6 +19,25 @@ tags:
   - name: depot
     description: 管理物理储存点及其内部存储空间，包括库位分配、容量规划和储存点布局设计。
 
+
+x-error-responses:
+  '400':
+    description: 参数错误
+    schema:
+      $ref: "#/components/schemas/ErrorResponse"
+  '401':
+    description: 未认证
+    schema:
+      $ref: "#/components/schemas/ErrorResponse"
+  '403':
+    description: 无权限
+    schema:
+      $ref: "#/components/schemas/ErrorResponse"
+  '500':
+    description: 服务内部错误
+    schema:
+      $ref: "#/components/schemas/ErrorResponse"
+
 paths:
   /users:
     get:
@@ -2946,7 +2965,7 @@ components:
       x-enum-descriptions:
         - 男
         - 女
-    Error:
+    ErrorResponse:
       description: 错误信息
       type: object
       required:
@@ -2957,3 +2976,34 @@ components:
           format: int32
         message:
           type: string
+  # responses:
+  #   BadRequest:
+  #     description: Bad Request - 参数错误
+  #     content:
+  #       application/json:
+  #         schema:
+  #           $ref: "#/components/schemas/ErrorResponse"
+  #   Unauthorized:
+  #     description: Unauthorized - 未登录或 Token 失效
+  #     content:
+  #       application/json:
+  #         schema:
+  #           $ref: "#/components/schemas/ErrorResponse"
+  #   Forbidden:
+  #     description: Forbidden - 无权限访问
+  #     content:
+  #       application/json:
+  #         schema:
+  #           $ref: "#/components/schemas/ErrorResponse"
+  #   NotFound:
+  #     description: Not Found - 资源不存在
+  #     content:
+  #       application/json:
+  #         schema:
+  #           $ref: "#/components/schemas/ErrorResponse"
+  #   InternalServerError:
+  #     description: Internal Server Error - 服务器内部错误
+  #     content:
+  #       application/json:
+  #         schema:
+  #           $ref: "#/components/schemas/ErrorResponse"

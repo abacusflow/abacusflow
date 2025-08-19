@@ -64,20 +64,11 @@ class SaleOrderQueryServiceImpl(
                 }
 
                 inventoryUnitName?.takeIf { it.isNotBlank() }?.let {
-                    val existsSubquery =
-                        DSL.selectOne()
-                            .from(SALE_ORDER_ITEM)
-                            .join(INVENTORY_UNIT).on(SALE_ORDER_ITEM.INVENTORY_UNIT_ID.eq(INVENTORY_UNIT.ID))
-                            .join(INVENTORY).on(INVENTORY_UNIT.INVENTORY_ID.eq(INVENTORY.ID))
-                            .join(PRODUCT).on(INVENTORY.PRODUCT_ID.eq(PRODUCT.ID))
-                            .where(SALE_ORDER_ITEM.ORDER_ID.eq(SALE_ORDER.ID))
-                            .and(
-                                INVENTORY_UNIT.SERIAL_NUMBER.cast(String::class.java).containsIgnoreCase(it)
-                                    .or(INVENTORY_UNIT.BATCH_CODE.cast(String::class.java).containsIgnoreCase(it))
-                                    .or(PRODUCT.NAME.cast(String::class.java).containsIgnoreCase(it))
-                            )
-
-                    add(DSL.exists(existsSubquery))
+                    add(
+                        INVENTORY_UNIT.SERIAL_NUMBER.cast(String::class.java).containsIgnoreCase(it)
+                            .or(INVENTORY_UNIT.BATCH_CODE.cast(String::class.java).containsIgnoreCase(it))
+                            .or(PRODUCT.NAME.cast(String::class.java).containsIgnoreCase(it))
+                    )
                 }
             }
 
@@ -85,6 +76,9 @@ class SaleOrderQueryServiceImpl(
             SALE_ORDER
                 .leftJoin(CUSTOMER).on(SALE_ORDER.CUSTOMER_ID.eq(CUSTOMER.ID))
                 .leftJoin(SALE_ORDER_ITEM).on(SALE_ORDER_ITEM.ORDER_ID.eq(SALE_ORDER.ID))
+                .leftJoin(INVENTORY_UNIT).on(SALE_ORDER_ITEM.INVENTORY_UNIT_ID.eq(INVENTORY_UNIT.ID))
+                .leftJoin(INVENTORY).on(INVENTORY_UNIT.INVENTORY_ID.eq(INVENTORY.ID))
+                .leftJoin(PRODUCT).on(INVENTORY.PRODUCT_ID.eq(PRODUCT.ID))
 
         val total =
             jooqDsl

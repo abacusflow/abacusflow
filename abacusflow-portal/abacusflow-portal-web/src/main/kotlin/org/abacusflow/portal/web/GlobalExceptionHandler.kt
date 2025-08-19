@@ -1,7 +1,7 @@
 package org.abacusflow.portal.web
 
 import jakarta.servlet.http.HttpServletRequest
-import org.abacusflow.portal.web.model.ErrorVO
+import org.abacusflow.portal.web.model.ErrorResponseVO
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,17 +16,17 @@ class GlobalExceptionHandler {
     fun handleValidationException(
         ex: MethodArgumentNotValidException,
         request: HttpServletRequest,
-    ): ResponseEntity<ErrorVO> {
+    ): ResponseEntity<ErrorResponseVO> {
         val errorMsg =
             ex.bindingResult.fieldErrors.joinToString("; ") {
                 "${it.field}：${it.defaultMessage}"
             }
 
-        return ResponseEntity.badRequest().body(ErrorVO(400, "参数校验错误：$errorMsg"))
+        return ResponseEntity.badRequest().body(ErrorResponseVO(400, "参数校验错误：$errorMsg"))
     }
 
     @ExceptionHandler(DataIntegrityViolationException::class)
-    fun handleDataIntegrity(ex: DataIntegrityViolationException): ResponseEntity<ErrorVO> {
+    fun handleDataIntegrity(ex: DataIntegrityViolationException): ResponseEntity<ErrorResponseVO> {
         val rootMsg = ex.rootCause?.message ?: "违反数据完整性约束"
         val match = DUPLICATE_KEY_REGEX.find(rootMsg)
 
@@ -39,17 +39,17 @@ class GlobalExceptionHandler {
             }
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
-            ErrorVO(409, userFriendlyMsg),
+            ErrorResponseVO(409, userFriendlyMsg),
         )
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArg(ex: IllegalArgumentException): ResponseEntity<ErrorVO> =
-        ResponseEntity.badRequest().body(ErrorVO(400, "参数非法：${ex.message}"))
+    fun handleIllegalArg(ex: IllegalArgumentException): ResponseEntity<ErrorResponseVO> =
+        ResponseEntity.badRequest().body(ErrorResponseVO(400, "参数非法：${ex.message}"))
 
     @ExceptionHandler(IllegalStateException::class)
-    fun handleIllegalState(ex: IllegalStateException): ResponseEntity<ErrorVO> =
-        ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorVO(409, "状态异常：${ex.message}"))
+    fun handleIllegalState(ex: IllegalStateException): ResponseEntity<ErrorResponseVO> =
+        ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponseVO(409, "状态异常：${ex.message}"))
 
     companion object {
         val DUPLICATE_KEY_REGEX = Regex("""Key \(.+?\)=\((.+?)\) already exists""")
