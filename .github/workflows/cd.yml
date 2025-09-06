@@ -1,16 +1,14 @@
-# This is a basic workflow to help you get started with Actions
+# This is a basic CD workflow
 
 name: CD
 
 permissions:
-  contents: none
+  contents: read
   packages: read
 
 on:
-  workflow_run:
-    workflows: ["Release"]
-    types:
-      - completed
+  release:
+    types: [published]
 
 env:
   REGISTRY: ghcr.io
@@ -18,17 +16,16 @@ env:
 
 jobs:
   deploy:
-    name: Deploy ${{ github.event.workflow_run.ref_name }} to ${{ env.DEPLOY_ENVIRONMENT }}
+    name: Deploy ${{ github.event.release.tag_name }} to ${{ env.DEPLOY_ENVIRONMENT }}
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
     environment: ${{ env.DEPLOY_ENVIRONMENT }}
 
     steps:
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         env:
-          # The tag name from the completed Release workflow run
-          RELEASE_VERSION: ${{ github.event.workflow_run.ref_name }}
+          # The tag name from the published release
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
         with:
           # 从GitHub Secrets中读取服务器连接信息
           host: ${{ secrets.SSH_IP }}
@@ -43,13 +40,13 @@ jobs:
             echo "Logging into GitHub Container Registry..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ github.actor }}" --password-stdin
 
-            export ABACUSFLOW_SERVER_VERSION=${{ env.RELEASE_VERSION }}
-            export ABACUSFLOW_WEBAPP_VERSION=${{ env.RELEASE_VERSION }}
+            export ABACUSFLOW_SERVER_VERSION=${{ github.event.release.tag_name }}
+            export ABACUSFLOW_WEBAPP_VERSION=${{ github.event.release.tag_name }}
 
             # 进入项目部署目录
             cd /opt/abacusflow/abacusflow/
 
-            echo "Starting deployment of version ${{ env.RELEASE_VERSION }} to ${{ env.DEPLOY_ENVIRONMENT }}..."
+            echo "Starting deployment of version ${{ github.event.release.tag_name }} to ${{ env.DEPLOY_ENVIRONMENT }}..."
 
             if [ "${{ env.DEPLOY_ENVIRONMENT }}" = "production" ]; then
               echo "Using production compose file..."
