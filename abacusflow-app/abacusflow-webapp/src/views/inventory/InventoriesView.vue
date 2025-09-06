@@ -667,7 +667,7 @@ const inventoryUnitColumns: TableColumnsType<BasicInventoryUnit> = [
       const content = text?.join(", ") ?? "-";
       return h(Tooltip, { title: content, placement: "topLeft" }, () => content);
     }
-  },
+  }
   // { title: "储存点", dataIndex: "depotName", key: "depotName" },
   // { title: "操作", key: "action" }
 ];

@@ -265,7 +265,7 @@ const {
     pageSize
   ],
   queryFn: () => {
-    const { orderNo, supplierName, status, productName,serialNumber, orderDate } = searchForm;
+    const { orderNo, supplierName, status, productName, serialNumber, orderDate } = searchForm;
     const params: ListBasicPurchaseOrdersPageRequest = {
       orderNo: orderNo || undefined,
       supplierName: supplierName || undefined,
