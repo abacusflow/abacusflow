@@ -14,6 +14,7 @@ interface PurchaseOrderQueryService {
         supplierName: String?,
         status: String?,
         productName: String?,
+        serialNumber: String?,
         orderDate: LocalDate?,
     ): Page<BasicPurchaseOrderTO>
 

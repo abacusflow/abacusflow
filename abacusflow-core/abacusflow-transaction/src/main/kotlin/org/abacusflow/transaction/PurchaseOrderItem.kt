@@ -26,12 +26,14 @@ class PurchaseOrderItem(
     val quantity: Int = 1,
     @field:PositiveOrZero
     val unitPrice: BigDecimal,
-    val serialNumber: String?,
+    serialNumber: String?,
     val batchCode: UUID?,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
+
+    val serialNumber = serialNumber?.uppercase()
 
     init {
         when (productType) {

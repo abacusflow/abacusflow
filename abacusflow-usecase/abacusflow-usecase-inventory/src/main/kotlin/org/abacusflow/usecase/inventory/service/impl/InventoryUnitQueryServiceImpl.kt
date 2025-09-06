@@ -67,12 +67,13 @@ class InventoryUnitQueryServiceImpl(
                 }
 
                 inventoryUnitCode?.takeIf { it.isNotBlank() }?.let { code ->
+                    val upperCode = code.uppercase()
                     val condition =
                         try {
-                            val uuid = UUID.fromString(code)
+                            val uuid = UUID.fromString(upperCode)
                             INVENTORY_UNIT.BATCH_CODE.eq(uuid)
                         } catch (e: IllegalArgumentException) {
-                            INVENTORY_UNIT.SERIAL_NUMBER.eq(code)
+                            INVENTORY_UNIT.SERIAL_NUMBER.eq(upperCode)
                         }
 
                     add(condition)

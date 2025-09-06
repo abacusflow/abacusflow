@@ -10,7 +10,6 @@ export default defineConfig(({ mode }) => {
   const envVars = loadEnv(mode, process.cwd());
 
   return {
-    base: "./", // 确保是相对路径
     plugins: [
       vue(),
       vueDevTools()

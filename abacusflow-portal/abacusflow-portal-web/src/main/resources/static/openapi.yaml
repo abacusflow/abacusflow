@@ -1303,6 +1303,11 @@ paths:
           required: false
           schema:
             type: string
+        - name: serialNumber
+          in: query
+          required: false
+          schema:
+            type: string
         - name: orderDate
           in: query
           required: false

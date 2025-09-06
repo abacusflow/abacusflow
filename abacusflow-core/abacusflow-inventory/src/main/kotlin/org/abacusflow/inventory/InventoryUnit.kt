@@ -153,7 +153,7 @@ abstract class InventoryUnit(
         purchaseOrderId: Long,
         depotId: Long?,
         unitPrice: BigDecimal,
-        val serialNumber: String,
+        serialNumber: String,
     ) : InventoryUnit(
             inventory = inventory,
             purchaseOrderId = purchaseOrderId,
@@ -161,6 +161,9 @@ abstract class InventoryUnit(
             depotId = depotId,
             unitPrice = unitPrice,
         ) {
+        @Column(unique = true)
+        val serialNumber: String = serialNumber.uppercase()
+
         val inStock: Boolean
             get() = remainingQuantity == 1L
 

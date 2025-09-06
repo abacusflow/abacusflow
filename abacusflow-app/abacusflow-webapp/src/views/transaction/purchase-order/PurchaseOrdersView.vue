@@ -32,6 +32,14 @@
             />
           </a-form-item>
 
+          <a-form-item label="序列号">
+            <a-input
+              v-model:value="searchForm.serialNumber"
+              placeholder="请输入序列号"
+              allow-clear
+            />
+          </a-form-item>
+
           <a-form-item label="供应商名">
             <a-input
               v-model:value="searchForm.supplierName"
@@ -200,6 +208,7 @@ const searchForm = reactive({
   orderNo: undefined,
   status: undefined,
   productName: undefined,
+  serialNumber: undefined,
   supplierName: undefined,
   orderDate: undefined
 });
@@ -226,6 +235,7 @@ const resetSearch = () => {
   searchForm.orderNo = undefined;
   searchForm.status = undefined;
   searchForm.productName = undefined;
+  searchForm.serialNumber = undefined;
   searchForm.supplierName = undefined;
   searchForm.orderDate = undefined;
 
@@ -249,17 +259,19 @@ const {
     searchForm.supplierName,
     searchForm.status,
     searchForm.productName,
+    searchForm.serialNumber,
     searchForm.orderDate,
     pageIndex,
     pageSize
   ],
   queryFn: () => {
-    const { orderNo, supplierName, status, productName, orderDate } = searchForm;
+    const { orderNo, supplierName, status, productName, serialNumber, orderDate } = searchForm;
     const params: ListBasicPurchaseOrdersPageRequest = {
       orderNo: orderNo || undefined,
       supplierName: supplierName || undefined,
       status: status || undefined,
       productName: productName || undefined,
+      serialNumber: serialNumber || undefined,
       orderDate: orderDate || undefined,
       pageIndex: pageIndex.value,
       pageSize: pageSize.value

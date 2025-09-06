@@ -84,6 +84,7 @@ class SaleOrderQueryServiceImpl(
             jooqDsl
                 .select(DSL.countDistinct(SALE_ORDER.ID))
                 .from(joinedTables)
+                .where(conditions)
                 .fetchOne(0, Long::class.java) ?: 0L
 
         val totalAmountField = DSL.sum(SALE_ORDER_ITEM.UNIT_PRICE.mul(SALE_ORDER_ITEM.QUANTITY)).`as`("total_amount")
