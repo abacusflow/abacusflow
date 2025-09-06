@@ -33,6 +33,7 @@ class PurchaseOrderQueryServiceImpl(
         supplierName: String?,
         status: String?,
         productName: String?,
+        serialNumber: String?,
         orderDate: LocalDate?,
     ): Page<BasicPurchaseOrderTO> {
         val conditions =
@@ -63,6 +64,9 @@ class PurchaseOrderQueryServiceImpl(
 
                 productName?.takeIf { it.isNotBlank() }?.let {
                     add(PRODUCT.NAME.containsIgnoreCase(it))
+                }
+                serialNumber?.takeIf { it.isNotBlank() }?.let {
+                    add(PURCHASE_ORDER_ITEM.SERIAL_NUMBER.eq(it.uppercase()))
                 }
             }
 

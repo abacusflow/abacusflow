@@ -200,7 +200,7 @@ import { translateProductType } from "@/util/productUtils";
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import { DownOutlined } from "@ant-design/icons-vue";
 import { message, type TableColumnsType, Tag, Tooltip } from "ant-design-vue";
-import { computed, h, inject, reactive, ref, watch } from "vue";
+import { computed, h, inject, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import InventoryAssignDepotView from "./InventoryAssignDepotView.vue";
 import InventoryEditWarningLineView from "./InventoryEditWarningLineView.vue";
@@ -217,7 +217,7 @@ const showEditWarningLine = ref(false);
 const editingInventory = ref<BasicInventory | null>(null);
 const editingInventoryUnit = ref<BasicInventoryUnit | null>(null);
 const expandedRowKeys = ref<number[]>([]);
-const showEmbeddedTable = ref(true);
+const showEmbeddedTable = ref(false);
 
 const productCategoryId = computed(() => {
   const id = route.query.productCategoryId;
@@ -432,19 +432,19 @@ function onCategorySelected(productCategoryId: string | number) {
   });
 }
 
-// 内嵌表格的默认展开
-watch(
-  () => inventoriesPageData.value?.content,
-  (newContent) => {
-    // 只展开类型为 Asset 且有剩余库存的行
-    expandedRowKeys.value =
-      newContent
-        ?.filter((item) => item.productType === ProductType.Asset) // 过滤出类型为 Asset 的行
-        ?.filter((item) => item.units.reduce((sum, unit) => sum + unit.remainingQuantity, 0) > 0) // 过滤出剩余库存总和大于 0 的行
-        ?.map((item) => item.id) || []; // 提取 id // 如果 newContent 为 null 或 undefined，则返回空数组
-  },
-  { immediate: true } // 在页面加载时立即执行一次
-);
+// // 内嵌表格的默认展开
+// watch(
+//   () => inventoriesPageData.value?.content,
+//   (newContent) => {
+//     // 只展开类型为 Asset 且有剩余库存的行
+//     expandedRowKeys.value =
+//       newContent
+//         ?.filter((item) => item.productType === ProductType.Asset) // 过滤出类型为 Asset 的行
+//         ?.filter((item) => item.units.reduce((sum, unit) => sum + unit.remainingQuantity, 0) > 0) // 过滤出剩余库存总和大于 0 的行
+//         ?.map((item) => item.id) || []; // 提取 id // 如果 newContent 为 null 或 undefined，则返回空数组
+//   },
+//   { immediate: true } // 在页面加载时立即执行一次
+// );
 
 const stockHealthTip = (value: number = 0, min: number = 0, max: number = Infinity): string => {
   const range = max - min;
@@ -599,22 +599,22 @@ const inventoryUnitColumns: TableColumnsType<BasicInventoryUnit> = [
     title: "库存单元名",
     dataIndex: "title",
     key: "title",
-    width: 200
+    width: 500
   },
-  {
-    title: "序列号/批次号",
-    key: "identity",
-    customRender: ({ record }) => {
-      switch (record.type) {
-        case InventoryUnitType.batch:
-          return record.batchCode ?? "-";
-        case InventoryUnitType.instance:
-          return record.serialNumber ?? "-";
-        default:
-          return "-";
-      }
-    }
-  },
+  // {
+  //   title: "序列号/批次号",
+  //   key: "identity",
+  //   customRender: ({ record }) => {
+  //     switch (record.type) {
+  //       case InventoryUnitType.batch:
+  //         return record.batchCode ?? "-";
+  //       case InventoryUnitType.instance:
+  //         return record.serialNumber ?? "-";
+  //       default:
+  //         return "-";
+  //     }
+  //   }
+  // },
   {
     title: "可用库存数量",
     dataIndex: "remainingQuantity",
@@ -668,7 +668,7 @@ const inventoryUnitColumns: TableColumnsType<BasicInventoryUnit> = [
       return h(Tooltip, { title: content, placement: "topLeft" }, () => content);
     }
   },
-  { title: "储存点", dataIndex: "depotName", key: "depotName" },
-  { title: "操作", key: "action" }
+  // { title: "储存点", dataIndex: "depotName", key: "depotName" },
+  // { title: "操作", key: "action" }
 ];
 </script>

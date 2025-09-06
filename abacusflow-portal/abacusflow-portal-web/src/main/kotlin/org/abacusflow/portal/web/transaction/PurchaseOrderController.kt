@@ -25,6 +25,7 @@ class PurchaseOrderController(
         supplierName: String?,
         status: String?,
         productName: String?,
+        serialNumber: String?,
         orderDate: LocalDate?,
     ): ResponseEntity<ListBasicPurchaseOrdersPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
@@ -36,6 +37,7 @@ class PurchaseOrderController(
                 supplierName = supplierName,
                 status = status,
                 productName = productName,
+                serialNumber = serialNumber,
                 orderDate = orderDate,
             ).map { it.toBasicVO() }
 
