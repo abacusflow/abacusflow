@@ -67,7 +67,7 @@ class SaleOrderQueryServiceImpl(
                     add(
                         INVENTORY_UNIT.SERIAL_NUMBER.cast(String::class.java).containsIgnoreCase(it)
                             .or(INVENTORY_UNIT.BATCH_CODE.cast(String::class.java).containsIgnoreCase(it))
-                            .or(PRODUCT.NAME.cast(String::class.java).containsIgnoreCase(it))
+                            .or(PRODUCT.NAME.cast(String::class.java).containsIgnoreCase(it)),
                     )
                 }
             }
