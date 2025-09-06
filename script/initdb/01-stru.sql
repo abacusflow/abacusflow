@@ -111,7 +111,7 @@ create table inventory_unit (
                                 unit_price numeric(38, 2),
                                 version bigint not null,
                                 batch_code uuid,
-                                serial_number varchar(255),
+                                serial_number varchar(255) constraint uq_inventory_unit_serial_number unique,
                                 inventory_id bigint constraint fk_inventory_unit_inventory_id references inventory,
                                 created_at timestamp(6) with time zone not null default now(),
                                 updated_at timestamp(6) with time zone not null default now()
