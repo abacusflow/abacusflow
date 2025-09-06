@@ -3,7 +3,7 @@ package org.abacusflow.portal.web.authentication
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.abacusflow.portal.web.model.ErrorVO
+import org.abacusflow.portal.web.model.ErrorResponseVO
 import org.springframework.http.MediaType
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -54,7 +54,7 @@ class AbacusFlowAuthenticationEntryPointHandler(
         response.characterEncoding = StandardCharsets.UTF_8.name()
 
         val errorResponse =
-            ErrorVO(
+            ErrorResponseVO(
                 code = HttpServletResponse.SC_UNAUTHORIZED,
                 message = exception?.message ?: "Authentication required",
             )

@@ -24,7 +24,7 @@ class SaleOrderController(
         orderNo: UUID?,
         customerName: String?,
         status: String?,
-        productName: String?,
+        inventoryUnitName: String?,
         orderDate: LocalDate?,
     ): ResponseEntity<ListBasicSaleOrdersPage200ResponseVO> {
         val pageable = PageRequest.of(pageIndex - 1, pageSize)
@@ -35,7 +35,7 @@ class SaleOrderController(
                 orderNo = orderNo,
                 customerName = customerName,
                 status = status,
-                productName = productName,
+                inventoryUnitName = inventoryUnitName,
                 orderDate = orderDate,
             ).map { it.toBasicVO() }
 
