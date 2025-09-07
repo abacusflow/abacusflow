@@ -2,23 +2,24 @@
 
 name: CD
 
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
 permissions:
   contents: read
   packages: read
 
-on:
-  release:
-    types: [published]
-
-env:
-  REGISTRY: ghcr.io
-  DEPLOY_ENVIRONMENT: production
-
 jobs:
-  deploy:
-    name: Deploy ${{ github.event.release.tag_name }} to ${{ env.DEPLOY_ENVIRONMENT }}
+  deploy-prod:
+    if: github.event_name == 'release'
+    name: Deploy ${{ github.event.release.tag_name }} to production
     runs-on: ubuntu-latest
-    environment: ${{ env.DEPLOY_ENVIRONMENT }}
+    environment: production
 
     steps:
       - name: Deploy to Server
@@ -46,15 +47,10 @@ jobs:
             # 进入项目部署目录
             cd /opt/abacusflow/abacusflow/
 
-            echo "Starting deployment of version ${{ github.event.release.tag_name }} to ${{ env.DEPLOY_ENVIRONMENT }}..."
+            echo "Starting deployment of version ${{ github.event.release.tag_name }} to production..."
 
-            if [ "${{ env.DEPLOY_ENVIRONMENT }}" = "production" ]; then
-              echo "Using production compose file..."
-              docker compose -f docker-compose-prod.yml pull
-              docker compose -f docker-compose-prod.yml up -d --remove-orphans
-            else
-              echo "Error: Unknown environment '${{ env.DEPLOY_ENVIRONMENT }}'"
-              exit 1
-            fi
+            echo "Using production compose file..."
+            docker compose -f docker-compose-prod.yml pull
+            docker compose -f docker-compose-prod.yml up -d --remove-orphans
 
             echo "Deployment completed successfully."
