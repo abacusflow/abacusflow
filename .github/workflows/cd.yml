@@ -6,6 +6,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version to deploy"
+        required: false
+        default: "latest"
 
 env:
   REGISTRY: ghcr.io
@@ -17,18 +22,25 @@ permissions:
 jobs:
   deploy-prod:
     if: github.event_name == 'release'
-    name: Deploy ${{ github.event.release.tag_name }} to production
+    name: Deploy abacusflow to production
     runs-on: ubuntu-latest
     environment: production
 
     steps:
+      - name: Set release version
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "release_version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "release_version=${{ github.event.inputs.release_version }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         env:
-          # The tag name from the published release
-          RELEASE_VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_VERSION: ${{ steps.vars.outputs.release_version }}
         with:
-          # 从GitHub Secrets中读取服务器连接信息
           host: ${{ secrets.SSH_IP }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -41,13 +53,13 @@ jobs:
             echo "Logging into GitHub Container Registry..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ github.actor }}" --password-stdin
 
-            export ABACUSFLOW_SERVER_VERSION=${{ github.event.release.tag_name }}
-            export ABACUSFLOW_WEBAPP_VERSION=${{ github.event.release.tag_name }}
+            export ABACUSFLOW_SERVER_VERSION=${{ env.RELEASE_VERSION }}
+            export ABACUSFLOW_WEBAPP_VERSION=${{ env.RELEASE_VERSION }}
 
             # 进入项目部署目录
             cd /opt/abacusflow/abacusflow/
 
-            echo "Starting deployment of version ${{ github.event.release.tag_name }} to production..."
+            echo "Starting deployment of version ${{ env.RELEASE_VERSION }} to production..."
 
             echo "Using production compose file..."
             docker compose -f docker-compose-prod.yml pull

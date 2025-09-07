@@ -208,7 +208,14 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Parse Git Tag
+        id: parse-git-tag
+        uses: ./.github/actions/parse-git-tag
+
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           generateReleaseNotes: true
+          draft: false
+          latest: ${{ steps.parse-git-tag.outputs.release_type == 'latest' }}
+          prerelease: ${{ steps.parse-git-tag.outputs.release_type == 'pre' }}
