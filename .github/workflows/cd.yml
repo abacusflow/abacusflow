@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   deploy-prod:
-    if: github.event_name == 'release'
+    # if: github.event_name == 'release'
     name: Deploy abacusflow to production
     runs-on: ubuntu-latest
     environment: production

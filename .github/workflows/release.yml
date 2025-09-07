@@ -208,6 +208,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Parse Git Tag
         id: parse-git-tag
         uses: ./.github/actions/parse-git-tag
