@@ -1,8 +1,5 @@
 package org.abacusflow.portal.web
 
-import org.abacusflow.portal.web.authentication.AbacusFlowAuthenticationEntryPointHandler
-import org.abacusflow.portal.web.authentication.AbacusFlowFormLoginAuthFailureHandler
-import org.abacusflow.portal.web.authentication.AbacusFlowFormLoginAuthSuccessHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -12,42 +9,38 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
-class SecurityConfiguration(
-    private val abacusFlowAuthenticationEntryPointHandler: AbacusFlowAuthenticationEntryPointHandler,
-    private val abacusFlowFormLoginAuthSuccessHandler: AbacusFlowFormLoginAuthSuccessHandler,
-    private val abacusFlowFormLoginAuthFailureHandler: AbacusFlowFormLoginAuthFailureHandler,
-) {
+class SecurityConfiguration {
     private val staticResources = listOf("css", "js", "images", "fonts", "scss", "vendor")
 
     @Bean
-    fun securityFilterChain(
-        http: HttpSecurity,
-//        abacusFlowJwtAuthenticationFilter: AbacusFlowJwtAuthenticationFilter
-    ): SecurityFilterChain {
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
             csrf { disable() }
-
-            exceptionHandling {
-                authenticationEntryPoint = abacusFlowAuthenticationEntryPointHandler
-            }
 
             authorizeHttpRequests {
                 authorize("/static/**", permitAll)
                 authorize("/login", permitAll)
-                authorize("/login", permitAll)
-                authorize("/logout", permitAll)
+                authorize("/oauth2/**", permitAll)
+                authorize("/error", permitAll)
                 authorize(anyRequest, authenticated)
             }
 
-            formLogin {
-                loginPage = "/login"
-                authenticationSuccessHandler = abacusFlowFormLoginAuthSuccessHandler
-                authenticationFailureHandler = abacusFlowFormLoginAuthFailureHandler
+            oauth2Login {
+                loginPage = "/oauth2/authorization/oauth2-client"
+                defaultSuccessUrl("/", true)
+                failureUrl("/login?error")
+            }
+
+            logout {
+                logoutSuccessUrl = "/login?logout"
+                deleteCookies("JSESSIONID")
                 permitAll()
             }
 
-//            oneTimeTokenLogin {  }
-//            addFilterBefore<UsernamePasswordAuthenticationFilter>(abacusFlowJwtAuthenticationFilter)
+            sessionManagement {
+                maximumSessions = 1
+                maxSessionsPreventsLogin = false
+            }
         }
         return http.build()
     }
