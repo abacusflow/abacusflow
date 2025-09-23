@@ -220,5 +220,5 @@ jobs:
         with:
           generateReleaseNotes: true
           draft: false
-          latest: ${{ steps.parse-git-tag.outputs.release_type == 'latest' }}
+          makeLatest: ${{ steps.parse-git-tag.outputs.release_type == 'latest' }}
           prerelease: ${{ steps.parse-git-tag.outputs.release_type == 'pre' }}
