@@ -25,22 +25,7 @@ class SecurityConfiguration {
                 authorize(anyRequest, authenticated)
             }
 
-            oauth2Login {
-                loginPage = "/oauth2/authorization/oauth2-client"
-                defaultSuccessUrl("/", true)
-                failureUrl("/login?error")
-            }
-
-            logout {
-                logoutSuccessUrl = "/login?logout"
-                deleteCookies("JSESSIONID")
-                permitAll()
-            }
-
-            sessionManagement {
-                maximumSessions = 1
-                maxSessionsPreventsLogin = false
-            }
+            oauth2ResourceServer { jwt { } }
         }
         return http.build()
     }

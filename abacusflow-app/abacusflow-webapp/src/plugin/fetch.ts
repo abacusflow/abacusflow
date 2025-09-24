@@ -10,6 +10,7 @@ import {
   UserApi
 } from "../core/openapi";
 import { notification } from "ant-design-vue";
+import authService from "../services/auth";
 
 export default {
   install: (app: App) => {
@@ -38,6 +39,16 @@ const authMiddleware: Middleware = {
     const headers = new Headers(init?.headers || {});
     headers.set("X-Requested-With", "XMLHttpRequest");
 
+    try {
+      const isAuthenticated = await authService.isAuthenticated();
+      if (isAuthenticated) {
+        const accessToken = await authService.getAccessToken();
+        headers.set("Authorization", `Bearer ${accessToken}`);
+      }
+    } catch (error) {
+      console.warn("Failed to add auth token to request:", error);
+    }
+
     return {
       url,
       init: {
@@ -49,13 +60,16 @@ const authMiddleware: Middleware = {
   post: async ({ response }) => {
     if (!response.ok) {
       if (response.status === 401) {
-        const redirectUrl = document.location.pathname;
-        window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
+        try {
+          await authService.login();
+        } catch (error) {
+          console.error("Failed to redirect to login:", error);
+          window.location.href = '/';
+        }
         return response;
       }
 
       const error = await response.json();
-      // message.error(error.message || "接口异常");
       notification.error({
         message: "请求出错",
         description: error.message || "接口异常",

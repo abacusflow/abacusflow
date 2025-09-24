@@ -38,6 +38,10 @@ export default defineConfig(({ mode }) => {
         "/login": {
           target: envVars.VITE_SERVER_ENDPOINT
         },
+        "/oauth2": {
+          target: envVars.VITE_SERVER_ENDPOINT,
+          changeOrigin: true
+        },
         "/static": {
           target: envVars.VITE_SERVER_ENDPOINT,
           changeOrigin: true

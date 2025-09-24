@@ -5,6 +5,7 @@ import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import router from "./router";
+import { useAuthStore } from "./stores/auth";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
 import { VueQueryPlugin } from "@tanstack/vue-query";
@@ -37,4 +38,9 @@ app.use(injectGlobalProperties, {
   dateToFormattedString
   // capitalize
 });
-app.mount("#app");
+
+// Initialize authentication on app start
+const authStore = useAuthStore();
+authStore.initialize().then(() => {
+  app.mount("#app");
+});
