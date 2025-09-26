@@ -41,15 +41,6 @@ class AuthService {
       scope: 'openid profile email'
     }
 
-    // Debug configuration
-    console.log('Auth0 Config:', {
-      domain: this.config.domain,
-      clientId: this.config.clientId ? `${this.config.clientId.substring(0, 8)}...` : 'NOT_SET',
-      audience: this.config.audience,
-      redirectUri: this.config.redirectUri,
-      scope: this.config.scope
-    })
-
     if (!this.config.clientId) {
       console.error('Auth0 Client ID is not configured. Please set VITE_AUTH0_CLIENT_ID environment variable.')
     }
@@ -77,6 +68,7 @@ class AuthService {
     if (!this.auth0Client) {
       throw new Error('Auth0 client not initialized')
     }
+    debugger
 
     await this.auth0Client.loginWithRedirect({
       ...options,

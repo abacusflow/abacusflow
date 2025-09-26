@@ -2,8 +2,8 @@
   <div class="login-container">
     <div class="login-content">
       <div class="login-header">
-        <h1>AbacusFlow Admin</h1>
-        <p>欢迎使用库存管理系统</p>
+        <h1>小算盘</h1>
+        <h3>AbacusFlow Admin</h3>
       </div>
 
       <div class="login-form">
@@ -26,7 +26,7 @@
       </div>
 
       <div class="login-footer">
-        <p>© 2024 AbacusFlow. All rights reserved.</p>
+        <p>© 2025 AbacusFlow. All rights reserved.</p>
       </div>
     </div>
   </div>
