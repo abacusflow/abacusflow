@@ -8,7 +8,7 @@ interface UserProfile {
   picture?: string;
   nickname?: string;
   sub?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const useAuthStore = defineStore("auth", () => {

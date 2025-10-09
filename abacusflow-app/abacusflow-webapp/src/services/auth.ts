@@ -25,7 +25,7 @@ interface UserProfile {
   iat?: number;
   aud?: string | string[];
   iss?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 class AuthService {
@@ -140,7 +140,7 @@ class AuthService {
     }
   }
 
-  async getUser(): Promise<any> {
+  async getUser(): Promise<UserProfile | undefined> {
     if (!this.auth0Client) {
       throw new Error("Auth0 client not initialized");
     }
@@ -153,7 +153,7 @@ class AuthService {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
       return decoded.exp ? decoded.exp < currentTime : true;
-    } catch (error) {
+    } catch {
       return true;
     }
   }
