@@ -1,21 +1,23 @@
-//package org.abacusflow.portal.web.authentication
+@file:Suppress("ktlint")
+
+// package org.abacusflow.portal.web.authentication
 //
-//import jakarta.servlet.ServletException
-//import jakarta.servlet.http.Cookie
-//import jakarta.servlet.http.HttpServletRequest
-//import jakarta.servlet.http.HttpServletResponse
-//import org.abacusflow.usecase.user.service.UserAuthenticationService
-//import org.springframework.security.core.Authentication
-//import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-//import org.springframework.stereotype.Component
-//import java.io.IOException
-//import java.net.URI
-//import java.net.URISyntaxException
+// import jakarta.servlet.ServletException
+// import jakarta.servlet.http.Cookie
+// import jakarta.servlet.http.HttpServletRequest
+// import jakarta.servlet.http.HttpServletResponse
+// import org.abacusflow.usecase.user.service.UserAuthenticationService
+// import org.springframework.security.core.Authentication
+// import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+// import org.springframework.stereotype.Component
+// import java.io.IOException
+// import java.net.URI
+// import java.net.URISyntaxException
 //
-//@Component
-//class AbacusFlowFormLoginAuthSuccessHandler(
+// @Component
+// class AbacusFlowFormLoginAuthSuccessHandler(
 //    private val userAuthenticationService: UserAuthenticationService,
-//) : AuthenticationSuccessHandler {
+// ) : AuthenticationSuccessHandler {
 //    @Throws(IOException::class, ServletException::class)
 //    override fun onAuthenticationSuccess(
 //        request: HttpServletRequest,
@@ -44,7 +46,7 @@
 //                path = "/"
 //                isHttpOnly = false // ✅ 如果你用 JS 读取，可设为 false；若你打算前端不读、直接 header 传回，建议 true
 //                maxAge = 60 * 60 * 24 * 365 // 1年
-////            secure = request.isSecure  // 若是 HTTPS
+// //            secure = request.isSecure  // 若是 HTTPS
 //            }
 //        response.addCookie(cookie)
 //    }
@@ -70,4 +72,4 @@
 //                "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTc1MTYyNDQzOH0." +
 //                "9PYDk96jITyoNjlmZ04by_1N_VR6HUw6h_A7jlk6m-Q"
 //    }
-//}
+// }

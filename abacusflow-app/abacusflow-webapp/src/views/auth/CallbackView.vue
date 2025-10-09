@@ -12,41 +12,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
-const router = useRouter()
-const authStore = useAuthStore()
-const error = ref<string | null>(null)
+const router = useRouter();
+const authStore = useAuthStore();
+const error = ref<string | null>(null);
 
 onMounted(async () => {
   try {
     // Handle the redirect callback
-    const success = await authStore.handleRedirectCallback()
+    const success = await authStore.handleRedirectCallback();
 
     if (success) {
       // Get the intended destination from the URL or default to dashboard
-      const urlParams = new URLSearchParams(window.location.search)
-      const returnTo = urlParams.get('returnTo') || '/'
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnTo = urlParams.get("returnTo") || "/";
 
       // Redirect to the intended page
-      await router.replace(returnTo)
+      await router.replace(returnTo);
     } else {
-      error.value = '登录处理失败'
+      error.value = "登录处理失败";
       setTimeout(() => {
-        router.replace('/login')
-      }, 3000)
+        router.replace("/login");
+      }, 3000);
     }
   } catch (err) {
-    console.error('Callback handling failed:', err)
-    error.value = '登录过程中发生错误'
+    console.error("Callback handling failed:", err);
+    error.value = "登录过程中发生错误";
 
     setTimeout(() => {
-      router.replace('/login')
-    }, 3000)
+      router.replace("/login");
+    }, 3000);
   }
-})
+});
 </script>
 
 <style scoped>

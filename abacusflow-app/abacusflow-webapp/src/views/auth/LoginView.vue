@@ -7,13 +7,7 @@
       </div>
 
       <div class="login-form">
-        <a-button
-          type="primary"
-          size="large"
-          :loading="loading"
-          @click="handleLogin"
-          block
-        >
+        <a-button type="primary" size="large" :loading="loading" @click="handleLogin" block>
           <template #icon>
             <LoginOutlined />
           </template>
@@ -33,33 +27,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { LoginOutlined } from '@ant-design/icons-vue'
+import { ref } from "vue";
+import { useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { LoginOutlined } from "@ant-design/icons-vue";
 
-const route = useRoute()
-const authStore = useAuthStore()
+const route = useRoute();
+const authStore = useAuthStore();
 
-const loading = ref(false)
-const error = ref<string | null>(null)
+const loading = ref(false);
+const error = ref<string | null>(null);
 
 const handleLogin = async () => {
   try {
-    loading.value = true
-    error.value = null
+    loading.value = true;
+    error.value = null;
 
     // Get the redirect URL from query params
-    const redirectTo = route.query.redirect as string || '/'
+    const redirectTo = (route.query.redirect as string) || "/";
 
-    await authStore.login(redirectTo)
+    await authStore.login(redirectTo);
   } catch (err) {
-    console.error('Login failed:', err)
-    error.value = '登录失败，请重试'
+    console.error("Login failed:", err);
+    error.value = "登录失败，请重试";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 </script>
 
 <style scoped>

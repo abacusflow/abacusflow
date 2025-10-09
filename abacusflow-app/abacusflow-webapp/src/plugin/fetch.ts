@@ -64,7 +64,7 @@ const authMiddleware: Middleware = {
           await authService.login();
         } catch (error) {
           console.error("Failed to redirect to login:", error);
-          window.location.href = '/';
+          window.location.href = "/";
         }
         return response;
       }

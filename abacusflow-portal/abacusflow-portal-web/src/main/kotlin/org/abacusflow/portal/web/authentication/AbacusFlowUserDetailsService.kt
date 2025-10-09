@@ -1,16 +1,18 @@
-//package org.abacusflow.portal.web.authentication
+@file:Suppress("ktlint")
+
+// package org.abacusflow.portal.web.authentication
 //
-//import org.abacusflow.usecase.user.service.UserAuthenticationService
-//import org.springframework.security.core.userdetails.UserDetails
-//import org.springframework.security.core.userdetails.UserDetailsService
-//import org.springframework.security.core.userdetails.UsernameNotFoundException
-//import org.springframework.stereotype.Component
-//import org.springframework.security.core.userdetails.User as SecurityUser
+// import org.abacusflow.usecase.user.service.UserAuthenticationService
+// import org.springframework.security.core.userdetails.UserDetails
+// import org.springframework.security.core.userdetails.UserDetailsService
+// import org.springframework.security.core.userdetails.UsernameNotFoundException
+// import org.springframework.stereotype.Component
+// import org.springframework.security.core.userdetails.User as SecurityUser
 //
-//@Component
-//class AbacusFlowUserDetailsService(
+// @Component
+// class AbacusFlowUserDetailsService(
 //    private val userAuthenticationService: UserAuthenticationService,
-//) : UserDetailsService {
+// ) : UserDetailsService {
 //    override fun loadUserByUsername(username: String?): UserDetails? {
 //        require(!username.isNullOrBlank()) { "Username must not be null or blank" }
 //
@@ -24,4 +26,4 @@
 //            .roles(*user.roleNames.toTypedArray())
 //            .build()
 //    }
-//}
+// }

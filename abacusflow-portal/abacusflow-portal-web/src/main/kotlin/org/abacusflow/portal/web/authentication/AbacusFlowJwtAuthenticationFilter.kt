@@ -1,14 +1,16 @@
-//package org.abacusflow.portal.web.authentication
+@file:Suppress("ktlint")
+
+// package org.abacusflow.portal.web.authentication
 //
-//import jakarta.servlet.FilterChain
-//import jakarta.servlet.http.HttpServletRequest
-//import jakarta.servlet.http.HttpServletResponse
-//import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
-//import org.springframework.web.filter.OncePerRequestFilter
+// import jakarta.servlet.FilterChain
+// import jakarta.servlet.http.HttpServletRequest
+// import jakarta.servlet.http.HttpServletResponse
+// import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+// import org.springframework.web.filter.OncePerRequestFilter
 //
-//class AbacusFlowJwtAuthenticationFilter(
+// class AbacusFlowJwtAuthenticationFilter(
 //    private val authenticationConfiguration: AuthenticationConfiguration,
-//) : OncePerRequestFilter() {
+// ) : OncePerRequestFilter() {
 //    override fun doFilterInternal(
 //        request: HttpServletRequest,
 //        response: HttpServletResponse,
@@ -16,4 +18,4 @@
 //    ) {
 //        TODO("Not yet implemented")
 //    }
-//}
+// }

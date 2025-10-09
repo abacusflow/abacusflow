@@ -1,20 +1,22 @@
-//package org.abacusflow.portal.web.authentication
+@file:Suppress("ktlint")
+
+// package org.abacusflow.portal.web.authentication
 //
-//import com.fasterxml.jackson.databind.ObjectMapper
-//import jakarta.servlet.http.HttpServletRequest
-//import jakarta.servlet.http.HttpServletResponse
-//import org.abacusflow.portal.web.model.ErrorResponseVO
-//import org.springframework.http.MediaType
-//import org.springframework.security.core.AuthenticationException
-//import org.springframework.security.web.AuthenticationEntryPoint
-//import org.springframework.stereotype.Component
-//import java.io.IOException
-//import java.nio.charset.StandardCharsets
+// import com.fasterxml.jackson.databind.ObjectMapper
+// import jakarta.servlet.http.HttpServletRequest
+// import jakarta.servlet.http.HttpServletResponse
+// import org.abacusflow.portal.web.model.ErrorResponseVO
+// import org.springframework.http.MediaType
+// import org.springframework.security.core.AuthenticationException
+// import org.springframework.security.web.AuthenticationEntryPoint
+// import org.springframework.stereotype.Component
+// import java.io.IOException
+// import java.nio.charset.StandardCharsets
 //
-//@Component
-//class AbacusFlowAuthenticationEntryPointHandler(
+// @Component
+// class AbacusFlowAuthenticationEntryPointHandler(
 //    private val objectMapper: ObjectMapper,
-//) : AuthenticationEntryPoint {
+// ) : AuthenticationEntryPoint {
 //    @Throws(IOException::class)
 //    override fun commence(
 //        request: HttpServletRequest,
@@ -62,4 +64,4 @@
 //        response.writer.write(objectMapper.writeValueAsString(errorResponse))
 //        response.writer.flush()
 //    }
-//}
+// }
