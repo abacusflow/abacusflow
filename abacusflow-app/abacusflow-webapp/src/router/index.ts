@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory, RouterView } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { LAYOUTS } from "@/layouts/layouts";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -6,6 +8,17 @@ const router = createRouter({
     {
       path: "/",
       redirect: "/dashboard"
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: () => import("@/views/auth/LoginView.vue"),
+      meta: {
+        title: "登录",
+        hidden: true,
+        requiresAuth: false,
+        layout: LAYOUTS.BLANK // 声明使用空白布局
+      }
     },
     {
       path: "/dashboard",
@@ -142,6 +155,16 @@ const router = createRouter({
       }
     },
     {
+      path: "/callback",
+      name: "callback",
+      component: () => import("@/views/auth/CallbackView.vue"),
+      meta: {
+        title: "登录回调",
+        hidden: true,
+        requiresAuth: false
+      }
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "not-found",
       component: () => import("@/views/NotFoundView.vue"),
@@ -151,6 +174,47 @@ const router = createRouter({
       }
     }
   ]
+});
+
+// Navigation guard for authentication
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore();
+
+  // Initialize auth on first visit
+  if (authStore.isLoading) {
+    await authStore.initialize();
+  }
+
+  const requiresAuth = to.meta.requiresAuth !== false; // Default to true
+  const isAuthenticated = authStore.isAuthenticated;
+
+  // Handle callback route
+  if (to.name === "callback") {
+    const success = await authStore.handleRedirectCallback();
+    if (success) {
+      // Redirect to intended page or dashboard
+      const returnTo = (to.query.state as string) || "/";
+      next(returnTo);
+    } else {
+      next("/login");
+    }
+    return;
+  }
+
+  // Handle authentication requirements
+  if (requiresAuth && !isAuthenticated) {
+    // Redirect to login
+    await authStore.login(to.fullPath);
+    return;
+  }
+
+  // If authenticated and trying to access login page, redirect to dashboard
+  if (to.name === "login" && isAuthenticated) {
+    next("/");
+    return;
+  }
+
+  next();
 });
 
 export default router;

@@ -12,6 +12,8 @@ dependencies {
     implementation(libs.swagger.annotations)
     implementation(libs.swagger.core)
     implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.oauth2.resource.server)
+    implementation(libs.spring.security.oauth2.jose)
     implementation(project(":abacusflow-usecase"))
 }
 

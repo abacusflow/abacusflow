@@ -22,7 +22,7 @@ import { ANNOUNCEMENTS } from "@/constants/versionAnnouncements";
 import { markAnnouncementAsRead, shouldShowAnnouncement } from "@/util/version";
 import { onMounted, ref } from "vue";
 const visible = ref(false);
-const countdown = ref(10);
+const countdown = ref(3);
 
 function handleClose() {
   markAnnouncementAsRead();
